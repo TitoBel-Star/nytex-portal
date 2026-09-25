@@ -2,7 +2,7 @@
   "name": "nytex-portal-root",
   "version": "1.0.0",
   "scripts": {
-    "build": "cd portal-frontend && npm install && npm run build && cd ../portal-backend && npm install && rm -rf public && cp -r ../portal-frontend/dist public",
+    "build": "cd portal-frontend && npm install --include=dev && npm run build && cd ../portal-backend && npm install && rm -rf public && cp -r ../portal-frontend/dist public",
     "start": "cd portal-backend && node server.js"
   }
 }
