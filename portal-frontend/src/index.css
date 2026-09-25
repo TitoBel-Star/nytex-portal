@@ -1,0 +1,55 @@
+@import "tailwindcss";
+
+@theme {
+  --color-nytex-navy: #06365C;
+  --color-nytex-blue: #126BA4;
+  --color-nytex-cyan: #09A9E8;
+  --color-nytex-silver: #AEB8BF;
+  --color-nytex-white: #FFFFFF;
+  
+  --color-nytex-navy-dark: #042A49;
+  --color-nytex-blue-dark: #0A4775;
+  --color-nytex-blue-light: #69B9EA;
+  --color-nytex-ice: #DCECF7;
+  --color-nytex-background: #F5F8FA;
+  --color-nytex-text: #102F4D;
+  --color-nytex-border: #D8E2EA;
+  
+  --color-nytex-success: #16A36A;
+  --color-nytex-warning: #F2A51A;
+  --color-nytex-danger: #F04444;
+}
+
+:root {
+  /* IDENTIDAD CORPORATIVA NyTEX */
+  --nytex-navy: #06365C;
+  --nytex-blue: #126BA4;
+  --nytex-cyan: #09A9E8;
+  --nytex-silver: #AEB8BF;
+  --nytex-white: #FFFFFF;
+
+  /* COLORES DE APOYO */
+  --nytex-navy-dark: #042A49;
+  --nytex-blue-dark: #0A4775;
+  --nytex-blue-light: #69B9EA;
+  --nytex-ice: #DCECF7;
+  --nytex-background: #F5F8FA;
+  --nytex-text: #102F4D;
+  --nytex-border: #D8E2EA;
+
+  /* ESTADOS */
+  --nytex-success: #16A36A;
+  --nytex-warning: #F2A51A;
+  --nytex-danger: #F04444;
+}
+
+body {
+  background-color: var(--nytex-background);
+  color: var(--nytex-text);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+#root { min-height: 100vh; width: 100vw; display: flex; flex-direction: column; }
+
