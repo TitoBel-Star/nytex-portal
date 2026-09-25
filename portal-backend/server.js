@@ -172,7 +172,7 @@ async function startServer() {
     
     const path = require('path');
     app.use(express.static(path.join(__dirname, 'public')));
-    app.get('*', (req, res) => {
+    app.use( (req, res) => {
       // Only serve index.html for non-API routes
       if (!req.path.startsWith('/api')) {
          res.sendFile(path.join(__dirname, 'public', 'index.html'));
