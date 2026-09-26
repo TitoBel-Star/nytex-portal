@@ -80,10 +80,9 @@ export default function Dashboard() {
   const { user, login } = useAuth();
   const location = useLocation();
 
-  // Objeto de usuario seguro por si la llamada a /api/auth/me aún está cargando
   const safeUser = user || {
     email: 'demo@consultores-nyt.com',
-    subscriptions: ['Ventas', 'CRM', 'Inventario'],
+    subscriptions: modulesList.map(m => m.id), // Todos adquiridos para demo
     customQuoteAmount: null
   };
 
@@ -92,7 +91,6 @@ export default function Dashboard() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedPhaseForPayment, setSelectedPhaseForPayment] = useState(null);
 
-  // Parse URL query params
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const phaseParam = params.get('phase');
@@ -312,56 +310,54 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Sección: Grid de 26 Módulos */}
+        {/* DIAGRAMA OPERATIVO Y ÁREAS FUNCIONALES (Justo debajo de la Propuesta de Implementación) */}
+        <NytexEcosistemaDiagram />
+
+        {/* Sección: Grid de 26 Módulos - Todos con Abrir Módulo y Adquirido, con iluminación activa al seleccionar fase */}
+        <div className="mb-8 text-center">
+          <h3 className="text-2xl font-extrabold text-[var(--nytex-navy)]">
+            Módulos y Aplicaciones del Sistema (26 Módulos)
+          </h3>
+          <p className="text-sm text-gray-500 mt-1">
+            Haga clic en <strong className="text-[#15A36A]">"Ver aplicaciones ↓"</strong> en cualquiera de las fases arriba para ver cuáles se iluminan.
+          </p>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
           {modulesList.map((mod) => {
-            const hasAccess = safeUser.subscriptions.includes(mod.id);
             const isHighlighted = highlightedModules.includes(mod.id);
-            const isCardActive = hasAccess || isHighlighted;
 
             return (
               <div 
                 key={mod.id} 
                 className={`relative bg-white rounded-xl overflow-hidden border transition-all duration-300 ${
                   isHighlighted 
-                    ? 'border-[#15A36A] ring-4 ring-[#15A36A] shadow-[0_0_20px_rgba(21,163,106,0.8)] transform scale-105 z-20 opacity-100' 
-                    : hasAccess 
-                      ? 'border-[#15A36A] shadow-md opacity-100 z-10' 
-                      : 'border-[var(--nytex-border)] opacity-60 z-0'
+                    ? 'border-[#15A36A] ring-4 ring-[#15A36A] shadow-[0_0_25px_rgba(21,163,106,0.9)] transform scale-105 z-20 opacity-100' 
+                    : 'border-[#15A36A] shadow-md opacity-100 z-10'
                 }`}
               >
                 <div className="p-6 flex flex-col h-full">
                   <h3 className="text-xl font-extrabold text-[var(--nytex-navy)] mb-2">{mod.name}</h3>
                   <p className="text-[var(--nytex-text)] mb-6 flex-grow">{mod.description}</p>
                   
-                  {isCardActive ? (
-                    <Link 
-                      to={`/app/` + mod.id.toLowerCase()} 
-                      className="mt-auto block w-full text-center bg-[#15A36A] text-white py-2 px-4 rounded-md font-bold hover:bg-[#108253] transition-colors shadow-lg"
-                    >
-                      Abrir Módulo
-                    </Link>
-                  ) : (
-                    <button 
-                      disabled 
-                      className="mt-auto block w-full text-center bg-[var(--nytex-ice)] text-[var(--nytex-navy)] py-2 px-4 rounded-md font-bold border border-[var(--nytex-border)] cursor-not-allowed"
-                    >
-                      Módulo Bloqueado
-                    </button>
-                  )}
+                  <Link 
+                    to={`/app/` + mod.id.toLowerCase()} 
+                    className={`mt-auto block w-full text-center py-2 px-4 rounded-md font-bold transition-all shadow-lg ${
+                      isHighlighted 
+                        ? 'bg-[#108253] text-white ring-2 ring-white ring-offset-2' 
+                        : 'bg-[#15A36A] text-white hover:bg-[#108253]'
+                    }`}
+                  >
+                    Abrir Módulo
+                  </Link>
                 </div>
 
-                {/* Badges */}
-                {!isCardActive && (
-                  <div className="absolute top-0 right-0 bg-gray-400 text-white px-3 py-1 text-xs font-extrabold rounded-bl-lg shadow-sm">
-                    REQUERIDO
-                  </div>
-                )}
-                {isCardActive && (
-                  <div className="absolute top-0 right-0 bg-[#15A36A] text-white px-3 py-1 text-xs font-extrabold rounded-bl-lg shadow-sm">
-                    ADQUIRIDO
-                  </div>
-                )}
+                {/* Badge ADQUIRIDO siempre presente en verde en cada módulo */}
+                <div className={`absolute top-0 right-0 px-3 py-1 text-xs font-extrabold rounded-bl-lg shadow-sm ${
+                  isHighlighted ? 'bg-[#108253] text-white ring-1 ring-white' : 'bg-[#15A36A] text-white'
+                }`}>
+                  ADQUIRIDO
+                </div>
               </div>
             );
           })}
@@ -373,9 +369,6 @@ export default function Dashboard() {
           phaseInfo={selectedPhaseForPayment} 
           onSuccess={handlePaymentSuccess}
         />
-
-        {/* Diagrama Completo de Ecosistema NyTEX (26 Módulos + 7 Áreas Funcionales) */}
-        <NytexEcosistemaDiagram />
 
         {/* Mini Admin Panel para Pruebas */}
         <div className="fixed bottom-2 right-2 bg-white p-2 text-xs border rounded shadow-md z-50 text-gray-500 opacity-50 hover:opacity-100 transition-opacity">
