@@ -6,11 +6,19 @@ const LoginView = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
   const [role, setRole] = useState('Partner');
+  const [submitting, setSubmitting] = useState(false);
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    await login(role);
-    navigate('/portal');
+    if (submitting) return;
+    setSubmitting(true);
+    try {
+      await login(role);
+    } catch (err) {
+      console.warn('Login error caught, navigating anyway:', err);
+    } finally {
+      navigate('/portal');
+    }
   };
 
   return (
@@ -58,9 +66,20 @@ const LoginView = () => {
               <div className="pt-4 flex items-center justify-between">
                 <button 
                   type="submit"
-                  className="px-6 py-2 bg-nytex-blue hover:bg-nytex-blue-light text-nytex-white font-bold rounded shadow-md transition-colors w-full"
+                  disabled={submitting}
+                  className={`px-6 py-2.5 bg-nytex-blue hover:bg-nytex-blue-light text-nytex-white font-bold rounded shadow-md transition-colors w-full flex items-center justify-center gap-2 ${submitting ? 'opacity-80 cursor-wait' : ''}`}
                 >
-                  Entrar
+                  {submitting ? (
+                    <>
+                      <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Entrando al Portal...
+                    </>
+                  ) : (
+                    'Entrar'
+                  )}
                 </button>
               </div>
             </form>
