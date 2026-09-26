@@ -18,6 +18,7 @@ const modulesList = [
   { id: 'RRHH', name: 'NyTEX RRHH', description: 'Gestión de recursos humanos.' },
   { id: 'Nomina', name: 'NyTEX Nómina', description: 'Cálculo y pago de planillas.' },
   { id: 'ProcessSuite', name: 'NyTEX Process Suite', description: 'Automatización de procesos.' },
+  { id: 'ProcessMining', name: 'NyTEX Process Mining', description: 'Minería de procesos operativos y flujos.' },
   { id: 'BusinessPartners', name: 'NyTEX Business Partners', description: 'Gestión de socios de negocio.' },
   { id: 'BIyReportes', name: 'NyTEX BI y Reportes', description: 'Inteligencia de negocios y analítica.' },
   { id: 'Configuracion', name: 'NyTEX Configuración', description: 'Ajustes globales del sistema.' },
@@ -25,6 +26,7 @@ const modulesList = [
   { id: 'Dashboards', name: 'NyTEX Dashboards Operativos', description: 'Visualización de métricas en tiempo real.' },
   { id: 'BI', name: 'NyTEX BI', description: 'Business Intelligence avanzado.' },
   { id: 'BigData', name: 'NyTEX Big Data', description: 'Procesamiento de grandes volúmenes de datos.' },
+  { id: 'MineriaDatos', name: 'NyTEX Minería de Datos', description: 'Descubrimiento de patrones y minería masiva.' },
   { id: 'IA', name: 'NyTEX IA', description: 'Inteligencia artificial aplicada a negocios.' },
   { id: 'Predictivos', name: 'NyTEX Modelos Predictivos', description: 'Análisis y proyecciones a futuro.' },
   { id: 'Planeacion', name: 'NyTEX Planeación', description: 'Planificación estratégica y operativa.' }
@@ -65,8 +67,8 @@ const phases = [
     id: 4,
     name: 'Fase 4: NyTEX Enterprise',
     subtitle: 'Dirección Estratégica',
-    moduleCount: '24 MÓDULOS:',
-    modulesText: 'Todo el Ecosistema: IA, Predictivos, Planeación, Big Data, BI, Dashboards y más',
+    moduleCount: '26 MÓDULOS:',
+    modulesText: 'Todo el Ecosistema: BI, Big Data, IA, Minería, Process Suite, Process Mining, Partners y más',
     modulesArray: modulesList.map(m => m.id),
     imp: 'Cotización a Medida',
     lic: '$499 USD / mes'
@@ -74,65 +76,73 @@ const phases = [
 ];
 
 export default function Dashboard() {
-  const { user, replaceSubscriptions, loading } = useAuth();
+  const { user, login } = useAuth();
   const location = useLocation();
+
   const [activePhase, setActivePhase] = useState(null);
   const [customModules, setCustomModules] = useState([]);
-
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedPhaseForPayment, setSelectedPhaseForPayment] = useState(null);
 
+  // Initialize and render Mermaid diagram
+  useEffect(() => {
+    // Expose zoom functions to window for the buttons in diagram
+    window.currentDiagramZoom = 1;
+    window.adjustDiagramZoom = function(delta) {
+      window.currentDiagramZoom = Math.max(0.6, Math.min(2.5, window.currentDiagramZoom + delta));
+      window.applyDiagramZoom();
+    };
+    window.resetDiagramZoom = function() {
+      window.currentDiagramZoom = 1;
+      window.applyDiagramZoom();
+    };
+    window.applyDiagramZoom = function() {
+      const svg = document.querySelector("#diagramWrapper .mermaid svg");
+      if (svg) {
+        svg.style.transform = "scale(" + window.currentDiagramZoom + ")";
+        svg.style.transformOrigin = "top center";
+      }
+    };
+
+    const renderMermaid = async () => {
+      if (window.mermaid) {
+        try {
+          window.mermaid.initialize({
+            startOnLoad: false,
+            theme: 'dark',
+            securityLevel: 'loose',
+            flowchart: { curve: 'basis' }
+          });
+          await window.mermaid.run({ querySelector: '.mermaid' });
+        } catch (e) {
+          console.error("Mermaid run error:", e);
+        }
+      }
+    };
+
+    renderMermaid();
+    const timer = setTimeout(renderMermaid, 600);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Parse URL query params
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const phaseParam = params.get('phase');
-    
     if (phaseParam) {
-      if (phaseParam === 'custom') {
+      const pId = parseInt(phaseParam, 10);
+      if (pId >= 1 && pId <= 4) {
+        setActivePhase(pId);
+      } else if (phaseParam === 'custom') {
         setActivePhase('custom');
-      } else {
-        const phaseId = parseInt(phaseParam, 10);
-        const phaseData = phases.find(p => p.id === phaseId);
-        if (phaseData) {
-          setActivePhase(phaseId);
-          // replaceSubscriptions(phaseData.modulesArray); // Wait until paid
-        }
       }
     }
   }, [location]);
 
-  const handleContratar = (phaseId, modules) => {
-    setActivePhase(phaseId);
-    const phaseData = phases.find(p => p.id === phaseId);
-    setSelectedPhaseForPayment({
-      name: phaseData.name,
-      modulesText: phaseData.modulesText,
-      modulesArray: modules,
-      imp: phaseData.imp
-    });
-    setIsModalOpen(true);
-  };
-
-  const handleCustomToggle = (moduleId) => {
-    setCustomModules(prev => {
-      const newCustom = prev.includes(moduleId) ? prev.filter(id => id !== moduleId) : [...prev, moduleId];
-      return newCustom;
-    });
-    setActivePhase('custom');
-  };
-
-  const handleContratarCustom = () => {
-    setSelectedPhaseForPayment({
-      name: 'Paquete a su Medida',
-      modulesText: `${customModules.length} módulos personalizados`,
-      modulesArray: customModules,
-      imp: `$${customModules.length * 250} USD`
-    });
-    setIsModalOpen(true);
-  };
-
-  const handlePaymentSuccess = (newSubscriptions) => {
-    replaceSubscriptions(newSubscriptions);
-    setIsModalOpen(false);
+  const handleToggleModule = (modId) => {
+    setCustomModules(prev => 
+      prev.includes(modId) ? prev.filter(id => id !== modId) : [...prev, modId]
+    );
   };
 
   const getHighlightedModules = () => {
@@ -146,227 +156,316 @@ export default function Dashboard() {
     return [];
   };
 
-  if (loading) return <div className="min-h-screen bg-gray-100 flex items-center justify-center">Cargando Portal...</div>;
-  if (!user) return <div className="min-h-screen bg-gray-100 flex items-center justify-center">Inicie sesión para continuar.</div>;
-
   const highlightedModules = getHighlightedModules();
+
+  const handleContratar = (phaseId, phaseModules) => {
+    if (phaseId === 4 && !user.customQuoteAmount) {
+      alert("Su cotización está siendo calculada por nuestro equipo de ventas. Le contactaremos en breve o use el panel de pruebas abajo para simular una cotización.");
+      return;
+    }
+
+    let amount = 0;
+    let title = "";
+
+    if (phaseId === 1) { amount = 0; title = "Fase 1: NyTEX Starter"; }
+    else if (phaseId === 2) { amount = 1500; title = "Fase 2: NyTEX Express"; }
+    else if (phaseId === 3) { amount = 4500; title = "Fase 3: NyTEX Advanced"; }
+    else if (phaseId === 4) { 
+      amount = user.customQuoteAmount || 0; 
+      title = "Fase 4: NyTEX Enterprise"; 
+    }
+    else if (phaseId === 'custom') {
+      amount = customModules.length * 400;
+      title = "Plan a su medida (" + customModules.length + " Módulos)";
+    }
+
+    setSelectedPhaseForPayment({
+      phaseId,
+      title,
+      amount,
+      modules: phaseModules
+    });
+    setIsModalOpen(true);
+  };
+
+  const handlePaymentSuccess = (newSubscriptions) => {
+    login({
+      ...user,
+      subscriptions: newSubscriptions
+    });
+    alert("¡Pago exitoso! Sus módulos han sido activados.");
+  };
 
   return (
     <div className="min-h-screen bg-[var(--nytex-background)] p-8 relative">
-      {/* Background Graphic to keep the NyTEX identity */}
+      {/* Background Graphic */}
       <div 
-        className="absolute inset-0 w-full h-full bg-no-repeat bg-contain bg-right-bottom pointer-events-none opacity-20"
-        style={{ backgroundImage: "url('/dashboard-bg.png')" }}
-      ></div>
+        className="absolute inset-0 z-0 opacity-5 pointer-events-none" 
+        style={{
+          backgroundImage: 'radial-gradient(circle at 15% 50%, var(--nytex-navy) 0%, transparent 25%), radial-gradient(circle at 85% 30%, var(--nytex-cyan) 0%, transparent 25%)',
+        }}
+      />
 
-      {/* Título de la página quitado porque ya vienen de la presentación, 
-          pasamos directo a la propuesta comercial */}
-      
-      {/* Sección de 5 Columnas (Fases) */}
-      <div className="max-w-[1600px] mx-auto mb-16 relative z-10">
-        <h2 className="text-3xl font-extrabold text-[var(--nytex-navy-dark)] mb-6 text-center">Propuesta de Implementación</h2>
+      <div className="max-w-[1600px] mx-auto relative z-10">
         
-        {/* Contenedor morado oscuro como en la imagen */}
-        <div className="bg-[#2A0F4C] p-6 rounded-xl flex flex-col lg:flex-row gap-4 overflow-x-auto">
-          
-          {phases.map((phase) => (
-            <div key={phase.id} className="flex-1 min-w-[250px] bg-transparent border border-[#4B2979] rounded-lg p-5 flex flex-col text-white">
-              <h3 className="text-xl font-bold mb-1">{phase.name}</h3>
-              <p className="text-sm text-gray-300 mb-4">{phase.subtitle}</p>
-              
-              <p className="text-xs font-bold text-yellow-500 mb-1">{phase.moduleCount}</p>
-              <p className="text-xs text-gray-300 mb-6 flex-grow">{phase.modulesText}</p>
-              
-              <div className="border-t border-[#4B2979] pt-4 mb-4">
-                <p className="text-[10px] text-gray-400 font-bold tracking-wider mb-1">IMPLEMENTACIÓN</p>
-                <p className="text-lg font-bold mb-3">
-                  {phase.id === 4 && user.customQuoteAmount 
-                    ? `$${user.customQuoteAmount.toLocaleString()} USD` 
-                    : phase.imp}
-                </p>
-                
-                <p className="text-[10px] text-gray-400 font-bold tracking-wider mb-1">LICENCIA NYTEX</p>
-                <p className="text-lg font-bold text-yellow-400">{phase.lic}</p>
-              </div>
-              
-              <button 
-                onClick={() => setActivePhase(phase.id)}
-                className={`w-full py-2 px-4 rounded text-sm font-bold transition-colors border mb-2 ${activePhase === phase.id ? 'bg-[#15A36A] border-[#15A36A] text-white' : 'bg-transparent border-[#4B2979] hover:bg-[#4B2979] text-white'}`}
-              >
-                {activePhase === phase.id ? 'Aplicaciones incluidas ↓' : 'Ver aplicaciones ↓'}
-              </button>
+        {/* Banner Cotización Pendiente */}
+        {user.customQuoteAmount && (
+          <div className="mb-8 p-4 bg-gradient-to-r from-purple-900 to-indigo-900 border border-purple-500 rounded-xl flex justify-between items-center text-white shadow-lg">
+            <div>
+              <h3 className="font-bold text-lg text-purple-200">¡Tiene una cotización personalizada lista!</h3>
+              <p className="text-sm text-gray-300">Monto aprobado para Fase 4: <strong>${user.customQuoteAmount.toLocaleString()} USD</strong></p>
+            </div>
+            <button 
+              onClick={() => handleContratar(4, phases[3].modulesArray)}
+              className="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-6 rounded-lg shadow transition-colors"
+            >
+              Pagar e Implementar Ahora
+            </button>
+          </div>
+        )}
 
+        {/* Sección: Propuesta de Implementación */}
+        <div className="mb-12">
+          <h2 className="text-3xl font-extrabold text-[var(--nytex-navy)] text-center mb-8">
+            Propuesta de Implementación
+          </h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+            
+            {/* 4 Fases Estándar */}
+            {phases.map((phase) => (
+              <div 
+                key={phase.id} 
+                className="bg-[#2A114B] border border-white/10 rounded-xl p-5 hover:border-white/30 transition-all flex flex-col text-white"
+              >
+                <h3 className="text-xl font-bold mb-1">{phase.name}</h3>
+                <p className="text-sm text-gray-300 mb-4">{phase.subtitle}</p>
+
+                <div className="flex-grow mb-4">
+                  <p className="text-amber-400 font-extrabold text-sm mb-1">{phase.moduleCount}</p>
+                  <p className="text-xs text-gray-300 leading-relaxed">{phase.modulesText}</p>
+                </div>
+
+                <div className="border-t border-white/10 pt-4 mb-4">
+                  <p className="text-[10px] text-gray-400 uppercase tracking-wider">Implementación</p>
+                  <p className="text-lg font-bold text-white mb-2">{phase.imp}</p>
+
+                  <p className="text-[10px] text-gray-400 uppercase tracking-wider">Licencia NyTEX</p>
+                  <p className="text-sm font-bold text-amber-400">{phase.lic}</p>
+                </div>
+
+                {/* Botón Ver / Aplicaciones incluidas */}
+                <button 
+                  type="button"
+                  onClick={() => setActivePhase(activePhase === phase.id ? null : phase.id)}
+                  className={`w-full py-2 px-4 rounded text-sm font-bold transition-colors border mb-2 ${
+                    activePhase === phase.id 
+                      ? 'bg-[#15A36A] border-[#15A36A] text-white shadow-md' 
+                      : 'bg-transparent border-[#4B2979] hover:bg-[#4B2979] text-white'
+                  }`}
+                >
+                  {activePhase === phase.id ? 'Aplicaciones incluidas ↓' : 'Ver aplicaciones ↓'}
+                </button>
+
+                {/* Botón Contratar */}
+                <button 
+                  type="button"
+                  onClick={() => handleContratar(phase.id, phase.modulesArray)}
+                  className={`w-full py-2 px-4 rounded text-sm font-bold text-center shadow-lg transition-colors border block ${
+                    phase.id === 4 && !user.customQuoteAmount 
+                    ? 'bg-purple-600 hover:bg-purple-700 text-white border-purple-600'
+                    : 'bg-[#0070BA] hover:bg-[#005ea6] text-white border-transparent'
+                  }`}
+                >
+                  {phase.id === 4 && !user.customQuoteAmount ? 'SOLICITAR COTIZACIÓN' : 'CONTRATAR EN PORTAL'}
+                </button>
+              </div>
+            ))}
+
+            {/* Tarjeta: A su medida */}
+            <div className="bg-[#2A114B] border border-white/10 rounded-xl p-5 hover:border-white/30 transition-all flex flex-col text-white">
+              <h3 className="text-xl font-bold mb-1">A su medida</h3>
+              <p className="text-sm text-gray-300 mb-2">Escoja sus módulos:</p>
+
+              <div className="flex-grow overflow-y-auto max-h-40 border border-white/10 rounded p-2 mb-4 bg-black/20">
+                {modulesList.map((mod) => (
+                  <div key={mod.id} className="flex items-center mb-2">
+                    <input 
+                      type="checkbox" 
+                      id={`chk-${mod.id}`}
+                      checked={customModules.includes(mod.id)}
+                      onChange={() => handleToggleModule(mod.id)}
+                      className="mr-2 cursor-pointer"
+                    />
+                    <label htmlFor={`chk-${mod.id}`} className="cursor-pointer text-xs">{mod.name.replace('NyTEX ', '')}</label>
+                  </div>
+                ))}
+              </div>
+
+              <div className="border-t border-white/10 pt-4 mb-4 flex justify-between">
+                <div>
+                  <p className="text-[10px] text-gray-400 uppercase tracking-wider">IMP.</p>
+                  <p className="text-sm font-bold text-white">${customModules.length * 400}</p>
+                </div>
+                <div>
+                  <p className="text-[10px] text-gray-400 uppercase tracking-wider">LIC.</p>
+                  <p className="text-sm font-bold text-amber-400">${customModules.length * 20} <span className="text-[10px] text-gray-300">/ mes</span></p>
+                </div>
+              </div>
+
+              {/* Botón Ver Aplicaciones A su Medida */}
               <button 
-                onClick={() => {
-                  if (phase.id === 4 && !user.customQuoteAmount) {
-                    alert('Se ha enviado una solicitud a su Consultor NyTEX. Pronto subiremos su Cotización a Medida.');
-                  } else {
-                    handleContratar(phase.id, phase.modulesArray);
-                  }
-                }}
-                className={`w-full py-2 px-4 rounded text-sm font-bold text-center shadow-lg transition-colors border block ${
-                  phase.id === 4 && !user.customQuoteAmount 
-                  ? 'bg-purple-600 hover:bg-purple-700 text-white border-purple-600'
-                  : 'bg-[#006EAD] hover:bg-[#005587] text-white border-[#006EAD]'
+                type="button"
+                onClick={() => setActivePhase(activePhase === 'custom' ? null : 'custom')}
+                className={`w-full py-2 px-4 rounded text-sm font-bold transition-colors border mb-2 ${
+                  activePhase === 'custom' 
+                    ? 'bg-[#15A36A] border-[#15A36A] text-white shadow-md' 
+                    : 'bg-transparent border-[#4B2979] hover:bg-[#4B2979] text-white'
                 }`}
               >
-                {phase.id === 4 && !user.customQuoteAmount ? 'SOLICITAR COTIZACIÓN' : 'CONTRATAR EN PORTAL'}
+                {activePhase === 'custom' ? 'Aplicaciones incluidas ↓' : 'Ver aplicaciones ↓'}
+              </button>
+
+              <button 
+                type="button"
+                disabled={customModules.length === 0}
+                onClick={() => handleContratar('custom', customModules)}
+                className={`w-full py-2 px-4 rounded text-sm font-bold text-center shadow-lg transition-colors border block ${
+                  customModules.length === 0 
+                    ? 'bg-gray-600 border-gray-600 cursor-not-allowed text-gray-400' 
+                    : 'bg-[#0070BA] hover:bg-[#005ea6] text-white border-transparent'
+                }`}
+              >
+                CONTRATAR EN PORTAL
               </button>
             </div>
-          ))}
 
-          {/* 5ta Columna: A su medida */}
-          <div className="flex-1 min-w-[250px] bg-transparent border border-[#4B2979] rounded-lg p-5 flex flex-col text-white">
-            <h3 className="text-xl font-bold mb-1">A su medida</h3>
-            <p className="text-sm text-gray-300 mb-4">Escoja sus módulos:</p>
-            
-            <div className="flex-grow overflow-y-auto max-h-[120px] mb-4 text-sm pr-2 custom-scrollbar">
-              {modulesList.map(mod => (
-                <div key={mod.id} className="flex items-center mb-2">
-                  <input 
-                    type="checkbox" 
-                    id={`chk-${mod.id}`}
-                    checked={customModules.includes(mod.id)}
-                    onChange={() => handleCustomToggle(mod.id)}
-                    className="mr-2 cursor-pointer"
-                  />
-                  <label htmlFor={`chk-${mod.id}`} className="cursor-pointer text-xs">{mod.name.replace('NyTEX ', '')}</label>
-                </div>
-              ))}
-            </div>
-            
-            <div className="border-t border-[#4B2979] pt-4 mb-4 flex justify-between">
-              <div>
-                <p className="text-[10px] text-gray-400 font-bold tracking-wider mb-1">IMP.</p>
-                <p className="text-sm font-bold">
-                  {customModules.length === 0 
-                    ? '$0' 
-                    : customModules.length > 5 && !user.customQuoteAmount 
-                      ? 'Cotización a Medida'
-                      : customModules.length > 5 && user.customQuoteAmount
-                        ? `$${user.customQuoteAmount.toLocaleString()} USD`
-                        : `$${(customModules.length * 250).toLocaleString()} USD`}
-                </p>
-              </div>
-              <div className="text-right">
-                <p className="text-[10px] text-gray-400 font-bold tracking-wider mb-1">LIC.</p>
-                <p className="text-sm font-bold text-yellow-400">
-                  ${customModules.length === 0 ? 0 : customModules.length === 1 ? 35 : Math.round(customModules.length * (149/6))} <span className="text-[10px] text-gray-400 font-normal">/ mes</span>
-                </p>
-              </div>
-            </div>
-            
-            <button 
-              onClick={() => setActivePhase('custom')}
-              className={`w-full py-2 px-4 rounded text-sm font-bold transition-colors border mb-2 ${activePhase === 'custom' ? 'bg-[#15A36A] border-[#15A36A] text-white' : 'bg-transparent border-[#4B2979] hover:bg-[#4B2979] text-white'}`}
-            >
-              {activePhase === 'custom' ? 'Aplicaciones incluidas ↓' : 'Ver aplicaciones ↓'}
-            </button>
-
-            <button 
-              onClick={() => {
-                if (customModules.length > 5 && !user.customQuoteAmount) {
-                  alert('Se ha enviado una solicitud a su Consultor NyTEX. Pronto subiremos su Cotización a Medida.');
-                } else {
-                  handleContratarCustom();
-                }
-              }}
-              disabled={customModules.length === 0}
-              className={`w-full py-2 px-4 rounded text-sm font-bold text-center shadow-lg transition-colors border block ${
-                customModules.length === 0 
-                  ? 'bg-gray-600 border-gray-600 cursor-not-allowed text-gray-400' 
-                  : customModules.length > 5 && !user.customQuoteAmount
-                    ? 'bg-purple-600 hover:bg-purple-700 text-white border-purple-600'
-                    : 'bg-[#006EAD] hover:bg-[#005587] text-white border-[#006EAD]'
-              }`}
-            >
-              {customModules.length > 5 && !user.customQuoteAmount ? 'SOLICITAR COTIZACIÓN' : 'CONTRATAR EN PORTAL'}
-            </button>
           </div>
-
         </div>
-      </div>
 
-      {/* Cuadrícula de Módulos a iluminar */}
-      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 relative z-10">
-        {modulesList.map((mod) => {
-          const hasAccess = user.subscriptions.includes(mod.id);
-          const isHighlighted = highlightedModules.includes(mod.id);
-          
-          return (
-            <div 
-              key={mod.id} 
-              className={`relative bg-white rounded-xl overflow-hidden border transition-all duration-300 ${
-                isHighlighted 
-                  ? 'border-[#15A36A] ring-4 ring-[#15A36A] shadow-[0_0_20px_rgba(21,163,106,0.8)] transform scale-105 z-20' 
-                  : hasAccess 
-                    ? 'border-[#15A36A] shadow-md opacity-100 z-10' 
-                    : 'border-[var(--nytex-border)] opacity-60 z-0'
-              }`}
-            >
-              <div className="p-6 flex flex-col h-full">
-                <h3 className="text-xl font-extrabold text-[var(--nytex-navy)] mb-2">{mod.name}</h3>
-                <p className="text-[var(--nytex-text)] mb-6 flex-grow">{mod.description}</p>
-                
-                {hasAccess ? (
-                  <Link 
-                    to={`/app/` + mod.id.toLowerCase()} 
-                    className="mt-auto block w-full text-center bg-[#15A36A] text-white py-2 px-4 rounded-md font-bold hover:bg-[#108253] transition-colors shadow-lg"
-                  >
-                    Abrir Módulo
-                  </Link>
-                ) : (
-                  <button 
-                    disabled
-                    className="mt-auto block w-full text-center bg-[var(--nytex-ice)] text-[var(--nytex-navy)] py-2 px-4 rounded-md font-bold border border-[var(--nytex-border)] cursor-not-allowed"
-                  >
-                    Módulo Bloqueado
-                  </button>
+        {/* Sección: Grid de 26 Módulos */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+          {modulesList.map((mod) => {
+            const hasAccess = user.subscriptions.includes(mod.id);
+            const isHighlighted = highlightedModules.includes(mod.id);
+            const isCardActive = hasAccess || isHighlighted;
+
+            return (
+              <div 
+                key={mod.id} 
+                className={`relative bg-white rounded-xl overflow-hidden border transition-all duration-300 ${
+                  isHighlighted 
+                    ? 'border-[#15A36A] ring-4 ring-[#15A36A] shadow-[0_0_20px_rgba(21,163,106,0.8)] transform scale-105 z-20 opacity-100' 
+                    : hasAccess 
+                      ? 'border-[#15A36A] shadow-md opacity-100 z-10' 
+                      : 'border-[var(--nytex-border)] opacity-60 z-0'
+                }`}
+              >
+                <div className="p-6 flex flex-col h-full">
+                  <h3 className="text-xl font-extrabold text-[var(--nytex-navy)] mb-2">{mod.name}</h3>
+                  <p className="text-[var(--nytex-text)] mb-6 flex-grow">{mod.description}</p>
+                  
+                  {isCardActive ? (
+                    <Link 
+                      to={`/app/` + mod.id.toLowerCase()} 
+                      className="mt-auto block w-full text-center bg-[#15A36A] text-white py-2 px-4 rounded-md font-bold hover:bg-[#108253] transition-colors shadow-lg"
+                    >
+                      Abrir Módulo
+                    </Link>
+                  ) : (
+                    <button 
+                      disabled 
+                      className="mt-auto block w-full text-center bg-[var(--nytex-ice)] text-[var(--nytex-navy)] py-2 px-4 rounded-md font-bold border border-[var(--nytex-border)] cursor-not-allowed"
+                    >
+                      Módulo Bloqueado
+                    </button>
+                  )}
+                </div>
+
+                {/* Badges */}
+                {!isCardActive && (
+                  <div className="absolute top-0 right-0 bg-gray-400 text-white px-3 py-1 text-xs font-extrabold rounded-bl-lg shadow-sm">
+                    REQUERIDO
+                  </div>
+                )}
+                {isCardActive && (
+                  <div className="absolute top-0 right-0 bg-[#15A36A] text-white px-3 py-1 text-xs font-extrabold rounded-bl-lg shadow-sm">
+                    ADQUIRIDO
+                  </div>
                 )}
               </div>
-              
-              {!hasAccess && !isHighlighted && (
-                <div className="absolute top-0 right-0 bg-[var(--nytex-silver)] text-white px-3 py-1 text-xs font-extrabold rounded-bl-lg shadow-sm">
-                  REQUERIDO
-                </div>
-              )}
-              {isHighlighted && !hasAccess && (
-                <div className="absolute top-0 right-0 bg-[var(--nytex-cyan)] text-white px-3 py-1 text-xs font-extrabold rounded-bl-lg shadow-sm">
-                  ADQUIRIDO
-                </div>
-              )}
-              {hasAccess && (
-                <div className="absolute top-0 right-0 bg-[#15A36A] text-white px-3 py-1 text-xs font-extrabold rounded-bl-lg shadow-sm">
-                  ADQUIRIDO
-                </div>
-              )}
-            </div>
-          );
-        })}
-      </div>
-      
-      <PaymentSimulatorModal 
-        isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
-        phaseInfo={selectedPhaseForPayment} 
-        onSuccess={handlePaymentSuccess}
-      />
-      
-      
+            );
+          })}
+        </div>
+        
+        <PaymentSimulatorModal 
+          isOpen={isModalOpen} 
+          onClose={() => setIsModalOpen(false)} 
+          phaseInfo={selectedPhaseForPayment} 
+          onSuccess={handlePaymentSuccess}
+        />
 
-      {/* DIAGRAMA AQUI */}
-      <div className="bg-gradient-to-br from-gray-950 via-[#0a0f1d] to-[#0f172a] rounded-3xl p-6 sm:p-8 lg:p-10 shadow-2xl border border-gray-800 mt-12 mb-16 w-full">
-          {/* Encabezado del marco */}
-          <div className="text-center max-w-3xl mx-auto mb-10">
-              <span className="bg-[#fbc044]/15 text-[#fbc044] border border-[#fbc044]/30 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest inline-block mb-3">
-                  Arquitectura Empresarial NyTEX
-              </span>
-              <h3 className="text-3xl md:text-4xl font-extrabold text-white tracking-tight">Ecosistema Operativo y Mapeo por Áreas Funcionales</h3>
-              <p className="text-gray-400 text-sm md:text-base mt-3 leading-relaxed">
-                  Conozca la interconexión viva de las <strong className="text-white font-bold">24 aplicaciones</strong> de nuestro ecosistema, clasificadas según su <strong className="text-[#fbc044]">Dirección Estratégica</strong> y los departamentos que operan día a día.
-              </p>
-          </div>
-          <div dangerouslySetInnerHTML={{ __html: `<div id="diagramWrapper" class="overflow-x-auto py-3 bg-[#02050e]/60 rounded-xl p-2 border border-gray-800/50 min-h-[560px] flex items-center justify-center">
+        {/* Diagrama Completo de Ecosistema NyTEX (26 Módulos + 7 Áreas Funcionales) */}
+        <div 
+          className="w-full mt-12 mb-16"
+          dangerouslySetInnerHTML={{ __html: `
+            <div class="bg-gradient-to-br from-gray-950 via-[#0a0f1d] to-[#0f172a] rounded-3xl p-6 sm:p-8 lg:p-10 shadow-2xl border border-gray-800 mt-12 mb-16">
+                
+                <div class="text-center max-w-3xl mx-auto mb-10">
+                    <span class="bg-brand-accent/15 text-brand-accent border border-brand-accent/30 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest inline-block mb-3">
+                        <i class="fas fa-network-wired mr-1.5"></i> Arquitectura Empresarial NyTEX
+                    </span>
+                    <h3 class="text-3xl md:text-4xl font-extrabold text-white tracking-tight">Ecosistema Operativo y Mapeo por Áreas Funcionales</h3>
+                    <p class="text-gray-400 text-sm md:text-base mt-3 leading-relaxed">
+                        Conozca la interconexión viva de las <strong class="text-white font-bold">26 aplicaciones</strong> de nuestro ecosistema, clasificadas según su <strong class="text-brand-accent">Dirección Estratégica</strong> y los departamentos que operan día a día.
+                    </p>
+                </div>
+
+                
+                
+                <style>
+                    #diagramWrapper .mermaid svg {
+                        width: 100% !important;
+                        min-width: 920px !important;
+                        max-width: none !important;
+                        height: auto !important;
+                        margin: 0 auto;
+                        transition: transform 0.2s ease;
+                    }
+                </style>
+
+                
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+                    
+                    
+                    <div class="lg:col-span-8 xl:col-span-9 bg-[#030712]/95 rounded-2xl p-4 sm:p-5 border border-gray-800/80 shadow-inner flex flex-col">
+                        <div class="flex flex-wrap items-center justify-between pb-3 mb-3 border-b border-gray-800 gap-2">
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs font-bold text-gray-200 flex items-center gap-1.5">
+                                    <i class="fas fa-project-diagram text-brand-accent"></i> Diagrama Operativo de Sincronización
+                                </span>
+                                <span class="text-[10px] font-semibold bg-gray-800/90 text-gray-400 px-2 py-0.5 rounded-full border border-gray-700">
+                                    26 Módulos Conectados
+                                </span>
+                            </div>
+
+                            
+                            <div class="flex items-center gap-1.5 bg-gray-900 border border-gray-700/80 px-2 py-1 rounded-lg">
+                                <span class="text-gray-400 text-[10px] font-semibold mr-1">Zoom:</span>
+                                <button type="button" onclick="adjustDiagramZoom(0.15)" class="w-6 h-6 rounded bg-gray-800 hover:bg-gray-700 text-gray-200 flex items-center justify-center text-[10px] transition-colors" title="Ampliar diagrama">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                                <button type="button" onclick="adjustDiagramZoom(-0.15)" class="w-6 h-6 rounded bg-gray-800 hover:bg-gray-700 text-gray-200 flex items-center justify-center text-[10px] transition-colors" title="Reducir diagrama">
+                                    <i class="fas fa-minus"></i>
+                                </button>
+                                <button type="button" onclick="resetDiagramZoom()" class="w-6 h-6 rounded bg-gray-800 hover:bg-gray-700 text-gray-200 flex items-center justify-center text-[10px] transition-colors" title="Restablecer tamaño">
+                                    <i class="fas fa-compress-arrows-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        
+                        <div id="diagramWrapper" class="overflow-x-auto py-3 bg-[#02050e]/60 rounded-xl p-2 border border-gray-800/50 min-h-[560px] flex items-center justify-center">
                             <pre class="mermaid text-center w-full">
 flowchart TD
     classDef sales fill:#0284C7,stroke:#38BDF8,stroke-width:2.5px,color:#FFFFFF,font-size:14px
@@ -380,7 +479,7 @@ flowchart TD
     BP["<span style='font-size:11px;font-weight:bold;color:#94a3b8'>ÁREA 7</span><br/><b>NyTEX Business Partners</b><br/><span style='font-size:12px'>Clientes y Proveedores</span>"]:::core
     CONF["<span style='font-size:11px;font-weight:bold;color:#94a3b8'>ÁREA 7</span><br/><b>NyTEX Configuración</b><br/><span style='font-size:12px'>Parámetros Globales</span>"]:::core
     PS["<span style='font-size:11px;font-weight:bold;color:#94a3b8'>ÁREA 7</span><br/><b>NyTEX Process Suite</b><br/><span style='font-size:12px'>Reglas de Negocio</span>"]:::core
-    
+    PM["<span style='font-size:11px;font-weight:bold;color:#94a3b8'>ÁREA 7</span><br/><b>NyTEX Process Mining</b><br/><span style='font-size:12px'>Minería de Procesos</span>"]:::core
 
     CRM["<span style='font-size:11px;font-weight:bold;color:#bae6fd'>ÁREA 1</span><br/><b>NyTEX CRM</b><br/><span style='font-size:12px'>Embudo de Ventas</span>"]:::sales
     VTS["<span style='font-size:11px;font-weight:bold;color:#bae6fd'>ÁREA 1</span><br/><b>NyTEX Ventas</b><br/><span style='font-size:12px'>Cotizaciones y Pedidos</span>"]:::sales
@@ -413,7 +512,7 @@ flowchart TD
     BP ==> VTS
     BP ==> COMP
     CONF -.-> PS
-    
+    CONF -.-> PM
     RRHH -.-> PS
     CRM ==> VTS
     VTS ==> CXC
@@ -442,29 +541,144 @@ flowchart TD
     PRED -.-> IA
     IA -.-> PLAN
                             </pre>
-                        </div>` }} />
-      </div>
+                        </div>
+                    </div>
 
-      {/* Mini Admin Panel para Pruebas (Oculto o muy pequeño) */}
-      <div className="fixed bottom-2 right-2 bg-white p-2 text-xs border rounded shadow-md z-50 text-gray-500 opacity-50 hover:opacity-100 transition-opacity">
-        <p className="font-bold mb-1 border-b pb-1">Test Admin</p>
-        <button 
-          onClick={async () => {
-            const amount = prompt("Ingresa el monto de la cotización (ej: 8500):", "8500");
-            if (amount) {
-              await fetch('/api/admin/set-quote', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: 'demo@consultores-nyt.com', amount: parseInt(amount, 10) })
-              });
-              alert('Cotización subida. Recarga la página.');
-              window.location.reload();
-            }
-          }}
-          className="bg-purple-600 text-white px-2 py-1 rounded"
-        >
-          Simular Subir Cotización
-        </button>
+                    
+                    <div class="lg:col-span-4 xl:col-span-3 bg-[#030712]/95 rounded-2xl p-3.5 sm:p-4 border border-gray-800/80 shadow-inner flex flex-col">
+                        <div class="mb-3 pb-2 border-b border-gray-800">
+                            <h4 class="text-xs font-black text-white uppercase tracking-wider flex items-center gap-1.5">
+                                <i class="fas fa-sitemap text-brand-accent"></i> ÁREAS FUNCIONALES
+                            </h4>
+                            <p class="text-[10px] text-gray-400">Mapeo organizacional NyTEX</p>
+                        </div>
+
+                        <div class="space-y-1.5">
+                            
+                            <div class="bg-gray-900/90 hover:bg-gray-800/70 border border-gray-800 hover:border-sky-500/50 rounded-lg p-2 transition-all flex items-start gap-2">
+                                <div class="w-5 h-5 rounded bg-sky-500 text-white font-black flex items-center justify-center text-[10px] flex-shrink-0 mt-0.5 shadow-sm">1</div>
+                                <div class="flex-grow min-w-0">
+                                    <h5 class="text-white font-bold text-xs leading-tight truncate">1. Dirección Comercial</h5>
+                                    <p class="text-[10px] text-gray-400 mt-0.5 leading-snug">
+                                        <span class="text-[9px] text-gray-500 uppercase">Módulos:</span> <span class="text-sky-300 font-medium">CRM, Ventas</span>
+                                    </p>
+                                </div>
+                            </div>
+
+                            
+                            <div class="bg-gray-900/90 hover:bg-gray-800/70 border border-gray-800 hover:border-emerald-500/50 rounded-lg p-2 transition-all flex items-start gap-2">
+                                <div class="w-5 h-5 rounded bg-emerald-500 text-white font-black flex items-center justify-center text-[10px] flex-shrink-0 mt-0.5 shadow-sm">2</div>
+                                <div class="flex-grow min-w-0">
+                                    <h5 class="text-white font-bold text-xs leading-tight truncate">2. Cadena de Suministro</h5>
+                                    <p class="text-[10px] text-gray-400 mt-0.5 leading-snug">
+                                        <span class="text-[9px] text-gray-500 uppercase">Módulos:</span> <span class="text-emerald-300 font-medium">Compras, Inventario, WMS, Logística</span>
+                                    </p>
+                                </div>
+                            </div>
+
+                            
+                            <div class="bg-gray-900/90 hover:bg-gray-800/70 border border-gray-800 hover:border-green-500/50 rounded-lg p-2 transition-all flex items-start gap-2">
+                                <div class="w-5 h-5 rounded bg-green-500 text-white font-black flex items-center justify-center text-[10px] flex-shrink-0 mt-0.5 shadow-sm">3</div>
+                                <div class="flex-grow min-w-0">
+                                    <h5 class="text-white font-bold text-xs leading-tight truncate">3. Operaciones y Producción</h5>
+                                    <p class="text-[10px] text-gray-400 mt-0.5 leading-snug">
+                                        <span class="text-[9px] text-gray-500 uppercase">Módulos:</span> <span class="text-green-300 font-medium">Producción</span>
+                                    </p>
+                                </div>
+                            </div>
+
+                            
+                            <div class="bg-gray-900/90 hover:bg-gray-800/70 border border-gray-800 hover:border-amber-500/50 rounded-lg p-2 transition-all flex items-start gap-2">
+                                <div class="w-5 h-5 rounded bg-amber-500 text-white font-black flex items-center justify-center text-[10px] flex-shrink-0 mt-0.5 shadow-sm">4</div>
+                                <div class="flex-grow min-w-0">
+                                    <h5 class="text-white font-bold text-xs leading-tight truncate">4. Administración y Finanzas</h5>
+                                    <p class="text-[10px] text-gray-400 mt-0.5 leading-snug">
+                                        <span class="text-[9px] text-gray-500 uppercase">Módulos:</span> <span class="text-amber-300 font-medium">CxP, CxC, Activos Fijos, Tesorería, Contabilidad</span>
+                                    </p>
+                                </div>
+                            </div>
+
+                            
+                            <div class="bg-gray-900/90 hover:bg-gray-800/70 border border-gray-800 hover:border-purple-500/50 rounded-lg p-2 transition-all flex items-start gap-2">
+                                <div class="w-5 h-5 rounded bg-purple-600 text-white font-black flex items-center justify-center text-[10px] flex-shrink-0 mt-0.5 shadow-sm">5</div>
+                                <div class="flex-grow min-w-0">
+                                    <h5 class="text-white font-bold text-xs leading-tight truncate">5. Talento Humano</h5>
+                                    <p class="text-[10px] text-gray-400 mt-0.5 leading-snug">
+                                        <span class="text-[9px] text-gray-500 uppercase">Módulos:</span> <span class="text-purple-300 font-medium">RRHH, Nómina</span>
+                                    </p>
+                                </div>
+                            </div>
+
+                            
+                            <div class="bg-gray-900/90 hover:bg-gray-800/70 border border-gray-800 hover:border-blue-500/50 rounded-lg p-2 transition-all flex items-start gap-2">
+                                <div class="w-5 h-5 rounded bg-blue-600 text-white font-black flex items-center justify-center text-[10px] flex-shrink-0 mt-0.5 shadow-sm">6</div>
+                                <div class="flex-grow min-w-0">
+                                    <h5 class="text-white font-bold text-xs leading-tight truncate">6. Inteligencia y Analítica</h5>
+                                    <p class="text-[10px] text-gray-400 mt-0.5 leading-snug">
+                                        <span class="text-[9px] text-gray-500 uppercase">Módulos:</span> <span class="text-blue-300 font-medium">BI, Dashboards, Big Data, Minería, Modelos, IA, Planeación</span>
+                                    </p>
+                                </div>
+                            </div>
+
+                            
+                            <div class="bg-gray-900/90 hover:bg-gray-800/70 border border-gray-800 hover:border-slate-500/50 rounded-lg p-2 transition-all flex items-start gap-2">
+                                <div class="w-5 h-5 rounded bg-slate-600 text-white font-black flex items-center justify-center text-[10px] flex-shrink-0 mt-0.5 shadow-sm">7</div>
+                                <div class="flex-grow min-w-0">
+                                    <h5 class="text-white font-bold text-xs leading-tight truncate">7. Gobernanza y TI</h5>
+                                    <p class="text-[10px] text-gray-400 mt-0.5 leading-snug">
+                                        <span class="text-[9px] text-gray-500 uppercase">Módulos:</span> <span class="text-slate-300 font-medium">Partners, Configuración, Process Suite, Process Mining</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                
+                <script>
+                    let currentDiagramZoom = 1;
+                    function adjustDiagramZoom(delta) {
+                        currentDiagramZoom = Math.max(0.6, Math.min(2.5, currentDiagramZoom + delta));
+                        applyDiagramZoom();
+                    }
+                    function resetDiagramZoom() {
+                        currentDiagramZoom = 1;
+                        applyDiagramZoom();
+                    }
+                    function applyDiagramZoom() {
+                        const svg = document.querySelector("#diagramWrapper .mermaid svg");
+                        if (svg) {
+                            svg.style.transform = "scale(" + currentDiagramZoom + ")";
+                            svg.style.transformOrigin = "top center";
+                        }
+                    }
+                </script>
+
+                </div>` }} 
+        />
+
+        {/* Mini Admin Panel para Pruebas */}
+        <div className="fixed bottom-2 right-2 bg-white p-2 text-xs border rounded shadow-md z-50 text-gray-500 opacity-50 hover:opacity-100 transition-opacity">
+          <p className="font-bold mb-1 border-b pb-1">Test Admin</p>
+          <button 
+            onClick={async () => {
+              const amount = prompt("Ingresa el monto de la cotización (ej: 8500):", "8500");
+              if (amount) {
+                await fetch('/api/admin/set-quote', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ email: 'demo@consultores-nyt.com', amount: parseInt(amount, 10) })
+                });
+                alert('Cotización subida. Recarga la página.');
+                window.location.reload();
+              }
+            }}
+            className="bg-purple-600 text-white px-2 py-1 rounded"
+          >
+            Simular Subir Cotización
+          </button>
+        </div>
+
       </div>
     </div>
   );
