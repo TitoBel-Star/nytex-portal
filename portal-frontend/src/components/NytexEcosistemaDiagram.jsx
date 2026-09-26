@@ -74,7 +74,94 @@ const diagramDefinition = `flowchart TD
     PRED -.-> IA
     IA -.-> PLAN`;
 
-export default function NytexEcosistemaDiagram({ highlightedModules = [] }) {
+export const AREAS_CONFIG = [
+  {
+    num: 1,
+    title: '1. Dirección Comercial',
+    modulesText: 'CRM, Ventas',
+    modules: ['CRM', 'Ventas'],
+    badgeBg: 'bg-sky-500',
+    colorText: 'text-sky-300',
+    activeRing: 'ring-sky-400',
+    activeBg: 'bg-sky-950/60 border-sky-400',
+    hoverBorder: 'hover:border-sky-400/60'
+  },
+  {
+    num: 2,
+    title: '2. Cadena de Suministro',
+    modulesText: 'Compras, Inventario, WMS, Logística',
+    modules: ['Compras', 'Inventario', 'WMS', 'Logistica'],
+    badgeBg: 'bg-emerald-500',
+    colorText: 'text-emerald-300',
+    activeRing: 'ring-emerald-400',
+    activeBg: 'bg-emerald-950/60 border-emerald-400',
+    hoverBorder: 'hover:border-emerald-400/60'
+  },
+  {
+    num: 3,
+    title: '3. Operaciones y Producción',
+    modulesText: 'Producción',
+    modules: ['Produccion'],
+    badgeBg: 'bg-green-500',
+    colorText: 'text-green-300',
+    activeRing: 'ring-green-400',
+    activeBg: 'bg-green-950/60 border-green-400',
+    hoverBorder: 'hover:border-green-400/60'
+  },
+  {
+    num: 4,
+    title: '4. Administración y Finanzas',
+    modulesText: 'CxP, CxC, Activos Fijos, Tesorería, Contabilidad',
+    modules: ['CxP', 'CxC', 'ActivosFijos', 'Tesoreria', 'Contabilidad'],
+    badgeBg: 'bg-amber-500',
+    colorText: 'text-amber-300',
+    activeRing: 'ring-amber-400',
+    activeBg: 'bg-amber-950/60 border-amber-400',
+    hoverBorder: 'hover:border-amber-400/60'
+  },
+  {
+    num: 5,
+    title: '5. Talento Humano',
+    modulesText: 'RRHH, Nómina',
+    modules: ['RRHH', 'Nomina'],
+    badgeBg: 'bg-purple-600',
+    colorText: 'text-purple-300',
+    activeRing: 'ring-purple-400',
+    activeBg: 'bg-purple-950/60 border-purple-400',
+    hoverBorder: 'hover:border-purple-400/60'
+  },
+  {
+    num: 6,
+    title: '6. Inteligencia y Analítica',
+    modulesText: 'BI, Dashboards, Big Data, Minería, Modelos, IA, Planeación',
+    modules: ['BIyReportes', 'Dashboards', 'BI', 'BigData', 'MineriaDatos', 'Predictivos', 'IA', 'Planeacion'],
+    badgeBg: 'bg-blue-600',
+    colorText: 'text-blue-300',
+    activeRing: 'ring-blue-400',
+    activeBg: 'bg-blue-950/60 border-blue-400',
+    hoverBorder: 'hover:border-blue-400/60'
+  },
+  {
+    num: 7,
+    title: '7. Gobernanza y TI',
+    modulesText: 'Partners, Configuración, Process Suite, Process Mining',
+    modules: ['BusinessPartners', 'Configuracion', 'ProcessSuite', 'ProcessMining'],
+    badgeBg: 'bg-slate-600',
+    colorText: 'text-slate-300',
+    activeRing: 'ring-slate-400',
+    activeBg: 'bg-slate-900/80 border-slate-400',
+    hoverBorder: 'hover:border-slate-400/60'
+  }
+];
+
+export default function NytexEcosistemaDiagram({ 
+  highlightedModules = [], 
+  selectedAreas = [],
+  onToggleArea = () => {},
+  onClearAreas = () => {},
+  onClearPhase = () => {},
+  activePhase = null
+}) {
   const [zoom, setZoom] = useState(1);
   const [rendered, setRendered] = useState(false);
 
@@ -205,19 +292,13 @@ export default function NytexEcosistemaDiagram({ highlightedModules = [] }) {
   }, [highlightedModules, rendered]);
 
   // Determine active areas for the right panel
-  const isAreaActive = (areaNum) => {
+  const isAreaActive = (area) => {
+    if (selectedAreas.includes(area.num)) return true;
     if (!highlightedModules || highlightedModules.length === 0) return true;
-    if (areaNum === 1) return highlightedModules.some(m => ['CRM', 'Ventas'].includes(m));
-    if (areaNum === 2) return highlightedModules.some(m => ['Compras', 'Inventario', 'WMS', 'Logistica'].includes(m));
-    if (areaNum === 3) return highlightedModules.includes('Produccion');
-    if (areaNum === 4) return highlightedModules.some(m => ['CxP', 'CxC', 'ActivosFijos', 'Tesoreria', 'Contabilidad'].includes(m));
-    if (areaNum === 5) return highlightedModules.some(m => ['RRHH', 'Nomina'].includes(m));
-    if (areaNum === 6) return highlightedModules.some(m => ['BI', 'Dashboards', 'BigData', 'MineriaDatos', 'Predictivos', 'IA', 'Planeacion'].includes(m));
-    if (areaNum === 7) return highlightedModules.some(m => ['BusinessPartners', 'Configuracion', 'ProcessSuite', 'ProcessMining'].includes(m));
-    return true;
+    return area.modules.some(m => highlightedModules.includes(m));
   };
 
-  const hasFilter = highlightedModules && highlightedModules.length > 0;
+  const hasFilter = (highlightedModules && highlightedModules.length > 0) || selectedAreas.length > 0;
 
   return (
     <div className="bg-gradient-to-br from-gray-950 via-[#0a0f1d] to-[#0f172a] rounded-3xl p-6 sm:p-8 lg:p-10 shadow-2xl border border-gray-800 mt-12 mb-16 text-white w-full">
@@ -234,8 +315,21 @@ export default function NytexEcosistemaDiagram({ highlightedModules = [] }) {
           Conozca la interconexión viva de las <strong className="text-white font-bold">26 aplicaciones</strong> de nuestro ecosistema, clasificadas según su <strong className="text-[#fbc044]">Dirección Estratégica</strong> y los departamentos que operan día a día.
         </p>
         {hasFilter && (
-          <div className="mt-4 inline-block bg-amber-400/10 border border-amber-400/40 text-amber-300 px-4 py-1.5 rounded-full text-xs font-bold animate-pulse">
-            ✨ Alumbrando en dorado los módulos correspondientes a la fase seleccionada
+          <div className="mt-4 inline-flex items-center gap-2 bg-amber-400/10 border border-amber-400/40 text-amber-300 px-4 py-1.5 rounded-full text-xs font-bold animate-pulse flex-wrap justify-center">
+            <span>
+              ✨ Alumbrando en dorado {highlightedModules.length} aplicaciones 
+              {selectedAreas.length > 0 
+                ? ` (${selectedAreas.length} área${selectedAreas.length > 1 ? 's' : ''} seleccionada${selectedAreas.length > 1 ? 's' : ''})` 
+                : ' correspondientes a la fase seleccionada'}
+            </span>
+            <button 
+              type="button"
+              onClick={() => { onClearAreas(); onClearPhase(); }}
+              className="ml-2 bg-amber-400/20 hover:bg-amber-400/30 text-amber-200 px-2.5 py-0.5 rounded-full text-[11px] font-bold transition-colors border border-amber-400/30"
+              title="Quitar iluminación"
+            >
+              ✕ Quitar iluminación
+            </button>
           </div>
         )}
       </div>
@@ -300,121 +394,82 @@ export default function NytexEcosistemaDiagram({ highlightedModules = [] }) {
         {/* Columna Derecha: Tarjetas de Áreas Funcionales (3 cols) */}
         <div className="lg:col-span-4 xl:col-span-3 bg-[#050814]/80 rounded-2xl p-5 border border-gray-800 shadow-xl flex flex-col">
           
-          <div className="border-b border-gray-800 pb-3 mb-4 flex items-center gap-2">
-            <i className="fas fa-sitemap text-[#fbc044]"></i>
-            <div>
-              <h4 className="text-sm font-extrabold text-white tracking-wide uppercase">Áreas Funcionales</h4>
-              <p className="text-[10px] text-gray-400">Mapeo organizacional NyTEX</p>
+          <div className="border-b border-gray-800 pb-3 mb-4 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <i className="fas fa-sitemap text-[#fbc044]"></i>
+              <div>
+                <h4 className="text-sm font-extrabold text-white tracking-wide uppercase">Áreas Funcionales</h4>
+                <p className="text-[10px] text-gray-400">Clic en 1 o varias para alumbrar</p>
+              </div>
             </div>
+            {selectedAreas.length > 0 && (
+              <button 
+                type="button"
+                onClick={onClearAreas}
+                className="text-[10px] bg-amber-400/20 hover:bg-amber-400/30 text-amber-300 border border-amber-400/40 px-2 py-0.5 rounded-full font-bold transition-all flex items-center gap-1"
+                title="Deseleccionar todas las áreas"
+              >
+                <span>Limpiar ({selectedAreas.length})</span> ✕
+              </button>
+            )}
           </div>
 
           <div className="space-y-2">
-            
-            {/* Área 1 */}
-            <div className={`border rounded-lg p-2.5 transition-all flex items-start gap-2.5 ${
-              isAreaActive(1) 
-                ? (hasFilter ? 'bg-sky-950/40 border-sky-400 ring-2 ring-sky-400/40 opacity-100 shadow-lg' : 'bg-gray-900/90 border-gray-800 hover:border-sky-500/50 opacity-100')
-                : 'bg-gray-900/40 border-gray-800/40 opacity-30 grayscale'
-            }`}>
-              <div className="w-5 h-5 rounded bg-sky-500 text-white font-black flex items-center justify-center text-[10px] flex-shrink-0 mt-0.5 shadow-sm">1</div>
-              <div className="flex-grow min-w-0">
-                <h5 className="text-white font-bold text-xs leading-tight">1. Dirección Comercial</h5>
-                <p className="text-[10px] text-gray-400 mt-0.5 leading-snug">
-                  <span className="text-[9px] text-gray-500 uppercase">Módulos:</span> <span className="text-sky-300 font-medium">CRM, Ventas</span>
-                </p>
-              </div>
-            </div>
+            {AREAS_CONFIG.map((area) => {
+              const isDirectlySelected = selectedAreas.includes(area.num);
+              const active = isAreaActive(area);
+              const hasAnySelection = (highlightedModules && highlightedModules.length > 0) || selectedAreas.length > 0;
 
-            {/* Área 2 */}
-            <div className={`border rounded-lg p-2.5 transition-all flex items-start gap-2.5 ${
-              isAreaActive(2) 
-                ? (hasFilter ? 'bg-emerald-950/40 border-emerald-400 ring-2 ring-emerald-400/40 opacity-100 shadow-lg' : 'bg-gray-900/90 border-gray-800 hover:border-emerald-500/50 opacity-100')
-                : 'bg-gray-900/40 border-gray-800/40 opacity-30 grayscale'
-            }`}>
-              <div className="w-5 h-5 rounded bg-emerald-500 text-white font-black flex items-center justify-center text-[10px] flex-shrink-0 mt-0.5 shadow-sm">2</div>
-              <div className="flex-grow min-w-0">
-                <h5 className="text-white font-bold text-xs leading-tight">2. Cadena de Suministro</h5>
-                <p className="text-[10px] text-gray-400 mt-0.5 leading-snug">
-                  <span className="text-[9px] text-gray-500 uppercase">Módulos:</span> <span className="text-emerald-300 font-medium">Compras, Inventario, WMS, Logística</span>
-                </p>
-              </div>
-            </div>
+              let cardClasses = "border rounded-xl p-2.5 transition-all duration-200 flex items-start gap-2.5 cursor-pointer select-none ";
+              
+              if (isDirectlySelected) {
+                // Actively selected by user click: brilliant golden halo
+                cardClasses += "bg-gradient-to-r from-amber-950/70 to-yellow-950/50 border-amber-400 ring-2 ring-amber-400/90 shadow-[0_0_22px_rgba(245,158,11,0.6)] transform scale-[1.02] z-10";
+              } else if (hasAnySelection && active) {
+                // Active because of a selected phase or sharing modules
+                cardClasses += `${area.activeBg} ring-2 ${area.activeRing} opacity-100 shadow-md hover:scale-[1.01]`;
+              } else if (!hasAnySelection) {
+                // Idle state
+                cardClasses += `bg-gray-900/90 border-gray-800 ${area.hoverBorder} hover:bg-gray-850 hover:scale-[1.01] opacity-100`;
+              } else {
+                // Dimmed state when other areas/phases are active
+                cardClasses += `bg-gray-900/40 border-gray-800/40 opacity-35 grayscale hover:opacity-85 hover:grayscale-0 hover:border-gray-700`;
+              }
 
-            {/* Área 3 */}
-            <div className={`border rounded-lg p-2.5 transition-all flex items-start gap-2.5 ${
-              isAreaActive(3) 
-                ? (hasFilter ? 'bg-green-950/40 border-green-400 ring-2 ring-green-400/40 opacity-100 shadow-lg' : 'bg-gray-900/90 border-gray-800 hover:border-green-500/50 opacity-100')
-                : 'bg-gray-900/40 border-gray-800/40 opacity-30 grayscale'
-            }`}>
-              <div className="w-5 h-5 rounded bg-green-500 text-white font-black flex items-center justify-center text-[10px] flex-shrink-0 mt-0.5 shadow-sm">3</div>
-              <div className="flex-grow min-w-0">
-                <h5 className="text-white font-bold text-xs leading-tight">3. Operaciones y Producción</h5>
-                <p className="text-[10px] text-gray-400 mt-0.5 leading-snug">
-                  <span className="text-[9px] text-gray-500 uppercase">Módulos:</span> <span className="text-green-300 font-medium">Producción</span>
-                </p>
-              </div>
-            </div>
-
-            {/* Área 4 */}
-            <div className={`border rounded-lg p-2.5 transition-all flex items-start gap-2.5 ${
-              isAreaActive(4) 
-                ? (hasFilter ? 'bg-amber-950/40 border-amber-400 ring-2 ring-amber-400/40 opacity-100 shadow-lg' : 'bg-gray-900/90 border-gray-800 hover:border-amber-500/50 opacity-100')
-                : 'bg-gray-900/40 border-gray-800/40 opacity-30 grayscale'
-            }`}>
-              <div className="w-5 h-5 rounded bg-amber-500 text-white font-black flex items-center justify-center text-[10px] flex-shrink-0 mt-0.5 shadow-sm">4</div>
-              <div className="flex-grow min-w-0">
-                <h5 className="text-white font-bold text-xs leading-tight">4. Administración y Finanzas</h5>
-                <p className="text-[10px] text-gray-400 mt-0.5 leading-snug">
-                  <span className="text-[9px] text-gray-500 uppercase">Módulos:</span> <span className="text-amber-300 font-medium">CxP, CxC, Activos Fijos, Tesorería, Contabilidad</span>
-                </p>
-              </div>
-            </div>
-
-            {/* Área 5 */}
-            <div className={`border rounded-lg p-2.5 transition-all flex items-start gap-2.5 ${
-              isAreaActive(5) 
-                ? (hasFilter ? 'bg-purple-950/40 border-purple-400 ring-2 ring-purple-400/40 opacity-100 shadow-lg' : 'bg-gray-900/90 border-gray-800 hover:border-purple-500/50 opacity-100')
-                : 'bg-gray-900/40 border-gray-800/40 opacity-30 grayscale'
-            }`}>
-              <div className="w-5 h-5 rounded bg-purple-600 text-white font-black flex items-center justify-center text-[10px] flex-shrink-0 mt-0.5 shadow-sm">5</div>
-              <div className="flex-grow min-w-0">
-                <h5 className="text-white font-bold text-xs leading-tight">5. Talento Humano</h5>
-                <p className="text-[10px] text-gray-400 mt-0.5 leading-snug">
-                  <span className="text-[9px] text-gray-500 uppercase">Módulos:</span> <span className="text-purple-300 font-medium">RRHH, Nómina</span>
-                </p>
-              </div>
-            </div>
-
-            {/* Área 6 */}
-            <div className={`border rounded-lg p-2.5 transition-all flex items-start gap-2.5 ${
-              isAreaActive(6) 
-                ? (hasFilter ? 'bg-blue-950/40 border-blue-400 ring-2 ring-blue-400/40 opacity-100 shadow-lg' : 'bg-gray-900/90 border-gray-800 hover:border-blue-500/50 opacity-100')
-                : 'bg-gray-900/40 border-gray-800/40 opacity-30 grayscale'
-            }`}>
-              <div className="w-5 h-5 rounded bg-blue-600 text-white font-black flex items-center justify-center text-[10px] flex-shrink-0 mt-0.5 shadow-sm">6</div>
-              <div className="flex-grow min-w-0">
-                <h5 className="text-white font-bold text-xs leading-tight">6. Inteligencia y Analítica</h5>
-                <p className="text-[10px] text-gray-400 mt-0.5 leading-snug">
-                  <span className="text-[9px] text-gray-500 uppercase">Módulos:</span> <span className="text-blue-300 font-medium">BI, Dashboards, Big Data, Minería, Modelos, IA, Planeación</span>
-                </p>
-              </div>
-            </div>
-
-            {/* Área 7 */}
-            <div className={`border rounded-lg p-2.5 transition-all flex items-start gap-2.5 ${
-              isAreaActive(7) 
-                ? (hasFilter ? 'bg-slate-900/60 border-amber-400 ring-2 ring-amber-400/40 opacity-100 shadow-lg' : 'bg-gray-900/90 border-gray-800 hover:border-slate-500/50 opacity-100')
-                : 'bg-gray-900/40 border-gray-800/40 opacity-30 grayscale'
-            }`}>
-              <div className="w-5 h-5 rounded bg-slate-600 text-white font-black flex items-center justify-center text-[10px] flex-shrink-0 mt-0.5 shadow-sm">7</div>
-              <div className="flex-grow min-w-0">
-                <h5 className="text-white font-bold text-xs leading-tight">7. Gobernanza y TI</h5>
-                <p className="text-[10px] text-gray-400 mt-0.5 leading-snug">
-                  <span className="text-[9px] text-gray-500 uppercase">Módulos:</span> <span className="text-slate-300 font-medium">Partners, Configuración, Process Suite, Process Mining</span>
-                </p>
-              </div>
-            </div>
-
+              return (
+                <div 
+                  key={area.num}
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => onToggleArea(area.num)}
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') onToggleArea(area.num); }}
+                  title={`Haga clic para ${isDirectlySelected ? 'desactivar' : 'activar y alumbrar'} ${area.title}`}
+                  className={cardClasses}
+                >
+                  <div className={`w-5 h-5 rounded ${isDirectlySelected ? 'bg-amber-400 text-slate-950 ring-2 ring-amber-300' : area.badgeBg + ' text-white'} font-black flex items-center justify-center text-[10px] flex-shrink-0 mt-0.5 shadow-sm transition-all`}>
+                    {area.num}
+                  </div>
+                  <div className="flex-grow min-w-0">
+                    <div className="flex items-center justify-between gap-1">
+                      <h5 className="text-white font-bold text-xs leading-tight">{area.title}</h5>
+                      {isDirectlySelected && (
+                        <span className="bg-gradient-to-r from-amber-500 to-yellow-400 text-slate-950 text-[9px] font-black px-1.5 py-0.2 rounded shadow-sm tracking-wide">
+                          ✓ ACTIVA
+                        </span>
+                      )}
+                      {!isDirectlySelected && hasAnySelection && active && (
+                        <span className="bg-sky-400/20 text-sky-300 border border-sky-400/40 text-[9px] font-bold px-1.5 py-0.2 rounded">
+                          EN FASE
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-[10px] text-gray-400 mt-0.5 leading-snug">
+                      <span className="text-[9px] text-gray-500 uppercase">Módulos:</span> <span className={isDirectlySelected ? 'text-amber-200 font-semibold' : area.colorText + ' font-medium'}>{area.modulesText}</span>
+                    </p>
+                  </div>
+                </div>
+              );
+            })}
           </div>
 
         </div>

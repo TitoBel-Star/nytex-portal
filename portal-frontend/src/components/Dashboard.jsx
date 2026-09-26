@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import PaymentSimulatorModal from './PaymentSimulatorModal';
-import NytexEcosistemaDiagram from './NytexEcosistemaDiagram';
+import NytexEcosistemaDiagram, { AREAS_CONFIG } from './NytexEcosistemaDiagram';
 
 const modulesList = [
   { id: 'Ventas', name: 'NyTEX Ventas', description: 'Gestión de ventas y facturación.' },
@@ -88,6 +88,7 @@ export default function Dashboard() {
 
   const [activePhase, setActivePhase] = useState(null);
   const [customModules, setCustomModules] = useState([]);
+  const [selectedAreas, setSelectedAreas] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedPhaseForPayment, setSelectedPhaseForPayment] = useState(null);
 
@@ -110,15 +111,36 @@ export default function Dashboard() {
     );
   };
 
+  const handleToggleArea = (areaNum) => {
+    setSelectedAreas(prev => 
+      prev.includes(areaNum) ? prev.filter(id => id !== areaNum) : [...prev, areaNum]
+    );
+  };
+
+  const handleClearAreas = () => {
+    setSelectedAreas([]);
+  };
+
   const getHighlightedModules = () => {
+    let mods = [];
+
     if (activePhase === 'custom') {
-      return customModules;
-    }
-    if (activePhase) {
+      mods = [...customModules];
+    } else if (activePhase) {
       const phase = phases.find(p => p.id === activePhase);
-      return phase ? phase.modulesArray : [];
+      if (phase) mods = [...phase.modulesArray];
     }
-    return [];
+
+    if (selectedAreas.length > 0) {
+      selectedAreas.forEach(aNum => {
+        const area = AREAS_CONFIG.find(a => a.num === aNum);
+        if (area) {
+          mods = [...mods, ...area.modules];
+        }
+      });
+    }
+
+    return Array.from(new Set(mods));
   };
 
   const highlightedModules = getHighlightedModules();
@@ -315,21 +337,35 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* DIAGRAMA OPERATIVO Y ÁREAS FUNCIONALES (Con Alumbrado Dinámico según la Fase elegida) */}
-        <NytexEcosistemaDiagram highlightedModules={highlightedModules} />
+        {/* DIAGRAMA OPERATIVO Y ÁREAS FUNCIONALES (Con Alumbrado Dinámico según la Fase elegida o Áreas Funcionales) */}
+        <NytexEcosistemaDiagram 
+          highlightedModules={highlightedModules} 
+          selectedAreas={selectedAreas}
+          onToggleArea={handleToggleArea}
+          onClearAreas={handleClearAreas}
+          onClearPhase={() => setActivePhase(null)}
+          activePhase={activePhase}
+        />
 
         {/* Sección: Grid de 26 Módulos */}
         <div className="mb-8 text-center">
           <h3 className="text-2xl font-extrabold text-[var(--nytex-navy)]">
             Módulos y Aplicaciones del Sistema (26 Módulos)
           </h3>
-          <p className="text-sm text-gray-500 mt-1">
+          <p className="text-sm text-gray-500 mt-2">
             {hasActivePhase ? (
-              <span className="text-amber-600 font-bold">
-                ⭐ Mostrando en dorado vibrante las aplicaciones de la fase seleccionada.
+              <span className="inline-flex items-center gap-2 flex-wrap justify-center text-amber-700 font-bold bg-amber-50 border border-amber-300 px-4 py-1.5 rounded-full shadow-sm">
+                <span>⭐ Mostrando en dorado vibrante las aplicaciones seleccionadas ({highlightedModules.length} módulos iluminados).</span>
+                <button 
+                  type="button"
+                  onClick={() => { setActivePhase(null); setSelectedAreas([]); setCustomModules([]); }}
+                  className="text-xs bg-amber-200 hover:bg-amber-300 text-amber-950 font-extrabold px-2.5 py-0.5 rounded-full transition-colors ml-1 border border-amber-400"
+                >
+                  ✕ Quitar iluminación
+                </button>
               </span>
             ) : (
-              'Haga clic en "Ver aplicaciones ↓" en cualquiera de las fases arriba para alumbrarlas en dorado.'
+              'Haga clic en "Ver aplicaciones ↓" en cualquiera de las fases arriba o en las "Áreas Funcionales" para alumbrarlas en dorado.'
             )}
           </p>
         </div>
@@ -369,13 +405,13 @@ export default function Dashboard() {
                   </Link>
                 </div>
 
-                {/* Badge: En dorado cuando está seleccionada en fase, o verde normal cuando no hay filtro */}
+                {/* Badge: En dorado cuando está seleccionada en fase o área, o verde normal cuando no hay filtro */}
                 <div className={`absolute top-0 right-0 px-3 py-1 text-xs font-extrabold rounded-bl-lg shadow-sm transition-all ${
                   isHighlighted 
                     ? 'bg-gradient-to-r from-amber-500 to-yellow-400 text-slate-950 font-black shadow-md' 
                     : 'bg-[#15A36A] text-white'
                 }`}>
-                  {isHighlighted ? '⭐ SELECCIONADO EN FASE' : 'ADQUIRIDO'}
+                  {isHighlighted ? '⭐ SELECCIONADO' : 'ADQUIRIDO'}
                 </div>
               </div>
             );
