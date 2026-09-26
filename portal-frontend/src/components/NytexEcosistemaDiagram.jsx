@@ -74,7 +74,7 @@ const diagramDefinition = `flowchart TD
     PRED -.-> IA
     IA -.-> PLAN`;
 
-export default function NytexEcosistemaDiagram() {
+export default function NytexEcosistemaDiagram({ highlightedModules = [] }) {
   const [zoom, setZoom] = useState(1);
   const [rendered, setRendered] = useState(false);
 
@@ -114,6 +114,7 @@ export default function NytexEcosistemaDiagram() {
     };
   }, []);
 
+  // Zoom management
   useEffect(() => {
     const svg = document.querySelector("#diagramWrapper-container svg");
     if (svg) {
@@ -122,6 +123,101 @@ export default function NytexEcosistemaDiagram() {
       svg.style.transition = "transform 0.2s ease";
     }
   }, [zoom, rendered]);
+
+  // Dynamic Highlighting of Nodes in Diagram
+  useEffect(() => {
+    const container = document.getElementById('diagramWrapper-container');
+    if (!container) return;
+    const svg = container.querySelector('svg');
+    if (!svg) return;
+
+    const nodeElements = svg.querySelectorAll('g.node');
+    if (!nodeElements || nodeElements.length === 0) return;
+
+    const hasFilter = highlightedModules && highlightedModules.length > 0;
+
+    nodeElements.forEach(g => {
+      const text = (g.textContent || '').toLowerCase();
+      let matches = false;
+
+      if (hasFilter) {
+        matches = highlightedModules.some(modId => {
+          if (modId === 'Ventas' && text.includes('ventas')) return true;
+          if (modId === 'CRM' && text.includes('crm')) return true;
+          if (modId === 'Inventario' && text.includes('inventario')) return true;
+          if (modId === 'Compras' && text.includes('compras')) return true;
+          if (modId === 'Produccion' && text.includes('producción')) return true;
+          if (modId === 'Contabilidad' && text.includes('contabilidad')) return true;
+          if (modId === 'CxC' && (text.includes('cxc') || text.includes('cobranza'))) return true;
+          if (modId === 'CxP' && (text.includes('cxp') || text.includes('deudas'))) return true;
+          if (modId === 'Tesoreria' && (text.includes('tesorería') || text.includes('efectivo'))) return true;
+          if (modId === 'ActivosFijos' && text.includes('activos fijos')) return true;
+          if (modId === 'Logistica' && text.includes('logística')) return true;
+          if (modId === 'RRHH' && text.includes('rrhh')) return true;
+          if (modId === 'Nomina' && (text.includes('nómina') || text.includes('sueldos'))) return true;
+          if (modId === 'ProcessSuite' && text.includes('process suite')) return true;
+          if (modId === 'ProcessMining' && text.includes('process mining')) return true;
+          if (modId === 'BusinessPartners' && text.includes('business partners')) return true;
+          if (modId === 'BIyReportes' && text.includes('bi y reportes')) return true;
+          if (modId === 'Configuracion' && text.includes('configuración')) return true;
+          if (modId === 'WMS' && text.includes('wms')) return true;
+          if (modId === 'Dashboards' && text.includes('dashboards')) return true;
+          if (modId === 'BI' && text.includes('nytex bi') && !text.includes('reportes')) return true;
+          if (modId === 'BigData' && text.includes('big data')) return true;
+          if (modId === 'MineriaDatos' && text.includes('minería de datos')) return true;
+          if (modId === 'IA' && text.includes('nytex ia')) return true;
+          if (modId === 'Predictivos' && text.includes('predictivos')) return true;
+          if (modId === 'Planeacion' && text.includes('planeación')) return true;
+          return false;
+        });
+      }
+
+      const shape = g.querySelector('rect, polygon, circle, path');
+
+      if (!hasFilter) {
+        g.style.opacity = '1';
+        g.style.filter = 'none';
+        g.style.transition = 'all 0.35s ease';
+        if (shape) {
+          shape.style.stroke = '';
+          shape.style.strokeWidth = '';
+        }
+      } else if (matches) {
+        // Highlighting in vibrant golden glow
+        g.style.opacity = '1';
+        g.style.filter = 'drop-shadow(0 0 12px #F59E0B) drop-shadow(0 0 24px #FBBF24)';
+        g.style.transition = 'all 0.35s ease';
+        if (shape) {
+          shape.style.stroke = '#FBBF24';
+          shape.style.strokeWidth = '4.5px';
+        }
+      } else {
+        // Dimming non-selected nodes
+        g.style.opacity = '0.2';
+        g.style.filter = 'grayscale(85%)';
+        g.style.transition = 'all 0.35s ease';
+        if (shape) {
+          shape.style.stroke = '';
+          shape.style.strokeWidth = '';
+        }
+      }
+    });
+  }, [highlightedModules, rendered]);
+
+  // Determine active areas for the right panel
+  const isAreaActive = (areaNum) => {
+    if (!highlightedModules || highlightedModules.length === 0) return true;
+    if (areaNum === 1) return highlightedModules.some(m => ['CRM', 'Ventas'].includes(m));
+    if (areaNum === 2) return highlightedModules.some(m => ['Compras', 'Inventario', 'WMS', 'Logistica'].includes(m));
+    if (areaNum === 3) return highlightedModules.includes('Produccion');
+    if (areaNum === 4) return highlightedModules.some(m => ['CxP', 'CxC', 'ActivosFijos', 'Tesoreria', 'Contabilidad'].includes(m));
+    if (areaNum === 5) return highlightedModules.some(m => ['RRHH', 'Nomina'].includes(m));
+    if (areaNum === 6) return highlightedModules.some(m => ['BI', 'Dashboards', 'BigData', 'MineriaDatos', 'Predictivos', 'IA', 'Planeacion'].includes(m));
+    if (areaNum === 7) return highlightedModules.some(m => ['BusinessPartners', 'Configuracion', 'ProcessSuite', 'ProcessMining'].includes(m));
+    return true;
+  };
+
+  const hasFilter = highlightedModules && highlightedModules.length > 0;
 
   return (
     <div className="bg-gradient-to-br from-gray-950 via-[#0a0f1d] to-[#0f172a] rounded-3xl p-6 sm:p-8 lg:p-10 shadow-2xl border border-gray-800 mt-12 mb-16 text-white w-full">
@@ -137,6 +233,11 @@ export default function NytexEcosistemaDiagram() {
         <p className="text-gray-400 text-sm md:text-base mt-3 leading-relaxed">
           Conozca la interconexión viva de las <strong className="text-white font-bold">26 aplicaciones</strong> de nuestro ecosistema, clasificadas según su <strong className="text-[#fbc044]">Dirección Estratégica</strong> y los departamentos que operan día a día.
         </p>
+        {hasFilter && (
+          <div className="mt-4 inline-block bg-amber-400/10 border border-amber-400/40 text-amber-300 px-4 py-1.5 rounded-full text-xs font-bold animate-pulse">
+            ✨ Alumbrando en dorado los módulos correspondientes a la fase seleccionada
+          </div>
+        )}
       </div>
 
       {/* Grid Principal: 75% Diagrama + 25% Áreas Funcionales */}
@@ -210,7 +311,11 @@ export default function NytexEcosistemaDiagram() {
           <div className="space-y-2">
             
             {/* Área 1 */}
-            <div className="bg-gray-900/90 hover:bg-gray-800/70 border border-gray-800 hover:border-sky-500/50 rounded-lg p-2.5 transition-all flex items-start gap-2.5">
+            <div className={`border rounded-lg p-2.5 transition-all flex items-start gap-2.5 ${
+              isAreaActive(1) 
+                ? (hasFilter ? 'bg-sky-950/40 border-sky-400 ring-2 ring-sky-400/40 opacity-100 shadow-lg' : 'bg-gray-900/90 border-gray-800 hover:border-sky-500/50 opacity-100')
+                : 'bg-gray-900/40 border-gray-800/40 opacity-30 grayscale'
+            }`}>
               <div className="w-5 h-5 rounded bg-sky-500 text-white font-black flex items-center justify-center text-[10px] flex-shrink-0 mt-0.5 shadow-sm">1</div>
               <div className="flex-grow min-w-0">
                 <h5 className="text-white font-bold text-xs leading-tight">1. Dirección Comercial</h5>
@@ -221,7 +326,11 @@ export default function NytexEcosistemaDiagram() {
             </div>
 
             {/* Área 2 */}
-            <div className="bg-gray-900/90 hover:bg-gray-800/70 border border-gray-800 hover:border-emerald-500/50 rounded-lg p-2.5 transition-all flex items-start gap-2.5">
+            <div className={`border rounded-lg p-2.5 transition-all flex items-start gap-2.5 ${
+              isAreaActive(2) 
+                ? (hasFilter ? 'bg-emerald-950/40 border-emerald-400 ring-2 ring-emerald-400/40 opacity-100 shadow-lg' : 'bg-gray-900/90 border-gray-800 hover:border-emerald-500/50 opacity-100')
+                : 'bg-gray-900/40 border-gray-800/40 opacity-30 grayscale'
+            }`}>
               <div className="w-5 h-5 rounded bg-emerald-500 text-white font-black flex items-center justify-center text-[10px] flex-shrink-0 mt-0.5 shadow-sm">2</div>
               <div className="flex-grow min-w-0">
                 <h5 className="text-white font-bold text-xs leading-tight">2. Cadena de Suministro</h5>
@@ -232,7 +341,11 @@ export default function NytexEcosistemaDiagram() {
             </div>
 
             {/* Área 3 */}
-            <div className="bg-gray-900/90 hover:bg-gray-800/70 border border-gray-800 hover:border-green-500/50 rounded-lg p-2.5 transition-all flex items-start gap-2.5">
+            <div className={`border rounded-lg p-2.5 transition-all flex items-start gap-2.5 ${
+              isAreaActive(3) 
+                ? (hasFilter ? 'bg-green-950/40 border-green-400 ring-2 ring-green-400/40 opacity-100 shadow-lg' : 'bg-gray-900/90 border-gray-800 hover:border-green-500/50 opacity-100')
+                : 'bg-gray-900/40 border-gray-800/40 opacity-30 grayscale'
+            }`}>
               <div className="w-5 h-5 rounded bg-green-500 text-white font-black flex items-center justify-center text-[10px] flex-shrink-0 mt-0.5 shadow-sm">3</div>
               <div className="flex-grow min-w-0">
                 <h5 className="text-white font-bold text-xs leading-tight">3. Operaciones y Producción</h5>
@@ -243,7 +356,11 @@ export default function NytexEcosistemaDiagram() {
             </div>
 
             {/* Área 4 */}
-            <div className="bg-gray-900/90 hover:bg-gray-800/70 border border-gray-800 hover:border-amber-500/50 rounded-lg p-2.5 transition-all flex items-start gap-2.5">
+            <div className={`border rounded-lg p-2.5 transition-all flex items-start gap-2.5 ${
+              isAreaActive(4) 
+                ? (hasFilter ? 'bg-amber-950/40 border-amber-400 ring-2 ring-amber-400/40 opacity-100 shadow-lg' : 'bg-gray-900/90 border-gray-800 hover:border-amber-500/50 opacity-100')
+                : 'bg-gray-900/40 border-gray-800/40 opacity-30 grayscale'
+            }`}>
               <div className="w-5 h-5 rounded bg-amber-500 text-white font-black flex items-center justify-center text-[10px] flex-shrink-0 mt-0.5 shadow-sm">4</div>
               <div className="flex-grow min-w-0">
                 <h5 className="text-white font-bold text-xs leading-tight">4. Administración y Finanzas</h5>
@@ -254,7 +371,11 @@ export default function NytexEcosistemaDiagram() {
             </div>
 
             {/* Área 5 */}
-            <div className="bg-gray-900/90 hover:bg-gray-800/70 border border-gray-800 hover:border-purple-500/50 rounded-lg p-2.5 transition-all flex items-start gap-2.5">
+            <div className={`border rounded-lg p-2.5 transition-all flex items-start gap-2.5 ${
+              isAreaActive(5) 
+                ? (hasFilter ? 'bg-purple-950/40 border-purple-400 ring-2 ring-purple-400/40 opacity-100 shadow-lg' : 'bg-gray-900/90 border-gray-800 hover:border-purple-500/50 opacity-100')
+                : 'bg-gray-900/40 border-gray-800/40 opacity-30 grayscale'
+            }`}>
               <div className="w-5 h-5 rounded bg-purple-600 text-white font-black flex items-center justify-center text-[10px] flex-shrink-0 mt-0.5 shadow-sm">5</div>
               <div className="flex-grow min-w-0">
                 <h5 className="text-white font-bold text-xs leading-tight">5. Talento Humano</h5>
@@ -265,7 +386,11 @@ export default function NytexEcosistemaDiagram() {
             </div>
 
             {/* Área 6 */}
-            <div className="bg-gray-900/90 hover:bg-gray-800/70 border border-gray-800 hover:border-blue-500/50 rounded-lg p-2.5 transition-all flex items-start gap-2.5">
+            <div className={`border rounded-lg p-2.5 transition-all flex items-start gap-2.5 ${
+              isAreaActive(6) 
+                ? (hasFilter ? 'bg-blue-950/40 border-blue-400 ring-2 ring-blue-400/40 opacity-100 shadow-lg' : 'bg-gray-900/90 border-gray-800 hover:border-blue-500/50 opacity-100')
+                : 'bg-gray-900/40 border-gray-800/40 opacity-30 grayscale'
+            }`}>
               <div className="w-5 h-5 rounded bg-blue-600 text-white font-black flex items-center justify-center text-[10px] flex-shrink-0 mt-0.5 shadow-sm">6</div>
               <div className="flex-grow min-w-0">
                 <h5 className="text-white font-bold text-xs leading-tight">6. Inteligencia y Analítica</h5>
@@ -276,7 +401,11 @@ export default function NytexEcosistemaDiagram() {
             </div>
 
             {/* Área 7 */}
-            <div className="bg-gray-900/90 hover:bg-gray-800/70 border border-gray-800 hover:border-slate-500/50 rounded-lg p-2.5 transition-all flex items-start gap-2.5">
+            <div className={`border rounded-lg p-2.5 transition-all flex items-start gap-2.5 ${
+              isAreaActive(7) 
+                ? (hasFilter ? 'bg-slate-900/60 border-amber-400 ring-2 ring-amber-400/40 opacity-100 shadow-lg' : 'bg-gray-900/90 border-gray-800 hover:border-slate-500/50 opacity-100')
+                : 'bg-gray-900/40 border-gray-800/40 opacity-30 grayscale'
+            }`}>
               <div className="w-5 h-5 rounded bg-slate-600 text-white font-black flex items-center justify-center text-[10px] flex-shrink-0 mt-0.5 shadow-sm">7</div>
               <div className="flex-grow min-w-0">
                 <h5 className="text-white font-bold text-xs leading-tight">7. Gobernanza y TI</h5>

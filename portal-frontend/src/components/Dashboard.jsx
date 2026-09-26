@@ -82,7 +82,7 @@ export default function Dashboard() {
 
   const safeUser = user || {
     email: 'demo@consultores-nyt.com',
-    subscriptions: modulesList.map(m => m.id), // Todos adquiridos para demo
+    subscriptions: modulesList.map(m => m.id),
     customQuoteAmount: null
   };
 
@@ -122,6 +122,7 @@ export default function Dashboard() {
   };
 
   const highlightedModules = getHighlightedModules();
+  const hasActivePhase = highlightedModules.length > 0;
 
   const handleContratar = (phaseId, phaseModules) => {
     if (phaseId === 4 && !safeUser.customQuoteAmount) {
@@ -203,7 +204,9 @@ export default function Dashboard() {
             {phases.map((phase) => (
               <div 
                 key={phase.id} 
-                className="bg-[#2A114B] border border-white/10 rounded-xl p-5 hover:border-white/30 transition-all flex flex-col text-white shadow-md"
+                className={`bg-[#2A114B] border rounded-xl p-5 transition-all flex flex-col text-white shadow-md ${
+                  activePhase === phase.id ? 'border-amber-400 ring-2 ring-amber-400/50' : 'border-white/10 hover:border-white/30'
+                }`}
               >
                 <h3 className="text-xl font-bold mb-1">{phase.name}</h3>
                 <p className="text-sm text-gray-300 mb-4">{phase.subtitle}</p>
@@ -227,7 +230,7 @@ export default function Dashboard() {
                   onClick={() => setActivePhase(activePhase === phase.id ? null : phase.id)}
                   className={`w-full py-2 px-4 rounded text-sm font-bold transition-all border mb-2 ${
                     activePhase === phase.id 
-                      ? 'bg-[#15A36A] border-[#15A36A] text-white shadow-lg' 
+                      ? 'bg-gradient-to-r from-amber-500 to-yellow-400 text-slate-950 border-amber-300 shadow-lg font-black' 
                       : 'bg-transparent border-[#4B2979] hover:bg-[#4B2979] text-white'
                   }`}
                 >
@@ -250,7 +253,9 @@ export default function Dashboard() {
             ))}
 
             {/* Tarjeta: A su medida */}
-            <div className="bg-[#2A114B] border border-white/10 rounded-xl p-5 hover:border-white/30 transition-all flex flex-col text-white shadow-md">
+            <div className={`bg-[#2A114B] border rounded-xl p-5 transition-all flex flex-col text-white shadow-md ${
+              activePhase === 'custom' ? 'border-amber-400 ring-2 ring-amber-400/50' : 'border-white/10 hover:border-white/30'
+            }`}>
               <h3 className="text-xl font-bold mb-1">A su medida</h3>
               <p className="text-sm text-gray-300 mb-2">Escoja sus módulos:</p>
 
@@ -286,7 +291,7 @@ export default function Dashboard() {
                 onClick={() => setActivePhase(activePhase === 'custom' ? null : 'custom')}
                 className={`w-full py-2 px-4 rounded text-sm font-bold transition-all border mb-2 ${
                   activePhase === 'custom' 
-                    ? 'bg-[#15A36A] border-[#15A36A] text-white shadow-lg' 
+                    ? 'bg-gradient-to-r from-amber-500 to-yellow-400 text-slate-950 border-amber-300 shadow-lg font-black' 
                     : 'bg-transparent border-[#4B2979] hover:bg-[#4B2979] text-white'
                 }`}
               >
@@ -310,16 +315,22 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* DIAGRAMA OPERATIVO Y ÁREAS FUNCIONALES (Justo debajo de la Propuesta de Implementación) */}
-        <NytexEcosistemaDiagram />
+        {/* DIAGRAMA OPERATIVO Y ÁREAS FUNCIONALES (Con Alumbrado Dinámico según la Fase elegida) */}
+        <NytexEcosistemaDiagram highlightedModules={highlightedModules} />
 
-        {/* Sección: Grid de 26 Módulos - Todos con Abrir Módulo y Adquirido, con iluminación activa al seleccionar fase */}
+        {/* Sección: Grid de 26 Módulos */}
         <div className="mb-8 text-center">
           <h3 className="text-2xl font-extrabold text-[var(--nytex-navy)]">
             Módulos y Aplicaciones del Sistema (26 Módulos)
           </h3>
           <p className="text-sm text-gray-500 mt-1">
-            Haga clic en <strong className="text-[#15A36A]">"Ver aplicaciones ↓"</strong> en cualquiera de las fases arriba para ver cuáles se iluminan.
+            {hasActivePhase ? (
+              <span className="text-amber-600 font-bold">
+                ⭐ Mostrando en dorado vibrante las aplicaciones de la fase seleccionada.
+              </span>
+            ) : (
+              'Haga clic en "Ver aplicaciones ↓" en cualquiera de las fases arriba para alumbrarlas en dorado.'
+            )}
           </p>
         </div>
 
@@ -332,19 +343,25 @@ export default function Dashboard() {
                 key={mod.id} 
                 className={`relative bg-white rounded-xl overflow-hidden border transition-all duration-300 ${
                   isHighlighted 
-                    ? 'border-[#15A36A] ring-4 ring-[#15A36A] shadow-[0_0_25px_rgba(21,163,106,0.9)] transform scale-105 z-20 opacity-100' 
-                    : 'border-[#15A36A] shadow-md opacity-100 z-10'
+                    ? 'border-amber-400 ring-4 ring-amber-400/90 shadow-[0_0_35px_rgba(245,158,11,0.7)] transform scale-105 z-20 opacity-100 bg-amber-50/30' 
+                    : hasActivePhase 
+                      ? 'border-[#15A36A]/40 shadow-sm opacity-55 z-0' 
+                      : 'border-[#15A36A] shadow-md opacity-100 z-10'
                 }`}
               >
                 <div className="p-6 flex flex-col h-full">
-                  <h3 className="text-xl font-extrabold text-[var(--nytex-navy)] mb-2">{mod.name}</h3>
+                  <h3 className={`text-xl font-extrabold mb-2 transition-colors ${
+                    isHighlighted ? 'text-amber-900 font-black' : 'text-[var(--nytex-navy)]'
+                  }`}>
+                    {mod.name}
+                  </h3>
                   <p className="text-[var(--nytex-text)] mb-6 flex-grow">{mod.description}</p>
                   
                   <Link 
                     to={`/app/` + mod.id.toLowerCase()} 
                     className={`mt-auto block w-full text-center py-2 px-4 rounded-md font-bold transition-all shadow-lg ${
                       isHighlighted 
-                        ? 'bg-[#108253] text-white ring-2 ring-white ring-offset-2' 
+                        ? 'bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-600 hover:to-yellow-500 text-slate-950 font-black ring-2 ring-amber-400 ring-offset-2' 
                         : 'bg-[#15A36A] text-white hover:bg-[#108253]'
                     }`}
                   >
@@ -352,11 +369,13 @@ export default function Dashboard() {
                   </Link>
                 </div>
 
-                {/* Badge ADQUIRIDO siempre presente en verde en cada módulo */}
-                <div className={`absolute top-0 right-0 px-3 py-1 text-xs font-extrabold rounded-bl-lg shadow-sm ${
-                  isHighlighted ? 'bg-[#108253] text-white ring-1 ring-white' : 'bg-[#15A36A] text-white'
+                {/* Badge: En dorado cuando está seleccionada en fase, o verde normal cuando no hay filtro */}
+                <div className={`absolute top-0 right-0 px-3 py-1 text-xs font-extrabold rounded-bl-lg shadow-sm transition-all ${
+                  isHighlighted 
+                    ? 'bg-gradient-to-r from-amber-500 to-yellow-400 text-slate-950 font-black shadow-md' 
+                    : 'bg-[#15A36A] text-white'
                 }`}>
-                  ADQUIRIDO
+                  {isHighlighted ? '⭐ SELECCIONADO EN FASE' : 'ADQUIRIDO'}
                 </div>
               </div>
             );
