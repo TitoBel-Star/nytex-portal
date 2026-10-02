@@ -14,23 +14,21 @@ const modulesList = [
   { id: 'CxC', name: 'NyTEX Cuentas por Cobrar (CxC)', description: 'Gestión de cuentas por cobrar.' },
   { id: 'CxP', name: 'NyTEX Cuentas por Pagar (CxP)', description: 'Gestión de cuentas por pagar.' },
   { id: 'Tesoreria', name: 'NyTEX Tesorería', description: 'Control de flujo de caja y bancos.' },
-  { id: 'ActivosFijos', name: 'NyTEX Activos Fijos', description: 'Control de bienes de la empresa.' },
   { id: 'Logistica', name: 'NyTEX Logística', description: 'Gestión de despachos y distribución.' },
   { id: 'RRHH', name: 'NyTEX RRHH', description: 'Gestión de recursos humanos.' },
   { id: 'Nomina', name: 'NyTEX Nómina', description: 'Cálculo y pago de planillas.' },
-  { id: 'ProcessSuite', name: 'NyTEX Process Suite', description: 'Automatización de procesos.' },
-  { id: 'ProcessMining', name: 'NyTEX Process Mining', description: 'Minería de procesos operativos y flujos.' },
-  { id: 'BusinessPartners', name: 'NyTEX Business Partners', description: 'Gestión de socios de negocio.' },
+  { id: 'ProcessSuite', name: 'NyTEX Process Suite', description: 'Reglas de negocio y flujos automatizados.' },
+  { id: 'ProcessMining', name: 'NyTEX Process Mining', description: 'Auditoría de logs y cuellos de botella.' },
+  { id: 'BusinessPartners', name: 'NyTEX Business Partners', description: 'Ficha única de clientes y proveedores.' },
   { id: 'BIyReportes', name: 'NyTEX BI y Reportes', description: 'Inteligencia de negocios y analítica.' },
-  { id: 'Configuracion', name: 'NyTEX Configuración', description: 'Ajustes globales del sistema.' },
-  { id: 'WMS', name: 'NyTEX WMS', description: 'Sistema de gestión de almacenes avanzado.' },
+  { id: 'Configuracion', name: 'NyTEX Configuración', description: 'Seguridad RBAC, multi-empresa y APIs.' },
+  { id: 'WMS', name: 'NyTEX WMS', description: 'Racks, picking RF y control FEFO.' },
   { id: 'Dashboards', name: 'NyTEX Dashboards Operativos', description: 'Visualización de métricas en tiempo real.' },
-  { id: 'BI', name: 'NyTEX BI', description: 'Business Intelligence avanzado.' },
   { id: 'BigData', name: 'NyTEX Big Data', description: 'Procesamiento de grandes volúmenes de datos.' },
   { id: 'MineriaDatos', name: 'NyTEX Minería de Datos', description: 'Descubrimiento de patrones y minería masiva.' },
   { id: 'IA', name: 'NyTEX IA', description: 'Inteligencia artificial aplicada a negocios.' },
-  { id: 'Predictivos', name: 'NyTEX Modelos Predictivos', description: 'Análisis y proyecciones a futuro.' },
-  { id: 'Planeacion', name: 'NyTEX Planeación', description: 'Planificación estratégica y operativa.' }
+  { id: 'Predictivos', name: 'NyTEX Modelos Predictivos', description: 'Series de tiempo y proyecciones a futuro.' },
+  { id: 'Planeacion', name: 'NyTEX Planeación', description: 'Planificación S&OP y presupuestos.' }
 ];
 
 const phases = [
@@ -58,9 +56,9 @@ const phases = [
     id: 3,
     name: 'Fase 3: NyTEX Advanced',
     subtitle: 'Inteligencia y Rentabilidad',
-    moduleCount: '20 MÓDULOS:',
-    modulesText: 'Incluye Fase 2 + BI, BI y Reportes, Big Data, Planeación, Activos Fijos',
-    modulesArray: ['Ventas', 'Inventario', 'Compras', 'Contabilidad', 'CxC', 'CxP', 'Tesoreria', 'CRM', 'WMS', 'Logistica', 'Produccion', 'RRHH', 'Nomina', 'Dashboards', 'ProcessSuite', 'BI', 'BIyReportes', 'BigData', 'Planeacion', 'ActivosFijos'],
+    moduleCount: '18 MÓDULOS:',
+    modulesText: 'Incluye Fase 2 + BI y Reportes, Big Data, Planeación',
+    modulesArray: ['Ventas', 'Inventario', 'Compras', 'Contabilidad', 'CxC', 'CxP', 'Tesoreria', 'CRM', 'WMS', 'Logistica', 'Produccion', 'RRHH', 'Nomina', 'Dashboards', 'ProcessSuite', 'BIyReportes', 'BigData', 'Planeacion'],
     imp: '$4,500 USD',
     lic: '$299 USD / mes'
   },
@@ -68,7 +66,7 @@ const phases = [
     id: 4,
     name: 'Fase 4: NyTEX Enterprise',
     subtitle: 'Anticipación y Escala',
-    moduleCount: '26 MÓDULOS:',
+    moduleCount: '24 MÓDULOS:',
     modulesText: 'Todo el Ecosistema: Fase 3 + IA, Modelos Predictivos, Minería de Datos, Process Mining, Business Partners, Configuración',
     modulesArray: modulesList.map(m => m.id),
     imp: 'Cotización a Medida',
@@ -214,6 +212,256 @@ export default function Dashboard() {
           </div>
         )}
 
+        {/* BANNER MAESTRO: MI ESPACIO DE TRABAJO (MI FASE CONTRATADA) */}
+        <div className="mb-8 bg-gradient-to-r from-[#0A2540] via-[#0E355E] to-[#0A2540] border-2 border-blue-400/50 rounded-2xl p-6 sm:p-7 shadow-2xl text-white relative overflow-hidden">
+          <div className="absolute right-0 top-0 w-96 h-full bg-gradient-to-l from-cyan-500/10 to-transparent pointer-events-none" />
+          
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
+            <div className="flex items-start sm:items-center gap-4">
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center text-3xl shadow-lg shadow-cyan-500/30 shrink-0">
+                🏢
+              </div>
+              <div>
+                <div className="flex flex-wrap items-center gap-2 mb-1.5">
+                  <span className="bg-emerald-500/20 border border-emerald-400 text-emerald-300 text-[11px] font-black tracking-wider uppercase px-2.5 py-0.5 rounded-full">
+                    ● Acceso Directo a su Solución
+                  </span>
+                  <span className="text-cyan-200 text-xs font-semibold">
+                    Entorno de Trabajo Unificado Multimodular
+                  </span>
+                </div>
+                <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
+                  Mi Espacio de Trabajo Integrado (Workspace)
+                </h2>
+                <p className="text-slate-300 text-sm mt-1 max-w-2xl leading-relaxed">
+                  ¿Adquirió una Fase o desea operar todos sus módulos de forma integral? Ingrese aquí para alternar con pestañas superiores instantáneas entre cada módulo de su plan, con datos sincronizados y sin recargas de página.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 shrink-0">
+              <Link 
+                to="/app/workspace" 
+                className="px-6 py-3.5 bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 text-slate-950 font-black rounded-xl text-sm transition-all shadow-xl shadow-teal-500/30 flex items-center justify-center gap-2 text-center group"
+              >
+                <span>🚀</span>
+                <span>ENTRAR A MI ESPACIO DE TRABAJO</span>
+                <span className="group-hover:translate-x-1 transition-transform font-bold">➔</span>
+              </Link>
+            </div>
+          </div>
+
+          {/* Accesos directos por fase */}
+          <div className="mt-5 pt-4 border-t border-white/10 flex flex-wrap items-center gap-2 text-xs">
+            <span className="text-slate-300 font-semibold mr-1">Abrir Workspace por Fase:</span>
+            <Link to="/app/workspace?phase=1" className="bg-white/10 hover:bg-white/25 text-blue-200 px-3 py-1.5 rounded-lg font-bold transition-colors border border-blue-400/30 flex items-center gap-1.5">
+              <span>Fase 1: Starter (7 Módulos)</span> ➔
+            </Link>
+            <Link to="/app/workspace?phase=2" className="bg-white/10 hover:bg-white/25 text-amber-200 px-3 py-1.5 rounded-lg font-bold transition-colors border border-amber-400/30 flex items-center gap-1.5">
+              <span>Fase 2: Express (15 Módulos)</span> ➔
+            </Link>
+            <Link to="/app/workspace?phase=3" className="bg-white/10 hover:bg-white/25 text-cyan-200 px-3 py-1.5 rounded-lg font-bold transition-colors border border-cyan-400/30 flex items-center gap-1.5">
+              <span>Fase 3: Advanced (18 Módulos)</span> ➔
+            </Link>
+            <Link to="/app/workspace?phase=4" className="bg-white/10 hover:bg-white/25 text-purple-200 px-3 py-1.5 rounded-lg font-bold transition-colors border border-purple-400/30 flex items-center gap-1.5">
+              <span>Fase 4: Enterprise (24 Módulos)</span> ➔
+            </Link>
+          </div>
+        </div>
+
+        {/* Barra de Circuitos Operativos Integrados Alineados a las 4 Fases Comerciales */}
+        <div className="mb-10 bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 mb-4 pb-3 border-b border-gray-100">
+            <div>
+              <span className="text-[10px] font-black tracking-widest text-[#006EAD] uppercase bg-blue-50 px-2 py-0.5 rounded-full">
+                Demostradores en Tiempo Real Alineados a los Paquetes Comerciales
+              </span>
+              <h2 className="text-xl font-black text-[#0A2540] mt-1">
+                Circuitos Operativos Integrados por Fase de Contratación
+              </h2>
+            </div>
+            <p className="text-xs text-gray-500 max-w-md">
+              Compruebe en vivo exactamente qué obtiene su empresa en cada una de las 4 Fases Comerciales con datos reales interconectados.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            
+            {/* Circuito Fase 1: Starter */}
+            <div className="p-5 rounded-2xl border border-blue-200 bg-gradient-to-br from-blue-50/60 to-white shadow-sm flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-[10px] font-black text-blue-700 bg-blue-100 px-2 py-0.5 rounded-full uppercase">
+                    Fase 1 • $35 USD/mes
+                  </span>
+                  <span className="text-[10px] text-gray-500 font-bold">Imp. $0 USD</span>
+                </div>
+                <h4 className="font-extrabold text-base text-gray-900">
+                  Circuito Starter: Control Transaccional
+                </h4>
+                <p className="text-xs text-gray-600 mt-1.5 leading-relaxed">
+                  Venta de producto, descuento automático en Inventario, factura en CxC, cobro en Tesorería y póliza contable cuadrada de partida doble.
+                </p>
+              </div>
+
+              <div className="mt-4 pt-3 border-t border-blue-100">
+                <span className="text-[10px] font-bold text-slate-500 block mb-1.5">7 Módulos Núcleo:</span>
+                <div className="flex flex-wrap gap-1 mb-3">
+                  {['Ventas', 'Inventario', 'Compras', 'CxC', 'CxP', 'Tesoreria', 'Contabilidad'].map(m => (
+                    <span key={m} className="text-[9px] font-bold bg-white text-blue-900 border border-blue-200 px-1.5 py-0.5 rounded">
+                      {m}
+                    </span>
+                  ))}
+                </div>
+                <div className="flex flex-col gap-2">
+                  <Link 
+                    to="/app/workspace?phase=1"
+                    className="w-full text-center py-2 px-3 rounded-lg text-xs font-black bg-blue-600 hover:bg-blue-700 text-white shadow transition-all flex items-center justify-center gap-1.5"
+                  >
+                    <span>🚀</span> Abrir Workspace (7 Módulos)
+                  </Link>
+                  <Link 
+                    to="/app/circuito-fase1"
+                    className="w-full text-center py-1.5 px-3 rounded-lg text-xs font-bold text-blue-700 hover:bg-blue-50 border border-blue-200 transition-colors"
+                  >
+                    Ver Demostración Flujo ➔
+                  </Link>
+                </div>
+              </div>
+            </div>
+
+            {/* Circuito Fase 2: Express */}
+            <div className="p-5 rounded-2xl border border-amber-200 bg-gradient-to-br from-amber-50/50 to-white shadow-sm flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-[10px] font-black text-amber-800 bg-amber-100 px-2 py-0.5 rounded-full uppercase">
+                    Fase 2 • $149 USD/mes
+                  </span>
+                  <span className="text-[10px] text-gray-500 font-bold">Imp. $1,500 USD</span>
+                </div>
+                <h4 className="font-extrabold text-base text-gray-900">
+                  Circuito Express: Manufactura & Nómina
+                </h4>
+                <p className="text-xs text-gray-600 mt-1.5 leading-relaxed">
+                  Añade órdenes en telares circulares Mayer & Cie, surtido con código de barras en WMS, logística con camiones, nómina quincenal con horas extra y BPMN.
+                </p>
+              </div>
+
+              <div className="mt-4 pt-3 border-t border-amber-100">
+                <span className="text-[10px] font-bold text-slate-500 block mb-1.5">15 Módulos (Starter + 8):</span>
+                <div className="flex flex-wrap gap-1 mb-3">
+                  {['CRM', 'WMS', 'Logistica', 'Produccion', 'RRHH', 'Nomina', 'Dashboards', 'ProcessSuite'].map(m => (
+                    <span key={m} className="text-[9px] font-bold bg-white text-amber-900 border border-amber-200 px-1.5 py-0.5 rounded">
+                      +{m}
+                    </span>
+                  ))}
+                </div>
+                <div className="flex flex-col gap-2">
+                  <Link 
+                    to="/app/workspace?phase=2"
+                    className="w-full text-center py-2 px-3 rounded-lg text-xs font-black bg-amber-600 hover:bg-amber-700 text-white shadow transition-all flex items-center justify-center gap-1.5"
+                  >
+                    <span>🚀</span> Abrir Workspace (15 Módulos)
+                  </Link>
+                  <Link 
+                    to="/app/circuito-fase2"
+                    className="w-full text-center py-1.5 px-3 rounded-lg text-xs font-bold text-amber-800 hover:bg-amber-50 border border-amber-200 transition-colors"
+                  >
+                    Ver Demostración Flujo ➔
+                  </Link>
+                </div>
+              </div>
+            </div>
+
+            {/* Circuito Fase 3: Advanced */}
+            <div className="p-5 rounded-2xl border border-cyan-200 bg-gradient-to-br from-cyan-50/50 to-white shadow-sm flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-[10px] font-black text-cyan-800 bg-cyan-100 px-2 py-0.5 rounded-full uppercase">
+                    Fase 3 • $299 USD/mes
+                  </span>
+                  <span className="text-[10px] text-gray-500 font-bold">Imp. $4,500 USD</span>
+                </div>
+                <h4 className="font-extrabold text-base text-gray-900">
+                  Circuito Advanced: Inteligencia & IoT
+                </h4>
+                <p className="text-xs text-gray-600 mt-1.5 leading-relaxed">
+                  Cubo OLAP multidimensional de rentabilidad, Data Lake con 96 sensores IoT en telares, planeación S&OP / MRP II y reportes fiscales auditados NIF/SAT.
+                </p>
+              </div>
+
+              <div className="mt-4 pt-3 border-t border-cyan-100">
+                <span className="text-[10px] font-bold text-slate-500 block mb-1.5">18 Módulos (Express + 3):</span>
+                <div className="flex flex-wrap gap-1 mb-3">
+                  {['BI Reportes', 'BigData IoT', 'Planeacion'].map(m => (
+                    <span key={m} className="text-[9px] font-bold bg-white text-cyan-900 border border-cyan-200 px-1.5 py-0.5 rounded">
+                      +{m}
+                    </span>
+                  ))}
+                </div>
+                <div className="flex flex-col gap-2">
+                  <Link 
+                    to="/app/workspace?phase=3"
+                    className="w-full text-center py-2 px-3 rounded-lg text-xs font-black bg-cyan-600 hover:bg-cyan-700 text-white shadow transition-all flex items-center justify-center gap-1.5"
+                  >
+                    <span>🚀</span> Abrir Workspace (18 Módulos)
+                  </Link>
+                  <Link 
+                    to="/app/circuito-fase3"
+                    className="w-full text-center py-1.5 px-3 rounded-lg text-xs font-bold text-cyan-800 hover:bg-cyan-50 border border-cyan-200 transition-colors"
+                  >
+                    Ver Demostración Flujo ➔
+                  </Link>
+                </div>
+              </div>
+            </div>
+
+            {/* Circuito Fase 4: Enterprise */}
+            <div className="p-5 rounded-2xl border border-purple-300 bg-gradient-to-br from-purple-50/70 to-white shadow-sm flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-[10px] font-black text-purple-900 bg-purple-100 px-2 py-0.5 rounded-full uppercase">
+                    Fase 4 • $499 USD/mes
+                  </span>
+                  <span className="text-[10px] text-emerald-700 font-extrabold">⭐ 24 Módulos 100%</span>
+                </div>
+                <h4 className="font-extrabold text-base text-gray-900">
+                  Circuito Enterprise: IA Autónoma 360°
+                </h4>
+                <p className="text-xs text-gray-600 mt-1.5 leading-relaxed">
+                  Ecosistema total autónomo: Asistente IA cognitivo con SQLite, pronósticos ARIMA, clustering K-Means, minería DFG y gobernanza SAT inmutable.
+                </p>
+              </div>
+
+              <div className="mt-4 pt-3 border-t border-purple-100">
+                <span className="text-[10px] font-bold text-slate-500 block mb-1.5">Los 24 Módulos Completos:</span>
+                <div className="flex flex-wrap gap-1 mb-3">
+                  {['IA Copilot', 'Predictivos', 'MineriaDatos', 'ProcessMining', 'Partners', 'Configuracion'].map(m => (
+                    <span key={m} className="text-[9px] font-bold bg-white text-purple-900 border border-purple-200 px-1.5 py-0.5 rounded">
+                      +{m}
+                    </span>
+                  ))}
+                </div>
+                <div className="flex flex-col gap-2">
+                  <Link 
+                    to="/app/workspace?phase=4"
+                    className="w-full text-center py-2 px-3 rounded-lg text-xs font-black bg-purple-700 hover:bg-purple-800 text-white shadow transition-all flex items-center justify-center gap-1.5"
+                  >
+                    <span>🚀</span> Abrir Workspace (24 Módulos)
+                  </Link>
+                  <Link 
+                    to="/app/circuito-fase4"
+                    className="w-full text-center py-1.5 px-3 rounded-lg text-xs font-bold text-purple-900 hover:bg-purple-50 border border-purple-200 transition-colors"
+                  >
+                    Ver Demostración Flujo ➔
+                  </Link>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
         {/* Sección: Propuesta de Implementación */}
         <div className="mb-12">
           <h2 className="text-3xl font-extrabold text-[var(--nytex-navy)] text-center mb-8">
@@ -271,6 +519,14 @@ export default function Dashboard() {
                 >
                   {phase.id === 4 && !safeUser.customQuoteAmount ? 'SOLICITAR COTIZACIÓN' : 'CONTRATAR EN PORTAL'}
                 </button>
+
+                {/* Acceso Directo al Workspace de la Fase */}
+                <Link
+                  to={`/app/workspace?phase=${phase.id}`}
+                  className="w-full mt-2 py-1.5 px-3 rounded text-xs font-bold text-center text-cyan-300 hover:text-white hover:bg-white/10 transition-colors border border-cyan-500/30 flex items-center justify-center gap-1"
+                >
+                  <span>🚀</span> Abrir en Workspace ➔
+                </Link>
               </div>
             ))}
 
@@ -347,10 +603,10 @@ export default function Dashboard() {
           activePhase={activePhase}
         />
 
-        {/* Sección: Grid de 26 Módulos */}
+        {/* Sección: Grid de 24 Módulos */}
         <div className="mb-8 text-center">
           <h3 className="text-2xl font-extrabold text-[var(--nytex-navy)]">
-            Módulos y Aplicaciones del Sistema (26 Módulos)
+            Módulos y Aplicaciones del Sistema (24 Módulos)
           </h3>
           <p className="text-sm text-gray-500 mt-2">
             {hasActivePhase ? (
