@@ -14,7 +14,7 @@ const ALL_MODULES = [
 const getDefaultUser = (role = 'Partner', customEmail = null) => {
   let email = customEmail || 'partner@nytex.com';
   let name = 'Distribuidor Partner';
-  let subscriptions = ['CRM', 'Inventario', 'ProcessSuite', 'BusinessPartners', 'Ventas', 'Contabilidad', 'Compras'];
+  let subscriptions = ALL_MODULES;
 
   if (role === 'Admin') {
     email = customEmail || 'admin@nytex.com';
