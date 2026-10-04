@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import PaymentSimulatorModal from './PaymentSimulatorModal';
 import NytexEcosistemaDiagram, { AREAS_CONFIG } from './NytexEcosistemaDiagram';
+import ModeloTransformacionNyt from './ModeloTransformacionNyt';
 
 const modulesList = [
   { id: 'Ventas', name: 'NyTEX Ventas', description: 'Gestión de ventas y facturación.' },
@@ -591,6 +592,23 @@ export default function Dashboard() {
             </div>
 
           </div>
+        </div>
+
+        {/* EL MODELO DE TRANSFORMACIÓN NyT™ */}
+        <ModeloTransformacionNyt 
+          activePhase={activePhase}
+          onSelectPhase={(lvl) => setActivePhase(activePhase === lvl ? null : lvl)}
+        />
+
+        {/* Encabezado: Las Aplicaciones UN ECOSISTEMA. TODA SU EMPRESA CONECTADA. */}
+        <div className="text-center mt-16 mb-6">
+          <span className="text-amber-500 font-bold tracking-wider uppercase text-sm mb-2 block">
+            Las Aplicaciones
+          </span>
+          <h2 className="text-3xl md:text-4xl font-extrabold text-[var(--nytex-navy)] mb-3">
+            UN ECOSISTEMA. TODA SU EMPRESA CONECTADA.
+          </h2>
+          <div className="w-24 h-1 bg-[#2A114B] mx-auto"></div>
         </div>
 
         {/* DIAGRAMA OPERATIVO Y ÁREAS FUNCIONALES (Con Alumbrado Dinámico según la Fase elegida o Áreas Funcionales) */}

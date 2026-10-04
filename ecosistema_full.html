@@ -1,0 +1,697 @@
+<!-- Marco de Ecosistema NyTEX y Áreas Funcionales -->
+            <div class="bg-gradient-to-br from-gray-950 via-[#0a0f1d] to-[#0f172a] rounded-3xl p-6 sm:p-8 lg:p-10 shadow-2xl border border-gray-800 mt-12 mb-16">
+                <!-- Encabezado del marco -->
+                <div class="text-center max-w-3xl mx-auto mb-10">
+                    <span class="bg-brand-accent/15 text-brand-accent border border-brand-accent/30 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest inline-block mb-3">
+                        <i class="fas fa-network-wired mr-1.5"></i> Arquitectura Empresarial NyTEX
+                    </span>
+                    <h3 class="text-3xl md:text-4xl font-extrabold text-white tracking-tight">Ecosistema Operativo y Mapeo por Áreas Funcionales</h3>
+                    <p class="text-gray-400 text-sm md:text-base mt-3 leading-relaxed">
+                        Conozca la interconexión viva de las <strong class="text-white font-bold">24 aplicaciones</strong> de nuestro ecosistema, clasificadas según su <strong class="text-brand-accent">Dirección Estratégica</strong> y los departamentos que operan día a día.
+                    </p>
+
+                    <!-- Banner de Alumbrado Activo -->
+                    <div id="ecosystemNotification" class="mt-4 inline-flex items-center gap-2 bg-amber-400/10 border border-amber-400/40 text-amber-300 px-4 py-1.5 rounded-full text-xs font-bold flex-wrap justify-center hidden transition-all animate-pulse">
+                        <span id="ecosystemNotificationText">✨ Alumbrando en dorado aplicaciones seleccionadas</span>
+                        <button type="button" onclick="clearAllAreas()" class="ml-2 bg-amber-400/20 hover:bg-amber-400/30 text-amber-200 px-2.5 py-0.5 rounded-full text-[11px] font-bold transition-colors border border-amber-400/30">
+                            ✕ Quitar iluminación
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Grid Principal: Diagrama de Flujo (Izquierda) + Panel de Áreas Funcionales (Derecha) -->
+                <!-- Estilos específicos para escala del diagrama -->
+                <style>
+                    #diagramWrapper .mermaid svg {
+                        width: 100% !important;
+                        min-width: 920px !important;
+                        max-width: none !important;
+                        height: auto !important;
+                        margin: 0 auto;
+                        transition: transform 0.2s ease;
+                    }
+                </style>
+
+                <!-- Grid Principal: 75% Diagrama (Grande) + 25% Áreas Funcionales (Compacto) -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+                    
+                    <!-- Columna Izquierda: Diagrama de Flujo Ampliado (9 columnas en XL / 8 en LG) -->
+                    <div class="lg:col-span-8 xl:col-span-9 bg-[#030712]/95 rounded-2xl p-4 sm:p-5 border border-gray-800/80 shadow-inner flex flex-col">
+                        <div class="flex flex-wrap items-center justify-between pb-3 mb-3 border-b border-gray-800 gap-2">
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs font-bold text-gray-200 flex items-center gap-1.5">
+                                    <i class="fas fa-project-diagram text-brand-accent"></i> Diagrama Operativo de Sincronización
+                                </span>
+                                <span class="text-[10px] font-semibold bg-gray-800/90 text-gray-400 px-2 py-0.5 rounded-full border border-gray-700">
+                                    24 Módulos Conectados
+                                </span>
+                            </div>
+
+                            <!-- Controles de Zoom para el Diagrama -->
+                            <div class="flex items-center gap-1.5 bg-gray-900 border border-gray-700/80 px-2 py-1 rounded-lg">
+                                <span class="text-gray-400 text-[10px] font-semibold mr-1">Zoom:</span>
+                                <button type="button" onclick="adjustDiagramZoom(0.15)" class="w-6 h-6 rounded bg-gray-800 hover:bg-gray-700 text-gray-200 flex items-center justify-center text-[10px] transition-colors" title="Ampliar diagrama">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                                <button type="button" onclick="adjustDiagramZoom(-0.15)" class="w-6 h-6 rounded bg-gray-800 hover:bg-gray-700 text-gray-200 flex items-center justify-center text-[10px] transition-colors" title="Reducir diagrama">
+                                    <i class="fas fa-minus"></i>
+                                </button>
+                                <button type="button" onclick="resetDiagramZoom()" class="w-6 h-6 rounded bg-gray-800 hover:bg-gray-700 text-gray-200 flex items-center justify-center text-[10px] transition-colors" title="Restablecer tamaño">
+                                    <i class="fas fa-compress-arrows-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Contenedor scrollable y escalable para el diagrama -->
+                        <div id="diagramWrapper" class="overflow-x-auto py-3 bg-[#02050e]/60 rounded-xl p-2 border border-gray-800/50 min-h-[560px] flex items-center justify-center">
+<svg viewBox="0 0 1024 940" class="w-full h-auto select-none" style="filter: drop-shadow(0 10px 25px rgba(0,0,0,0.5)); min-width: 920px;">
+    <defs>
+        <marker id="arrow-cyan" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="#38bdf8" />
+        </marker>
+        <marker id="arrow-white" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="#cbd5e1" />
+        </marker>
+        <marker id="arrow-slate" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="#94a3b8" />
+        </marker>
+    </defs>
+
+    <!-- 1. ÁREA 7: NÚCLEO MAESTRO & GOBERNANZA -->
+    <g id="subgraph-area7">
+        <rect x="30" y="60" width="810" height="76" rx="2" fill="#080e1c" stroke="#334155" stroke-width="1.5" />
+        <text x="42" y="76" fill="#f8fafc" font-size="11" font-weight="bold" font-family="system-ui, -apple-system, sans-serif">
+            ÁREA 7: NÚCLEO MAESTRO &amp; GOBERNANZA
+        </text>
+        <line x1="30" y1="84" x2="840" y2="84" stroke="#1e293b" stroke-width="1" />
+    </g>
+
+    <!-- 2. ÁREA 5: TALENTO HUMANO (Hire-to-Pay) -->
+    <g id="subgraph-area5">
+        <rect x="858" y="16" width="156" height="136" rx="2" fill="#0c071a" stroke="#7e22ce" stroke-width="1.5" />
+        <rect x="858" y="16" width="156" height="18" fill="#7e22ce" />
+        <text x="936" y="28" text-anchor="middle" dominant-baseline="middle" fill="#ffffff" font-size="8.5" font-weight="bold" font-family="system-ui, -apple-system, sans-serif">
+            ÁREA 5: TALENTO HUMANO (Hire-to-Pay)
+        </text>
+    </g>
+
+    <!-- 3. ÁREA 1: CICLO COMERCIAL (Order-to-Cash) -->
+    <g id="subgraph-area1">
+        <rect x="98" y="360" width="140" height="140" rx="2" fill="#051429" stroke="#0284c7" stroke-width="1.5" />
+        <rect x="98" y="360" width="140" height="18" fill="#0284c7" />
+        <text x="168" y="372" text-anchor="middle" dominant-baseline="middle" fill="#ffffff" font-size="7.8" font-weight="bold" font-family="system-ui, -apple-system, sans-serif">
+            ÁREA 1: CICLO COMERCIAL (Order-to-Cash)
+        </text>
+    </g>
+
+    <!-- 4. ÁREA 6: CAPA ESTRATÉGICA & ANALÍTICA -->
+    <g id="subgraph-area6">
+        <rect x="452" y="168" width="370" height="316" rx="2" fill="#060f24" stroke="#1e40af" stroke-width="1.5" />
+        <rect x="452" y="168" width="370" height="20" fill="#1e3a8a" />
+        <text x="464" y="182" fill="#93c5fd" font-size="9.5" font-weight="bold" font-family="system-ui, -apple-system, sans-serif">
+            ÁREA 6: CAPA ESTRATÉGICA &amp; ANALÍTICA
+        </text>
+    </g>
+
+    <!-- 5. ÁREA 2 & 3: CADENA DE SUMINISTRO Y PLANTA -->
+    <g id="subgraph-area2-3">
+        <rect x="152" y="562" width="678" height="90" rx="2" fill="#041a10" stroke="#16a34a" stroke-width="1.5" />
+        <rect x="152" y="562" width="678" height="19" fill="#16a34a" />
+        <text x="164" y="575" fill="#ffffff" font-size="9" font-weight="bold" font-family="system-ui, -apple-system, sans-serif">
+            ÁREA 2 &amp; 3: CADENA DE SUMINISTRO Y PLANTA
+        </text>
+    </g>
+
+    <!-- 6. ÁREA 4: ADMINISTRACIÓN Y FINANZAS -->
+    <g id="subgraph-area4">
+        <rect x="198" y="728" width="428" height="182" rx="2" fill="#180e05" stroke="#d97706" stroke-width="1.5" />
+        <rect x="198" y="728" width="428" height="19" fill="#d97706" />
+        <text x="208" y="741" fill="#ffffff" font-size="9" font-weight="bold" font-family="system-ui, -apple-system, sans-serif">
+            ÁREA 4: ADMINISTRACIÓN Y FINANZAS
+        </text>
+    </g>
+
+    <!-- LÍNEAS Y CONEXIONES -->
+    <path d="M 129.5 130 L 129.5 250" stroke="#cbd5e1" stroke-width="1.4" fill="none" />
+    <path d="M 129.5 250 L 168 250 L 168 388" stroke="#38bdf8" stroke-width="1.4" fill="none" marker-end="url(#arrow-cyan)" />
+    <path d="M 129.5 250 L 358 250 L 358 605" stroke="#38bdf8" stroke-width="1.4" fill="none" marker-end="url(#arrow-cyan)" />
+    <path d="M 168 426 L 168 454" stroke="#38bdf8" stroke-width="1.4" fill="none" marker-end="url(#arrow-cyan)" />
+    <path d="M 186 492 L 186 542 L 481 542 L 481 605" stroke="#38bdf8" stroke-width="1.4" stroke-dasharray="3,3" fill="none" marker-end="url(#arrow-cyan)" />
+    <g><rect x="286" y="534" width="76" height="16" rx="3" fill="#0b1b36" stroke="#1e40af" stroke-width="1" /><text x="324" y="543" text-anchor="middle" dominant-baseline="middle" fill="#e2e8f0" font-size="9.5">Reserva stock</text></g>
+    <path d="M 110 492 L 110 774 L 208 774" stroke="#38bdf8" stroke-width="1.4" fill="none" marker-end="url(#arrow-cyan)" />
+    <g><rect x="78" y="694" width="82" height="16" rx="3" fill="#0b1b36" stroke="#1e40af" stroke-width="1" /><text x="119" y="703" text-anchor="middle" dominant-baseline="middle" fill="#e2e8f0" font-size="9.5">Venta a crédito</text></g>
+    <path d="M 224 641 L 224 756" stroke="#38bdf8" stroke-width="1.4" stroke-dasharray="3,3" fill="none" marker-end="url(#arrow-cyan)" />
+    <g><rect x="148" y="676" width="116" height="16" rx="3" fill="#0b1b36" stroke="#1e40af" stroke-width="1" /><text x="206" y="685" text-anchor="middle" dominant-baseline="middle" fill="#e2e8f0" font-size="9.5">Prueba de entrega digital</text></g>
+    <path d="M 358 641 L 358 756" stroke="#38bdf8" stroke-width="1.4" fill="none" marker-end="url(#arrow-cyan)" />
+    <g><rect x="324" y="676" width="84" height="16" rx="3" fill="#0b1b36" stroke="#1e40af" stroke-width="1" /><text x="366" y="685" text-anchor="middle" dominant-baseline="middle" fill="#e2e8f0" font-size="9.5">Factura validada</text></g>
+    <path d="M 476 641 L 476 695 L 535 695 L 535 756" stroke="#38bdf8" stroke-width="1.4" stroke-dasharray="3,3" fill="none" marker-end="url(#arrow-cyan)" />
+    <g><rect x="482" y="676" width="84" height="16" rx="3" fill="#0b1b36" stroke="#1e40af" stroke-width="1" /><text x="524" y="685" text-anchor="middle" dominant-baseline="middle" fill="#e2e8f0" font-size="9.5">Costo de Ventas</text></g>
+    <path d="M 606 494 L 606 530 L 358 530 L 358 605" stroke="#38bdf8" stroke-width="1.4" fill="none" marker-end="url(#arrow-cyan)" />
+    <g><rect x="508" y="522" width="102" height="16" rx="3" fill="#0b1b36" stroke="#1e40af" stroke-width="1" /><text x="559" y="531" text-anchor="middle" dominant-baseline="middle" fill="#e2e8f0" font-size="9.5">Requerimientos MRP</text></g>
+    <path d="M 674 494 L 674 530 L 759 530 L 759 605" stroke="#38bdf8" stroke-width="1.4" fill="none" marker-end="url(#arrow-cyan)" />
+    <g><rect x="636" y="522" width="98" height="16" rx="3" fill="#0b1b36" stroke="#1e40af" stroke-width="1" /><text x="685" y="531" text-anchor="middle" dominant-baseline="middle" fill="#e2e8f0" font-size="9.5">Programa de fábrica</text></g>
+    <path d="M 260 792 L 260 840 L 306 840 L 306 866" stroke="#38bdf8" stroke-width="1.4" fill="none" marker-end="url(#arrow-cyan)" />
+    <g><rect x="226" y="822" width="92" height="16" rx="3" fill="#0b1b36" stroke="#1e40af" stroke-width="1" /><text x="272" y="831" text-anchor="middle" dominant-baseline="middle" fill="#e2e8f0" font-size="9.5">Cobranza al banco</text></g>
+    <path d="M 386 792 L 386 840 L 342 840 L 342 866" stroke="#38bdf8" stroke-width="1.4" fill="none" marker-end="url(#arrow-cyan)" />
+    <g><rect x="352" y="822" width="90" height="16" rx="3" fill="#0b1b36" stroke="#1e40af" stroke-width="1" /><text x="397" y="831" text-anchor="middle" dominant-baseline="middle" fill="#e2e8f0" font-size="9.5">Propuesta de pago</text></g>
+    <path d="M 936 79 L 936 106" stroke="#38bdf8" stroke-width="1.5" fill="none" marker-end="url(#arrow-cyan)" />
+    <path d="M 640 230 L 640 262" stroke="#38bdf8" stroke-width="1.4" stroke-dasharray="3,3" fill="none" marker-end="url(#arrow-cyan)" />
+    <path d="M 640 290 L 640 320" stroke="#38bdf8" stroke-width="1.4" stroke-dasharray="3,3" fill="none" marker-end="url(#arrow-cyan)" />
+    <path d="M 640 356 L 640 390" stroke="#38bdf8" stroke-width="1.4" stroke-dasharray="3,3" fill="none" marker-end="url(#arrow-cyan)" />
+    <path d="M 640 426 L 640 458" stroke="#38bdf8" stroke-width="1.5" fill="none" marker-end="url(#arrow-cyan)" />
+    <path d="M 324 902 L 324 926 L 852 926 L 852 158 L 756 158 L 756 200" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="4,4" fill="none" marker-end="url(#arrow-slate)" />
+
+    <!-- 24 MÓDULOS DE ARQUITECTURA (CON CLASE .node) -->
+    <!-- ÁREA 7 -->
+    <g class="node cursor-pointer transition-all duration-300" id="node-businesspartners">
+        <rect x="42" y="90" width="175" height="40" rx="4" fill="#0e182e" stroke="#eab308" stroke-width="1.5" />
+        <text x="129.5" y="105" text-anchor="middle" dominant-baseline="middle" fill="#ffffff" font-size="11" font-weight="bold">NyTEX Business Partners</text>
+        <text x="129.5" y="119" text-anchor="middle" dominant-baseline="middle" fill="#cbd5e1" font-size="9">(Ficha Única: Clientes y Proveedores)</text>
+    </g>
+    <g class="node cursor-pointer transition-all duration-300" id="node-configuracion">
+        <rect x="236" y="90" width="180" height="40" rx="4" fill="#0e182e" stroke="#eab308" stroke-width="1.5" />
+        <text x="326" y="105" text-anchor="middle" dominant-baseline="middle" fill="#ffffff" font-size="11" font-weight="bold">NyTEX Configuración</text>
+        <text x="326" y="119" text-anchor="middle" dominant-baseline="middle" fill="#cbd5e1" font-size="9">(Seguridad RBAC, Multi-Empresa, APIs)</text>
+    </g>
+    <g class="node cursor-pointer transition-all duration-300" id="node-processsuite">
+        <rect x="434" y="90" width="175" height="40" rx="4" fill="#0e182e" stroke="#eab308" stroke-width="1.5" />
+        <text x="521.5" y="105" text-anchor="middle" dominant-baseline="middle" fill="#ffffff" font-size="11" font-weight="bold">NyTEX Process Suite</text>
+        <text x="521.5" y="119" text-anchor="middle" dominant-baseline="middle" fill="#cbd5e1" font-size="9">(Reglas de Negocio y Aprobaciones)</text>
+    </g>
+    <g class="node cursor-pointer transition-all duration-300" id="node-processmining">
+        <rect x="626" y="90" width="204" height="40" rx="4" fill="#0e182e" stroke="#eab308" stroke-width="1.5" />
+        <text x="728" y="105" text-anchor="middle" dominant-baseline="middle" fill="#ffffff" font-size="11" font-weight="bold">NyTEX Process Mining</text>
+        <text x="728" y="119" text-anchor="middle" dominant-baseline="middle" fill="#cbd5e1" font-size="9">(Auditoría de Event Logs y Cuellos de Botella)</text>
+    </g>
+
+    <!-- ÁREA 5 -->
+    <g class="node cursor-pointer transition-all duration-300" id="node-rrhh">
+        <rect x="868" y="44" width="136" height="35" rx="4" fill="#581c87" stroke="#eab308" stroke-width="1.5" />
+        <text x="936" y="57" text-anchor="middle" dominant-baseline="middle" fill="#ffffff" font-size="10.5" font-weight="bold">NyTEX RRHH</text>
+        <text x="936" y="69" text-anchor="middle" dominant-baseline="middle" fill="#e9d5ff" font-size="8.5">(Expedientes y Asistencias)</text>
+    </g>
+    <g class="node cursor-pointer transition-all duration-300" id="node-nomina">
+        <rect x="868" y="106" width="136" height="35" rx="4" fill="#581c87" stroke="#eab308" stroke-width="1.5" />
+        <text x="936" y="119" text-anchor="middle" dominant-baseline="middle" fill="#ffffff" font-size="10.5" font-weight="bold">NyTEX Nómina</text>
+        <text x="936" y="131" text-anchor="middle" dominant-baseline="middle" fill="#e9d5ff" font-size="8.5">(Sueldos e Impuestos)</text>
+    </g>
+
+    <!-- ÁREA 1 -->
+    <g class="node cursor-pointer transition-all duration-300" id="node-crm">
+        <rect x="114" y="388" width="108" height="38" rx="4" fill="#0284c7" stroke="#eab308" stroke-width="1.5" />
+        <text x="168" y="403" text-anchor="middle" dominant-baseline="middle" fill="#ffffff" font-size="11" font-weight="bold">NyTEX CRM</text>
+        <text x="168" y="416" text-anchor="middle" dominant-baseline="middle" fill="#e0f2fe" font-size="9">(Embudo / Pipeline)</text>
+    </g>
+    <g class="node cursor-pointer transition-all duration-300" id="node-ventas">
+        <rect x="110" y="454" width="116" height="38" rx="4" fill="#0284c7" stroke="#eab308" stroke-width="1.5" />
+        <text x="168" y="469" text-anchor="middle" dominant-baseline="middle" fill="#ffffff" font-size="11" font-weight="bold">NyTEX Ventas</text>
+        <text x="168" y="482" text-anchor="middle" dominant-baseline="middle" fill="#e0f2fe" font-size="9">(Cotización y Factura)</text>
+    </g>
+
+    <!-- ÁREA 6 -->
+    <g class="node cursor-pointer transition-all duration-300" id="node-biyreportes">
+        <rect x="466" y="200" width="112" height="30" rx="4" fill="#0f2b5c" stroke="#eab308" stroke-width="1.5" />
+        <text x="522" y="215" text-anchor="middle" dominant-baseline="middle" fill="#ffffff" font-size="10" font-weight="bold">NyTEX BI y Reportes</text>
+    </g>
+    <g class="node cursor-pointer transition-all duration-300" id="node-bigdata">
+        <rect x="594" y="200" width="92" height="30" rx="4" fill="#0f2b5c" stroke="#eab308" stroke-width="1.5" />
+        <text x="640" y="215" text-anchor="middle" dominant-baseline="middle" fill="#ffffff" font-size="10" font-weight="bold">NyTEX Big Data</text>
+    </g>
+    <g class="node cursor-pointer transition-all duration-300" id="node-dashboards">
+        <rect x="702" y="200" width="108" height="38" rx="4" fill="#0f2b5c" stroke="#eab308" stroke-width="1.5" />
+        <text x="756" y="214" text-anchor="middle" dominant-baseline="middle" fill="#ffffff" font-size="10.5" font-weight="bold">NyTEX Dashboards</text>
+        <text x="756" y="227" text-anchor="middle" dominant-baseline="middle" fill="#bfdbfe" font-size="8.5">(Cockpit en Vivo)</text>
+    </g>
+    <g class="node cursor-pointer transition-all duration-300" id="node-mineriadatos">
+        <rect x="574" y="262" width="132" height="28" rx="4" fill="#0f2b5c" stroke="#eab308" stroke-width="1.5" />
+        <text x="640" y="276" text-anchor="middle" dominant-baseline="middle" fill="#ffffff" font-size="10" font-weight="bold">NyTEX Minería de Datos</text>
+    </g>
+    <g class="node cursor-pointer transition-all duration-300" id="node-predictivos">
+        <rect x="566" y="320" width="148" height="36" rx="4" fill="#0f2b5c" stroke="#eab308" stroke-width="1.5" />
+        <text x="640" y="333" text-anchor="middle" dominant-baseline="middle" fill="#ffffff" font-size="10" font-weight="bold">NyTEX Modelos Predictivos</text>
+        <text x="640" y="346" text-anchor="middle" dominant-baseline="middle" fill="#bfdbfe" font-size="8">(Series de Tiempo + Logit/OR)</text>
+    </g>
+    <g class="node cursor-pointer transition-all duration-300" id="node-ia">
+        <rect x="576" y="390" width="128" height="36" rx="4" fill="#0f2b5c" stroke="#eab308" stroke-width="1.5" />
+        <text x="640" y="404" text-anchor="middle" dominant-baseline="middle" fill="#ffffff" font-size="10.5" font-weight="bold">NyTEX IA</text>
+        <text x="640" y="417" text-anchor="middle" dominant-baseline="middle" fill="#bfdbfe" font-size="8.5">(Decisiones Autónomas)</text>
+    </g>
+    <g class="node cursor-pointer transition-all duration-300" id="node-planeacion">
+        <rect x="572" y="458" width="136" height="36" rx="4" fill="#0f2b5c" stroke="#eab308" stroke-width="1.5" />
+        <text x="640" y="472" text-anchor="middle" dominant-baseline="middle" fill="#ffffff" font-size="10.5" font-weight="bold">NyTEX Planeación</text>
+        <text x="640" y="485" text-anchor="middle" dominant-baseline="middle" fill="#bfdbfe" font-size="8.5">(S&OP y Presupuestos)</text>
+    </g>
+
+    <!-- ÁREA 2 & 3 -->
+    <g class="node cursor-pointer transition-all duration-300" id="node-logistica">
+        <rect x="162" y="605" width="124" height="36" rx="4" fill="#14532d" stroke="#eab308" stroke-width="1.5" />
+        <text x="224" y="619" text-anchor="middle" dominant-baseline="middle" fill="#ffffff" font-size="10.5" font-weight="bold">NyTEX Logística</text>
+        <text x="224" y="632" text-anchor="middle" dominant-baseline="middle" fill="#bbf7d0" font-size="8.5">(Rutas, Camiones y POD)</text>
+    </g>
+    <g class="node cursor-pointer transition-all duration-300" id="node-compras">
+        <rect x="302" y="605" width="112" height="36" rx="4" fill="#14532d" stroke="#eab308" stroke-width="1.5" />
+        <text x="358" y="619" text-anchor="middle" dominant-baseline="middle" fill="#ffffff" font-size="10.5" font-weight="bold">NyTEX Compras</text>
+        <text x="358" y="632" text-anchor="middle" dominant-baseline="middle" fill="#bbf7d0" font-size="8.5">(Órdenes de Compra)</text>
+    </g>
+    <g class="node cursor-pointer transition-all duration-300" id="node-inventario">
+        <rect x="430" y="605" width="102" height="36" rx="4" fill="#14532d" stroke="#eab308" stroke-width="1.5" />
+        <text x="481" y="619" text-anchor="middle" dominant-baseline="middle" fill="#ffffff" font-size="10.5" font-weight="bold">NyTEX Inventario</text>
+        <text x="481" y="632" text-anchor="middle" dominant-baseline="middle" fill="#bbf7d0" font-size="8.5">(Kardex y Stock)</text>
+    </g>
+    <g class="node cursor-pointer transition-all duration-300" id="node-wms">
+        <rect x="548" y="605" width="136" height="36" rx="4" fill="#14532d" stroke="#eab308" stroke-width="1.5" />
+        <text x="616" y="619" text-anchor="middle" dominant-baseline="middle" fill="#ffffff" font-size="10.5" font-weight="bold">NyTEX WMS</text>
+        <text x="616" y="632" text-anchor="middle" dominant-baseline="middle" fill="#bbf7d0" font-size="8.5">(Racks, Picking RF, FEFO)</text>
+    </g>
+    <g class="node cursor-pointer transition-all duration-300" id="node-produccion">
+        <rect x="700" y="605" width="118" height="36" rx="4" fill="#065f46" stroke="#eab308" stroke-width="1.5" />
+        <text x="759" y="619" text-anchor="middle" dominant-baseline="middle" fill="#ffffff" font-size="10.5" font-weight="bold">NyTEX Producción</text>
+        <text x="759" y="632" text-anchor="middle" dominant-baseline="middle" fill="#a7f3d0" font-size="8.5">(Recetas BOM y Planta)</text>
+    </g>
+
+    <!-- ÁREA 4 -->
+    <g class="node cursor-pointer transition-all duration-300" id="node-cxc">
+        <rect x="208" y="756" width="104" height="36" rx="4" fill="#78350f" stroke="#eab308" stroke-width="1.5" />
+        <text x="260" y="770" text-anchor="middle" dominant-baseline="middle" fill="#ffffff" font-size="10.5" font-weight="bold">NyTEX CxC</text>
+        <text x="260" y="783" text-anchor="middle" dominant-baseline="middle" fill="#fde68a" font-size="8.5">(Cartera y Crédito)</text>
+    </g>
+    <g class="node cursor-pointer transition-all duration-300" id="node-cxp">
+        <rect x="324" y="756" width="124" height="36" rx="4" fill="#78350f" stroke="#eab308" stroke-width="1.5" />
+        <text x="386" y="770" text-anchor="middle" dominant-baseline="middle" fill="#ffffff" font-size="10.5" font-weight="bold">NyTEX CxP</text>
+        <text x="386" y="783" text-anchor="middle" dominant-baseline="middle" fill="#fde68a" font-size="8.5">(3-Way Match y Deudas)</text>
+    </g>
+    <g class="node cursor-pointer transition-all duration-300" id="node-contabilidad">
+        <rect x="460" y="756" width="152" height="36" rx="4" fill="#78350f" stroke="#eab308" stroke-width="1.5" />
+        <text x="536" y="770" text-anchor="middle" dominant-baseline="middle" fill="#ffffff" font-size="10.5" font-weight="bold">NyTEX Contabilidad</text>
+        <text x="536" y="783" text-anchor="middle" dominant-baseline="middle" fill="#fde68a" font-size="7.8">(Consolidación en Tiempo Real)</text>
+    </g>
+    <g class="node cursor-pointer transition-all duration-300" id="node-tesoreria">
+        <rect x="266" y="866" width="116" height="36" rx="4" fill="#78350f" stroke="#eab308" stroke-width="1.5" />
+        <text x="324" y="880" text-anchor="middle" dominant-baseline="middle" fill="#ffffff" font-size="10.5" font-weight="bold">NyTEX Tesorería</text>
+        <text x="324" y="893" text-anchor="middle" dominant-baseline="middle" fill="#fde68a" font-size="8.5">(Bancos y Cash Flow)</text>
+    </g>
+</svg>
+</div>
+                    </div>
+
+                    <!-- Columna Derecha: Tarjetas de Áreas Funcionales (Interactivas) -->
+                    <div class="lg:col-span-4 xl:col-span-3 bg-[#030712]/95 rounded-2xl p-3.5 sm:p-4 border border-gray-800/80 shadow-inner flex flex-col">
+                        <div class="mb-3 pb-2 border-b border-gray-800 flex items-center justify-between">
+                            <div>
+                                <h4 class="text-xs font-black text-white uppercase tracking-wider flex items-center gap-1.5">
+                                    <i class="fas fa-sitemap text-brand-accent"></i> ÁREAS FUNCIONALES
+                                </h4>
+                                <p class="text-[10px] text-gray-400">Clic en 1 o varias para alumbrar</p>
+                            </div>
+                            <button id="btnClearAreas" type="button" onclick="clearAllAreas()" class="text-[10px] font-bold px-2.5 py-1 rounded bg-amber-400/20 hover:bg-amber-400/30 text-amber-300 border border-amber-400/40 transition-colors hidden" title="Restablecer todas">
+                                Limpiar (<span id="countSelectedAreas">0</span>) ✕
+                            </button>
+                        </div>
+
+                        <div class="space-y-2">
+                            <!-- Área 1 -->
+                            <div id="areaCard-1" onclick="toggleArea(1)" class="bg-gray-900/90 hover:bg-gray-800/80 border border-gray-800 hover:border-sky-500/60 rounded-xl p-2.5 transition-all duration-200 cursor-pointer flex items-center justify-between gap-2 select-none group">
+                                <div class="flex items-start gap-2 flex-grow min-w-0">
+                                    <div class="w-6 h-6 rounded bg-sky-500 text-white font-black flex items-center justify-center text-xs flex-shrink-0 mt-0.5 shadow-sm">1</div>
+                                    <div class="min-w-0">
+                                        <h5 class="text-white font-bold text-xs leading-tight truncate group-hover:text-sky-300 transition-colors">1. Dirección Comercial</h5>
+                                        <p class="text-[10px] text-gray-400 mt-0.5 leading-snug">
+                                            <span class="text-[9px] text-gray-500 uppercase">Módulos:</span> <span class="text-sky-300 font-medium">CRM, Ventas</span>
+                                        </p>
+                                    </div>
+                                </div>
+                                <span id="areaBadge-1" class="text-[9px] font-black uppercase px-2 py-0.5 rounded border border-transparent transition-all hidden">✓ ACTIVA</span>
+                            </div>
+
+                            <!-- Área 2 -->
+                            <div id="areaCard-2" onclick="toggleArea(2)" class="bg-gray-900/90 hover:bg-gray-800/80 border border-gray-800 hover:border-emerald-500/60 rounded-xl p-2.5 transition-all duration-200 cursor-pointer flex items-center justify-between gap-2 select-none group">
+                                <div class="flex items-start gap-2 flex-grow min-w-0">
+                                    <div class="w-6 h-6 rounded bg-emerald-500 text-white font-black flex items-center justify-center text-xs flex-shrink-0 mt-0.5 shadow-sm">2</div>
+                                    <div class="min-w-0">
+                                        <h5 class="text-white font-bold text-xs leading-tight truncate group-hover:text-emerald-300 transition-colors">2. Cadena de Suministro</h5>
+                                        <p class="text-[10px] text-gray-400 mt-0.5 leading-snug">
+                                            <span class="text-[9px] text-gray-500 uppercase">Módulos:</span> <span class="text-emerald-300 font-medium">Compras, Inventario, WMS, Logística</span>
+                                        </p>
+                                    </div>
+                                </div>
+                                <span id="areaBadge-2" class="text-[9px] font-black uppercase px-2 py-0.5 rounded border border-transparent transition-all hidden">✓ ACTIVA</span>
+                            </div>
+
+                            <!-- Área 3 -->
+                            <div id="areaCard-3" onclick="toggleArea(3)" class="bg-gray-900/90 hover:bg-gray-800/80 border border-gray-800 hover:border-green-500/60 rounded-xl p-2.5 transition-all duration-200 cursor-pointer flex items-center justify-between gap-2 select-none group">
+                                <div class="flex items-start gap-2 flex-grow min-w-0">
+                                    <div class="w-6 h-6 rounded bg-green-500 text-white font-black flex items-center justify-center text-xs flex-shrink-0 mt-0.5 shadow-sm">3</div>
+                                    <div class="min-w-0">
+                                        <h5 class="text-white font-bold text-xs leading-tight truncate group-hover:text-green-300 transition-colors">3. Operaciones y Producción</h5>
+                                        <p class="text-[10px] text-gray-400 mt-0.5 leading-snug">
+                                            <span class="text-[9px] text-gray-500 uppercase">Módulos:</span> <span class="text-green-300 font-medium">Producción</span>
+                                        </p>
+                                    </div>
+                                </div>
+                                <span id="areaBadge-3" class="text-[9px] font-black uppercase px-2 py-0.5 rounded border border-transparent transition-all hidden">✓ ACTIVA</span>
+                            </div>
+
+                            <!-- Área 4 -->
+                            <div id="areaCard-4" onclick="toggleArea(4)" class="bg-gray-900/90 hover:bg-gray-800/80 border border-gray-800 hover:border-amber-500/60 rounded-xl p-2.5 transition-all duration-200 cursor-pointer flex items-center justify-between gap-2 select-none group">
+                                <div class="flex items-start gap-2 flex-grow min-w-0">
+                                    <div class="w-6 h-6 rounded bg-amber-500 text-white font-black flex items-center justify-center text-xs flex-shrink-0 mt-0.5 shadow-sm">4</div>
+                                    <div class="min-w-0">
+                                        <h5 class="text-white font-bold text-xs leading-tight truncate group-hover:text-amber-300 transition-colors">4. Administración y Finanzas</h5>
+                                        <p class="text-[10px] text-gray-400 mt-0.5 leading-snug">
+                                            <span class="text-[9px] text-gray-500 uppercase">Módulos:</span> <span class="text-amber-300 font-medium">CxP, CxC, Tesorería, Contabilidad</span>
+                                        </p>
+                                    </div>
+                                </div>
+                                <span id="areaBadge-4" class="text-[9px] font-black uppercase px-2 py-0.5 rounded border border-transparent transition-all hidden">✓ ACTIVA</span>
+                            </div>
+
+                            <!-- Área 5 -->
+                            <div id="areaCard-5" onclick="toggleArea(5)" class="bg-gray-900/90 hover:bg-gray-800/80 border border-gray-800 hover:border-purple-500/60 rounded-xl p-2.5 transition-all duration-200 cursor-pointer flex items-center justify-between gap-2 select-none group">
+                                <div class="flex items-start gap-2 flex-grow min-w-0">
+                                    <div class="w-6 h-6 rounded bg-purple-600 text-white font-black flex items-center justify-center text-xs flex-shrink-0 mt-0.5 shadow-sm">5</div>
+                                    <div class="min-w-0">
+                                        <h5 class="text-white font-bold text-xs leading-tight truncate group-hover:text-purple-300 transition-colors">5. Talento Humano</h5>
+                                        <p class="text-[10px] text-gray-400 mt-0.5 leading-snug">
+                                            <span class="text-[9px] text-gray-500 uppercase">Módulos:</span> <span class="text-purple-300 font-medium">RRHH, Nómina</span>
+                                        </p>
+                                    </div>
+                                </div>
+                                <span id="areaBadge-5" class="text-[9px] font-black uppercase px-2 py-0.5 rounded border border-transparent transition-all hidden">✓ ACTIVA</span>
+                            </div>
+
+                            <!-- Área 6 -->
+                            <div id="areaCard-6" onclick="toggleArea(6)" class="bg-gray-900/90 hover:bg-gray-800/80 border border-gray-800 hover:border-blue-500/60 rounded-xl p-2.5 transition-all duration-200 cursor-pointer flex items-center justify-between gap-2 select-none group">
+                                <div class="flex items-start gap-2 flex-grow min-w-0">
+                                    <div class="w-6 h-6 rounded bg-blue-600 text-white font-black flex items-center justify-center text-xs flex-shrink-0 mt-0.5 shadow-sm">6</div>
+                                    <div class="min-w-0">
+                                        <h5 class="text-white font-bold text-xs leading-tight truncate group-hover:text-blue-300 transition-colors">6. Inteligencia y Analítica</h5>
+                                        <p class="text-[10px] text-gray-400 mt-0.5 leading-snug">
+                                            <span class="text-[9px] text-gray-500 uppercase">Módulos:</span> <span class="text-blue-300 font-medium">BI y Reportes, Dashboards, Big Data, Minería, Modelos, IA, Planeación</span>
+                                        </p>
+                                    </div>
+                                </div>
+                                <span id="areaBadge-6" class="text-[9px] font-black uppercase px-2 py-0.5 rounded border border-transparent transition-all hidden">✓ ACTIVA</span>
+                            </div>
+
+                            <!-- Área 7 -->
+                            <div id="areaCard-7" onclick="toggleArea(7)" class="bg-gray-900/90 hover:bg-gray-800/80 border border-gray-800 hover:border-slate-500/60 rounded-xl p-2.5 transition-all duration-200 cursor-pointer flex items-center justify-between gap-2 select-none group">
+                                <div class="flex items-start gap-2 flex-grow min-w-0">
+                                    <div class="w-6 h-6 rounded bg-slate-600 text-white font-black flex items-center justify-center text-xs flex-shrink-0 mt-0.5 shadow-sm">7</div>
+                                    <div class="min-w-0">
+                                        <h5 class="text-white font-bold text-xs leading-tight truncate group-hover:text-slate-300 transition-colors">7. Gobernanza y TI</h5>
+                                        <p class="text-[10px] text-gray-400 mt-0.5 leading-snug">
+                                            <span class="text-[9px] text-gray-500 uppercase">Módulos:</span> <span class="text-slate-300 font-medium">Partners, Configuración, Process Suite, Process Mining</span>
+                                        </p>
+                                    </div>
+                                </div>
+                                <span id="areaBadge-7" class="text-[9px] font-black uppercase px-2 py-0.5 rounded border border-transparent transition-all hidden">✓ ACTIVA</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                
+                <script>
+                    let currentDiagramZoom = 1;
+                    function adjustDiagramZoom(delta) {
+                        currentDiagramZoom = Math.max(0.6, Math.min(2.5, currentDiagramZoom + delta));
+                        applyDiagramZoom();
+                    }
+                    function resetDiagramZoom() {
+                        currentDiagramZoom = 1;
+                        applyDiagramZoom();
+                    }
+                    function applyDiagramZoom() {
+                        const svg = document.querySelector("#diagramWrapper .mermaid svg, #diagramWrapper svg");
+                        if (svg) {
+                            svg.style.transform = "scale(" + currentDiagramZoom + ")";
+                            svg.style.transformOrigin = "top center";
+                        }
+                    }
+
+                    // Interacción Áreas Funcionales & Alumbrado de Nodos
+                    const selectedAreas = new Set();
+
+                    const AREAS_MAP = {
+                        1: {
+                            areaNum: "1",
+                            modules: ["crm", "ventas"],
+                            activeClass: ["bg-sky-950/70", "border-sky-400", "ring-2", "ring-sky-400/50"],
+                            badgeClass: ["bg-sky-500", "text-white", "border-sky-400"]
+                        },
+                        2: {
+                            areaNum: "2",
+                            modules: ["compras", "inventario", "wms", "logística"],
+                            activeClass: ["bg-emerald-950/70", "border-emerald-400", "ring-2", "ring-emerald-400/50"],
+                            badgeClass: ["bg-emerald-500", "text-white", "border-emerald-400"]
+                        },
+                        3: {
+                            areaNum: "3",
+                            modules: ["producción"],
+                            activeClass: ["bg-green-950/70", "border-green-400", "ring-2", "ring-green-400/50"],
+                            badgeClass: ["bg-green-500", "text-white", "border-green-400"]
+                        },
+                        4: {
+                            areaNum: "4",
+                            modules: ["cxp", "cxc", "tesorería", "contabilidad", "cobranza", "deudas", "efectivo"],
+                            activeClass: ["bg-amber-950/70", "border-amber-400", "ring-2", "ring-amber-400/50"],
+                            badgeClass: ["bg-amber-400", "text-slate-950", "border-amber-300"]
+                        },
+                        5: {
+                            areaNum: "5",
+                            modules: ["rrhh", "nómina", "expedientes", "sueldos"],
+                            activeClass: ["bg-purple-950/70", "border-purple-400", "ring-2", "ring-purple-400/50"],
+                            badgeClass: ["bg-purple-500", "text-white", "border-purple-400"]
+                        },
+                        6: {
+                            areaNum: "6",
+                            modules: ["bi y reportes", "dashboards", "nytex bi", "big data", "minería de datos", "modelos predictivos", "predictivos", "nytex ia", "planeación", "consultas", "lagos", "kpis"],
+                            activeClass: ["bg-blue-950/70", "border-blue-400", "ring-2", "ring-blue-400/50"],
+                            badgeClass: ["bg-blue-500", "text-white", "border-blue-400"]
+                        },
+                        7: {
+                            areaNum: "7",
+                            modules: ["business partners", "configuración", "process suite", "process mining", "parámetros"],
+                            activeClass: ["bg-slate-900/90", "border-slate-400", "ring-2", "ring-slate-400/50"],
+                            badgeClass: ["bg-slate-500", "text-white", "border-slate-400"]
+                        }
+                    };
+
+                    function toggleArea(areaId) {
+                        if (selectedAreas.has(areaId)) {
+                            selectedAreas.delete(areaId);
+                        } else {
+                            selectedAreas.add(areaId);
+                        }
+                        updateEcosistemaHighlight();
+                    }
+
+                    function clearAllAreas() {
+                        selectedAreas.clear();
+                        updateEcosistemaHighlight();
+                    }
+
+                    function updateEcosistemaHighlight() {
+                        const svg = document.querySelector("#diagramWrapper .mermaid svg, #diagramWrapper svg");
+                        const nodeElements = svg ? svg.querySelectorAll("g.node") : [];
+
+                        const hasFilter = selectedAreas.size > 0;
+                        let lightedNodes = 0;
+
+                        if (nodeElements.length > 0) {
+                            nodeElements.forEach(g => {
+                                const text = (g.textContent || "").toLowerCase();
+                                let matches = false;
+
+                                if (hasFilter) {
+                                    for (const areaId of selectedAreas) {
+                                        const area = AREAS_MAP[areaId];
+                                        if (text.includes("área " + area.areaNum) || area.modules.some(m => text.includes(m))) {
+                                            matches = true;
+                                            break;
+                                        }
+                                    }
+                                }
+
+                                const shape = g.querySelector("rect, polygon, circle, path");
+
+                                if (!hasFilter) {
+                                    g.style.opacity = "1";
+                                    g.style.filter = "none";
+                                    g.style.transition = "all 0.35s ease";
+                                    if (shape) {
+                                        shape.style.stroke = "";
+                                        shape.style.strokeWidth = "";
+                                    }
+                                } else if (matches) {
+                                    lightedNodes++;
+                                    g.style.opacity = "1";
+                                    g.style.filter = "drop-shadow(0 0 12px #F59E0B) drop-shadow(0 0 24px #FBBF24)";
+                                    g.style.transition = "all 0.35s ease";
+                                    if (shape) {
+                                        shape.style.stroke = "#FBBF24";
+                                        shape.style.strokeWidth = "4.5px";
+                                    }
+                                } else {
+                                    g.style.opacity = "0.18";
+                                    g.style.filter = "grayscale(85%)";
+                                    g.style.transition = "all 0.35s ease";
+                                    if (shape) {
+                                        shape.style.stroke = "";
+                                        shape.style.strokeWidth = "";
+                                    }
+                                }
+                            });
+                        }
+
+                        // Actualizar tarjetas y badges de áreas
+                        for (let i = 1; i <= 7; i++) {
+                            const card = document.getElementById("areaCard-" + i);
+                            const badge = document.getElementById("areaBadge-" + i);
+                            const area = AREAS_MAP[i];
+                            if (!card || !badge) continue;
+
+                            if (selectedAreas.has(i)) {
+                                card.classList.remove("bg-gray-900/90", "border-gray-800");
+                                card.classList.add(...area.activeClass);
+                                badge.className = "text-[9px] font-black uppercase px-2 py-0.5 rounded shadow-sm border " + area.badgeClass.join(" ");
+                                badge.textContent = "✓ ACTIVA";
+                                badge.classList.remove("hidden");
+                            } else {
+                                card.classList.remove(...area.activeClass);
+                                card.classList.add("bg-gray-900/90", "border-gray-800");
+                                badge.classList.add("hidden");
+                            }
+                        }
+
+                        // Botón Limpiar
+                        const btnClear = document.getElementById("btnClearAreas");
+                        const countSpan = document.getElementById("countSelectedAreas");
+                        if (btnClear && countSpan) {
+                            if (hasFilter) {
+                                countSpan.textContent = selectedAreas.size;
+                                btnClear.classList.remove("hidden");
+                            } else {
+                                btnClear.classList.add("hidden");
+                            }
+                        }
+
+                        // Banner de notificación
+                        const notif = document.getElementById("ecosystemNotification");
+                        const notifText = document.getElementById("ecosystemNotificationText");
+                        if (notif && notifText) {
+                            if (hasFilter) {
+                                notif.classList.remove("hidden");
+                                notifText.textContent = "✨ Alumbrando en dorado " + lightedNodes + " aplicaciones (" + selectedAreas.size + " área" + (selectedAreas.size > 1 ? "s" : "") + " seleccionada" + (selectedAreas.size > 1 ? "s" : "") + ")";
+                            } else {
+                                notif.classList.add("hidden");
+                            }
+                        }
+                    }
+                </script>
+
+
+            </div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- ERP -->
+                <div class="bg-gray-50 border border-gray-200 p-8 rounded-2xl hover:border-brand transition-colors group">
+                    <h3 class="text-3xl font-black text-brand mb-2">ERP</h3>
+                    <p class="text-lg font-bold text-gray-900 mb-4">Controle su empresa.</p>
+                    <p class="text-sm text-gray-600 mb-6 h-16">Finanzas · Compras · Ventas · Inventarios · CxC · CxP · Tesorería · Contabilidad</p>
+                    <a href="#contacto" class="text-brand font-bold group-hover:text-brand-accent transition-colors">CONOCER ERP <i class="fas fa-arrow-right ml-1"></i></a>
+                </div>
+                <!-- CRM -->
+                <div class="bg-gray-50 border border-gray-200 p-8 rounded-2xl hover:border-brand transition-colors group">
+                    <h3 class="text-3xl font-black text-brand mb-2">CRM</h3>
+                    <p class="text-lg font-bold text-gray-900 mb-4">Convierta oportunidades en clientes.</p>
+                    <p class="text-sm text-gray-600 mb-6 h-16">Prospectos · Ventas · Cotizaciones · WhatsApp · Seguimiento · Servicio · Fidelización</p>
+                    <a href="/crm/" class="text-brand font-bold group-hover:text-brand-accent transition-colors">CONOCER CRM <i class="fas fa-arrow-right ml-1"></i></a>
+                </div>
+                <!-- BPM -->
+                <div class="bg-gray-50 border border-gray-200 p-8 rounded-2xl hover:border-brand transition-colors group">
+                    <h3 class="text-3xl font-black text-brand mb-2">BPM</h3>
+                    <p class="text-lg font-bold text-gray-900 mb-4">Convierta procesos en flujos.</p>
+                    <p class="text-sm text-gray-600 mb-6 h-16">Workflows · Aprobaciones · Responsables · SLA · Alertas · Auditoría · Automatización</p>
+                    <a href="#contacto" class="text-brand font-bold group-hover:text-brand-accent transition-colors">CONOCER BPM <i class="fas fa-arrow-right ml-1"></i></a>
+                </div>
+                <!-- BI -->
+                <div class="bg-gray-50 border border-gray-200 p-8 rounded-2xl hover:border-brand transition-colors group">
+                    <h3 class="text-3xl font-black text-brand mb-2">BI</h3>
+                    <p class="text-lg font-bold text-gray-900 mb-4">Convierta datos en decisiones.</p>
+                    <p class="text-sm text-gray-600 mb-6 h-16">KPIs · Dashboards · Rentabilidad · Tendencias · Alertas · Drill-down · Predicción</p>
+                    <a href="#contacto" class="text-brand font-bold group-hover:text-brand-accent transition-colors">CONOCER BI <i class="fas fa-arrow-right ml-1"></i></a>
+                </div>
+                <!-- IA -->
+                <div class="bg-gray-50 border border-gray-200 p-8 rounded-2xl hover:border-brand transition-colors group">
+                    <h3 class="text-3xl font-black text-brand mb-2">IA</h3>
+                    <p class="text-lg font-bold text-gray-900 mb-4">Convierta información en anticipación.</p>
+                    <p class="text-sm text-gray-600 mb-6 h-16">Predicción de demanda · Agentes IA · Recomendaciones · Automatización · Simulación</p>
+                    <a href="#contacto" class="text-brand font-bold group-hover:text-brand-accent transition-colors">CONOCER IA <i class="fas fa-arrow-right ml-1"></i></a>
+                </div>
+                <!-- MINERÍA DE DATOS -->
+                <div class="bg-gray-50 border border-gray-200 p-8 rounded-2xl hover:border-brand transition-colors group">
+                    <h3 class="text-3xl font-black text-brand mb-2">Minería de Datos</h3>
+                    <p class="text-lg font-bold text-gray-900 mb-4">Convierta datos ocultos en ventajas competitivas.</p>
+                    <p class="text-sm text-gray-600 mb-6 h-16">Descubrimiento de Patrones · Segmentación Avanzada · Detección de Anomalías · Clustering · Análisis de Comportamiento</p>
+                    <a href="#contacto" class="text-brand font-bold group-hover:text-brand-accent transition-colors">CONOCER MINERÍA <i class="fas fa-arrow-right ml-1"></i></a>
+                </div>
+            </div>
+
+            <div class="mt-16 text-center">
+                <p class="text-2xl md:text-3xl font-black text-gray-900 tracking-tight">
+                    ERP registra. CRM conecta. BPM automatiza. BI explica. Minería descubre. <span class="text-brand">IA anticipa.</span>
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 14. ANTES VS DESPUÉS -->
+    <section class="py-24 bg-brand text-white relative">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-extrabold mb-4">¿QUÉ CAMBIA CON NyT?</h2>
+                <div class="w-24 h-1 bg-brand-accent mx-auto"></div>
+            </div>
+            
+            <div class="bg-brand-dark rounded-2xl overflow-hidden shadow-2xl border border-white/10">
+                <div class="grid grid-cols-2 text-center border-b border-white/10">
+                    <div class="p-6 bg-white/5 font-bold text-xl text-gray-400">Empresa Tradicional</div>
+                    <div class="p-6 bg-brand-accent/10 font-bold text-xl text-brand-accent">Empresa Inteligente</div>
+                </div>
+                
+                <!-- Filas de comparación -->
+                <div class="grid grid-cols-2 text-center border-b border-white/5 hover:bg-white/5 transition-colors">
+                    <div class="p-4 text-gray-400">Excel dispersos</div>
+                    <div class="p-4 font-semibold text-white">Información integrada</div>
+                </div>
+                <div class="grid grid-cols-2 text-center border-b border-white/5 hover:bg-white/5 transition-colors">
+                    <div class="p-4 text-gray-400">Procesos manuales</div>
+                    <div class="p-4 font-semibold text-white">Procesos automatizados</div>
+                </div>
+                <div class="grid grid-cols-2 text-center border-b border-white/5 hover:bg-white/5 transition-colors">
+                    <div class="p-4 text-gray-400">Datos duplicados</div>
+                    <div class="p-4 font-semibold text-white">Una sola fuente de verdad</div>
+                </div>
+                <div class="grid grid-cols-2 text-center border-b border-white/5 hover:bg-white/5 transition-colors">
+                    <div class="p-4 text-gray-400">Gerencia reactiva</div>
+                    <div class="p-4 font-semibold text-white">Dirección estratégica</div>
+                </div>
+                <div class="grid grid-cols-2 text-center border-b border-white/5 hover:bg-white/5 transition-colors">
+                    <div class="p-4 text-gray-400">Reportes históricos</div>
+                    <div class="p-4 font-semibold text-white">Información en tiempo real</div>
+                </div>
+                <div class="grid grid-cols-2 text-center border-b border-white/5 hover:bg-white/5 transition-colors">
+                    <div class="p-4 text-gray-400">Decisiones intuitivas</div>
+                    <div class="p-4 font-semibold text-white">Decisiones basadas en datos</div>
+                </div>
+                <div class="grid grid-cols-2 text-center border-b border-white/5 hover:bg-white/5 transition-colors">
+                    <div class="p-4 text-gray-400">Sistemas aislados</div>
+                    <div class="p-4 font-semibold text-white">Ecosistema integrado</div>
+                </div>
+                <div class="grid grid-cols-2 text-center hover:bg-white/5 transition-colors">
+                    <div class="p-4 text-gray-400">Reacción al futuro</div>
+                    <div class="p-4 font-semibold text-white">Predicción mediante IA</div>
+                </div>
+            </div>
+        </div>
+    
