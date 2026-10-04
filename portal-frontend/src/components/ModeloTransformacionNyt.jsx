@@ -3,7 +3,7 @@ import React from 'react';
 const levelsData = [
   {
     level: 1,
-    tag: 'NIVEL 1',
+    tag: 'Fase 1: NyTEX Starter',
     category: 'Eficiencia Operacional',
     title: 'CONTROL TRANSACCIONAL',
     subtitle: 'Ordenar y estabilizar la operación diaria.',
@@ -12,14 +12,12 @@ const levelsData = [
     objective: 'REGISTRAR — ORDENAR — ESTANDARIZAR — CONTROLAR',
     tech: 'ERP Core · Compras · Inventarios · Facturación/CxC · CxP · Tesorería · Contabilidad',
     techColor: 'text-[#2A114B]',
-    result: 'Una empresa con control estricto de sus recursos, inventarios exactos y cero fugas.',
     borderTop: 'border-t-8 border-[#2A114B]',
     tagBg: 'bg-purple-50 text-[#2A114B] border-purple-200',
-    resultBox: 'bg-purple-50/70 border-purple-100',
   },
   {
     level: 2,
-    tag: 'NIVEL 2',
+    tag: 'Fase 2: NyTEX Express',
     category: 'Eficiencia Operacional',
     title: 'PRODUCTIVIDAD Y FLUJO',
     subtitle: 'Hacer más rápido y eficiente lo que hoy hacemos.',
@@ -28,14 +26,12 @@ const levelsData = [
     objective: 'INTEGRAR — SINCRONIZAR — MEDIR — AUTOMATIZAR',
     tech: 'CRM · WMS (Bodegas) · BPM (Workflows) · Logística / Rutas · Dashboards Operativos',
     techColor: 'text-[#2A114B]',
-    result: 'Operación ágil, tiempos de respuesta mínimos y seguimiento comercial sistemático.',
     borderTop: 'border-t-8 border-[#2A114B]',
     tagBg: 'bg-purple-50 text-[#2A114B] border-purple-200',
-    resultBox: 'bg-purple-50/70 border-purple-100',
   },
   {
     level: 3,
-    tag: 'NIVEL 3',
+    tag: 'Fase 3: NyTEX Advanced',
     category: 'Dirección Estratégica',
     title: 'INTELIGENCIA Y RENTABILIDAD',
     subtitle: 'Decidir con datos exactos y rentabilizar cada área.',
@@ -44,14 +40,12 @@ const levelsData = [
     objective: 'CENTRALIZAR — ANALIZAR — DIAGNOSTICAR — RENTABILIZAR',
     tech: 'Business Intelligence (BI) · Data Warehouse · Dashboards Ejecutivos · Planeación & MRP',
     techColor: 'text-slate-900',
-    result: 'Visibilidad ejecutiva 360° en tiempo real y decisiones estratégicas 100% basadas en datos.',
     borderTop: 'border-t-8 border-amber-400',
     tagBg: 'bg-amber-50 text-amber-800 border-amber-200',
-    resultBox: 'bg-amber-50/70 border-amber-200',
   },
   {
     level: 4,
-    tag: 'NIVEL 4',
+    tag: 'Fase 4: NyTEX Enterprise',
     category: 'Dirección Estratégica',
     title: 'ANTICIPACIÓN Y ESCALA',
     subtitle: 'Anticipar el futuro, innovar y liderar el mercado.',
@@ -60,10 +54,8 @@ const levelsData = [
     objective: 'ANTICIPAR — SIMULAR — INNOVAR — ESCALAR — TRANSFORMAR',
     tech: 'IA Predictiva · Big Data · Minería de Procesos · Modelos Predictivos · Agentes Autónomos',
     techColor: 'text-slate-900',
-    result: 'Una empresa inteligente, autónoma y predictiva capaz de anticipar y liderar su industria.',
     borderTop: 'border-t-8 border-amber-400',
     tagBg: 'bg-amber-50 text-amber-800 border-amber-200',
-    resultBox: 'bg-amber-50/70 border-amber-200',
   },
 ];
 
@@ -152,29 +144,22 @@ export default function ModeloTransformacionNyt({ activePhase, onSelectPhase }) 
                 </div>
               </div>
 
-              <div>
-                <div className={`${lvl.resultBox} p-3.5 rounded-2xl border mb-3`}>
-                  <strong className="text-xs font-bold text-gray-900 block mb-1">
-                    Resultado:
-                  </strong>
-                  <p className="text-xs text-gray-700 leading-snug">
-                    {lvl.result}
-                  </p>
-                </div>
-
+              <div className="mt-4">
                 <button
                   type="button"
                   onClick={(e) => {
                     e.stopPropagation();
                     onSelectPhase && onSelectPhase(lvl.level);
                   }}
-                  className={`w-full py-1.5 px-3 rounded-lg text-xs font-bold transition-all border ${
+                  className={`w-full py-2.5 px-4 rounded-xl text-xs md:text-sm font-bold transition-all border shadow-md flex items-center justify-center gap-1.5 cursor-pointer ${
                     isActive
-                      ? 'bg-amber-400 text-slate-950 border-amber-300 shadow font-black'
-                      : 'bg-gray-50 hover:bg-gray-100 text-gray-700 border-gray-200'
+                      ? 'bg-amber-400 text-slate-950 border-amber-300 font-black shadow-lg scale-[1.02]'
+                      : lvl.level <= 2
+                        ? 'border-[#2A114B] bg-[#2A114B] text-white hover:bg-purple-900'
+                        : 'border-amber-400 bg-gradient-to-r from-amber-400 to-yellow-400 text-slate-950 hover:from-amber-500 hover:to-yellow-500 font-black'
                   }`}
                 >
-                  {isActive ? '✨ Alumbrando en diagrama' : 'Ver en diagrama ↓'}
+                  {isActive ? '✨ Aplicaciones activas ↓' : 'Ver aplicaciones ↓'}
                 </button>
               </div>
             </div>
