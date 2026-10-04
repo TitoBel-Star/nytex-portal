@@ -151,7 +151,7 @@ export default function ModeloTransformacionNyt({ activePhase, onSelectPhase }) 
                     e.stopPropagation();
                     onSelectPhase && onSelectPhase(lvl.level);
                   }}
-                  className={`w-full py-2.5 px-4 rounded-xl text-xs md:text-sm font-bold transition-all border shadow-md flex items-center justify-center gap-1.5 cursor-pointer ${
+                  className={`w-full py-2.5 px-3 rounded-xl text-xs md:text-sm font-bold transition-all border shadow-md flex items-center justify-center gap-1.5 cursor-pointer ${
                     isActive
                       ? 'bg-amber-400 text-slate-950 border-amber-300 font-black shadow-lg scale-[1.02]'
                       : lvl.level <= 2
@@ -159,7 +159,7 @@ export default function ModeloTransformacionNyt({ activePhase, onSelectPhase }) 
                         : 'border-amber-400 bg-gradient-to-r from-amber-400 to-yellow-400 text-slate-950 hover:from-amber-500 hover:to-yellow-500 font-black'
                   }`}
                 >
-                  {isActive ? '✨ Aplicaciones activas ↓' : 'Ver aplicaciones ↓'}
+                  {isActive ? '✨ Aplicaciones activas ↓' : 'Ver aplicaciones del ecosistema ↓'}
                 </button>
               </div>
             </div>
