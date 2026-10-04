@@ -144,23 +144,26 @@ export default function ModeloTransformacionNyt({ activePhase, onSelectPhase }) 
                 </div>
               </div>
 
-              <div className="mt-4">
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onSelectPhase && onSelectPhase(lvl.level);
-                  }}
-                  className={`w-full py-2.5 px-3 rounded-xl text-xs md:text-sm font-bold transition-all border shadow-md flex items-center justify-center gap-1.5 cursor-pointer ${
-                    isActive
-                      ? 'bg-amber-400 text-slate-950 border-amber-300 font-black shadow-lg scale-[1.02]'
-                      : lvl.level <= 2
-                        ? 'border-[#2A114B] bg-[#2A114B] text-white hover:bg-purple-900'
-                        : 'border-amber-400 bg-gradient-to-r from-amber-400 to-yellow-400 text-slate-950 hover:from-amber-500 hover:to-yellow-500 font-black'
-                  }`}
-                >
-                  {isActive ? '✨ Aplicaciones activas ↓' : 'Ver aplicaciones del ecosistema ↓'}
-                </button>
+              <div className="mt-4 pt-3 border-t border-gray-100 text-center">
+                <div className="text-xs text-gray-600 leading-relaxed flex flex-wrap items-center justify-center gap-1.5">
+                  <span>Para ver las aplicaciones del ecosistema, haz clic aquí ↓</span>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onSelectPhase && onSelectPhase(lvl.level);
+                    }}
+                    className={`py-1 px-3 rounded-lg text-xs font-bold transition-all border shadow-sm cursor-pointer ${
+                      isActive
+                        ? 'bg-amber-400 text-slate-950 border-amber-300 font-black shadow-lg scale-[1.02]'
+                        : lvl.level <= 2
+                          ? 'border-[#2A114B] bg-[#2A114B] text-white hover:bg-purple-900'
+                          : 'border-amber-400 bg-gradient-to-r from-amber-400 to-yellow-400 text-slate-950 hover:from-amber-500 hover:to-yellow-500 font-black'
+                    }`}
+                  >
+                    {isActive ? '✨ Activas' : 'Ver aplicaciones'}
+                  </button>
+                </div>
               </div>
             </div>
           );
