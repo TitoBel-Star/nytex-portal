@@ -19,6 +19,7 @@ import Nomina from '../modules/Nomina';
 import SynexProcessSuiteView from './SynexProcessSuiteView';
 import ProcessMiningView from './ProcessMiningView';
 import WmsView from './WmsView';
+import RopView from './RopView';
 import BIyReportes from '../modules/BIyReportes';
 import DashboardsView from './DashboardsView';
 import BiCubeView from './BiCubeView';
@@ -56,7 +57,7 @@ const PHASES_CONFIG = {
   2: {
     id: 2,
     name: 'Fase 2: NyTEX Express',
-    badge: 'Express (15 Módulos)',
+    badge: 'Express (17 Módulos)',
     price: '$149 USD/mes',
     imp: '$1,500 USD',
     color: 'amber',
@@ -65,6 +66,7 @@ const PHASES_CONFIG = {
       { id: 'crm', name: '[2] CRM', label: 'CRM', icon: '👥' },
       { id: 'inventario', name: '[3] Inventario', label: 'Inventario', icon: '📦' },
       { id: 'compras', name: '[4] Compras', label: 'Compras', icon: '🛒' },
+      { id: 'rop', name: '[4.1] ROP Inteligente', label: 'ROP Inteligente', icon: '📊' },
       { id: 'produccion', name: '[5] Producción', label: 'Producción', icon: '🏭' },
       { id: 'logistica', name: '[7] Logística', label: 'Logística', icon: '🚚' },
       { id: 'cxc', name: '[8] CxC', label: 'CxC', icon: '📄' },
@@ -74,6 +76,7 @@ const PHASES_CONFIG = {
       { id: 'rrhh', name: '[13] RRHH', label: 'RRHH', icon: '🧑‍💼' },
       { id: 'nomina', name: '[14] Nómina', label: 'Nómina', icon: '💵' },
       { id: 'processsuite', name: '[15] Process Suite', label: 'BPMN', icon: '🔄' },
+      { id: 'processmining', name: '[16] Process Mining', label: 'Process Mining', icon: '🕸️' },
       { id: 'wms', name: '[17] WMS', label: 'WMS', icon: '🏷️' },
       { id: 'dashboards', name: '[19] Dashboards', label: 'Dashboards', icon: '📈' }
     ]
@@ -81,7 +84,7 @@ const PHASES_CONFIG = {
   3: {
     id: 3,
     name: 'Fase 3: NyTEX Advanced',
-    badge: 'Advanced (20 Módulos)',
+    badge: 'Advanced (22 Módulos)',
     price: '$299 USD/mes',
     imp: '$4,500 USD',
     color: 'cyan',
@@ -90,6 +93,7 @@ const PHASES_CONFIG = {
       { id: 'crm', name: '[2] CRM', label: 'CRM', icon: '👥' },
       { id: 'inventario', name: '[3] Inventario', label: 'Inventario', icon: '📦' },
       { id: 'compras', name: '[4] Compras', label: 'Compras', icon: '🛒' },
+      { id: 'rop', name: '[4.1] ROP Inteligente', label: 'ROP Inteligente', icon: '📊' },
       { id: 'produccion', name: '[5] Producción', label: 'Producción', icon: '🏭' },
       { id: 'logistica', name: '[7] Logística', label: 'Logística', icon: '🚚' },
       { id: 'cxc', name: '[8] CxC', label: 'CxC', icon: '📄' },
@@ -100,6 +104,7 @@ const PHASES_CONFIG = {
       { id: 'rrhh', name: '[13] RRHH', label: 'RRHH', icon: '🧑‍💼' },
       { id: 'nomina', name: '[14] Nómina', label: 'Nómina', icon: '💵' },
       { id: 'processsuite', name: '[15] Process Suite', label: 'BPMN', icon: '🔄' },
+      { id: 'processmining', name: '[16] Process Mining', label: 'Process Mining', icon: '🕸️' },
       { id: 'wms', name: '[17] WMS', label: 'WMS', icon: '🏷️' },
       { id: 'biyreportes', name: '[18] BI y Reportes', label: 'Reportes NIF', icon: '📑' },
       { id: 'dashboards', name: '[19] Dashboards', label: 'Dashboards', icon: '📈' },
@@ -111,7 +116,7 @@ const PHASES_CONFIG = {
   4: {
     id: 4,
     name: 'Fase 4: NyTEX Enterprise',
-    badge: 'Enterprise (26 Módulos)',
+    badge: 'Enterprise (27 Módulos)',
     price: '$499 USD/mes',
     imp: 'A Medida',
     color: 'purple',
@@ -120,6 +125,7 @@ const PHASES_CONFIG = {
       { id: 'crm', name: '[2] CRM', label: 'CRM', icon: '👥' },
       { id: 'inventario', name: '[3] Inventario', label: 'Inventario', icon: '📦' },
       { id: 'compras', name: '[4] Compras', label: 'Compras', icon: '🛒' },
+      { id: 'rop', name: '[4.1] ROP Inteligente', label: 'ROP Inteligente', icon: '📊' },
       { id: 'produccion', name: '[5] Producción', label: 'Producción', icon: '🏭' },
       { id: 'businesspartners', name: '[6] Partners', label: 'Partners', icon: '🤝' },
       { id: 'logistica', name: '[7] Logística', label: 'Logística', icon: '🚚' },
@@ -193,6 +199,7 @@ export default function PhaseWorkspaceView() {
       case 'crm': return <CrmDashboardView />;
       case 'inventario': return <InventoryView />;
       case 'compras': return <Compras />;
+      case 'rop': return <RopView />;
       case 'produccion': return <Produccion />;
       case 'businesspartners': return <BusinessPartnersView />;
       case 'logistica': return <Logistica />;

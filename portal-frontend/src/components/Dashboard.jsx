@@ -4,12 +4,15 @@ import { useAuth } from '../context/AuthContext';
 import PaymentSimulatorModal from './PaymentSimulatorModal';
 import NytexEcosistemaDiagram, { AREAS_CONFIG } from './NytexEcosistemaDiagram';
 import ModeloTransformacionNyt from './ModeloTransformacionNyt';
+import NytexVideoCard from './NytexVideoCard';
+import ComoTrabajamosConUsted from './ComoTrabajamosConUsted';
 
 const modulesList = [
   { id: 'Ventas', name: 'NyTEX Ventas', description: 'Gestión de ventas y facturación.' },
   { id: 'CRM', name: 'NyTEX CRM', description: 'Gestión de relaciones con los clientes.' },
   { id: 'Inventario', name: 'NyTEX Inventario', description: 'Control de stock y almacén.' },
   { id: 'Compras', name: 'NyTEX Compras', description: 'Gestión de proveedores y compras.' },
+  { id: 'Rop', name: 'NyTEX Reabastecimiento ROP Inteligente', description: 'Cálculo dinámico de punto de reorden (ROP), stock de seguridad y control de pedidos.' },
   { id: 'Produccion', name: 'NyTEX Producción', description: 'Control de procesos de manufactura.' },
   { id: 'Contabilidad', name: 'NyTEX Contabilidad', description: 'Gestión contable financiera.' },
   { id: 'CxC', name: 'NyTEX Cuentas por Cobrar (CxC)', description: 'Gestión de cuentas por cobrar.' },
@@ -47,9 +50,9 @@ const phases = [
     id: 2,
     name: 'Fase 2: NyTEX Express',
     subtitle: 'Productividad y Flujo',
-    moduleCount: '15 MÓDULOS:',
-    modulesText: 'Incluye Fase 1 + CRM, WMS, Logística, Producción, RRHH, Nómina, Dashboards, Process Suite',
-    modulesArray: ['Ventas', 'Inventario', 'Compras', 'Contabilidad', 'CxC', 'CxP', 'Tesoreria', 'CRM', 'WMS', 'Logistica', 'Produccion', 'RRHH', 'Nomina', 'Dashboards', 'ProcessSuite'],
+    moduleCount: '17 MÓDULOS:',
+    modulesText: 'Incluye Fase 1 + CRM, ROP Inteligente, WMS, Logística, Producción, RRHH, Nómina, Dashboards, Process Suite, Process Mining',
+    modulesArray: ['Ventas', 'Inventario', 'Compras', 'Contabilidad', 'CxC', 'CxP', 'Tesoreria', 'CRM', 'Rop', 'WMS', 'Logistica', 'Produccion', 'RRHH', 'Nomina', 'Dashboards', 'ProcessSuite', 'ProcessMining'],
     imp: '$1,500 USD',
     lic: '$149 USD / mes'
   },
@@ -57,9 +60,9 @@ const phases = [
     id: 3,
     name: 'Fase 3: NyTEX Advanced',
     subtitle: 'Inteligencia y Rentabilidad',
-    moduleCount: '18 MÓDULOS:',
+    moduleCount: '20 MÓDULOS:',
     modulesText: 'Incluye Fase 2 + BI y Reportes, Big Data, Planeación',
-    modulesArray: ['Ventas', 'Inventario', 'Compras', 'Contabilidad', 'CxC', 'CxP', 'Tesoreria', 'CRM', 'WMS', 'Logistica', 'Produccion', 'RRHH', 'Nomina', 'Dashboards', 'ProcessSuite', 'BIyReportes', 'BigData', 'Planeacion'],
+    modulesArray: ['Ventas', 'Inventario', 'Compras', 'Contabilidad', 'CxC', 'CxP', 'Tesoreria', 'CRM', 'Rop', 'WMS', 'Logistica', 'Produccion', 'RRHH', 'Nomina', 'Dashboards', 'ProcessSuite', 'ProcessMining', 'BIyReportes', 'BigData', 'Planeacion'],
     imp: '$4,500 USD',
     lic: '$299 USD / mes'
   },
@@ -67,8 +70,8 @@ const phases = [
     id: 4,
     name: 'Fase 4: NyTEX Enterprise',
     subtitle: 'Anticipación y Escala',
-    moduleCount: '24 MÓDULOS:',
-    modulesText: 'Todo el Ecosistema: Fase 3 + IA, Modelos Predictivos, Minería de Datos, Process Mining, Business Partners, Configuración',
+    moduleCount: '25 MÓDULOS:',
+    modulesText: 'Todo el Ecosistema: Fase 3 + IA, Modelos Predictivos, Minería de Datos, Business Partners, Configuración',
     modulesArray: modulesList.map(m => m.id),
     imp: 'Cotización a Medida',
     lic: '$499 USD / mes'
@@ -259,31 +262,35 @@ export default function Dashboard() {
               <span>Fase 1: Starter (7 Módulos)</span> ➔
             </Link>
             <Link to="/app/workspace?phase=2" className="bg-white/10 hover:bg-white/25 text-amber-200 px-3 py-1.5 rounded-lg font-bold transition-colors border border-amber-400/30 flex items-center gap-1.5">
-              <span>Fase 2: Express (15 Módulos)</span> ➔
+              <span>Fase 2: Express (17 Módulos)</span> ➔
             </Link>
             <Link to="/app/workspace?phase=3" className="bg-white/10 hover:bg-white/25 text-cyan-200 px-3 py-1.5 rounded-lg font-bold transition-colors border border-cyan-400/30 flex items-center gap-1.5">
-              <span>Fase 3: Advanced (18 Módulos)</span> ➔
+              <span>Fase 3: Advanced (20 Módulos)</span> ➔
             </Link>
             <Link to="/app/workspace?phase=4" className="bg-white/10 hover:bg-white/25 text-purple-200 px-3 py-1.5 rounded-lg font-bold transition-colors border border-purple-400/30 flex items-center gap-1.5">
-              <span>Fase 4: Enterprise (24 Módulos)</span> ➔
+              <span>Fase 4: Enterprise (25 Módulos)</span> ➔
             </Link>
           </div>
         </div>
 
         {/* Barra de Circuitos Operativos Integrados Alineados a las 4 Fases Comerciales */}
         <div className="mb-10 bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-2 mb-4 pb-3 border-b border-gray-100">
+          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-6 pb-4 border-b border-gray-100">
             <div>
               <span className="text-[10px] font-black tracking-widest text-[#006EAD] uppercase bg-blue-50 px-2 py-0.5 rounded-full">
                 Demostradores en Tiempo Real Alineados a los Paquetes Comerciales
               </span>
-              <h2 className="text-xl font-black text-[#0A2540] mt-1">
+              <h2 className="text-xl sm:text-2xl font-black text-[#0A2540] mt-1">
                 Circuitos Operativos Integrados por Fase de Contratación
               </h2>
+              <p className="text-xs text-gray-500 max-w-xl mt-1">
+                Compruebe en vivo exactamente qué obtiene su empresa en cada una de las 4 Fases Comerciales con datos reales interconectados.
+              </p>
             </div>
-            <p className="text-xs text-gray-500 max-w-md">
-              Compruebe en vivo exactamente qué obtiene su empresa en cada una de las 4 Fases Comerciales con datos reales interconectados.
-            </p>
+            {/* Tarjeta NyTEX ERP: Ver recorrido en 3 minutos */}
+            <div className="shrink-0 w-full sm:w-auto">
+              <NytexVideoCard className="!p-4 !px-8 !rounded-2xl" />
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -349,9 +356,9 @@ export default function Dashboard() {
               </div>
 
               <div className="mt-4 pt-3 border-t border-amber-100">
-                <span className="text-[10px] font-bold text-slate-500 block mb-1.5">15 Módulos (Starter + 8):</span>
+                <span className="text-[10px] font-bold text-slate-500 block mb-1.5">17 Módulos (Starter + 10):</span>
                 <div className="flex flex-wrap gap-1 mb-3">
-                  {['CRM', 'WMS', 'Logistica', 'Produccion', 'RRHH', 'Nomina', 'Dashboards', 'ProcessSuite'].map(m => (
+                  {['CRM', 'ROP Inteligente', 'WMS', 'Logistica', 'Produccion', 'RRHH', 'Nomina', 'Dashboards', 'ProcessSuite', 'ProcessMining'].map(m => (
                     <span key={m} className="text-[9px] font-bold bg-white text-amber-900 border border-amber-200 px-1.5 py-0.5 rounded">
                       +{m}
                     </span>
@@ -362,7 +369,7 @@ export default function Dashboard() {
                     to="/app/workspace?phase=2"
                     className="w-full text-center py-2 px-3 rounded-lg text-xs font-black bg-amber-600 hover:bg-amber-700 text-white shadow transition-all flex items-center justify-center gap-1.5"
                   >
-                    <span>🚀</span> Abrir Workspace (15 Módulos)
+                    <span>🚀</span> Abrir Workspace (17 Módulos)
                   </Link>
                   <Link 
                     to="/app/circuito-fase2"
@@ -392,7 +399,7 @@ export default function Dashboard() {
               </div>
 
               <div className="mt-4 pt-3 border-t border-cyan-100">
-                <span className="text-[10px] font-bold text-slate-500 block mb-1.5">18 Módulos (Express + 3):</span>
+                <span className="text-[10px] font-bold text-slate-500 block mb-1.5">20 Módulos (Express + 3):</span>
                 <div className="flex flex-wrap gap-1 mb-3">
                   {['BI Reportes', 'BigData IoT', 'Planeacion'].map(m => (
                     <span key={m} className="text-[9px] font-bold bg-white text-cyan-900 border border-cyan-200 px-1.5 py-0.5 rounded">
@@ -405,7 +412,7 @@ export default function Dashboard() {
                     to="/app/workspace?phase=3"
                     className="w-full text-center py-2 px-3 rounded-lg text-xs font-black bg-cyan-600 hover:bg-cyan-700 text-white shadow transition-all flex items-center justify-center gap-1.5"
                   >
-                    <span>🚀</span> Abrir Workspace (18 Módulos)
+                    <span>🚀</span> Abrir Workspace (20 Módulos)
                   </Link>
                   <Link 
                     to="/app/circuito-fase3"
@@ -424,7 +431,7 @@ export default function Dashboard() {
                   <span className="text-[10px] font-black text-purple-900 bg-purple-100 px-2 py-0.5 rounded-full uppercase">
                     Fase 4 • $499 USD/mes
                   </span>
-                  <span className="text-[10px] text-emerald-700 font-extrabold">⭐ 24 Módulos 100%</span>
+                  <span className="text-[10px] text-emerald-700 font-extrabold">⭐ 25 Módulos 100%</span>
                 </div>
                 <h4 className="font-extrabold text-base text-gray-900">
                   Circuito Enterprise: IA Autónoma 360°
@@ -435,9 +442,9 @@ export default function Dashboard() {
               </div>
 
               <div className="mt-4 pt-3 border-t border-purple-100">
-                <span className="text-[10px] font-bold text-slate-500 block mb-1.5">Los 24 Módulos Completos:</span>
+                <span className="text-[10px] font-bold text-slate-500 block mb-1.5">Los 25 Módulos Completos:</span>
                 <div className="flex flex-wrap gap-1 mb-3">
-                  {['IA Copilot', 'Predictivos', 'MineriaDatos', 'ProcessMining', 'Partners', 'Configuracion'].map(m => (
+                  {['IA Copilot', 'Predictivos', 'MineriaDatos', 'Partners', 'Configuracion'].map(m => (
                     <span key={m} className="text-[9px] font-bold bg-white text-purple-900 border border-purple-200 px-1.5 py-0.5 rounded">
                       +{m}
                     </span>
@@ -448,7 +455,7 @@ export default function Dashboard() {
                     to="/app/workspace?phase=4"
                     className="w-full text-center py-2 px-3 rounded-lg text-xs font-black bg-purple-700 hover:bg-purple-800 text-white shadow transition-all flex items-center justify-center gap-1.5"
                   >
-                    <span>🚀</span> Abrir Workspace (24 Módulos)
+                    <span>🚀</span> Abrir Workspace (25 Módulos)
                   </Link>
                   <Link 
                     to="/app/circuito-fase4"
@@ -621,10 +628,10 @@ export default function Dashboard() {
           activePhase={activePhase}
         />
 
-        {/* Sección: Grid de 24 Módulos */}
+        {/* Sección: Grid de 25 Módulos */}
         <div className="mb-8 text-center">
           <h3 className="text-2xl font-extrabold text-[var(--nytex-navy)]">
-            Módulos y Aplicaciones del Sistema (24 Módulos)
+            Módulos y Aplicaciones del Sistema (25 Módulos)
           </h3>
           <p className="text-sm text-gray-500 mt-2">
             {hasActivePhase ? (
@@ -691,6 +698,9 @@ export default function Dashboard() {
             );
           })}
         </div>
+        
+        {/* Sección: Cómo trabajamos con usted, Tecnología NyTEX + Consultores NyT y FAQ */}
+        <ComoTrabajamosConUsted />
         
         <PaymentSimulatorModal 
           isOpen={isModalOpen} 

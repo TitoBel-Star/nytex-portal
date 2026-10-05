@@ -191,15 +191,16 @@ export default function CircuitoFase3View() {
           </div>
         </div>
 
-        {/* Directorio de los 20 Módulos */}
+        {/* Directorio de los Módulos de Fase 3 */}
         <div>
-          <h3 className="font-extrabold text-white text-lg mb-3">Los 20 Módulos de la Fase 3 Advanced</h3>
+          <h3 className="font-extrabold text-white text-lg mb-3">Módulos de la Fase 3 Advanced</h3>
           <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-3">
             {[
               { id: 'ventas', name: '[1] Ventas' },
               { id: 'crm', name: '[2] CRM' },
               { id: 'inventario', name: '[3] Inventario' },
               { id: 'compras', name: '[4] Compras' },
+              { id: 'rop', name: '[4.1] ROP Inteligente' },
               { id: 'produccion', name: '[5] Producción' },
               { id: 'logistica', name: '[7] Logística' },
               { id: 'cxc', name: '[8] CxC' },
@@ -210,6 +211,7 @@ export default function CircuitoFase3View() {
               { id: 'rrhh', name: '[13] RRHH' },
               { id: 'nomina', name: '[14] Nómina' },
               { id: 'processsuite', name: '[15] Process Suite' },
+              { id: 'processmining', name: '[16] Process Mining' },
               { id: 'wms', name: '[17] WMS' },
               { id: 'biyreportes', name: '[18] BI y Reportes' },
               { id: 'dashboards', name: '[19] Dashboards' },

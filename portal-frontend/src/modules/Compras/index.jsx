@@ -124,10 +124,10 @@ export default function Compras() {
   };
 
   return (
-    <div className="h-full flex flex-col bg-[#f4f7f9] overflow-hidden w-full">
+    <div className="h-full flex flex-col bg-[#f4f7f9] overflow-y-auto w-full">
       {/* Top Header */}
       <div className="flex flex-col border-b border-gray-200 px-6 py-4 bg-white sticky top-0 z-10 shrink-0 shadow-sm w-full">
-        <div className="flex justify-between items-center">
+        <div className="flex flex-wrap justify-between items-center gap-3">
           <div className="flex items-center text-lg text-gray-700">
             <span className="cursor-pointer hover:underline text-[#006EAD]" onClick={() => navigate('/portal')}>Portal</span>
             <span className="mx-2 text-gray-400">/</span>
@@ -136,7 +136,7 @@ export default function Compras() {
               NyTEX Compras & Abastecimiento
             </span>
           </div>
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center flex-wrap gap-2">
             <button 
               onClick={() => navigate('/app/inventario')}
               className="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 px-3 py-1.5 rounded-md text-xs font-semibold shadow-sm transition"

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import NytexVideoCard from '../components/NytexVideoCard';
 
 const DashboardView = () => {
   return (
@@ -22,10 +23,11 @@ const DashboardView = () => {
             <p className="text-[18px] 2xl:text-[24px] text-nytex-text font-normal mb-8 max-w-xl">
               Gestiona, controla y haz crecer tu negocio con NyTEX ERP.
             </p>
-            <div className="flex gap-4 mb-24">
-              <Link to="/portal" className="bg-nytex-navy hover:bg-nytex-blue transition-colors text-white font-bold py-3 px-8 rounded-full shadow-lg">
+            <div className="flex flex-wrap items-center gap-4 mb-14">
+              <Link to="/portal" className="bg-nytex-navy hover:bg-nytex-blue transition-colors text-white font-bold py-3.5 px-8 rounded-full shadow-lg">
                 Ir a mis Módulos
               </Link>
+              <NytexVideoCard className="!p-3.5 !px-6 !rounded-2xl" />
             </div>
             <div className="w-[80px] h-[4px] bg-nytex-cyan mb-8 rounded-full"></div>
 

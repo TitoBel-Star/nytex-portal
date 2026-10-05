@@ -21,6 +21,7 @@ import SynexProcessSuiteView from './views/SynexProcessSuiteView';
 import BusinessPartnersView from './views/BusinessPartnersView';
 import BIyReportes from './modules/BIyReportes';
 import Configuracion from './modules/Configuracion';
+import RopView from './views/RopView';
 import PredictiveModelsView from './views/PredictiveModelsView';
 import WmsView from './views/WmsView';
 import CxcView from './views/CxcView';
@@ -126,6 +127,7 @@ function AppRoutes() {
         {/* Módulos Operativos Integrados: Circuito Comercial O2C */}
         <Route path="/app/cxc" element={<ProtectedModuleRoute moduleId="CxC"><ModuleLayout><CxcView /></ModuleLayout></ProtectedModuleRoute>} />
         <Route path="/app/wms" element={<ProtectedModuleRoute moduleId="WMS"><ModuleLayout><WmsView /></ModuleLayout></ProtectedModuleRoute>} />
+        <Route path="/app/rop" element={<ProtectedModuleRoute moduleId="Rop"><ModuleLayout><RopView /></ModuleLayout></ProtectedModuleRoute>} />
         <Route path="/app/circuito-comercial" element={<ModuleLayout><CircuitoComercialView /></ModuleLayout>} />
         {/* Módulos Operativos Integrados: Circuito Compras, Inventario y Producción (P2P & M) */}
         <Route path="/app/cxp" element={<ProtectedModuleRoute moduleId="CxP"><ModuleLayout><CxpView /></ModuleLayout></ProtectedModuleRoute>} />

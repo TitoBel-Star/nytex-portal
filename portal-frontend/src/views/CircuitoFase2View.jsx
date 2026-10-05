@@ -64,14 +64,14 @@ export default function CircuitoFase2View() {
                   Circuito 2 • Paquete Comercial
                 </span>
                 <span className="bg-white/20 text-white text-xs px-3 py-1 rounded-full font-bold">
-                  15 Módulos Operativos
+                  17 Módulos Operativos
                 </span>
               </div>
               <h1 className="text-3xl lg:text-4xl font-black tracking-tight">
-                Fase 2: NyTEX Express — Manufactura, Planta & Personal
+                Fase 2: NyTEX Express — Manufactura, ROP, Personal & Minería
               </h1>
               <p className="text-amber-200 text-sm mt-2 max-w-2xl leading-relaxed">
-                Diseñado para fábricas textiles en pleno crecimiento: añade piso de producción en telares circulares, código de barras en WMS, logística con camiones, nómina quincenal con horas extra, KPIs de OEE y gobernanza de procesos BPMN.
+                Diseñado para empresas y fábricas en pleno crecimiento: añade piso de producción en telares circulares, reabastecimiento ROP inteligente, código de barras en WMS, logística con camiones, nómina quincenal, KPIs de OEE, gobernanza BPMN y Minería de Procesos.
               </p>
               <div className="flex items-center gap-6 mt-4 pt-4 border-t border-white/10 text-xs">
                 <div>
@@ -84,7 +84,7 @@ export default function CircuitoFase2View() {
                 </div>
                 <div>
                   <span className="text-amber-300 block uppercase font-bold text-[10px]">Cobertura Total</span>
-                  <strong className="text-xl text-emerald-400 font-black">15 Módulos (Starter + 8)</strong>
+                  <strong className="text-xl text-emerald-400 font-black">17 Módulos (Starter + 10)</strong>
                 </div>
               </div>
             </div>
@@ -191,15 +191,16 @@ export default function CircuitoFase2View() {
           </div>
         </div>
 
-        {/* Directorio de los 15 Módulos */}
+        {/* Directorio de los 17 Módulos */}
         <div>
-          <h3 className="font-extrabold text-slate-900 text-lg mb-3">Los 15 Módulos de la Fase 2 Express</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+          <h3 className="font-extrabold text-slate-900 text-lg mb-3">Los 17 Módulos de la Fase 2 Express</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 gap-3">
             {[
               { id: 'ventas', name: '[1] Ventas' },
               { id: 'crm', name: '[2] CRM' },
               { id: 'inventario', name: '[3] Inventario' },
               { id: 'compras', name: '[4] Compras' },
+              { id: 'rop', name: '[4.1] ROP Inteligente' },
               { id: 'produccion', name: '[5] Producción' },
               { id: 'logistica', name: '[7] Logística' },
               { id: 'cxc', name: '[8] CxC' },
@@ -209,6 +210,7 @@ export default function CircuitoFase2View() {
               { id: 'rrhh', name: '[13] RRHH' },
               { id: 'nomina', name: '[14] Nómina' },
               { id: 'processsuite', name: '[15] Process Suite' },
+              { id: 'processmining', name: '[16] Process Mining' },
               { id: 'wms', name: '[17] WMS' },
               { id: 'dashboards', name: '[19] Dashboards' }
             ].map(m => (

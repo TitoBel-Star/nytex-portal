@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import NytexVideoCard from '../components/NytexVideoCard';
 
 export default function CircuitoFase1View() {
   const [data, setData] = useState(null);
@@ -90,10 +91,11 @@ export default function CircuitoFase1View() {
             </div>
 
             <div className="flex flex-col sm:flex-row lg:flex-col gap-3 w-full lg:w-auto">
+              <NytexVideoCard className="!p-4 !rounded-2xl" />
               <button
                 onClick={handleSimulate}
                 disabled={simulating}
-                className="bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-400 hover:to-yellow-300 text-slate-950 font-black px-6 py-3 rounded-2xl text-sm transition-all shadow-lg flex items-center justify-center gap-2"
+                className="bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-400 hover:to-yellow-300 text-slate-950 font-black px-6 py-3 rounded-2xl text-sm transition-all shadow-lg flex items-center justify-center gap-2 cursor-pointer"
               >
                 <span>⚡</span> {simulating ? 'Procesando Ciclo...' : 'Simular Ciclo Transaccional'}
               </button>

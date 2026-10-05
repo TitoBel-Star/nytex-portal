@@ -15,8 +15,8 @@ export const AREAS_CONFIG = [
   {
     num: 2,
     title: '2. Cadena de Suministro',
-    modulesText: 'Compras, Inventario, WMS, Logística',
-    modules: ['Compras', 'Inventario', 'WMS', 'Logistica'],
+    modulesText: 'Compras, ROP Inteligente, Inventario, WMS, Logística',
+    modules: ['Compras', 'Rop', 'Inventario', 'WMS', 'Logistica'],
     badgeBg: 'bg-emerald-500',
     colorText: 'text-emerald-300',
     activeRing: 'ring-emerald-400',
@@ -378,9 +378,9 @@ export default function NytexEcosistemaDiagram({
 
                 {/* 5. ÁREA 2 & 3: CADENA DE SUMINISTRO Y PLANTA */}
                 <g id="subgraph-area2-3">
-                  <rect x="152" y="562" width="678" height="90" rx="2" fill="#041a10" stroke="#16a34a" strokeWidth="1.5" />
-                  <rect x="152" y="562" width="678" height="19" fill="#16a34a" />
-                  <text x="164" y="575" fill="#ffffff" fontSize="9" fontWeight="bold" fontFamily="system-ui, -apple-system, sans-serif">
+                  <rect x="146" y="562" width="688" height="90" rx="2" fill="#041a10" stroke="#16a34a" strokeWidth="1.5" />
+                  <rect x="146" y="562" width="688" height="19" fill="#16a34a" />
+                  <text x="158" y="575" fill="#ffffff" fontSize="9" fontWeight="bold" fontFamily="system-ui, -apple-system, sans-serif">
                     ÁREA 2 &amp; 3: CADENA DE SUMINISTRO Y PLANTA
                   </text>
                 </g>
@@ -648,15 +648,15 @@ export default function NytexEcosistemaDiagram({
                   defaultStroke: '#eab308'
                 })}
 
-                {/* --- ÁREA 2 & 3 (5 módulos) --- */}
+                {/* --- ÁREA 2 & 3 (6 módulos) --- */}
                 {renderModuleNode({
                   id: 'Logistica',
-                  x: 162,
+                  x: 154,
                   y: 605,
-                  width: 124,
+                  width: 102,
                   height: 36,
                   title: 'NyTEX Logística',
-                  subtitle: '(Rutas, Camiones y POD)',
+                  subtitle: '(Rutas y POD)',
                   bgColor: '#14532d',
                   subtitleColor: '#bbf7d0',
                   defaultStroke: '#eab308'
@@ -664,12 +664,25 @@ export default function NytexEcosistemaDiagram({
 
                 {renderModuleNode({
                   id: 'Compras',
-                  x: 302,
+                  x: 264,
                   y: 605,
-                  width: 112,
+                  width: 98,
                   height: 36,
                   title: 'NyTEX Compras',
-                  subtitle: '(Órdenes de Compra)',
+                  subtitle: '(Órdenes O.C.)',
+                  bgColor: '#14532d',
+                  subtitleColor: '#bbf7d0',
+                  defaultStroke: '#eab308'
+                })}
+
+                {renderModuleNode({
+                  id: 'Rop',
+                  x: 370,
+                  y: 605,
+                  width: 110,
+                  height: 36,
+                  title: 'NyTEX ROP',
+                  subtitle: '(Punto de Reorden)',
                   bgColor: '#14532d',
                   subtitleColor: '#bbf7d0',
                   defaultStroke: '#eab308'
@@ -677,9 +690,9 @@ export default function NytexEcosistemaDiagram({
 
                 {renderModuleNode({
                   id: 'Inventario',
-                  x: 430,
+                  x: 488,
                   y: 605,
-                  width: 102,
+                  width: 98,
                   height: 36,
                   title: 'NyTEX Inventario',
                   subtitle: '(Kardex y Stock)',
@@ -690,12 +703,12 @@ export default function NytexEcosistemaDiagram({
 
                 {renderModuleNode({
                   id: 'WMS',
-                  x: 548,
+                  x: 594,
                   y: 605,
-                  width: 136,
+                  width: 112,
                   height: 36,
                   title: 'NyTEX WMS',
-                  subtitle: '(Racks, Picking RF, FEFO)',
+                  subtitle: '(Racks y Picking)',
                   bgColor: '#14532d',
                   subtitleColor: '#bbf7d0',
                   defaultStroke: '#eab308'
@@ -703,12 +716,12 @@ export default function NytexEcosistemaDiagram({
 
                 {renderModuleNode({
                   id: 'Produccion',
-                  x: 700,
+                  x: 714,
                   y: 605,
-                  width: 118,
+                  width: 114,
                   height: 36,
                   title: 'NyTEX Producción',
-                  subtitle: '(Recetas BOM y Planta)',
+                  subtitle: '(Recetas y Planta)',
                   bgColor: '#065f46',
                   subtitleColor: '#a7f3d0',
                   defaultStroke: '#eab308'
