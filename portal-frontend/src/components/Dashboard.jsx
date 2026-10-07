@@ -394,7 +394,7 @@ export default function Dashboard() {
                   Circuito Advanced: Inteligencia & IoT
                 </h4>
                 <p className="text-xs text-gray-600 mt-1.5 leading-relaxed">
-                  Cubo OLAP multidimensional de rentabilidad, Data Lake con 96 sensores IoT en telares, planeación S&OP / MRP II y reportes fiscales auditados NIF/SAT.
+                  Cubo OLAP multidimensional de rentabilidad, Data Lake con 96 sensores IoT en telares, planeación S&OP / MRP II y reportes fiscales auditados NIF/Tributarios.
                 </p>
               </div>
 
@@ -437,7 +437,7 @@ export default function Dashboard() {
                   Circuito Enterprise: IA Autónoma 360°
                 </h4>
                 <p className="text-xs text-gray-600 mt-1.5 leading-relaxed">
-                  Ecosistema total autónomo: Asistente IA cognitivo con SQLite, pronósticos ARIMA, clustering K-Means, minería DFG y gobernanza SAT inmutable.
+                  Ecosistema total autónomo: Asistente IA cognitivo con SQLite, pronósticos ARIMA, clustering K-Means, minería DFG y gobernanza fiscal inmutable multi-país (DTE / SAT / SAR / DGI).
                 </p>
               </div>
 

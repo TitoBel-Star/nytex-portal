@@ -46,7 +46,7 @@ export default function CircuitoGobernanzaView() {
           '2. Minería de Datos: Se actualizaron los centroides K-Means (Silhouette 0.784) y reglas Apriori.',
           '3. Inteligencia de Negocios (BI): Cubo multidimensional sincronizado con las órdenes y costos fabriles.',
           '4. Reportes Ejecutivos: Balanza y Estado de Resultados recalculados con dictamen digital limpio.',
-          '5. Gobernanza y Seguridad: Transacción inmutable registrada en la Bitácora de Auditoría del SAT.'
+          '5. Gobernanza y Seguridad: Transacción inmutable registrada en la Bitácora de Auditoría Fiscal Multi-País (DTE / SAT / SAR / DGI).'
         ]
       });
     } catch (err) {
@@ -204,7 +204,7 @@ export default function CircuitoGobernanzaView() {
               <div>
                 <span className="text-[10px] font-bold text-blue-400 uppercase block mb-1">Paso 4 • [18] Reportes</span>
                 <h4 className="font-bold text-sm text-white">Dictamen Oficial</h4>
-                <p className="text-[11px] text-slate-400 mt-1">Generación de P&L, balanza fiscal SAT Anexo 24 y reporte OEE.</p>
+                <p className="text-[11px] text-slate-400 mt-1">Generación de P&L, balanza fiscal tributaria / NIF y reporte OEE.</p>
               </div>
               <div className="mt-3 text-right text-xs text-slate-500">➔ Certificación</div>
             </div>
@@ -212,10 +212,10 @@ export default function CircuitoGobernanzaView() {
             <div className="bg-slate-950/80 border border-slate-800 p-4 rounded-xl flex flex-col justify-between">
               <div>
                 <span className="text-[10px] font-bold text-amber-400 uppercase block mb-1">Paso 5 • [26] Configuración</span>
-                <h4 className="font-bold text-sm text-white">Gobernanza SAT</h4>
-                <p className="text-[11px] text-slate-400 mt-1">Control de sellos digitales, seguridad RBAC y bitácora de auditoría.</p>
+                <h4 className="font-bold text-sm text-white">Gobernanza Fiscal Multi-País</h4>
+                <p className="text-[11px] text-slate-400 mt-1">Firma electrónica DTE / CSD, seguridad RBAC y bitácora de auditoría inmutable.</p>
               </div>
-              <div className="mt-3 text-right text-xs text-emerald-400 font-bold">✓ 100% Seguro</div>
+              <div className="mt-3 text-right text-xs text-emerald-400 font-bold">✓ 100% Blindado</div>
             </div>
           </div>
         </div>
@@ -255,7 +255,7 @@ export default function CircuitoGobernanzaView() {
                 <h4 className="font-bold text-white text-base group-hover:text-blue-400 transition-colors">
                   BI y Reportes
                 </h4>
-                <p className="text-xs text-slate-400 mt-1">Estados financieros, balanza SAT y OEE imprimible.</p>
+                <p className="text-xs text-slate-400 mt-1">Estados financieros, balanza tributaria y OEE imprimible.</p>
               </div>
               <div className="mt-4 pt-3 border-t border-slate-800 text-xs font-bold text-blue-400 flex justify-between items-center">
                 <span>Abrir Módulo</span>

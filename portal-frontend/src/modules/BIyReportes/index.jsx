@@ -81,7 +81,7 @@ export default function BIyReportes() {
               <span className="bg-blue-100 text-blue-700 text-xs px-2.5 py-1 rounded-full font-bold uppercase tracking-wider">
                 Módulo [18] • BI y Reportes
               </span>
-              <span className="text-xs text-slate-500">Motor de Emisión NIF, SAT e IFRS</span>
+              <span className="text-xs text-slate-500">Motor de Emisión NIF, Hacienda / SAT e IFRS</span>
             </div>
             <h1 className="text-2xl md:text-3xl font-black text-slate-900 mt-1">
               Centro de Reportes Ejecutivos & Fiscales

@@ -168,6 +168,72 @@ export default function CircuitoFinancieroView() {
           </div>
         </div>
 
+        {/* Sección de Controles Internos y Cierres Operativos */}
+        <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm space-y-4">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b pb-3">
+            <div>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-600 block">
+                Segregación de Funciones & Blindaje de Auditoría
+              </span>
+              <h3 className="text-base font-black text-gray-900">
+                Controles Internos & Cierres Operativos en Finanzas y Administración
+              </h3>
+            </div>
+            <button
+              onClick={() => navigate('/app/tesoreria')}
+              className="bg-slate-900 hover:bg-slate-800 text-white font-bold px-4 py-2 rounded-xl text-xs shadow-sm transition"
+            >
+              Abrir Tablero de Cierres en Tesorería ➔
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-1">
+            <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
+              <span className="text-[10px] font-bold text-amber-700 bg-amber-100 px-2 py-0.5 rounded">
+                Control de Efectivo
+              </span>
+              <h4 className="font-bold text-gray-900 text-sm mt-2">Cajas & Fondos Fijos</h4>
+              <p className="text-xs text-gray-500 mt-1">
+                Arqueos físicos periódicos con cálculo de diferencias y reposición automática con cargo a bancos.
+              </p>
+              <div className="mt-3 text-xs font-bold text-amber-700">✓ 3 Cajas Auditadas</div>
+            </div>
+
+            <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
+              <span className="text-[10px] font-bold text-blue-700 bg-blue-100 px-2 py-0.5 rounded">
+                Auditoría Bancaria
+              </span>
+              <h4 className="font-bold text-gray-900 text-sm mt-2">Conciliación Mensual</h4>
+              <p className="text-xs text-gray-500 mt-1">
+                Cotejo entre Libro Mayor ERP y extracto bancario oficial, conciliando cheques flotantes y depósitos.
+              </p>
+              <div className="mt-3 text-xs font-bold text-blue-700">✓ Cuadrado al 100%</div>
+            </div>
+
+            <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
+              <span className="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded">
+                Cierre de Turno
+              </span>
+              <h4 className="font-bold text-gray-900 text-sm mt-2">Cierres Diarios (CxC / CxP)</h4>
+              <p className="text-xs text-gray-500 mt-1">
+                Corte diario de facturación, recibos de cobro y dispersiones a proveedores con sellos criptográficos.
+              </p>
+              <div className="mt-3 text-xs font-bold text-emerald-700">✓ Sin pendientes</div>
+            </div>
+
+            <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
+              <span className="text-[10px] font-bold text-purple-700 bg-purple-100 px-2 py-0.5 rounded">
+                Cadena de Suministro
+              </span>
+              <h4 className="font-bold text-gray-900 text-sm mt-2">Cierre de Compras</h4>
+              <p className="text-xs text-gray-500 mt-1">
+                Three-Way Match: conciliación de Órdenes de Compra (PO) contra Recepción en Bodega y Factura fiscal.
+              </p>
+              <div className="mt-3 text-xs font-bold text-purple-700">✓ Match 100% verificado</div>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   );

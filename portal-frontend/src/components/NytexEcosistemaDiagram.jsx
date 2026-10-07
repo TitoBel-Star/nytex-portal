@@ -36,8 +36,8 @@ export const AREAS_CONFIG = [
   },
   {
     num: 4,
-    title: '4. Administración y Finanzas',
-    modulesText: 'CxP, CxC, Tesorería, Contabilidad',
+    title: '4. Dirección de Finanzas & Administración',
+    modulesText: 'CxP, CxC, Tesorería & Cajas, Conciliaciones Bancarias, Contabilidad & Cierres',
     modules: ['CxP', 'CxC', 'Tesoreria', 'Contabilidad'],
     badgeBg: 'bg-amber-500',
     colorText: 'text-amber-300',
@@ -385,12 +385,12 @@ export default function NytexEcosistemaDiagram({
                   </text>
                 </g>
 
-                {/* 6. ÁREA 4: ADMINISTRACIÓN Y FINANZAS */}
+                {/* 6. ÁREA 4: DIRECCIÓN DE FINANZAS & ADMINISTRACIÓN */}
                 <g id="subgraph-area4">
                   <rect x="198" y="728" width="428" height="182" rx="2" fill="#180e05" stroke="#d97706" strokeWidth="1.5" />
                   <rect x="198" y="728" width="428" height="19" fill="#d97706" />
                   <text x="208" y="741" fill="#ffffff" fontSize="9" fontWeight="bold" fontFamily="system-ui, -apple-system, sans-serif">
-                    ÁREA 4: ADMINISTRACIÓN Y FINANZAS
+                    ÁREA 4: DIRECCIÓN DE FINANZAS &amp; ADMINISTRACIÓN
                   </text>
                 </g>
 
@@ -434,13 +434,13 @@ export default function NytexEcosistemaDiagram({
                 <path d="M 674 494 L 674 530 L 759 530 L 759 605" stroke="#38bdf8" strokeWidth="1.4" fill="none" markerEnd="url(#arrow-cyan)" />
                 {renderLabelBadge(636, 522, 98, 16, "Programa de fábrica")}
 
-                {/* CxC -> Tesorería (Cobranza al banco) */}
-                <path d="M 260 792 L 260 840 L 306 840 L 306 866" stroke="#38bdf8" strokeWidth="1.4" fill="none" markerEnd="url(#arrow-cyan)" />
-                {renderLabelBadge(226, 822, 92, 16, "Cobranza al banco")}
+                {/* CxC -> Tesorería (Cobranza y Cierre de Caja) */}
+                <path d="M 260 792 L 260 840 L 290 840 L 290 866" stroke="#38bdf8" strokeWidth="1.4" fill="none" markerEnd="url(#arrow-cyan)" />
+                {renderLabelBadge(206, 822, 114, 16, "Cobranza y Cierre")}
 
-                {/* CxP -> Tesorería (Propuesta de pago) */}
-                <path d="M 386 792 L 386 840 L 342 840 L 342 866" stroke="#38bdf8" strokeWidth="1.4" fill="none" markerEnd="url(#arrow-cyan)" />
-                {renderLabelBadge(352, 822, 90, 16, "Propuesta de pago")}
+                {/* CxP -> Tesorería (Dispersión y Pagos) */}
+                <path d="M 386 792 L 386 840 L 358 840 L 358 866" stroke="#38bdf8" strokeWidth="1.4" fill="none" markerEnd="url(#arrow-cyan)" />
+                {renderLabelBadge(344, 822, 112, 16, "Dispersión y Pagos")}
 
                 {/* RRHH -> Nómina */}
                 <path d="M 936 79 L 936 106" stroke="#38bdf8" strokeWidth="1.5" fill="none" markerEnd="url(#arrow-cyan)" />
@@ -452,7 +452,7 @@ export default function NytexEcosistemaDiagram({
                 <path d="M 640 426 L 640 458" stroke="#38bdf8" strokeWidth="1.5" fill="none" markerEnd="url(#arrow-cyan)" />
 
                 {/* Telemetría: Tesorería -> Dashboards */}
-                <path d="M 324 902 L 324 926 L 852 926 L 852 158 L 756 158 L 756 200" stroke="#94a3b8" strokeWidth="1.2" strokeDasharray="4,4" fill="none" markerEnd="url(#arrow-slate)" />
+                <path d="M 324 904 L 324 926 L 852 926 L 852 158 L 756 158 L 756 200" stroke="#94a3b8" strokeWidth="1.2" strokeDasharray="4,4" fill="none" markerEnd="url(#arrow-slate)" />
 
                 {/* ========================================================
                     LOS 24 MÓDULOS DE ARQUITECTURA (NODOS INTERACTIVOS)
@@ -770,15 +770,16 @@ export default function NytexEcosistemaDiagram({
 
                 {renderModuleNode({
                   id: 'Tesoreria',
-                  x: 266,
+                  x: 234,
                   y: 866,
-                  width: 116,
-                  height: 36,
-                  title: 'NyTEX Tesorería',
-                  subtitle: '(Bancos y Cash Flow)',
+                  width: 180,
+                  height: 38,
+                  title: 'NyTEX Tesorería & Cajas',
+                  subtitle: '(Arqueos, Conciliación y Cierres)',
                   bgColor: '#78350f',
                   subtitleColor: '#fde68a',
-                  defaultStroke: '#eab308'
+                  defaultStroke: '#eab308',
+                  subtitleSize: 7.2
                 })}
 
               </svg>

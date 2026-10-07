@@ -12,12 +12,50 @@ export default function Configuracion() {
 
   // Form state
   const [companyName, setCompanyName] = useState('');
+  const [country, setCountry] = useState('El Salvador');
+  const [taxAuthority, setTaxAuthority] = useState('Ministerio de Hacienda (MH)');
+  const [electronicDocType, setElectronicDocType] = useState('DTE (Factura Electrónica y CCF)');
   const [rfc, setRfc] = useState('');
   const [taxRegime, setTaxRegime] = useState('');
   const [fiscalAddress, setFiscalAddress] = useState('');
-  const [exchangeRateUsd, setExchangeRateUsd] = useState(19.85);
-  const [exchangeRateEur, setExchangeRateEur] = useState(21.40);
+  const [exchangeRateUsd, setExchangeRateUsd] = useState(1.00);
+  const [exchangeRateEur, setExchangeRateEur] = useState(1.08);
   const [vatRate, setVatRate] = useState(13.0);
+
+  const handleCountryChange = (c) => {
+    setCountry(c);
+    if (c === 'El Salvador') {
+      setTaxAuthority('Ministerio de Hacienda (MH)');
+      setElectronicDocType('DTE (Facturación Electrónica & CCF)');
+      setVatRate(13.0);
+      setExchangeRateUsd(1.00);
+    } else if (c === 'Guatemala') {
+      setTaxAuthority('SAT (Superintendencia de Administración Tributaria)');
+      setElectronicDocType('FEL (Factura Electrónica en Línea)');
+      setVatRate(12.0);
+      setExchangeRateUsd(7.75);
+    } else if (c === 'Honduras') {
+      setTaxAuthority('SAR (Servicio de Administración de Rentas)');
+      setElectronicDocType('Régimen de Facturación / CAI');
+      setVatRate(15.0);
+      setExchangeRateUsd(24.70);
+    } else if (c === 'Costa Rica') {
+      setTaxAuthority('Ministerio de Hacienda (DGT)');
+      setElectronicDocType('Comprobante Electrónico v4.3');
+      setVatRate(13.0);
+      setExchangeRateUsd(515.0);
+    } else if (c === 'Panamá') {
+      setTaxAuthority('DGI (Dirección General de Ingresos)');
+      setElectronicDocType('SFEP (Facturación Electrónica Panamá)');
+      setVatRate(7.0);
+      setExchangeRateUsd(1.00);
+    } else if (c === 'México') {
+      setTaxAuthority('SAT (Servicio de Administración Tributaria)');
+      setElectronicDocType('CFDI 4.0');
+      setVatRate(16.0);
+      setExchangeRateUsd(19.85);
+    }
+  };
 
   useEffect(() => {
     fetchAll();
@@ -39,13 +77,16 @@ export default function Configuracion() {
       setRoles(jsonRoles);
 
       if (jsonCfg) {
-        setCompanyName(jsonCfg.companyName || '');
-        setRfc(jsonCfg.rfc || '');
-        setTaxRegime(jsonCfg.taxRegime || '');
-        setFiscalAddress(jsonCfg.fiscalAddress || '');
-        setExchangeRateUsd(jsonCfg.exchangeRateUsd || 19.85);
-        setExchangeRateEur(jsonCfg.exchangeRateEur || 21.40);
-        setVatRate(jsonCfg.vatRate || 13.0);
+        setCompanyName(jsonCfg.companyName || 'NyTEX Textil de Centroamérica S.A. de C.V.');
+        setCountry(jsonCfg.country || 'El Salvador');
+        setTaxAuthority(jsonCfg.taxAuthority || 'Ministerio de Hacienda (MH)');
+        setElectronicDocType(jsonCfg.electronicDocType || 'DTE (Facturación Electrónica & CCF)');
+        setRfc(jsonCfg.rfc || '0614-180612-102-4');
+        setTaxRegime(jsonCfg.taxRegime || 'Régimen General / Mediano Contribuyente');
+        setFiscalAddress(jsonCfg.fiscalAddress || 'Km 10.5 Carretera Panamericana, San Salvador, El Salvador');
+        setExchangeRateUsd(jsonCfg.exchangeRateUsd ?? 1.00);
+        setExchangeRateEur(jsonCfg.exchangeRateEur ?? 1.08);
+        setVatRate(jsonCfg.vatRate ?? 13.0);
       }
     } catch (err) {
       console.error('Error fetching config data:', err);
@@ -63,6 +104,9 @@ export default function Configuracion() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           companyName,
+          country,
+          taxAuthority,
+          electronicDocType,
           rfc,
           taxRegime,
           fiscalAddress,
@@ -73,7 +117,7 @@ export default function Configuracion() {
       });
       const updated = await res.json();
       setConfig(updated);
-      setMessage('✓ Configuración corporativa y fiscal actualizada con éxito. Evento auditado en bitácora.');
+      setMessage(`✓ Parámetros de ${country} y configuración fiscal actualizados con éxito. Evento auditado en bitácora inmutable.`);
       setTimeout(() => setMessage(null), 4000);
       
       // Refrescar logs
@@ -116,13 +160,15 @@ export default function Configuracion() {
               <span className="bg-slate-200 text-slate-800 text-xs px-2.5 py-1 rounded-full font-bold uppercase tracking-wider">
                 Módulo [26] • Configuración Global
               </span>
-              <span className="text-xs text-slate-500">Gobernanza, Seguridad & Auditoría SAT</span>
+              <span className="text-xs text-indigo-700 font-semibold bg-indigo-50 border border-indigo-200 px-2.5 py-0.5 rounded-full">
+                Gobernanza, Seguridad & Compliance Fiscal Multi-País
+              </span>
             </div>
             <h1 className="text-2xl md:text-3xl font-black text-slate-900 mt-1">
               Panel Maestro de Configuración & Parámetros
             </h1>
             <p className="text-sm text-slate-500 mt-1">
-              Administración de la razón social, certificados fiscales digitales, catálogo de divisas y bitácora de auditoría.
+              Administración de la razón social, certificados fiscales (DTE / CSD), parámetros tributarios de Centroamérica y bitácora de auditoría inmutable.
             </p>
           </div>
 
@@ -152,7 +198,7 @@ export default function Configuracion() {
                 : 'bg-white text-slate-600 hover:bg-slate-200 border border-slate-200'
             }`}
           >
-            🏢 Datos Fiscales & Divisas
+            🏢 Localización Fiscal & Divisas
           </button>
           <button
             onClick={() => setActiveTab('roles')}
@@ -172,7 +218,7 @@ export default function Configuracion() {
                 : 'bg-white text-slate-600 hover:bg-slate-200 border border-slate-200'
             }`}
           >
-            📜 Bitácora de Auditoría ({auditLogs.length})
+            📜 Bitácora Inmutable de Auditoría ({auditLogs.length})
           </button>
         </div>
 
@@ -180,9 +226,46 @@ export default function Configuracion() {
         {activeTab === 'fiscal' && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <form onSubmit={handleSaveConfig} className="lg:col-span-2 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-              <h3 className="text-sm font-bold uppercase tracking-wider text-slate-600 pb-2 border-b border-slate-100">
-                Información Fiscal de la Empresa
-              </h3>
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center pb-2 border-b border-slate-100 gap-2">
+                <h3 className="text-sm font-bold uppercase tracking-wider text-slate-600">
+                  Localización Tributaria & Fiscal
+                </h3>
+                <span className="text-[11px] font-bold text-indigo-700 bg-indigo-50 px-2.5 py-0.5 rounded-full border border-indigo-200">
+                  Driver Activo: {electronicDocType}
+                </span>
+              </div>
+
+              {/* Selector de País */}
+              <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-2">
+                <label className="block text-xs font-bold uppercase text-slate-700">
+                  País de Operación / Jurisdicción Fiscal
+                </label>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2">
+                  {[
+                    { name: 'El Salvador', flag: '🇸🇻', code: 'MH DTE' },
+                    { name: 'Guatemala', flag: '🇬🇹', code: 'SAT FEL' },
+                    { name: 'Honduras', flag: '🇭🇳', code: 'SAR CAI' },
+                    { name: 'Costa Rica', flag: '🇨🇷', code: 'DGT 4.3' },
+                    { name: 'Panamá', flag: '🇵🇦', code: 'DGI SFEP' },
+                    { name: 'México', flag: '🇲🇽', code: 'SAT CFDI' }
+                  ].map(c => (
+                    <button
+                      key={c.name}
+                      type="button"
+                      onClick={() => handleCountryChange(c.name)}
+                      className={`p-2 rounded-lg text-center transition-all text-xs font-semibold border ${
+                        country === c.name 
+                          ? 'bg-slate-900 text-white border-slate-900 shadow-sm ring-2 ring-indigo-500/30' 
+                          : 'bg-white hover:bg-slate-100 text-slate-700 border-slate-200'
+                      }`}
+                    >
+                      <div className="text-base">{c.flag}</div>
+                      <div className="font-bold text-[11px] truncate">{c.name}</div>
+                      <div className="text-[9px] opacity-75">{c.code}</div>
+                    </button>
+                  ))}
+                </div>
+              </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
@@ -196,7 +279,13 @@ export default function Configuracion() {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-slate-600 mb-1">RFC</label>
+                  <label className="block text-xs font-semibold text-slate-600 mb-1">
+                    {country === 'El Salvador' ? 'NIT / NRC (El Salvador)' : 
+                     country === 'Guatemala' ? 'NIT (Guatemala)' :
+                     country === 'Honduras' ? 'RTN (Honduras)' :
+                     country === 'Costa Rica' ? 'Cédula Jurídica (Costa Rica)' :
+                     country === 'Panamá' ? 'RUC / DV (Panamá)' : 'RFC (México)'}
+                  </label>
                   <input 
                     type="text" 
                     value={rfc} 
@@ -207,15 +296,27 @@ export default function Configuracion() {
                 </div>
               </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-slate-600 mb-1">Régimen Fiscal (SAT)</label>
-                <input 
-                  type="text" 
-                  value={taxRegime} 
-                  onChange={e => setTaxRegime(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 text-sm text-slate-900 focus:outline-none focus:border-blue-500"
-                  required
-                />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-600 mb-1">Autoridad Tributaria</label>
+                  <input 
+                    type="text" 
+                    value={taxAuthority} 
+                    onChange={e => setTaxAuthority(e.target.value)}
+                    className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 text-sm text-slate-900 focus:outline-none focus:border-blue-500"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-600 mb-1">Régimen / Categoría del Contribuyente</label>
+                  <input 
+                    type="text" 
+                    value={taxRegime} 
+                    onChange={e => setTaxRegime(e.target.value)}
+                    className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 text-sm text-slate-900 focus:outline-none focus:border-blue-500"
+                    required
+                  />
+                </div>
               </div>
 
               <div>
@@ -258,6 +359,7 @@ export default function Configuracion() {
                   <label className="block text-xs font-semibold text-slate-600 mb-1">Tasa IVA General (%)</label>
                   <input 
                     type="number" 
+                    step="0.1"
                     value={vatRate} 
                     onChange={e => setVatRate(e.target.value)}
                     className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 text-sm font-mono font-bold text-slate-900 focus:outline-none focus:border-blue-500"
@@ -280,15 +382,15 @@ export default function Configuracion() {
             <div className="space-y-4">
               <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 block">
-                  Seguridad Fiscal SAT
+                  Seguridad Fiscal & Certificación
                 </span>
-                <h4 className="font-bold text-sm text-slate-900">Certificados de Sello Digital (CSD)</h4>
+                <h4 className="font-bold text-sm text-slate-900">Firma Electrónica / Facturación Digital</h4>
                 <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-xs space-y-1 text-emerald-800">
-                  <div className="font-bold">✓ Estatus: {config?.fiscalCertificatesStatus}</div>
-                  <div className="text-[11px] text-emerald-600 font-mono">No. Certificado: 00001000000508492011</div>
+                  <div className="font-bold">✓ Estatus: {config?.fiscalCertificatesStatus || 'Vigente (Homologado)'}</div>
+                  <div className="text-[11px] text-emerald-600 font-mono">Tipo: {electronicDocType}</div>
                 </div>
                 <div className="text-xs text-slate-500">
-                  Permite timbrado directo de facturas en CxC, notas de crédito y recibos de nómina CFDI 4.0.
+                  Permite timbrado directo de DTE (El Salvador), FEL (Guatemala), CFDI o comprobantes tributarios electrónicos regionales con sellado digital inmutable.
                 </div>
               </div>
 
@@ -298,8 +400,8 @@ export default function Configuracion() {
                 </span>
                 <h4 className="font-bold text-sm text-slate-900">Políticas de Acceso & Auditoría</h4>
                 <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs space-y-1 font-mono text-slate-700">
-                  <div>Modo: <strong className="text-slate-900">{config?.auditMode}</strong></div>
-                  <div>Seguridad: <strong className="text-slate-900">{config?.activeSecurityPolicy}</strong></div>
+                  <div>Modo: <strong className="text-slate-900">{config?.auditMode || 'Enforced (Registro Inmutable)'}</strong></div>
+                  <div>Seguridad: <strong className="text-slate-900">{config?.activeSecurityPolicy || '2FA Obligatorio'}</strong></div>
                 </div>
               </div>
             </div>

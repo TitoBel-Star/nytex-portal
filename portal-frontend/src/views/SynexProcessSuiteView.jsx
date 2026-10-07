@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import BpmnInteractiveDesigner from '../components/BpmnInteractiveDesigner';
 
 export default function SynexProcessSuiteView() {
   const navigate = useNavigate();
@@ -147,6 +148,15 @@ export default function SynexProcessSuiteView() {
             <span>📐</span> Catálogo de Modelos BPMN ({models.length})
           </button>
           <button 
+            onClick={() => setActiveTab('designer')}
+            className={`pb-1 px-2 border-b-2 transition-colors flex items-center gap-1.5 ${
+              activeTab === 'designer' ? 'border-purple-600 text-purple-900 font-bold' : 'border-transparent hover:text-gray-800'
+            }`}
+          >
+            <span>🎨</span> Diseñador BPMN 2.0
+            <span className="text-[9px] bg-purple-100 text-purple-800 font-extrabold px-1.5 py-0.5 rounded-full uppercase">Interactivo</span>
+          </button>
+          <button 
             onClick={() => setActiveTab('nuevo')}
             className={`pb-1 px-2 border-b-2 transition-colors flex items-center gap-1.5 ${
               activeTab === 'nuevo' ? 'border-purple-600 text-purple-900 font-bold' : 'border-transparent hover:text-gray-800'
@@ -256,7 +266,15 @@ export default function SynexProcessSuiteView() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Lista de Modelos */}
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 space-y-3">
-              <h3 className="font-bold text-gray-900 text-sm border-b pb-2">Workflows Diseñados en BPMN</h3>
+              <div className="flex justify-between items-center border-b pb-2">
+                <h3 className="font-bold text-gray-900 text-sm">Workflows Diseñados</h3>
+                <button
+                  onClick={() => setActiveTab('designer')}
+                  className="bg-purple-100 hover:bg-purple-200 text-purple-900 text-[11px] font-black px-2.5 py-1 rounded-lg transition-colors flex items-center gap-1 shadow-2xs"
+                >
+                  <span>🎨</span> + Diseñar Nuevo
+                </button>
+              </div>
               <div className="space-y-2">
                 {models.map(m => (
                   <div
@@ -313,22 +331,30 @@ export default function SynexProcessSuiteView() {
                 </div>
               </div>
 
-              <div className="bg-gray-50 p-4 rounded-xl border border-gray-200 text-xs text-gray-600 flex justify-between items-center">
+              <div className="bg-gray-50 p-4 rounded-xl border border-gray-200 text-xs text-gray-600 flex flex-wrap justify-between items-center gap-2">
                 <span>Tiempo Máximo de SLA Permitido: <strong>{selectedModel?.slaHours} horas</strong></span>
-                <button 
-                  onClick={() => {
-                    setNewTask(prev => ({
-                      ...prev,
-                      processCode: selectedModel.processCode,
-                      processName: selectedModel.name,
-                      title: `Instancia de ${selectedModel.name}`
-                    }));
-                    setActiveTab('nuevo');
-                  }}
-                  className="bg-purple-700 hover:bg-purple-800 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow"
-                >
-                  Ejecutar este Workflow ➔
-                </button>
+                <div className="flex items-center gap-2">
+                  <button 
+                    onClick={() => setActiveTab('designer')}
+                    className="bg-white hover:bg-gray-100 border border-purple-300 text-purple-800 px-3 py-1.5 rounded-lg text-xs font-bold shadow-2xs transition-all flex items-center gap-1"
+                  >
+                    <span>🎨</span> Abrir en Diseñador
+                  </button>
+                  <button 
+                    onClick={() => {
+                      setNewTask(prev => ({
+                        ...prev,
+                        processCode: selectedModel.processCode,
+                        processName: selectedModel.name,
+                        title: `Instancia de ${selectedModel.name}`
+                      }));
+                      setActiveTab('nuevo');
+                    }}
+                    className="bg-purple-700 hover:bg-purple-800 text-white px-3.5 py-1.5 rounded-lg text-xs font-bold shadow transition-all flex items-center gap-1"
+                  >
+                    <span>🚀</span> Ejecutar este Workflow ➔
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -441,6 +467,31 @@ export default function SynexProcessSuiteView() {
                 </button>
               </div>
             </form>
+          </div>
+        )}
+
+        {/* TAB 4: DISEÑADOR BPMN INTERACTIVO */}
+        {activeTab === 'designer' && (
+          <div className="h-[calc(100vh-210px)] min-h-[640px] flex flex-col">
+            <BpmnInteractiveDesigner 
+              onModelSaved={async (savedModel) => {
+                await fetchData();
+                setSelectedModel(savedModel);
+                setNewTask(prev => ({
+                  ...prev,
+                  processCode: savedModel.processCode,
+                  processName: savedModel.name,
+                  title: `Instancia de ${savedModel.name}`,
+                  assignedRole: savedModel.steps?.[0]?.role || 'Director de Finanzas'
+                }));
+                setFeedback({ 
+                  type: 'success', 
+                  message: `¡Proceso "${savedModel.name}" (${savedModel.processCode}) guardado y publicado en NytEX ERP exitosamente! Ya está en el Catálogo y listo para ser ejecutado.` 
+                });
+                setActiveTab('models');
+              }} 
+              nextProcessCode={`WF-PRC-${String(models.length + 1).padStart(2, '0')}`}
+            />
           </div>
         )}
 

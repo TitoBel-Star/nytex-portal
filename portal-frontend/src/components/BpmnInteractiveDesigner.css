@@ -1,0 +1,71 @@
+/* Estilos para el Modelador BPMN 2.0 en NytEX ERP */
+.bpmn-designer-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 600px;
+  background-color: #f8fafc;
+  display: flex;
+  flex-direction: column;
+}
+
+.bpmn-canvas-wrapper {
+  position: relative;
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  min-height: 520px;
+  background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+  background-size: 20px 20px;
+  background-color: #f8fafc;
+}
+
+/* Palette Overrides */
+.bpmn-canvas-wrapper .djs-palette {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  top: 16px;
+  left: 16px;
+  padding: 6px;
+}
+
+.bpmn-canvas-wrapper .djs-palette .entry {
+  transition: all 0.15s ease;
+  border-radius: 6px;
+}
+
+.bpmn-canvas-wrapper .djs-palette .entry:hover {
+  background-color: #f1f5f9;
+  transform: scale(1.08);
+}
+
+/* Context Pad */
+.bpmn-canvas-wrapper .djs-context-pad {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+  border: 1px solid #cbd5e1;
+}
+
+/* Minimap / Watermark removal */
+.bpmn-canvas-wrapper .bjs-powered-by {
+  display: none !important;
+}
+
+/* Propiedades del Panel */
+.bpmn-prop-input {
+  width: 100%;
+  padding: 0.4rem 0.6rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.5rem;
+  font-size: 0.75rem;
+  transition: border-color 0.15s;
+}
+
+.bpmn-prop-input:focus {
+  outline: none;
+  border-color: #7c3aed;
+  box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.15);
+}

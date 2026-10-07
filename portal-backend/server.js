@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const { Sequelize, DataTypes, Op } = require('sequelize');
 const path = require('path');
+const crypto = require('crypto');
 
 const app = express();
 app.use(cors());
@@ -221,6 +222,64 @@ const BankTransaction = sequelize.define('BankTransaction', {
   journalEntryCode: { type: DataTypes.STRING, allowNull: true }
 });
 
+// [10.1] Controles de Tesorería: Cajas y Fondos Fijos (Caja General y Caja Chica)
+const CashDesk = sequelize.define('CashDesk', {
+  code: { type: DataTypes.STRING, unique: true, allowNull: false },
+  name: { type: DataTypes.STRING, allowNull: false },
+  type: { type: DataTypes.STRING, defaultValue: 'Caja Chica' }, // 'Caja General', 'Caja Chica'
+  currency: { type: DataTypes.STRING, defaultValue: 'USD' },
+  authorizedFund: { type: DataTypes.FLOAT, defaultValue: 500 },
+  currentBalance: { type: DataTypes.FLOAT, defaultValue: 500 },
+  pendingVouchers: { type: DataTypes.FLOAT, defaultValue: 0 },
+  responsible: { type: DataTypes.STRING, allowNull: false },
+  status: { type: DataTypes.STRING, defaultValue: 'Abierta' }, // 'Abierta', 'Cuadrada', 'Arqueo Pendiente', 'Cerrada'
+  lastAuditDate: { type: DataTypes.STRING }
+});
+
+const CashAudit = sequelize.define('CashAudit', {
+  auditCode: { type: DataTypes.STRING, unique: true, allowNull: false },
+  cashDeskCode: { type: DataTypes.STRING, allowNull: false },
+  auditDate: { type: DataTypes.STRING, allowNull: false },
+  physicalCashCounted: { type: DataTypes.FLOAT, defaultValue: 0 },
+  vouchersCounted: { type: DataTypes.FLOAT, defaultValue: 0 },
+  totalCounted: { type: DataTypes.FLOAT, defaultValue: 0 },
+  systemExpected: { type: DataTypes.FLOAT, defaultValue: 0 },
+  difference: { type: DataTypes.FLOAT, defaultValue: 0 },
+  resultStatus: { type: DataTypes.STRING, defaultValue: 'Cuadrada' }, // 'Cuadrada', 'Sobrante', 'Faltante'
+  auditedBy: { type: DataTypes.STRING, defaultValue: 'Auditoría Interna' },
+  notes: { type: DataTypes.STRING }
+});
+
+// [10.2] Controles de Tesorería: Conciliación Bancaria Mensual
+const BankReconciliationItem = sequelize.define('BankReconciliationItem', {
+  itemCode: { type: DataTypes.STRING, unique: true, allowNull: false },
+  bankCode: { type: DataTypes.STRING, allowNull: false },
+  period: { type: DataTypes.STRING, allowNull: false },
+  date: { type: DataTypes.STRING, allowNull: false },
+  concept: { type: DataTypes.STRING, allowNull: false },
+  reference: { type: DataTypes.STRING, allowNull: false },
+  type: { type: DataTypes.STRING, allowNull: false }, // 'Cheque Flotante', 'Depósito en Tránsito', 'Comisión Bancaria'
+  amount: { type: DataTypes.FLOAT, defaultValue: 0 },
+  origin: { type: DataTypes.STRING, defaultValue: 'Libro ERP' }, // 'Libro ERP', 'Extracto Bancario'
+  status: { type: DataTypes.STRING, defaultValue: 'Pendiente' }, // 'Conciliado', 'Pendiente'
+  reconciledAt: { type: DataTypes.STRING, allowNull: true }
+});
+
+// [10.3] Controles Internos: Cierres Diarios y Periódicos (Finanzas & Administración)
+const InternalClosure = sequelize.define('InternalClosure', {
+  closeCode: { type: DataTypes.STRING, unique: true, allowNull: false },
+  closeType: { type: DataTypes.STRING, allowNull: false }, // 'COBROS_DIARIO', 'PAGOS_DIARIO', 'COMPRAS_PERIODO', 'CAJA_GENERAL', 'CONTABLE_MENSUAL'
+  title: { type: DataTypes.STRING, allowNull: false },
+  periodOrDate: { type: DataTypes.STRING, allowNull: false },
+  status: { type: DataTypes.STRING, defaultValue: 'Pendiente' }, // 'Cerrado', 'Pendiente', 'Conciliado'
+  totalAmount: { type: DataTypes.FLOAT, defaultValue: 0 },
+  recordsCount: { type: DataTypes.INTEGER, defaultValue: 0 },
+  closedBy: { type: DataTypes.STRING, defaultValue: 'Dirección Financiera' },
+  closedAt: { type: DataTypes.STRING, allowNull: true },
+  details: { type: DataTypes.STRING },
+  cryptographicHash: { type: DataTypes.STRING, allowNull: true }
+});
+
 // [11] NyTEX Activos Fijos: Padrón de Bienes y Depreciación Fiscal/Contable
 const FixedAsset = sequelize.define('FixedAsset', {
   assetCode: { type: DataTypes.STRING, unique: true, allowNull: false },
@@ -352,7 +411,8 @@ const BpmnProcess = sequelize.define('BpmnProcess', {
   slaHours: { type: DataTypes.INTEGER, defaultValue: 24 },
   activeInstances: { type: DataTypes.INTEGER, defaultValue: 0 },
   steps: { type: DataTypes.JSON, defaultValue: [] },
-  status: { type: DataTypes.STRING, defaultValue: 'Desplegado' } // 'Desplegado', 'Borrador', 'Archivado'
+  status: { type: DataTypes.STRING, defaultValue: 'Desplegado' }, // 'Desplegado', 'Borrador', 'Archivado'
+  xml: { type: DataTypes.TEXT, allowNull: true }
 });
 
 // [15] Tareas de Workflow e Instancias Pendientes de Aprobación
@@ -387,15 +447,18 @@ const ProcessEventLog = sequelize.define('ProcessEventLog', {
 
 // [26] NyTEX Configuración: Configuración Corporativa y Parámetros Fiscales
 const CompanyConfig = sequelize.define('CompanyConfig', {
-  companyName: { type: DataTypes.STRING, defaultValue: 'NyTEX Textil de México S.A. de C.V.' },
-  rfc: { type: DataTypes.STRING, defaultValue: 'NTM180612TX4' },
-  taxRegime: { type: DataTypes.STRING, defaultValue: '601 - General de Ley Personas Morales' },
-  fiscalAddress: { type: DataTypes.STRING, defaultValue: 'Av. de las Industrias Textiles 450, Parque Industrial Huinalá, Apodaca, N.L. C.P. 66645' },
+  companyName: { type: DataTypes.STRING, defaultValue: 'NyTEX Textil de Centroamérica S.A. de C.V.' },
+  country: { type: DataTypes.STRING, defaultValue: 'El Salvador' },
+  taxAuthority: { type: DataTypes.STRING, defaultValue: 'Ministerio de Hacienda (MH)' },
+  electronicDocType: { type: DataTypes.STRING, defaultValue: 'DTE (Factura y Crédito Fiscal Electrónico)' },
+  rfc: { type: DataTypes.STRING, defaultValue: '0614-180612-102-4' }, // Formato NIT El Salvador / Multi-país
+  taxRegime: { type: DataTypes.STRING, defaultValue: 'Régimen General / Mediano Contribuyente' },
+  fiscalAddress: { type: DataTypes.STRING, defaultValue: 'Km 10.5 Carretera Panamericana, Complejo Industrial, San Salvador, El Salvador' },
   baseCurrency: { type: DataTypes.STRING, defaultValue: 'USD' },
-  exchangeRateUsd: { type: DataTypes.FLOAT, defaultValue: 19.85 },
-  exchangeRateEur: { type: DataTypes.FLOAT, defaultValue: 21.40 },
+  exchangeRateUsd: { type: DataTypes.FLOAT, defaultValue: 1.00 },
+  exchangeRateEur: { type: DataTypes.FLOAT, defaultValue: 1.08 },
   vatRate: { type: DataTypes.FLOAT, defaultValue: 13.0 },
-  fiscalCertificatesStatus: { type: DataTypes.STRING, defaultValue: 'Vigente (Expira SAT: Dic 2028)' },
+  fiscalCertificatesStatus: { type: DataTypes.STRING, defaultValue: 'Vigente (Firma Electrónica DTE / Homologado)' },
   auditMode: { type: DataTypes.STRING, defaultValue: 'Enforced (Registro Inmutable)' },
   activeSecurityPolicy: { type: DataTypes.STRING, defaultValue: '2FA Obligatorio + Bloqueo tras 3 intentos' }
 });
@@ -1643,6 +1706,448 @@ app.post('/api/tesoreria/transactions', async (req, res) => {
     });
 
     res.status(201).json({ success: true, transaction: tx, journalEntry: autoEntry });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// =========================================================================
+// --- [10.1] CONTROLES INTERNOS: CAJAS Y FONDOS FIJOS (CAJA GENERAL & CHICA) ---
+// =========================================================================
+
+app.get('/api/tesoreria/cajas', async (req, res) => {
+  try {
+    let count = await CashDesk.count();
+    if (count === 0) {
+      await CashDesk.bulkCreate([
+        {
+          code: 'CAJA-GEN-01',
+          name: 'Caja General - Cobranza Central & Mostrador',
+          type: 'Caja General',
+          currency: 'USD',
+          authorizedFund: 1000.00,
+          currentBalance: 2840.50,
+          pendingVouchers: 0,
+          responsible: 'Lic. Andrea Morales (Cajera General)',
+          status: 'Abierta',
+          lastAuditDate: new Date().toISOString().split('T')[0]
+        },
+        {
+          code: 'CAJA-CHIC-01',
+          name: 'Caja Chica - Administración & Finanzas',
+          type: 'Caja Chica',
+          currency: 'USD',
+          authorizedFund: 800.00,
+          currentBalance: 245.80,
+          pendingVouchers: 554.20,
+          responsible: 'Lic. Carlos Henríquez (Administración)',
+          status: 'Abierta',
+          lastAuditDate: new Date().toISOString().split('T')[0]
+        },
+        {
+          code: 'CAJA-CHIC-02',
+          name: 'Caja Chica - Planta Textil & Mantenimiento',
+          type: 'Caja Chica',
+          currency: 'USD',
+          authorizedFund: 1200.00,
+          currentBalance: 390.00,
+          pendingVouchers: 810.00,
+          responsible: 'Ing. Roberto Solís (Jefe Planta)',
+          status: 'Abierta',
+          lastAuditDate: new Date().toISOString().split('T')[0]
+        }
+      ]);
+    }
+
+    const [cajas, audits] = await Promise.all([
+      CashDesk.findAll({ order: [['id', 'ASC']] }),
+      CashAudit.findAll({ order: [['id', 'DESC']], limit: 15 })
+    ]);
+
+    res.json({ cajas, audits });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/api/tesoreria/cajas/arqueo', async (req, res) => {
+  try {
+    const { cashDeskCode, physicalCash, vouchersAmount, notes, auditedBy } = req.body;
+    const caja = await CashDesk.findOne({ where: { code: cashDeskCode } });
+    if (!caja) return res.status(404).json({ error: 'Caja no encontrada' });
+
+    const pCash = parseFloat(physicalCash || 0);
+    const vAmount = parseFloat(vouchersAmount || 0);
+    const totalCounted = Math.round((pCash + vAmount) * 100) / 100;
+    const systemExpected = caja.type === 'Caja Chica' ? caja.authorizedFund : caja.currentBalance;
+    const difference = Math.round((totalCounted - systemExpected) * 100) / 100;
+
+    let resultStatus = 'Cuadrada';
+    if (difference > 0.05) resultStatus = 'Sobrante';
+    if (difference < -0.05) resultStatus = 'Faltante';
+
+    const count = await CashAudit.count();
+    const auditCode = `ARQ-${cashDeskCode}-${String(count + 1).padStart(4, '0')}`;
+    const today = new Date().toISOString().split('T')[0];
+
+    const audit = await CashAudit.create({
+      auditCode,
+      cashDeskCode,
+      auditDate: today,
+      physicalCashCounted: pCash,
+      vouchersCounted: vAmount,
+      totalCounted,
+      systemExpected,
+      difference,
+      resultStatus,
+      auditedBy: auditedBy || 'Auditoría Interna de Finanzas',
+      notes: notes || `Arqueo de control interno ordinario - Estatus: ${resultStatus}`
+    });
+
+    caja.status = resultStatus;
+    caja.lastAuditDate = today;
+    if (caja.type === 'Caja Chica') {
+      caja.currentBalance = pCash;
+      caja.pendingVouchers = vAmount;
+    }
+    await caja.save();
+
+    await AuditLog.create({
+      timestamp: new Date().toISOString(),
+      action: 'ARQUEO_CAJA',
+      module: 'Tesorería',
+      user: auditedBy || 'admin@consultores-nyt.com',
+      ipAddress: '192.168.1.105',
+      details: `Arqueo ejecutado en ${caja.name} (${auditCode}): Conteo $${totalCounted} USD, Esperado $${systemExpected} USD, Dif: $${difference} USD (${resultStatus}).`,
+      severity: resultStatus === 'Cuadrada' ? 'INFO' : 'WARNING'
+    });
+
+    res.json({ success: true, audit, caja });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/api/tesoreria/cajas/reposicion', async (req, res) => {
+  try {
+    const { cashDeskCode, bankCode } = req.body;
+    const caja = await CashDesk.findOne({ where: { code: cashDeskCode } });
+    if (!caja) return res.status(404).json({ error: 'Caja no encontrada' });
+
+    const bank = await BankAccount.findOne({ where: { bankCode: bankCode || 'BCO-BBVA-01' } });
+    if (!bank) return res.status(404).json({ error: 'Cuenta bancaria de dispersión no encontrada' });
+
+    const amountToReplenish = Math.round((caja.authorizedFund - caja.currentBalance) * 100) / 100;
+    if (amountToReplenish <= 0) {
+      return res.status(400).json({ error: 'La caja chica se encuentra con su fondo completo, no requiere reposición.' });
+    }
+
+    if (bank.balance < amountToReplenish) {
+      return res.status(400).json({ error: `Saldo insuficiente en ${bank.bankName} ($${bank.balance} USD) para reponer $${amountToReplenish} USD` });
+    }
+
+    // Descontar de banco y restaurar fondo
+    bank.balance = Math.round((bank.balance - amountToReplenish) * 100) / 100;
+    await bank.save();
+
+    caja.currentBalance = caja.authorizedFund;
+    caja.pendingVouchers = 0;
+    caja.status = 'Cuadrada';
+    await caja.save();
+
+    const txCount = await BankTransaction.count();
+    const txCode = `TX-REP-${String(txCount + 1).padStart(4, '0')}`;
+    await BankTransaction.create({
+      txCode,
+      bankCode: bank.bankCode,
+      type: 'Egreso',
+      category: 'Reposición Fondo Fijo',
+      amount: amountToReplenish,
+      date: new Date().toISOString().split('T')[0],
+      concept: `Cheque / Dispersión por Reposición de ${caja.name}`,
+      reference: `REP-${caja.code}`,
+      reconciled: true
+    });
+
+    const autoEntry = await createAutoJournalEntry({
+      type: 'Egreso',
+      concept: `Póliza de Reposición de Fondo Fijo: ${caja.name} con cargo a ${bank.bankName}`,
+      originModule: 'Tesorería',
+      originReference: txCode,
+      lines: [
+        { accountCode: '6102-05', accountName: 'Gastos Menores Comprobados de Operación', debit: amountToReplenish, credit: 0 },
+        { accountCode: '1101-01', accountName: `Bancos Nacionales (${bank.bankName})`, debit: 0, credit: amountToReplenish }
+      ]
+    });
+
+    await AuditLog.create({
+      timestamp: new Date().toISOString(),
+      action: 'REPOSICION_CAJA_CHICA',
+      module: 'Tesorería',
+      user: 'finanzas@consultores-nyt.com',
+      ipAddress: '192.168.1.105',
+      details: `Reposición de Fondo Fijo efectuada para ${caja.name} por $${amountToReplenish} USD con cargo a ${bank.bankName}. Póliza ${autoEntry.entryCode}.`,
+      severity: 'INFO'
+    });
+
+    res.json({ success: true, message: `Reposición de $${amountToReplenish} USD completada exitosamente.`, caja, bank, journalEntry: autoEntry });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// =========================================================================
+// --- [10.2] CONCILIACIÓN BANCARIA MENSUAL ---
+// =========================================================================
+
+app.get('/api/tesoreria/conciliacion', async (req, res) => {
+  try {
+    const bankCode = req.query.bankCode || 'BCO-BBVA-01';
+    const period = req.query.period || '2026-10';
+
+    const bank = await BankAccount.findOne({ where: { bankCode } });
+    if (!bank) return res.status(404).json({ error: 'Cuenta bancaria no encontrada' });
+
+    let count = await BankReconciliationItem.count({ where: { bankCode, period } });
+    if (count === 0) {
+      await BankReconciliationItem.bulkCreate([
+        {
+          itemCode: `REC-${period}-001`,
+          bankCode,
+          period,
+          date: '2026-10-02',
+          concept: 'Depósito Cliente Maquilas de Centroamérica (En tránsito de compensación)',
+          reference: 'DEP-84920',
+          type: 'Depósito en Tránsito',
+          amount: 4500.00,
+          origin: 'Libro ERP',
+          status: 'Pendiente'
+        },
+        {
+          itemCode: `REC-${period}-002`,
+          bankCode,
+          period,
+          date: '2026-10-04',
+          concept: 'Cheque #4820 a Proveedor Hilos & Hilazas S.A. (No presentado al cobro)',
+          reference: 'CHQ-4820',
+          type: 'Cheque Flotante',
+          amount: 8750.00,
+          origin: 'Libro ERP',
+          status: 'Pendiente'
+        },
+        {
+          itemCode: `REC-${period}-003`,
+          bankCode,
+          period,
+          date: '2026-10-05',
+          concept: 'Comisión mensual por custodia y token digital bancario',
+          reference: 'ND-COM-01',
+          type: 'Comisión Bancaria',
+          amount: 45.00,
+          origin: 'Extracto Bancario',
+          status: 'Conciliado',
+          reconciledAt: new Date().toISOString()
+        }
+      ]);
+    }
+
+    const items = await BankReconciliationItem.findAll({
+      where: { bankCode, period },
+      order: [['date', 'ASC']]
+    });
+
+    const bookBalance = bank.balance;
+    const pendingDeposits = items
+      .filter(i => i.type === 'Depósito en Tránsito' && i.status === 'Pendiente')
+      .reduce((sum, i) => sum + i.amount, 0);
+    const pendingChecks = items
+      .filter(i => i.type === 'Cheque Flotante' && i.status === 'Pendiente')
+      .reduce((sum, i) => sum + i.amount, 0);
+
+    // Saldo según extracto banco = Saldo Libro + Cheques flotantes - Depósitos en tránsito
+    const statementBalance = Math.round((bookBalance + pendingChecks - pendingDeposits) * 100) / 100;
+    const reconciledBalance = Math.round((statementBalance + pendingDeposits - pendingChecks) * 100) / 100;
+    const difference = Math.round((reconciledBalance - bookBalance) * 100) / 100;
+
+    res.json({
+      bank,
+      period,
+      bookBalance,
+      statementBalance,
+      pendingDeposits,
+      pendingChecks,
+      reconciledBalance,
+      difference,
+      isBalanced: Math.abs(difference) < 0.01,
+      items
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/api/tesoreria/conciliacion/toggle', async (req, res) => {
+  try {
+    const { itemCode } = req.body;
+    const item = await BankReconciliationItem.findOne({ where: { itemCode } });
+    if (!item) return res.status(404).json({ error: 'Partida no encontrada' });
+
+    item.status = item.status === 'Conciliado' ? 'Pendiente' : 'Conciliado';
+    item.reconciledAt = item.status === 'Conciliado' ? new Date().toISOString() : null;
+    await item.save();
+
+    res.json({ success: true, item });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/api/tesoreria/conciliacion/cerrar', async (req, res) => {
+  try {
+    const { bankCode, period, statementBalance } = req.body;
+    const hash = crypto.createHash('sha256').update(`${bankCode}|${period}|${statementBalance}|${Date.now()}`).digest('hex');
+
+    await AuditLog.create({
+      timestamp: new Date().toISOString(),
+      action: 'CIERRE_CONCILIACION_BANCARIA',
+      module: 'Tesorería',
+      user: 'auditoria@consultores-nyt.com',
+      ipAddress: '192.168.1.105',
+      details: `Conciliación Bancaria Mensual aprobada y cerrada para ${bankCode} período ${period}. Sello digital: ${hash.substring(0, 16)}...`,
+      severity: 'INFO'
+    });
+
+    res.json({
+      success: true,
+      message: `Acta Oficial de Conciliación Bancaria generada y sellada con éxito para el período ${period}.`,
+      cryptographicSeal: hash,
+      status: 'CERRADA_Y_AUDITADA'
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// =========================================================================
+// --- [10.3] TABLERO DE CIERRES DIARIOS Y CONTROLES INTERNOS ---
+// =========================================================================
+
+app.get('/api/tesoreria/cierres', async (req, res) => {
+  try {
+    const today = new Date().toISOString().split('T')[0];
+    let closures = await InternalClosure.findAll({ order: [['id', 'DESC']] });
+
+    if (closures.length === 0) {
+      closures = await InternalClosure.bulkCreate([
+        {
+          closeCode: `CLR-COB-${today}`,
+          closeType: 'COBROS_DIARIO',
+          title: 'Cierre Diario de Cobros & Facturación (CxC)',
+          periodOrDate: today,
+          status: 'Cerrado',
+          totalAmount: 14850.00,
+          recordsCount: 8,
+          closedBy: 'Lic. Sofía Rivas (Jefa de Crédito y Cobranza)',
+          closedAt: `${today} 18:30:00`,
+          details: '8 recibos de cobranza auditados y acreditados en bancos. Cero partidas pendientes.',
+          cryptographicHash: 'a7f9c8e2b1049281726354182901a8f9c'
+        },
+        {
+          closeCode: `CLR-PAG-${today}`,
+          closeType: 'PAGOS_DIARIO',
+          title: 'Cierre Diario de Dispersión de Pagos a Proveedores (CxP)',
+          periodOrDate: today,
+          status: 'Cerrado',
+          totalAmount: 9320.00,
+          recordsCount: 5,
+          closedBy: 'Lic. Fernando Cruz (Tesorero Corporativo)',
+          closedAt: `${today} 17:45:00`,
+          details: '5 transferencias bancarias validadas con factura fiscal liquidada y retenciones aplicadas.',
+          cryptographicHash: 'c4e8b105928172634819201827364512b'
+        },
+        {
+          closeCode: `CLR-COM-${today}`,
+          closeType: 'COMPRAS_PERIODO',
+          title: 'Cierre de Compras & Three-Way Match (OC vs. WMS vs. Factura)',
+          periodOrDate: today,
+          status: 'Conciliado',
+          totalAmount: 38400.00,
+          recordsCount: 14,
+          closedBy: 'Ing. Rodrigo Mendoza (Cadena de Suministro)',
+          closedAt: `${today} 16:15:00`,
+          details: '14 Órdenes de Compra cotejadas al 100% contra recepciones físicas en muelle y facturas CxP.',
+          cryptographicHash: 'e9281726354182901928374650192837c'
+        },
+        {
+          closeCode: `CLR-CAJ-${today}`,
+          closeType: 'CAJA_GENERAL',
+          title: 'Cierre de Caja General & Emisión de Remesa Bancaria',
+          periodOrDate: today,
+          status: 'Cerrado',
+          totalAmount: 2840.50,
+          recordsCount: 1,
+          closedBy: 'Lic. Andrea Morales (Cajera General)',
+          closedAt: `${today} 18:00:00`,
+          details: 'Efectivo en mostrador cuadrado. Boleta de remesa al banco BCO-BBVA-01 por $2,340.50 USD (dejando $500 USD de fondo base).',
+          cryptographicHash: 'f10293847561029384756102938475610'
+        },
+        {
+          closeCode: `CLR-CTB-2026-09`,
+          closeType: 'CONTABLE_MENSUAL',
+          title: 'Cierre Contable Mensual & Candado Fiscal de Período',
+          periodOrDate: 'Septiembre 2026',
+          status: 'Cerrado',
+          totalAmount: 2450000.00,
+          recordsCount: 184,
+          closedBy: 'C.P. Mario Castaneda (Contador General)',
+          closedAt: '2026-10-02 20:00:00',
+          details: 'Período Septiembre bloqueado contra modificaciones. Balanza cuadrada y depreciaciones ejecutadas.',
+          cryptographicHash: 'b5839201948572615482910485726194a'
+        }
+      ]);
+    }
+
+    res.json(closures);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/api/tesoreria/cierres/ejecutar', async (req, res) => {
+  try {
+    const { closeType, periodOrDate, title, totalAmount, recordsCount, notes } = req.body;
+    const today = new Date().toISOString().split('T')[0];
+    const now = new Date().toISOString().replace('T', ' ').substring(0, 19);
+    const hash = crypto.createHash('sha256').update(`${closeType}|${periodOrDate}|${totalAmount}|${Date.now()}`).digest('hex');
+
+    const count = await InternalClosure.count();
+    const closeCode = `CLR-${closeType.substring(0, 3)}-${Date.now().toString().slice(-4)}`;
+
+    const closure = await InternalClosure.create({
+      closeCode,
+      closeType: closeType || 'CIERRE_OPERATIVO',
+      title: title || `Cierre Operativo de Control Interno`,
+      periodOrDate: periodOrDate || today,
+      status: 'Cerrado',
+      totalAmount: parseFloat(totalAmount || 0),
+      recordsCount: parseInt(recordsCount || 1, 10),
+      closedBy: 'Dirección Financiera & Control Interno',
+      closedAt: now,
+      details: notes || `Cierre formal ejecutado con sello inmutable. ${notes || ''}`,
+      cryptographicHash: hash
+    });
+
+    await AuditLog.create({
+      timestamp: new Date().toISOString(),
+      action: `CIERRE_${closeType}`,
+      module: 'Finanzas & Administración',
+      user: 'director.finanzas@consultores-nyt.com',
+      ipAddress: '192.168.1.105',
+      details: `Ejecución de control interno: ${closure.title} ($${closure.totalAmount} USD, ${closure.recordsCount} ops). Hash de auditoría: ${hash.substring(0, 16)}...`,
+      severity: 'INFO'
+    });
+
+    res.json({ success: true, closure });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -3350,16 +3855,19 @@ app.get('/api/circuit/gobernanza/summary', async (req, res) => {
 
     res.json({
       circuitName: 'Circuito 7: Inteligencia de Negocios, Big Data y Gobernanza Global',
-      company: config ? config.companyName : 'NyTEX Textil de México S.A. de C.V.',
-      rfc: config ? config.rfc : 'NTM180612TX4',
-      taxStatus: 'Cumplimiento Positivo SAT 32-D',
+      company: config ? config.companyName : 'NyTEX Textil de Centroamérica S.A. de C.V.',
+      country: config ? config.country : 'El Salvador',
+      taxAuthority: config ? config.taxAuthority : 'Ministerio de Hacienda (MH)',
+      electronicDocType: config ? config.electronicDocType : 'DTE (Facturación Electrónica)',
+      rfc: config ? config.rfc : '0614-180612-102-4',
+      taxStatus: 'Cumplimiento Tributario Positivo (MH / SAT / DGT)',
       dataLakeVolume: `${dataLakeStats.dataLakeSizeGb} GB (${dataLakeStats.totalIngestedRecords.toLocaleString()} eventos IoT)`,
       auditTrailEvents: auditCount || 24,
       cubeRevenueMxn: totalSales,
       cubeRevenueUsd: totalSales,
       treasuryLiquidity: totalLiquidity,
       ecosystemIntegrity: '100% (26 de 26 Módulos Enlazados)',
-      governanceStatus: 'Conforme a Normas NIF, SAT Anexo 24 e ISO 9001'
+      governanceStatus: 'Conforme a Normas NIF, Auditoría Fiscal e ISO 9001'
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -3664,7 +4172,7 @@ app.get('/api/fases/fase4/summary', async (req, res) => {
         clusteringModel: 'K-Means RFM (k=4, Silhouette 0.784)',
         associationRulesModel: 'Apriori (Lift máx 3.28x)',
         processMiningStatus: 'Direct-Follows Graph (DFG) con detección de cuellos de botella',
-        fiscalStatus: 'Razón Social y Sellos SAT Vigentes (Anexo 24 / NIF)',
+        fiscalStatus: 'Cumplimiento Fiscal y Trazabilidad Inmutable (DTE / SAT / SAR / DGI)',
         ecosystemCompleteness: '100% (26 de 26 Módulos Enlazados)'
       }
     });
@@ -3681,7 +4189,7 @@ app.post('/api/fases/fase4/simulate', async (req, res) => {
       module: 'IA',
       user: 'copilot-ia@system.nytex.com',
       ipAddress: '10.0.0.1 (AI Node)',
-      details: 'Auditoría cognitiva 360° ejecutada en los 26 módulos: K-Means re-evaluado, proyección ARIMA actualizada y bitácora fiscal sellada.',
+      details: 'Auditoría cognitiva 360° ejecutada en los 26 módulos: K-Means re-evaluado, proyección ARIMA actualizada y bitácora fiscal inmutable sellada (Cumplimiento DTE / SAT / Regional).',
       severity: 'INFO'
     });
 

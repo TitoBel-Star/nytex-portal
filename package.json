@@ -4,5 +4,8 @@
   "scripts": {
     "build": "cd portal-frontend && npm install --include=dev && npm run build && cd ../portal-backend && npm install && node -e \"const fs=require('fs');fs.rmSync('public',{recursive:true,force:true});fs.cpSync('../portal-frontend/dist','public',{recursive:true});\"",
     "start": "cd portal-backend && node server.js"
+  },
+  "dependencies": {
+    "playwright": "^1.63.0"
   }
 }
