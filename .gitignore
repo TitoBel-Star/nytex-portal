@@ -4,3 +4,5 @@ portal-backend/node_modules/
 portal-frontend/node_modules/
 *.sqlite
 .env
+~$*
+*.tmp
