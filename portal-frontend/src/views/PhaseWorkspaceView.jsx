@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 // Importar todos los componentes de módulos
 import Ventas from '../modules/Ventas';
@@ -154,8 +155,11 @@ const PHASES_CONFIG = {
 
 export default function PhaseWorkspaceView() {
   const location = useLocation();
+  const { user, login } = useAuth();
   const [activePhase, setActivePhase] = useState(1);
   const [activeTab, setActiveTab] = useState('circuito'); // 'circuito' o moduleId
+
+  const safeUser = user || { role: localStorage.getItem('nytex_role') || 'Client' };
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -183,6 +187,16 @@ export default function PhaseWorkspaceView() {
     setActivePhase(pId);
     setActiveTab('circuito');
     localStorage.setItem('nytex_active_phase', pId.toString());
+    localStorage.setItem('nytex_user_plan', PHASES_CONFIG[pId]?.name || `Fase ${pId}`);
+  };
+
+  const handleSwitchRole = (newRole, phaseNum = activePhase) => {
+    if (newRole === 'Client') {
+      handleSelectPhase(phaseNum);
+      if (login) login('Client');
+    } else {
+      if (login) login(newRole);
+    }
   };
 
   // Renderizador dinámico del componente seleccionado
@@ -232,17 +246,17 @@ export default function PhaseWorkspaceView() {
       {/* Barra Superior Maestra de Mi Espacio de Trabajo */}
       <div className="bg-[#0A2540] text-white shadow-xl border-b border-slate-700 sticky top-0 z-40">
         
-        {/* Fila 1: Selector de Fase Contratada & Estatus */}
-        <div className="max-w-[1700px] mx-auto px-4 py-3 flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
-          <div className="flex items-center gap-3">
+        {/* Fila 1: Selector de Fase Contratada & Simulador de Roles */}
+        <div className="max-w-[1700px] mx-auto px-4 py-2.5 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
             <Link to="/portal" className="font-black text-xl tracking-tight text-white flex items-center gap-2">
               <span className="bg-gradient-to-r from-blue-500 to-cyan-400 text-slate-950 px-2 py-0.5 rounded font-black text-sm">NyTEX</span>
               <span>Workspace</span>
             </Link>
-            <span className="text-slate-400 text-xs hidden sm:inline">|</span>
+            <span className="text-slate-500 text-xs hidden sm:inline">|</span>
             <div className="flex items-center gap-2">
-              <span className="text-xs text-slate-300">Plan Visualizado:</span>
-              <div className="flex bg-slate-900/80 p-0.5 rounded-lg border border-slate-700">
+              <span className="text-xs text-slate-300 font-semibold">Fase Activa:</span>
+              <div className="flex bg-slate-900/90 p-0.5 rounded-lg border border-slate-700">
                 {[1, 2, 3, 4].map(pId => (
                   <button
                     key={pId}
@@ -260,10 +274,42 @@ export default function PhaseWorkspaceView() {
             </div>
           </div>
 
-          <div className="flex items-center gap-3 w-full md:w-auto justify-between md:justify-end">
+          {/* Simulador de Rol Activo & Navegación */}
+          <div className="flex flex-wrap items-center gap-3 w-full xl:w-auto justify-between xl:justify-end">
+            <div className="flex items-center gap-1.5 bg-slate-900/90 border border-slate-700 rounded-lg p-1 text-xs">
+              <span className="text-slate-400 px-1 font-semibold">Simular:</span>
+              <button
+                type="button"
+                onClick={() => handleSwitchRole('Admin')}
+                className={`px-2 py-0.5 rounded text-[11px] font-bold transition-all ${
+                  safeUser.role === 'Admin' ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                👑 Admin
+              </button>
+              <button
+                type="button"
+                onClick={() => handleSwitchRole('Partner')}
+                className={`px-2 py-0.5 rounded text-[11px] font-bold transition-all ${
+                  safeUser.role === 'Partner' || (!safeUser.role && !safeUser.email?.includes('admin') && !safeUser.email?.includes('cliente')) ? 'bg-purple-600 text-white shadow-sm' : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                🤝 Partner
+              </button>
+              <button
+                type="button"
+                onClick={() => handleSwitchRole('Client', activePhase)}
+                className={`px-2 py-0.5 rounded text-[11px] font-bold transition-all ${
+                  safeUser.role === 'Client' ? 'bg-emerald-600 text-white shadow-sm' : 'text-slate-400 hover:text-white'
+                }`}
+              >
+                🏢 Cliente (F{activePhase})
+              </button>
+            </div>
+
             <div className="flex items-center gap-2 text-xs">
               <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
-              <span className="text-emerald-400 font-bold">Licencia Activa:</span>
+              <span className="text-emerald-400 font-bold hidden sm:inline">Licencia:</span>
               <strong className="text-white font-extrabold">{currentConfig.name}</strong>
             </div>
 

@@ -23,7 +23,14 @@ const getDefaultUser = (role = 'Partner', customEmail = null) => {
   } else if (role === 'Client') {
     email = customEmail || 'cliente@empresa.com';
     name = 'Cliente Final';
-    subscriptions = ['Ventas', 'Inventario'];
+    const savedPhase = parseInt(localStorage.getItem('nytex_active_phase'), 10) || 1;
+    const p1 = ['Ventas', 'Inventario', 'Compras', 'Contabilidad', 'CxC', 'CxP', 'Tesoreria'];
+    const p2 = [...p1, 'CRM', 'Rop', 'Produccion', 'Logistica', 'RRHH', 'Nomina', 'ProcessSuite', 'ProcessMining', 'WMS', 'Dashboards'];
+    const p3 = [...p2, 'ActivosFijos', 'BIyReportes', 'BigData', 'BI', 'Planeacion'];
+    if (savedPhase === 1) subscriptions = p1;
+    else if (savedPhase === 2) subscriptions = p2;
+    else if (savedPhase === 3) subscriptions = p3;
+    else subscriptions = ALL_MODULES;
   }
 
   return {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import PaymentSimulatorModal from './PaymentSimulatorModal';
 import NytexEcosistemaDiagram, { AREAS_CONFIG } from './NytexEcosistemaDiagram';
@@ -81,6 +81,7 @@ const phases = [
 export default function Dashboard() {
   const { user, login } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
 
   const safeUser = user || {
     email: 'demo@consultores-nyt.com',
@@ -97,12 +98,23 @@ export default function Dashboard() {
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const phaseParam = params.get('phase');
+    const checkoutParam = params.get('checkout') || params.get('contratar');
+
     if (phaseParam) {
       const pId = parseInt(phaseParam, 10);
       if (pId >= 1 && pId <= 4) {
         setActivePhase(pId);
+        if (checkoutParam === 'true' || checkoutParam === '1') {
+          const ph = phases.find(p => p.id === pId);
+          if (ph) {
+            handleContratar(pId, ph.modulesArray);
+          }
+        }
       } else if (phaseParam === 'custom') {
         setActivePhase('custom');
+        if (checkoutParam === 'true' || checkoutParam === '1') {
+          handleContratar('custom', customModules);
+        }
       }
     }
   }, [location]);
@@ -154,38 +166,54 @@ export default function Dashboard() {
       return;
     }
 
-    let amount = 0;
-    let title = "";
+    const phaseObj = phases.find(p => p.id === phaseId) || {};
+    const title = phaseObj.name || (phaseId === 'custom' ? `Plan a su medida (${customModules.length} Módulos)` : `Fase ${phaseId}`);
+    const modulesText = phaseObj.modulesText || (customModules.length > 0 ? customModules.join(', ') : 'Módulos operativos incluidos');
+    const imp = phaseObj.imp && phaseObj.imp !== '$0 USD' && phaseObj.imp !== '$0'
+      ? phaseObj.imp
+      : (phaseObj.lic || '$35 USD / mes');
 
-    if (phaseId === 1) { amount = 0; title = "Fase 1: NyTEX Starter"; }
-    else if (phaseId === 2) { amount = 1500; title = "Fase 2: NyTEX Express"; }
-    else if (phaseId === 3) { amount = 4500; title = "Fase 3: NyTEX Advanced"; }
-    else if (phaseId === 4) { 
-      amount = safeUser.customQuoteAmount || 0; 
-      title = "Fase 4: NyTEX Enterprise"; 
-    }
-    else if (phaseId === 'custom') {
-      amount = customModules.length * 400;
-      title = `Plan a su medida (${customModules.length} Módulos)`;
-    }
+    let amount = 35;
+    if (phaseId === 1) amount = 35;
+    else if (phaseId === 2) amount = 1500;
+    else if (phaseId === 3) amount = 4500;
+    else if (phaseId === 4) amount = safeUser.customQuoteAmount || 499;
+    else if (phaseId === 'custom') amount = customModules.length * 400 || 125;
 
     setSelectedPhaseForPayment({
       phaseId,
+      id: phaseId,
+      name: title,
       title,
+      subtitle: phaseObj.subtitle || '',
+      modulesText,
+      imp,
+      lic: phaseObj.lic || '$35 USD / mes',
       amount,
-      modules: phaseModules
+      modulesArray: phaseModules || phaseObj.modulesArray || customModules || []
     });
     setIsModalOpen(true);
   };
 
-  const handlePaymentSuccess = (newSubscriptions) => {
+  const handlePaymentSuccess = (newSubscriptions, phase) => {
+    const pId = phase?.phaseId || phase?.id || activePhase || 1;
+    localStorage.setItem('nytex_active_phase', pId.toString());
+    localStorage.setItem('nytex_user_plan', phase?.name || `Fase ${pId}`);
     if (login) {
-      login({
-        ...safeUser,
-        subscriptions: newSubscriptions
-      });
+      login('Client');
     }
-    alert("¡Pago exitoso! Sus módulos han sido activados.");
+    navigate(`/app/workspace?phase=${pId}`);
+  };
+
+  const handleSwitchRole = (newRole, phaseNum = 1) => {
+    if (newRole === 'Client') {
+      localStorage.setItem('nytex_active_phase', phaseNum.toString());
+      const p = phases.find(ph => ph.id === phaseNum);
+      if (p) localStorage.setItem('nytex_user_plan', p.name);
+      if (login) login('Client');
+    } else {
+      if (login) login(newRole);
+    }
   };
 
   return (
@@ -199,6 +227,86 @@ export default function Dashboard() {
       />
 
       <div className="max-w-[1600px] mx-auto relative z-10">
+
+        {/* BARRA SUPERIOR: SIMULADOR DE ROLES NYTEX */}
+        <div className="mb-6 bg-slate-900 border border-slate-700/80 rounded-xl p-3.5 shadow-xl flex flex-wrap items-center justify-between gap-3 text-white">
+          <div className="flex items-center gap-3">
+            <span className="bg-amber-400/20 text-amber-300 border border-amber-400/40 text-[10px] font-black uppercase px-2.5 py-1 rounded tracking-wide flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+              Simulador de Roles
+            </span>
+            <div className="text-xs">
+              <span className="text-slate-400">Rol Activo: </span>
+              <strong className="text-cyan-300 font-bold">
+                {safeUser.role === 'Admin' ? '👑 Administrador' : safeUser.role === 'Client' ? `🏢 Cliente Final (Fase ${localStorage.getItem('nytex_active_phase') || '1'})` : '🤝 Partner Consultor'}
+              </strong>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-xs text-slate-400 mr-1">Probar como:</span>
+            
+            <button
+              type="button"
+              onClick={() => handleSwitchRole('Admin')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all border ${
+                safeUser.role === 'Admin'
+                  ? 'bg-blue-600 border-blue-400 text-white shadow-md'
+                  : 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700 hover:text-white'
+              }`}
+            >
+              👑 Administrador
+            </button>
+
+            <button
+              type="button"
+              onClick={() => handleSwitchRole('Partner')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all border ${
+                safeUser.role === 'Partner' || (!safeUser.role && !safeUser.email?.includes('admin') && !safeUser.email?.includes('cliente'))
+                  ? 'bg-purple-600 border-purple-400 text-white shadow-md'
+                  : 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700 hover:text-white'
+              }`}
+            >
+              🤝 Partner
+            </button>
+
+            <div className="flex items-center bg-slate-800 border border-slate-700 rounded-lg p-0.5">
+              <button
+                type="button"
+                onClick={() => handleSwitchRole('Client', parseInt(localStorage.getItem('nytex_active_phase') || '1', 10))}
+                className={`px-2.5 py-1 rounded text-xs font-bold transition-all ${
+                  safeUser.role === 'Client'
+                    ? 'bg-emerald-600 text-white shadow-sm'
+                    : 'text-slate-300 hover:text-white'
+                }`}
+              >
+                🏢 Cliente Final:
+              </button>
+              {[1, 2, 3, 4].map((pNum) => (
+                <button
+                  type="button"
+                  key={pNum}
+                  onClick={() => handleSwitchRole('Client', pNum)}
+                  className={`px-2 py-1 text-[11px] font-bold rounded transition-colors ${
+                    safeUser.role === 'Client' && (localStorage.getItem('nytex_active_phase') || '1') === pNum.toString()
+                      ? 'bg-emerald-500 text-slate-950 font-black'
+                      : 'text-slate-400 hover:text-white'
+                  }`}
+                  title={`Cliente con Fase ${pNum}`}
+                >
+                  F{pNum}
+                </button>
+              ))}
+            </div>
+
+            <Link
+              to="/login"
+              className="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800 hover:bg-slate-700 text-amber-300 border border-amber-500/30 transition-all flex items-center gap-1"
+            >
+              <span>⚙️</span> Selector Detallado
+            </Link>
+          </div>
+        </div>
         
         {/* Banner Cotización Pendiente */}
         {safeUser.customQuoteAmount && (
@@ -512,7 +620,7 @@ export default function Dashboard() {
                       : 'bg-transparent border-[#4B2979] hover:bg-[#4B2979] text-white'
                   }`}
                 >
-                  {activePhase === phase.id ? 'Aplicaciones incluidas ↓' : 'Ver aplicaciones ↓'}
+                  {activePhase === phase.id ? 'Ocultar aplicaciones ↑' : 'Ver aplicaciones ↓'}
                 </button>
 
                 {/* Botón Contratar */}
@@ -535,6 +643,39 @@ export default function Dashboard() {
                 >
                   <span>🚀</span> Abrir en Workspace ➔
                 </Link>
+
+                {/* Desglose de Módulos Activos de esta Fase */}
+                {activePhase === phase.id && (
+                  <div className="mt-3 pt-3 border-t border-amber-400/40 bg-black/40 rounded-lg p-3 text-left">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-[11px] font-black text-amber-300 uppercase tracking-wider">
+                        Módulos incluidos ({phase.modulesArray.length}):
+                      </span>
+                      <span className="text-[10px] bg-amber-400/20 text-amber-200 px-2 py-0.5 rounded-full border border-amber-400/30 font-bold">
+                        Fase {phase.id}
+                      </span>
+                    </div>
+                    <div className="flex flex-wrap gap-1.5 max-h-48 overflow-y-auto pr-1">
+                      {phase.modulesArray.map((mId) => {
+                        const modObj = modulesList.find(m => m.id === mId);
+                        return (
+                          <span 
+                            key={mId} 
+                            className="text-[11px] bg-amber-400/15 text-amber-200 border border-amber-400/40 px-2 py-1 rounded font-medium flex items-center gap-1"
+                          >
+                            <span className="text-amber-400">✓</span> {modObj ? modObj.name.replace('NyTEX ', '') : mId}
+                          </span>
+                        );
+                      })}
+                    </div>
+                    <Link
+                      to={`/app/workspace?phase=${phase.id}`}
+                      className="mt-3 w-full py-2 px-3 rounded-lg text-xs font-black text-center bg-gradient-to-r from-amber-400 to-yellow-400 text-slate-950 hover:from-amber-300 hover:to-yellow-300 transition-all shadow-md flex items-center justify-center gap-1.5"
+                    >
+                      <span>🚀</span> Abrir en Workspace (Fase {phase.id}) ➔
+                    </Link>
+                  </div>
+                )}
               </div>
             ))}
 
@@ -581,7 +722,7 @@ export default function Dashboard() {
                     : 'bg-transparent border-[#4B2979] hover:bg-[#4B2979] text-white'
                 }`}
               >
-                {activePhase === 'custom' ? 'Aplicaciones incluidas ↓' : 'Ver aplicaciones ↓'}
+                {activePhase === 'custom' ? 'Ocultar aplicaciones ↑' : 'Ver aplicaciones ↓'}
               </button>
 
               <button 
@@ -596,6 +737,34 @@ export default function Dashboard() {
               >
                 CONTRATAR EN PORTAL
               </button>
+
+              {/* Desglose de Módulos Seleccionados a Su Medida */}
+              {activePhase === 'custom' && (
+                <div className="mt-3 pt-3 border-t border-amber-400/40 bg-black/40 rounded-lg p-3 text-left">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-[11px] font-black text-amber-300 uppercase tracking-wider">
+                      Módulos seleccionados ({customModules.length}):
+                    </span>
+                  </div>
+                  {customModules.length === 0 ? (
+                    <p className="text-xs text-gray-400 italic">Marque arriba los módulos que desea contratar.</p>
+                  ) : (
+                    <div className="flex flex-wrap gap-1.5 max-h-48 overflow-y-auto pr-1">
+                      {customModules.map((mId) => {
+                        const modObj = modulesList.find(m => m.id === mId);
+                        return (
+                          <span 
+                            key={mId} 
+                            className="text-[11px] bg-amber-400/15 text-amber-200 border border-amber-400/40 px-2 py-1 rounded font-medium flex items-center gap-1"
+                          >
+                            <span className="text-amber-400">✓</span> {modObj ? modObj.name.replace('NyTEX ', '') : mId}
+                          </span>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
           </div>
