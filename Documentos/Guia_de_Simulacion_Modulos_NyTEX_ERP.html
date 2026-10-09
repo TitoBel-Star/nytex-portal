@@ -1,0 +1,1344 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Guía de Simulación Operativa NyTEX ERP - Versión 4.0</title>
+  <style>
+    @page {
+      size: A4 portrait;
+      margin: 16mm 14mm 16mm 14mm;
+      @bottom-right {
+        content: "Página " counter(page);
+      }
+    }
+    
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', Helvetica, Arial, sans-serif;
+      color: #1e293b;
+      background: #ffffff;
+      font-size: 10pt;
+      line-height: 1.5;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Portada / Cabecera Principal */
+    .header-banner {
+      background: linear-gradient(135deg, #0A2540 0%, #0F3E6D 60%, #09A9E8 100%);
+      color: white;
+      padding: 22px 26px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      border-left: 6px solid #00D4B2;
+      box-shadow: 0 4px 12px rgba(10, 37, 64, 0.15);
+    }
+
+    .header-banner .badge {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.18);
+      color: #e0f2fe;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 8pt;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .header-banner h1 {
+      margin: 4px 0 6px 0;
+      font-size: 18pt;
+      font-weight: 900;
+      color: #ffffff;
+      letter-spacing: -0.5px;
+      line-height: 1.2;
+    }
+
+    .header-banner p {
+      margin: 3px 0;
+      font-size: 8.5pt;
+      color: #e2e8f0;
+    }
+
+    /* Tipografía y Títulos */
+    .doc-title {
+      font-size: 16pt;
+      font-weight: 900;
+      color: #0A2540;
+      margin: 18px 0 10px 0;
+      letter-spacing: -0.4px;
+      border-bottom: 2px solid #0A2540;
+      padding-bottom: 4px;
+    }
+
+    .section-title {
+      font-size: 13pt;
+      font-weight: 800;
+      color: #0F3E6D;
+      background: #f1f5f9;
+      padding: 8px 14px;
+      border-radius: 6px;
+      margin: 22px 0 10px 0;
+      border-left: 4px solid #09A9E8;
+    }
+
+    .module-title {
+      font-size: 11.5pt;
+      font-weight: 700;
+      color: #1e3a8a;
+      margin: 16px 0 8px 0;
+      padding-bottom: 4px;
+      border-bottom: 1px solid #cbd5e1;
+    }
+
+    .task-title {
+      font-size: 10.5pt;
+      font-weight: 700;
+      color: #0f766e;
+      margin: 12px 0 6px 0;
+      background: #f0fdf4;
+      padding: 4px 8px;
+      border-radius: 4px;
+      border-left: 3px solid #10b981;
+    }
+
+    .doc-text {
+      margin: 4px 0;
+      color: #334155;
+    }
+
+    /* Listas */
+    .custom-list {
+      margin: 4px 0 10px 18px;
+      padding: 0;
+      color: #334155;
+    }
+
+    .custom-list li {
+      margin-bottom: 3px;
+    }
+
+    .task-steps {
+      margin: 4px 0 12px 20px;
+      padding: 0;
+      color: #1e293b;
+    }
+
+    .task-steps li {
+      margin-bottom: 5px;
+      line-height: 1.45;
+    }
+
+    /* Código y Badges */
+    code {
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+      background: #f1f5f9;
+      color: #0369a1;
+      padding: 1px 5px;
+      border-radius: 4px;
+      font-size: 8.5pt;
+      border: 1px solid #e2e8f0;
+      font-weight: 600;
+    }
+
+    .math-block {
+      background: #f8fafc;
+      border: 1px dashed #cbd5e1;
+      border-radius: 6px;
+      padding: 8px 12px;
+      font-family: 'Consolas', monospace;
+      font-weight: 700;
+      color: #0369a1;
+      margin: 8px 0;
+      text-align: center;
+    }
+
+    .math-inline {
+      font-weight: 700;
+      color: #0369a1;
+    }
+
+    .divider {
+      border: 0;
+      height: 1px;
+      background: #e2e8f0;
+      margin: 16px 0;
+    }
+
+    /* Tablas */
+    .table-responsive {
+      margin: 12px 0;
+      overflow-x: auto;
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 8.5pt;
+      margin: 6px 0 12px 0;
+    }
+
+    .data-table th, .data-table td {
+      border: 1px solid #cbd5e1;
+      padding: 6px 10px;
+      text-align: left;
+    }
+
+    .data-table th {
+      background: #0A2540;
+      color: #ffffff;
+      font-weight: 700;
+    }
+
+    .data-table tr:nth-child(even) {
+      background: #f8fafc;
+    }
+
+    /* Footer */
+    .doc-footer {
+      margin-top: 24px;
+      padding-top: 10px;
+      border-top: 1px solid #e2e8f0;
+      font-size: 7.5pt;
+      color: #64748b;
+      display: flex;
+      justify-content: space-between;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header-banner">
+    <div class="badge">MANUAL Y GUÍA DE SIMULACIÓN OPERATIVA</div>
+    <h1>NyTEX ERP • Guía de Simulación Tarea por Tarea</h1>
+    <p><strong>Plataforma:</strong> NyTEX Business Cloud & ERP Textil • <strong>Versión:</strong> 4.0 Integral Actualizada (Octubre 2026)</p>
+    <p><strong>Espacio Unificado:</strong> https://nytex-erp-portal.onrender.com/app/workspace • <strong>Cobertura:</strong> 25 Módulos, Controles Internos & 4 Circuitos</p>
+  </div>
+
+  <h1 class="doc-title">📘 GUÍA DE SIMULACIÓN OPERATIVA TAREA POR TAREA — ERP NyTEX</h1>
+<p class="doc-text"><strong>Versión:</strong> 4.0 Integral Actualizada • <strong>Plataforma:</strong> NyTEX ERP & Portal Web Multi-Rol</p>
+<p class="doc-text"><strong>Entorno Local:</strong> <code>http://localhost:5173</code> • <code>http://localhost:3001</code></p>
+<p class="doc-text"><strong>Entorno Nube (Producción):</strong> <code>https://nytex-erp-portal.onrender.com/portal</code></p>
+<p class="doc-text"><strong>Espacio Unificado (Workspace):</strong> <code>https://nytex-erp-portal.onrender.com/app/workspace</code></p>
+<p class="doc-text"><strong>Landing Comercial & Contratación:</strong> <code>https://consultores-nyt.onrender.com/</code></p>
+<hr class="divider" />
+<h2 class="section-title">🎯 Objetivo de la Guía</h2>
+<p class="doc-text">Esta guía describe <strong>módulo por módulo</strong> y <strong>tarea por tarea</strong> el procedimiento exacto de captura, digitación y operación en las pantallas de la aplicación NyTEX ERP. Contiene:</p>
+<ol class="task-steps">
+<li><strong>Pantalla y Ruta de Acceso.</strong></li>
+<li><strong>Botón o Disparador de la Tarea.</strong></li>
+<li><strong>Formulario y Campos a Digitar</strong> (con datos de ejemplo realistas de simulación textil e industrial).</li>
+<li><strong>Acción de Confirmación / Guardado.</strong></li>
+<li><strong>Resultado Visible en Pantalla</strong> (cambios de estado, badges, alertas).</li>
+<li><strong>Efecto de Integración Automatizada</strong> (impacto cruzado e inmediato en contabilidad, inventarios, tesorería, etc.).</li>
+</ol>
+<hr class="divider" />
+<h2 class="section-title">🧭 SECCIÓN 0: MARCO DE OPERACIÓN, SIMULADOR DE ROLES Y SELECTOR DE FASES</h2>
+<p class="doc-text">El ERP NyTEX incorpora una arquitectura adaptativa que permite operar el sistema desde múltiples perspectivas directivas y según la etapa de madurez digital de la empresa.</p>
+<h3 class="module-title">0.1 Simulador de Roles en Tiempo Real (Barra Superior)</h3>
+<p class="doc-text">En la parte superior de la aplicación y del Workspace se dispone del <strong>Simulador de Roles</strong>, el cual permite alternar instantáneamente entre los 3 perfiles clave:</p>
+<ul class="custom-list">
+<li><strong>Rol Administrador:</strong> Acceso completo e irrestricto a los 25 módulos del ecosistema, configuración global de localización fiscal multi-país, auditoría inmutable de accesos y administración de catálogos maestros.</li>
+<li><strong>Rol Partner / Consultor:</strong> Vista de diagnóstico de arquitectura empresarial, matriz de madurez digital, trazabilidad integral de los circuitos operativos y herramientas de consultoría para acelerar la adopción.</li>
+<li><strong>Rol Cliente Final:</strong> Interfaz ejecutiva y simplificada enfocada en la operación del día a día según la fase contratada, eliminando sobrecarga visual y restringiendo las acciones a su alcance operativo.</li>
+</ul>
+<h3 class="module-title">0.2 Selector Dinámico de Fases de Implementación</h3>
+<p class="doc-text">El Workspace unificado permite filtrar y visualizar los módulos correspondientes a cada fase de transformación:</p>
+<ul class="custom-list">
+<li><strong>Fase 1: Starter (7 Módulos):</strong> [1] Ventas, [2] CRM, [3] Inventario, [4] Compras, [5] Producción, [6] Directorio de Business Partners, [17] WMS.</li>
+<li><strong>Fase 2: Express (+10 = 17 Módulos):</strong> Starter + [7] Logística y Distribución, [8] CxC, [9] CxP, [10] Tesorería, Cajas y Controles Internos, [11] Activos Fijos, [12] Contabilidad Central, [13] RRHH, [14] Nómina, [15] Synex Process Suite (BPMN), [16] Minería de Procesos.</li>
+<li><strong>Fase 3: Advanced (+5 = 22 Módulos):</strong> Express + [18] BI y Reportes Financieros NIF/IFRS, [19] Dashboards Ejecutivos, [20] BI Cubo OLAP HyperCube, [21] Big Data e IoT Industrial, [22] Minería de Datos y Machine Learning.</li>
+<li><strong>Fase 4: Enterprise (+3 = 25 Módulos):</strong> Advanced + [23] Asistente Cognitivo IA Copilot, [24] Modelos Predictivos y Riesgo Crediticio (Logit/ARIMA), [25] Planeación S&OP / MRP II.</li>
+</ul>
+<h3 class="module-title">0.3 Flujo de Contratación y Activación Instantánea en la Nube</h3>
+<ol class="task-steps">
+<li>El cliente ingresa a la Landing Page oficial: <code>https://consultores-nyt.onrender.com/</code>.</li>
+<li>En la sección de precios y paquetes, hace clic en <strong><code>CONTRATAR EN PORTAL</code></strong> de la fase seleccionada (ej. Fase 1 Starter).</li>
+<li>Se abre la pasarela de simulación de pago en el Portal de NyTEX:</li>
+</ol>
+<ul class="custom-list">
+<li>Digitar tarjeta de prueba (<code>4242 4242 4242 4242</code>, exp: <code>12/28</code>, CVC: <code>123</code>).</li>
+<li>Hacer clic en <strong><code>Simular Pago y Activar Fase</code></strong>.</li>
+</ul>
+<ol class="task-steps">
+<li><strong>Resultado:</strong> Se confirma el pago y el sistema desbloquea y redirige automáticamente al usuario a su <strong>Workspace Integrado</strong> (<code>/app/workspace?phase=1</code>), con sus módulos listos para operar sin bucles de inicio de sesión.</li>
+</ol>
+<h3 class="module-title">0.4 Centro de Inducción Multimedia</h3>
+<p class="doc-text">En el panel del Workspace y en el Portal se integran accesos a:</p>
+<ul class="custom-list">
+<li><strong>Recorrido General en 3 Minutos:</strong> Video introductorio de navegación por el ecosistema.</li>
+<li><strong>Capacitación Operativa de Fase 1 Starter:</strong> Video intensivo de operación de compras, inventarios, manufactura textil y ventas.</li>
+</ul>
+<hr class="divider" />
+<h2 class="section-title">🏢 BLOQUE 1: NÚCLEO COMERCIAL Y OPERACIONES BASE</h2>
+<hr class="divider" />
+<h3 class="module-title">[1] MÓDULO DE VENTAS (Order-to-Cash)</h3>
+<ul class="custom-list">
+<li><strong>Ruta de Acceso:</strong> <code>/app/ventas</code> o Pestaña <strong>[1] Ventas</strong> en el Workspace.</li>
+<li><strong>Propósito:</strong> Captura de cotizaciones, confirmación de pedidos, orden de surtido y facturación electrónica CFDI/DTE.</li>
+</ul>
+<h4 class="task-title">Tarea 1.1: Captura de Nueva Cotización / Pedido de Venta</h4>
+<ol class="task-steps">
+<li><strong>Acción inicial:</strong> Hacer clic en el botón superior derecho <strong><code>+ NUEVA ORDEN / COTIZACIÓN</code></strong>.</li>
+<li><strong>Campos a registrar en el modal:</strong></li>
+</ol>
+<ul class="custom-list">
+<li><strong>Cliente:</strong> Seleccionar del menú desplegable <code>BP-001 | Confecciones Modernas S.A.</code>.</li>
+<li><strong>Dirección de Entrega:</strong> Verificar que se autocomplete <code>Av. Central #120, Parque Industrial Norte</code>.</li>
+<li><strong>Términos de Pago:</strong> Seleccionar <code>Crédito 30 días</code>.</li>
+<li><strong>Buscador Rápido de Catálogo / Partidas:</strong></li>
+<li>En el buscador digitar <code>Gabardina</code> o seleccionar la categoría <code>Producto Terminado</code>.</li>
+<li>Presionar <strong><code>+ Agregar a la orden</code></strong> en el artículo <code>PT-TEL-101 | Rollo Tela Gabardina Algodón Peinado (Azul)</code>.</li>
+<li>Alternativamente, en la tabla de partidas escribir directamente:</li>
+<li><strong>SKU:</strong> <code>PT-TEL-101</code></li>
+<li><strong>Descripción:</strong> <code>Rollo Tela Gabardina Algodón Peinado (Azul)</code></li>
+<li><strong>Cantidad:</strong> Digitar <code>10</code></li>
+<li><strong>Precio Unitario ($):</strong> Verificar <code>1,850.00</code></li>
+<li>Si se requiere una segunda partida, hacer clic en <strong><code>+ Agregar Partida</code></strong> y capturar:</li>
+<li><strong>SKU:</strong> <code>SKU-MEZ-01</code></li>
+<li><strong>Descripción:</strong> <code>Rollo Mezclilla Denim 12oz Índigo Strech</code></li>
+<li><strong>Cantidad:</strong> Digitar <code>5</code></li>
+<li><strong>Precio Unitario ($):</strong> <code>2,400.00</code></li>
+<li><strong>Resumen Financiero:</strong> Verificar que el sistema calcula automáticamente:</li>
+<li>Subtotal: <code>$30,500.00</code></li>
+<li>IVA (13%): <code>$3,965.00</code></li>
+<li>Total: <code>$34,465.00</code></li>
+</ul>
+<ol class="task-steps">
+<li><strong>Acción de confirmación:</strong> Hacer clic en el botón verde <strong><code>Crear Orden</code></strong>.</li>
+<li><strong>Resultado en pantalla:</strong></li>
+</ol>
+<ul class="custom-list">
+<li>Aparece notificación: <code>✓ Cotización SO-XXXX creada exitosamente.</code></li>
+<li>La nueva orden aparece en la primera fila de la tabla con el badge amarillo <strong><code>Cotización</code></strong>.</li>
+</ul>
+<ol class="task-steps">
+<li><strong>Efecto de Integración:</strong> La cotización queda registrada en el historial comercial disponible para seguimiento en el CRM y planeación S&OP.</li>
+</ol>
+<h4 class="task-title">Tarea 1.2: Confirmar Pedido en Firme y Disparar Surtido a Almacén (WMS)</h4>
+<ol class="task-steps">
+<li><strong>Acción inicial:</strong> En la tabla de órdenes, ubicar la orden recién creada (estado <code>Cotización</code>) y hacer clic en el botón <strong><code>⚡ Confirmar ➔ WMS</code></strong>.</li>
+<li><strong>Resultado en pantalla:</strong></li>
+</ol>
+<ul class="custom-list">
+<li>El estado de la orden cambia inmediatamente a badge azul <strong><code>En Proceso</code></strong>.</li>
+<li>Aparece la alerta: <code>Orden SO-XXXX confirmada. Se ha generado la Tarea de Picking en WMS.</code></li>
+</ul>
+<ol class="task-steps">
+<li><strong>Efecto de Integración:</strong> Se genera automáticamente una orden de surtido en <strong>[17] WMS</strong> con los códigos de barras de los rollos listos para escanear en los racks.</li>
+</ol>
+<h4 class="task-title">Tarea 1.3: Emitir Factura Electrónica y Enviar a Cuentas por Cobrar (CxC)</h4>
+<ol class="task-steps">
+<li><strong>Acción inicial:</strong> Una vez preparado o entregado el pedido (o directamente sobre la orden confirmada), hacer clic en el botón <strong><code>🧾 Facturar ➔ CxC</code></strong>.</li>
+<li><strong>Resultado en pantalla:</strong></li>
+</ol>
+<ul class="custom-list">
+<li>El estado de la orden cambia a <strong><code>Facturada</code></strong>.</li>
+<li>Se muestra la alerta: <code>Factura FAC-XXXX generada y enviada a Cuentas por Cobrar.</code></li>
+</ul>
+<ol class="task-steps">
+<li><strong>Efecto de Integración:</strong></li>
+</ol>
+<ul class="custom-list">
+<li>Descuenta físicamente las existencias en <strong>[3] Inventario</strong>.</li>
+<li>Crea el título de crédito en <strong>[8] CxC</strong> con el saldo por cobrar.</li>
+<li>Dispara en <strong>[12] Contabilidad</strong> la <strong>Póliza de Diario</strong> (Cargo a Clientes CxC, Abono a Ventas e Impuestos Trasladados).</li>
+</ul>
+<hr class="divider" />
+<h3 class="module-title">[2] MÓDULO DE CRM (Embudo Comercial y Oportunidades)</h3>
+<ul class="custom-list">
+<li><strong>Ruta de Acceso:</strong> <code>/app/crm</code> o Pestaña <strong>[2] CRM</strong> en el Workspace.</li>
+<li><strong>Propósito:</strong> Gestión de prospectos (leads), avance de etapas en pipeline y cálculo de probabilidad de cierre.</li>
+</ul>
+<h4 class="task-title">Tarea 2.1: Registrar Nueva Oportunidad Comercial</h4>
+<ol class="task-steps">
+<li><strong>Acción inicial:</strong> Hacer clic en el botón superior derecho <strong><code>+ NUEVA OPORTUNIDAD</code></strong>.</li>
+<li><strong>Campos a registrar en el modal:</strong></li>
+</ol>
+<ul class="custom-list">
+<li><strong>Título del Trato / Negocio:</strong> Digitar <code>Suministro Anual de Popelina y Gabardina</code>.</li>
+<li><strong>Empresa / Prospecto:</strong> Digitar <code>Industrias Textiles del Bajío S.A.</code>.</li>
+<li><strong>Valor Estimado ($):</strong> Digitar <code>45,000</code>.</li>
+<li><strong>Etapa Inicial:</strong> Seleccionar <code>Nuevo</code> o <code>Contactado</code>.</li>
+<li><strong>Prioridad:</strong> Seleccionar <code>Alta</code>.</li>
+<li><strong>Fecha Objetivo de Cierre:</strong> Seleccionar fecha futura (ej. <code>15/10/2026</code>).</li>
+</ul>
+<ol class="task-steps">
+<li><strong>Acción de confirmación:</strong> Hacer clic en <strong><code>Guardar Oportunidad</code></strong>.</li>
+<li><strong>Resultado en pantalla:</strong> La tarjeta de la oportunidad se incorpora a la primera columna (<strong>Nuevo</strong>) del tablero Kanban, y el KPI <em>Valor del Pipeline</em> se incrementa en <code>$45,000</code>.</li>
+</ol>
+<h4 class="task-title">Tarea 2.2: Avanzar Oportunidad por el Embudo Kanban</h4>
+<ol class="task-steps">
+<li><strong>Acción inicial:</strong> Arrastrar la tarjeta o hacer clic en los controles de avance de la oportunidad:</li>
+</ol>
+<ul class="custom-list">
+<li>Pasar de <strong>Nuevo</strong> ➔ <strong>Contactado</strong> (después de llamada inicial de prospección).</li>
+<li>Pasar de <strong>Contactado</strong> ➔ <strong>Calificado</strong> (al validar capacidad financiera y volumen requerido).</li>
+<li>Pasar de <strong>Calificado</strong> ➔ <strong>Cotizado</strong> (al enviar propuesta formal desde el módulo [1] Ventas).</li>
+<li>Pasar de <strong>Cotizado</strong> ➔ <strong>Ganado</strong>.</li>
+</ul>
+<ol class="task-steps">
+<li><strong>Resultado en pantalla:</strong> Al mover la oportunidad a <strong>Ganado</strong>, el contador <em>Ganado este mes</em> suma el importe y la tasa de conversión global del CRM se recalcula en tiempo real.</li>
+</ol>
+<hr class="divider" />
+<h3 class="module-title">[3] MÓDULO DE INVENTARIO Y STOCK</h3>
+<ul class="custom-list">
+<li><strong>Ruta de Acceso:</strong> <code>/app/inventario</code> o Pestaña <strong>[3] Inventario</strong> en el Workspace.</li>
+<li><strong>Propósito:</strong> Catálogo maestro de artículos (SKUs), control de existencias por almacén, lotes, caducidades y valorización PEPS.</li>
+</ul>
+<h4 class="task-title">Tarea 3.1: Alta de Nuevo Artículo en Catálogo Maestro (SKU)</h4>
+<ol class="task-steps">
+<li><strong>Acción inicial:</strong> Hacer clic en el botón superior derecho <strong><code>+ NUEVO PRODUCTO / ARTÍCULO</code></strong>.</li>
+<li><strong>Campos a registrar en el modal:</strong></li>
+</ol>
+<ul class="custom-list">
+<li><strong>Código SKU:</strong> Digitar <code>MP-HIL-501</code>.</li>
+<li><strong>Nombre / Descripción:</strong> Digitar <code>Hilo de Poliéster Texturizado 150D/48F (Blanco Óptico)</code>.</li>
+<li><strong>Categoría:</strong> Seleccionar <code>Materia Prima</code> (opciones: <em>Materia Prima, Producto en Proceso, Producto Terminado, Insumos / Químicos</em>).</li>
+<li><strong>Almacén Principal:</strong> Seleccionar <code>Almacén Central Materias Primas</code> (o <code>Bodega Planta 1</code>).</li>
+<li><strong>Unidad de Medida:</strong> Seleccionar <code>kg</code> (o <code>metros</code>, <code>piezas</code>, <code>rollos</code>).</li>
+<li><strong>Costo Unitario ($):</strong> Digitar <code>85.50</code>.</li>
+<li><strong>Precio de Venta ($):</strong> Dejar en blanco o digitar <code>120.00</code>.</li>
+<li><strong>Stock Inicial:</strong> Digitar <code>1,200</code>.</li>
+<li><strong>Stock Mínimo (Alerta de Reorden):</strong> Digitar <code>300</code>.</li>
+<li><strong>Stock Máximo:</strong> Digitar <code>3,000</code>.</li>
+</ul>
+<ol class="task-steps">
+<li><strong>Acción de confirmación:</strong> Hacer clic en el botón verde <strong><code>Guardar en Catálogo</code></strong>.</li>
+<li><strong>Resultado en pantalla:</strong> El nuevo SKU aparece en la tabla con badge verde de <em>Stock Óptimo</em> y el valor total del inventario aumenta en <code>$102,600.00</code>.</li>
+</ol>
+<h4 class="task-title">Tarea 3.2: Registrar Ajuste Manual de Inventario (Entrada / Salida)</h4>
+<ol class="task-steps">
+<li><strong>Acción inicial:</strong> Hacer clic en el botón <strong><code>⚖️ Registrar Ajuste de Inventario</code></strong>.</li>
+<li><strong>Campos a registrar en el modal:</strong></li>
+</ol>
+<ul class="custom-list">
+<li><strong>Artículo / SKU:</strong> Seleccionar <code>MP-HIL-501</code>.</li>
+<li><strong>Tipo de Movimiento:</strong> Seleccionar <code>Entrada (+)</code> o <code>Salida (-)</code>.</li>
+<li><strong>Cantidad:</strong> Digitar <code>100</code>.</li>
+<li><strong>Motivo del Ajuste:</strong> Seleccionar <code>Reconteo Físico Auditoría</code> (opciones: <em>Merma de Operación, Daño por Humedad, Muestra Comercial</em>).</li>
+</ul>
+<ol class="task-steps">
+<li><strong>Acción de confirmación:</strong> Hacer clic en <strong><code>Aplicar Ajuste Físico</code></strong>.</li>
+<li><strong>Resultado en pantalla:</strong> El stock se actualiza a 1,300 kg y se genera un registro en el Kardex físico.</li>
+<li><strong>Efecto de Integración:</strong> Genera en <strong>[12] Contabilidad</strong> la póliza de variación de existencias.</li>
+</ol>
+<hr class="divider" />
+<h3 class="module-title">[4] MÓDULO DE COMPRAS (Procure-to-Pay)</h3>
+<ul class="custom-list">
+<li><strong>Ruta de Acceso:</strong> <code>/app/compras</code> o Pestaña <strong>[4] Compras</strong> en el Workspace.</li>
+<li><strong>Propósito:</strong> Emisión de órdenes de compra (PO), control de abastecimiento con proveedores y recepción física.</li>
+</ul>
+<h4 class="task-title">Tarea 4.1: Crear Orden de Compra (PO) a Proveedor</h4>
+<ol class="task-steps">
+<li><strong>Acción inicial:</strong> Hacer clic en el botón <strong><code>+ NUEVA ORDEN DE COMPRA</code></strong>.</li>
+<li><strong>Campos a registrar en el modal:</strong></li>
+</ol>
+<ul class="custom-list">
+<li><strong>Proveedor:</strong> Seleccionar <code>PRV-001 | Hilaturas del Norte S.A. de C.V.</code>.</li>
+<li><strong>Almacén de Destino:</strong> Seleccionar <code>Almacén Central Materias Primas</code>.</li>
+<li><strong>Condiciones de Pago:</strong> Seleccionar <code>Crédito 45 días</code>.</li>
+<li><strong>Partida 1:</strong></li>
+<li><strong>SKU:</strong> Seleccionar <code>MP-HIL-101 | Hilo de Algodón Peinado 30/1</code></li>
+<li><strong>Cantidad:</strong> Digitar <code>500</code> kg</li>
+<li><strong>Precio Unitario (<span class="math-inline">):</strong> Verificar <code>125.00</code> (Subtotal: </span>62,500.00)</li>
+<li><strong>Partida 2 (clic en <code>+ Agregar Partida</code>):</strong></li>
+<li><strong>SKU:</strong> Seleccionar <code>MP-HIL-202 | Hilo Poliéster 150D</code></li>
+<li><strong>Cantidad:</strong> Digitar <code>200</code> kg</li>
+<li><strong>Precio Unitario (<span class="math-inline">):</strong> Verificar <code>138.00</code> (Subtotal: </span>27,600.00)</li>
+<li><strong>Resumen:</strong> Subtotal <code><span class="math-inline">90,100.00</code> + IVA (13%) <code></span>11,713.00</code> = Total <code>$101,813.00</code>.</li>
+</ul>
+<ol class="task-steps">
+<li><strong>Acción de confirmación:</strong> Hacer clic en <strong><code>Emitir Orden de Compra</code></strong>.</li>
+<li><strong>Resultado en pantalla:</strong> La orden aparece con estatus amarillo <strong><code>Aprobada</code></strong> (o enviada a workflow de autorización si supera el umbral directivo).</li>
+</ol>
+<h4 class="task-title">Tarea 4.2: Recepción Física de Mercancía en Almacén</h4>
+<ol class="task-steps">
+<li><strong>Acción inicial:</strong> En la tabla de compras, sobre la orden en estado <code>Aprobada</code>, hacer clic en el botón azul <strong><code>📦 Recibir Mercancía</code></strong>.</li>
+<li><strong>Resultado en pantalla:</strong></li>
+</ol>
+<ul class="custom-list">
+<li>El estado de la orden cambia de <code>Aprobada</code> a badge verde <strong><code>Recibida</code></strong>.</li>
+<li>Aparece el mensaje de éxito integral detallando los módulos sincronizados.</li>
+</ul>
+<ol class="task-steps">
+<li><strong>Efecto de Integración Automatizada:</strong></li>
+</ol>
+<ul class="custom-list">
+<li><strong>[3] Inventario:</strong> Aumenta las existencias físicas de hilo en 500 kg y 200 kg respectivamente.</li>
+<li><strong>[9] CxP:</strong> Genera automáticamente la cuenta por pagar a favor de Hilaturas del Norte por <code>$101,813.00</code>.</li>
+<li><strong>[12] Contabilidad:</strong> Genera la <strong>Póliza de Provisión de Compra</strong> (Cargo a Inventario de Materias Primas e IVA Acreditable por Pagar, Abono a Proveedores CxP).</li>
+</ul>
+<hr class="divider" />
+<h3 class="module-title">[5] MÓDULO DE PRODUCCIÓN (Manufactura Textil)</h3>
+<ul class="custom-list">
+<li><strong>Ruta de Acceso:</strong> <code>/app/produccion</code> o Pestaña <strong>[5] Producción</strong> en el Workspace.</li>
+<li><strong>Propósito:</strong> Plan Maestro de Manufactura, órdenes de tejeduría (OP), consumo de lista de materiales (BOM) y liquidación de producto terminado.</li>
+</ul>
+<h4 class="task-title">Tarea 5.1: Programar Nueva Orden de Producción (OP)</h4>
+<ol class="task-steps">
+<li><strong>Acción inicial:</strong> Hacer clic en el botón <strong><code>+ Nueva Orden de Fabricación (OP)</code></strong>.</li>
+<li><strong>Campos a registrar en el modal:</strong></li>
+</ol>
+<ul class="custom-list">
+<li><strong>SKU a Producir:</strong> Digitar o seleccionar <code>PT-TEL-101</code>.</li>
+<li><strong>Descripción del Producto:</strong> <code>Rollo Tela Gabardina Algodón Peinado (Azul)</code>.</li>
+<li><strong>Cantidad Objetivo:</strong> Digitar <code>30</code> (rollos).</li>
+<li><strong>Unidad de Medida:</strong> <code>rollos</code>.</li>
+<li><strong>Centro de Trabajo / Maquinaria:</strong> Seleccionar <code>Telar Circular #3 - Planta 1 (Mayer & Cie)</code>.</li>
+<li><strong>Operador Responsable:</strong> Digitar <code>Ing. Miguel Tejeduría</code>.</li>
+<li><strong>Lista de Materiales Estándar (BOM):</strong> Verificar consumos unitarios:</li>
+<li>Hilo de Algodón 30/1: <code>3.0 kg/rollo</code> (Total lote: 90 kg).</li>
+<li>Hilo de Poliéster 150D: <code>1.5 kg/rollo</code> (Total lote: 45 kg).</li>
+<li>Tinte Reactivo Azul Marino: <code>0.4 L/rollo</code> (Total lote: 12 L).</li>
+</ul>
+<ol class="task-steps">
+<li><strong>Acción de confirmación:</strong> Hacer clic en el botón verde <strong><code>Programar Producción</code></strong>.</li>
+<li><strong>Resultado en pantalla:</strong> La OP queda registrada con el folio <code>OP-XXXX</code> en estado amarillo <strong><code>Planificada</code></strong>.</li>
+</ol>
+<h4 class="task-title">Tarea 5.2: Iniciar Fabricación (Consumo y Descuento de Materias Primas)</h4>
+<ol class="task-steps">
+<li><strong>Acción inicial:</strong> En la tabla de órdenes de producción, hacer clic en el botón azul <strong><code>⚙️ Iniciar Fabricación (Descontar Insumos)</code></strong>.</li>
+<li><strong>Resultado en pantalla:</strong></li>
+</ol>
+<ul class="custom-list">
+<li>El estado de la OP cambia a badge azul <strong><code>En Proceso</code></strong>.</li>
+<li>Aparece la notificación: <code>Producción iniciada. Materias primas reservadas y descontadas del almacén.</code></li>
+</ul>
+<ol class="task-steps">
+<li><strong>Efecto de Integración:</strong></li>
+</ol>
+<ul class="custom-list">
+<li>Descuenta en <strong>[3] Inventario</strong> los 90 kg de algodón y 45 kg de poliéster.</li>
+<li>Genera en <strong>[12] Contabilidad</strong> la <strong>Póliza de Traspaso a Producción en Proceso</strong> (WIP).</li>
+</ul>
+<h4 class="task-title">Tarea 5.3: Liquidar Orden de Producción e Ingresar Producto Terminado</h4>
+<ol class="task-steps">
+<li><strong>Acción inicial:</strong> Al culminar el turno de tejeduría, hacer clic en el botón verde <strong><code>✅ Completar & Enviar a Almacén</code></strong>.</li>
+<li><strong>Resultado en pantalla:</strong></li>
+</ol>
+<ul class="custom-list">
+<li>La orden pasa a estado verde <strong><code>Terminada</code></strong>.</li>
+<li>Se muestra la confirmación: <code>Lote de 30 rollos ingresado con éxito al Almacén de Producto Terminado.</code></li>
+</ul>
+<ol class="task-steps">
+<li><strong>Efecto de Integración:</strong></li>
+</ol>
+<ul class="custom-list">
+<li><strong>[3] Inventario:</strong> Incrementa 30 rollos en existencia de <code>PT-TEL-101</code>.</li>
+<li><strong>[12] Contabilidad:</strong> Genera la <strong>Póliza de Liquidación de Manufactura</strong> (Cargo a Inventario de Producto Terminado, Abono a Producción en Proceso).</li>
+</ul>
+<hr class="divider" />
+<h3 class="module-title">[6] MÓDULO DE BUSINESS PARTNERS (Directorio Central Maestro)</h3>
+<ul class="custom-list">
+<li><strong>Ruta de Acceso:</strong> <code>/app/partners</code> o Pestaña <strong>[6] Partners</strong> en el Workspace.</li>
+<li><strong>Propósito:</strong> Directorio unificado de Clientes, Proveedores, Fleteros y Prospectos comerciales con información fiscal y comercial centralizada.</li>
+</ul>
+<h4 class="task-title">Tarea 6.1: Registrar Nuevo Socio de Negocios</h4>
+<ol class="task-steps">
+<li><strong>Acción inicial:</strong> Hacer clic en el botón <strong><code>+ NUEVO SOCIO DE NEGOCIO</code></strong>.</li>
+<li><strong>Campos a registrar en el modal:</strong></li>
+</ol>
+<ul class="custom-list">
+<li><strong>Tipo de Socio:</strong> Seleccionar <code>Cliente</code> (opciones: <em>Cliente, Proveedor, Fletero, Prospecto</em>).</li>
+<li><strong>Nombre / Razón Social:</strong> Digitar <code>Distribuidora Textil de Guadalajara S.A. de C.V.</code>.</li>
+<li><strong>Identificación Fiscal (RFC / Tax ID):</strong> Digitar <code>DTG980421KM8</code>.</li>
+<li><strong>Términos de Pago Habituales:</strong> Seleccionar <code>Neto 30 días</code>.</li>
+<li><strong>Contacto Principal:</strong> Digitar <code>Lic. Fernando Morales</code>.</li>
+<li><strong>Correo Electrónico:</strong> Digitar <code>fmorales@distribuidoratextil.com</code>.</li>
+<li><strong>Dirección Completa:</strong> Digitar <code>Calzada del Federalismo #850, Guadalajara, Jal.</code>.</li>
+<li><strong>Límite de Crédito ($):</strong> Digitar <code>250,000</code>.</li>
+</ul>
+<ol class="task-steps">
+<li><strong>Acción de confirmación:</strong> Hacer clic en <strong><code>Guardar Socio de Negocio</code></strong>.</li>
+<li><strong>Resultado en pantalla:</strong> El socio queda activo en la tabla maestra y se actualizan los contadores superiores de <em>Clientes Activos</em>.</li>
+<li><strong>Efecto de Integración:</strong> Queda disponible de inmediato en los selectores de <strong>[1] Ventas</strong> y <strong>[8] CxC</strong>.</li>
+</ol>
+<hr class="divider" />
+<h2 class="section-title">🚚 BLOQUE 2: ALMACENES, LOGÍSTICA Y CADENA DE SUMINISTRO</h2>
+<hr class="divider" />
+<h3 class="module-title">[17] MÓDULO DE WMS (Gestión de Almacenes, Picking & Packing)</h3>
+<ul class="custom-list">
+<li><strong>Ruta de Acceso:</strong> <code>/app/wms</code> o Pestaña <strong>[17] WMS</strong> en el Workspace.</li>
+<li><strong>Propósito:</strong> Surtido físico guiado por código de barras, empaque de mercancía y traspaso a logística.</li>
+</ul>
+<h4 class="task-title">Tarea 17.1: Ejecutar Picking con Lector de Código de Barras</h4>
+<ol class="task-steps">
+<li><strong>Acción inicial:</strong> En la tabla de tareas de surtido, ubicar la tarea originada por Ventas en estado <code>Pendiente</code>.</li>
+<li><strong>Acción en pantalla:</strong> Hacer clic en el botón azul <strong><code>▶ Iniciar Picking</code></strong>.</li>
+<li><strong>Verificación visual:</strong> El estado cambia a <strong><code>En Picking</code></strong>. Se muestra la lista de rollos a surtir con su ubicación en racks (ej. <em>Rack B-03, Pasillo 2</em>).</li>
+<li><strong>Lectura de código:</strong> Simular la lectura con pistola láser haciendo clic en la casilla de validación de código de barras.</li>
+</ol>
+<h4 class="task-title">Tarea 17.2: Finalizar Empaque y Liberar a Despacho</h4>
+<ol class="task-steps">
+<li><strong>Acción inicial:</strong> Una vez recolectadas las piezas, presionar el botón morado <strong><code>📦 Finalizar Empaque</code></strong>.</li>
+<li><strong>Paso final:</strong> Hacer clic en el botón verde <strong><code>🚀 Liberar a Despacho</code></strong>.</li>
+<li><strong>Resultado en pantalla:</strong> El estatus cambia a <strong><code>Listo para Despacho</code></strong>.</li>
+<li><strong>Efecto de Integración:</strong> Se genera automáticamente una guía de envío en <strong>[7] Logística</strong> con chofer y unidad preasignada.</li>
+</ol>
+<hr class="divider" />
+<h3 class="module-title">[7] MÓDULO DE LOGÍSTICA Y DISTRIBUCIÓN</h3>
+<ul class="custom-list">
+<li><strong>Ruta de Acceso:</strong> <code>/app/logistica</code> o Pestaña <strong>[7] Logística</strong> en el Workspace.</li>
+<li><strong>Propósito:</strong> Gestión de unidades de transporte, seguimiento de ruta (tracking) y confirmación de entrega física.</li>
+</ul>
+<h4 class="task-title">Tarea 7.1: Iniciar Ruta de Tránsito de Mercancía</h4>
+<ol class="task-steps">
+<li><strong>Acción inicial:</strong> En la tabla de despachos, ubicar el embarque en estatus <code>Programado</code>.</li>
+<li><strong>Acción en pantalla:</strong> Hacer clic en el botón <strong><code>🚛 Iniciar Ruta de Tránsito</code></strong>.</li>
+<li><strong>Resultado en pantalla:</strong> El estado avanza a <strong><code>En Tránsito</code></strong> (badge amarillo animado) y se activa el cronómetro de tiempo en ruta.</li>
+</ol>
+<h4 class="task-title">Tarea 7.2: Ingreso a Zona de Reparto y Confirmación de Entrega</h4>
+<ol class="task-steps">
+<li><strong>Acción inicial:</strong> Al llegar a la ciudad de destino, hacer clic en <strong><code>📍 Entrar en Zona de Reparto</code></strong> (estado: <code>En Reparto</code>).</li>
+<li><strong>Acción de entrega:</strong> Al recibir el acuse firmado del cliente, hacer clic en el botón verde <strong><code>✅ Confirmar Entrega al Cliente</code></strong>.</li>
+<li><strong>Resultado en pantalla:</strong> El envío pasa a <strong><code>Entregado</code></strong>.</li>
+<li><strong>Efecto de Integración:</strong> Actualiza la orden de venta en <strong>[1] Ventas</strong> a estatus <em>Entregada</em> y notifica al área de cobranza en <strong>[8] CxC</strong>.</li>
+</ol>
+<hr class="divider" />
+<h3 class="module-title">[ROP] MÓDULO DE PUNTO DE REORDEN & REABASTECIMIENTO DINÁMICO</h3>
+<ul class="custom-list">
+<li><strong>Ruta de Acceso:</strong> <code>/app/rop</code> o vista integrada de Cadena de Suministro en el Workspace.</li>
+<li><strong>Propósito:</strong> Monitoreo matemático continuo del inventario para evitar quiebres de stock mediante la fórmula estandarizada de reorden dinámico.</li>
+</ul>
+<h4 class="task-title">Tarea ROP.1: Configuración de Parámetros de SKU y Cálculo del Umbral</h4>
+<ol class="task-steps">
+<li><strong>Fórmula de Cálculo Integrada:</strong></li>
+</ol>
+<p class="doc-text"><div class="math-block">\text{ROP} = (\text{Demanda Diaria} \times \text{Lead Time del Proveedor}) + \text{Stock de Seguridad}</div></p>
+<ol class="task-steps">
+<li><strong>Parámetros por SKU (Ejemplo real en pantalla):</strong></li>
+</ol>
+<ul class="custom-list">
+<li><strong>SKU:</strong> <code>KC-10185</code> | <em>Papel Higiénico Scott RindeMax 12x4</em></li>
+<li><strong>Proveedor:</strong> <code>Kimberly Clark</code> (SUP-001)</li>
+<li><strong>Demanda Diaria (<span class="math-inline">d</span>):</strong> <code>45</code> cajas/día</li>
+<li><strong>Lead Time (<span class="math-inline">L</span>):</strong> <code>7</code> días</li>
+<li><strong>Stock de Seguridad (<span class="math-inline">SS</span>):</strong> <code>120</code> cajas</li>
+<li><strong>Cálculo ROP:</strong> <span class="math-inline">(45 \times 7) + 120 = 435</span> cajas.</li>
+<li><strong>Stock Actual:</strong> <code>280</code> cajas (por debajo del ROP ➔ Alerta de Reorden).</li>
+</ul>
+<h4 class="task-title">Tarea ROP.2: Auditoría del Semáforo de Riesgo y Disparo de Requisición</h4>
+<ol class="task-steps">
+<li><strong>Acción de inspección:</strong> En el panel de control, revisar los tres semáforos de criticidad:</li>
+</ol>
+<ul class="custom-list">
+<li><strong>Verde (Óptimo):</strong> Existencias superiores al ROP (ej. <code>NES-30114</code> con 195 cajas vs ROP 130).</li>
+<li><strong>Amarillo (Alerta de Reorden):</strong> Existencias por debajo del ROP (ej. <code>KC-10185</code> con 280 cajas vs ROP 435).</li>
+<li><strong>Rojo (Rotura Crítica):</strong> Existencias por debajo del Stock de Seguridad (ej. <code>UN-20412</code> con 140 cajas vs ROP 370).</li>
+</ul>
+<ol class="task-steps">
+<li><strong>Acción resolutiva:</strong> Sobre el artículo en alerta amarilla o roja, hacer clic en el botón azul <strong><code>⚡ Generar Requisición Sugerida a Compras</code></strong>.</li>
+<li><strong>Resultado en pantalla:</strong> Se sugiere el <strong>Lote Económico de Pedido (EOQ: 350 cajas)</strong> y se muestra: <code>✓ Requisición REQ-ROP-XXXX transmitida con éxito a Compras.</code></li>
+<li><strong>Efecto de Integración:</strong> Aparece inmediatamente una requisición precargada en <strong>[4] Compras</strong> lista para emitir la Orden de Compra (PO) correspondiente.</li>
+</ol>
+<hr class="divider" />
+<h2 class="section-title">💰 BLOQUE 3: NÚCLEO FINANCIERO, TESORERÍA, CONTROLES INTERNOS Y CONTABILIDAD</h2>
+<hr class="divider" />
+<h3 class="module-title">[8] MÓDULO DE CUENTAS POR COBRAR (CxC & Cartera)</h3>
+<ul class="custom-list">
+<li><strong>Ruta de Acceso:</strong> <code>/app/cxc</code> o Pestaña <strong>[8] CxC</strong> en el Workspace.</li>
+<li><strong>Propósito:</strong> Control de cartera de clientes, facturación directa y aplicación de cobranzas bancarias.</li>
+</ul>
+<h4 class="task-title">Tarea 8.1: Emisión Directa de Factura a Crédito</h4>
+<ol class="task-steps">
+<li><strong>Acción inicial:</strong> Hacer clic en el botón superior derecho <strong><code>+ NUEVA FACTURA DIRECTA</code></strong>.</li>
+<li><strong>Campos a registrar en el modal:</strong></li>
+</ol>
+<ul class="custom-list">
+<li><strong>Cliente:</strong> Seleccionar <code>BP-002 | Hilados & Diseños Industriales</code>.</li>
+<li><strong>Días de Crédito:</strong> Digitar <code>30</code>.</li>
+<li><strong>Concepto / Descripción:</strong> Digitar <code>Venta de Tela Drill Algodón Calidad Exportación</code>.</li>
+<li><strong>Monto Subtotal ($):</strong> Digitar <code>18,500.00</code>.</li>
+<li><strong>IVA Calculado (13%):</strong> Verificar que el sistema calcula automáticamente <code>$2,405.00</code>.</li>
+<li><strong>Total Factura ($):</strong> <code>20,905.00</code>.</li>
+</ul>
+<ol class="task-steps">
+<li><strong>Acción de confirmación:</strong> Hacer clic en <strong><code>Emitir y Contabilizar Factura</code></strong>.</li>
+<li><strong>Resultado en pantalla:</strong> La factura aparece en la tabla con folio <code>FAC-XXXX</code>, estado <code>Pendiente</code> y saldo insoluto de <code>$20,905.00</code>.</li>
+<li><strong>Efecto de Integración:</strong> Genera en <strong>[12] Contabilidad</strong> la <strong>Póliza de Diario de Provisión de Venta</strong>.</li>
+</ol>
+<h4 class="task-title">Tarea 8.2: Aplicar Pago de Cliente (Cobranza Bancaria)</h4>
+<ol class="task-steps">
+<li><strong>Acción inicial:</strong> En la tabla de facturas, ubicar la factura emitida y hacer clic en el botón verde <strong><code>💵 Aplicar Cobro</code></strong>.</li>
+<li><strong>Campos a registrar en el modal:</strong></li>
+</ol>
+<ul class="custom-list">
+<li><strong>Cuenta de Depósito:</strong> Seleccionar <code>BBVA Bancomer - Cta Maestra Pesos</code>.</li>
+<li><strong>Método de Pago:</strong> Seleccionar <code>Transferencia SPEI</code>.</li>
+<li><strong>Monto a Cobrar ($):</strong> Digitar el pago total <code>20,905.00</code> (o parcial).</li>
+<li><strong>Referencia Bancaria:</strong> Digitar <code>SPEI-9928172</code>.</li>
+</ul>
+<ol class="task-steps">
+<li><strong>Acción de confirmación:</strong> Hacer clic en <strong><code>Confirmar Cobro y Timbrar Recibo</code></strong>.</li>
+<li><strong>Resultado en pantalla:</strong> El saldo de la factura pasa a <code>$0.00</code> y su estatus cambia a badge verde <strong><code>Pagada</code></strong>.</li>
+<li><strong>Efecto de Integración:</strong></li>
+</ol>
+<ul class="custom-list">
+<li><strong>[10] Tesorería:</strong> Ingresan <code>$20,905.00</code> a la cuenta de cheques bancaria.</li>
+<li><strong>[12] Contabilidad:</strong> Genera la <strong>Póliza de Ingreso</strong> (Cargo a Bancos, Abono a Clientes CxC).</li>
+</ul>
+<hr class="divider" />
+<h3 class="module-title">[9] MÓDULO DE CUENTAS POR PAGAR (CxP & Pasivos)</h3>
+<ul class="custom-list">
+<li><strong>Ruta de Acceso:</strong> <code>/app/cxp</code> o Pestaña <strong>[9] CxP</strong> en el Workspace.</li>
+<li><strong>Propósito:</strong> Gestión de obligaciones con proveedores, programación de pagos y retenciones tributarias.</li>
+</ul>
+<h4 class="task-title">Tarea 9.1: Registrar Factura de Proveedor para Pago Programado</h4>
+<ol class="task-steps">
+<li><strong>Acción inicial:</strong> Hacer clic en el botón <strong><code>+ REGISTRAR FACTURA DE PROVEEDOR</code></strong>.</li>
+<li><strong>Campos a registrar en el modal:</strong></li>
+</ol>
+<ul class="custom-list">
+<li><strong>Proveedor:</strong> Seleccionar <code>PRV-002 | Tintes & Químicos de Centroamérica</code>.</li>
+<li><strong>Número de Factura Proveedor:</strong> Digitar <code>FAC-PRV-45019</code>.</li>
+<li><strong>Fecha de Vencimiento:</strong> Seleccionar fecha futura (ej. <code>30 días</code>).</li>
+<li><strong>Monto Total con Impuestos ($):</strong> Digitar <code>28,250.00</code>.</li>
+<li><strong>Concepto:</strong> Digitar <code>Suministro de Pigmentos Reactivos y Suavizantes Lote B-12</code>.</li>
+</ul>
+<ol class="task-steps">
+<li><strong>Acción de confirmación:</strong> Hacer clic en <strong><code>Guardar Cuenta por Pagar</code></strong>.</li>
+<li><strong>Resultado en pantalla:</strong> La cuenta por pagar queda programada con semáforo verde de vencimiento.</li>
+</ol>
+<h4 class="task-title">Tarea 9.2: Dispersión Bancaria y Liquidación de Pasivo</h4>
+<ol class="task-steps">
+<li><strong>Acción inicial:</strong> En la tabla de cuentas por pagar, ubicar la factura a liquidar y presionar el botón morado <strong><code>💳 Pagar Factura</code></strong>.</li>
+<li><strong>Campos a registrar:</strong></li>
+</ol>
+<ul class="custom-list">
+<li><strong>Cuenta Bancaria Origen:</strong> Seleccionar <code>BBVA Bancomer - Cta Maestra Pesos</code>.</li>
+<li><strong>Método de Dispersión:</strong> Seleccionar <code>Transferencia Bancaria Electrónica</code>.</li>
+<li><strong>Monto a Liquidar ($):</strong> Verificar <code>28,250.00</code>.</li>
+<li><strong>Folio de Autorización / Referencia:</strong> Digitar <code>TRANS-PAGO-00412</code>.</li>
+</ul>
+<ol class="task-steps">
+<li><strong>Acción de confirmación:</strong> Hacer clic en <strong><code>Ejecutar Dispersión Bancaria</code></strong>.</li>
+<li><strong>Resultado en pantalla:</strong> El pasivo queda saldado con estatus verde <strong><code>Liquidada</code></strong>.</li>
+<li><strong>Efecto de Integración:</strong></li>
+</ol>
+<ul class="custom-list">
+<li><strong>[10] Tesorería:</strong> Resta <code>$28,250.00</code> de la cuenta bancaria.</li>
+<li><strong>[12] Contabilidad:</strong> Genera la <strong>Póliza de Egresos</strong> (Cargo a Proveedores CxP, Abono a Bancos).</li>
+</ul>
+<hr class="divider" />
+<h3 class="module-title">[10] MÓDULO DE TESORERÍA, CONTROLES INTERNOS Y DIRECCIÓN DE FINANZAS</h3>
+<ul class="custom-list">
+<li><strong>Ruta de Acceso:</strong> <code>/app/tesoreria</code> o Pestaña <strong>[10] Tesorería</strong> en el Workspace.</li>
+<li><strong>Propósito:</strong> Administración de liquidez, salvaguarda de efectivo físico, controles de cierre operativo diario, conciliaciones bancarias automatizadas y políticas de gobernanza financiera.</li>
+<li><strong>Estructura de la Pantalla:</strong> Cuenta con 4 pestañas de control operativo y un área directiva de gobernanza:</li>
+</ul>
+<ol class="task-steps">
+<li><em>Cuentas Bancarias / Tesorería Principal</em></li>
+<li><em>Cajas y Fondos Fijos (Control Interno & Arqueos)</em></li>
+<li><em>Cierres de Operación Diaria (Gobernanza Administrativa)</em></li>
+<li><em>Conciliación Bancaria Automática</em></li>
+</ol>
+<h4 class="task-title">Tarea 10.1: Registrar Movimiento Bancario Manual (Ingresos / Egresos / Traspasos)</h4>
+<ol class="task-steps">
+<li><strong>Acción inicial:</strong> En la pestaña <em>Cuentas Bancarias</em>, hacer clic en el botón superior derecho <strong><code>+ REGISTRAR MOVIMIENTO BANCARIO</code></strong>.</li>
+<li><strong>Campos a registrar en el modal:</strong></li>
+</ol>
+<ul class="custom-list">
+<li><strong>Institución Bancaria:</strong> Seleccionar <code>BBVA Bancomer - Cta Maestra Pesos</code> (o <code>Banorte Operativa</code>).</li>
+<li><strong>Tipo de Movimiento:</strong> Seleccionar <code>Ingreso</code> o <code>Egreso</code>.</li>
+<li><strong>Categoría:</strong> Seleccionar <code>Inversión de Capital</code> (opciones: <em>Operación Comercial, Anticipo de Cliente, Pago a Proveedores, Gastos Administrativos, Traspaso entre Cuentas</em>).</li>
+<li><strong>Monto ($):</strong> Digitar <code>50,000.00</code>.</li>
+<li><strong>Concepto:</strong> Digitar <code>Aportación de Capital de Trabajo para Expansión de Telares</code>.</li>
+<li><strong>Referencia Bancaria:</strong> Digitar <code>DEP-CAP-88192</code>.</li>
+</ul>
+<ol class="task-steps">
+<li><strong>Acción de confirmación:</strong> Hacer clic en <strong><code>Guardar y Aplicar en Bancos</code></strong>.</li>
+<li><strong>Resultado en pantalla:</strong></li>
+</ol>
+<ul class="custom-list">
+<li>El saldo disponible de la cuenta se incrementa inmediatamente en <code>$50,000.00</code>.</li>
+<li>El KPI de <em>Flujo de Efectivo Neto</em> se actualiza.</li>
+</ul>
+<ol class="task-steps">
+<li><strong>Efecto de Integración:</strong> Genera en <strong>[12] Contabilidad</strong> la <strong>Póliza de Ingreso</strong> cuadrada al 100%.</li>
+</ol>
+<h4 class="task-title">Tarea 10.2: Cierre y Arqueo Físico de Caja General</h4>
+<ol class="task-steps">
+<li><strong>Acción inicial:</strong> Cambiar a la pestaña <strong><code>Cajas y Fondos Fijos</code></strong>. Ubicar la tarjeta de <code>Caja General Planta Principal</code> y hacer clic en el botón <strong><code>🔍 Ejecutar Arqueo Físico</code></strong>.</li>
+<li><strong>Campos a capturar en el modal de arqueo:</strong></li>
+</ol>
+<ul class="custom-list">
+<li><strong>Efectivo Físico Contado ($):</strong> Digitar el monto recontado en billetes y monedas (ej. <code>1,250.00</code>).</li>
+<li><strong>Total de Comprobantes / Vales ($):</strong> Digitar la suma de recibos y facturas en caja (ej. <code>450.00</code>).</li>
+<li><strong>Observaciones de Auditoría:</strong> Digitar <code>Arqueo de corte de turno vespertino. Valores cuadrados.</code>.</li>
+</ul>
+<ol class="task-steps">
+<li><strong>Cálculo automático del sistema:</strong></li>
+</ol>
+<ul class="custom-list">
+<li>Saldo Teórico en Libros: <code>$1,700.00</code>.</li>
+<li>Total Físico Justificado: <code><span class="math-inline">1,250.00 + </span>450.00 = $1,700.00</code>.</li>
+<li>Diferencia: <code>$0.00</code> (Badge verde: <em>Arqueo Conforme / Sin Descuadre</em>).</li>
+</ul>
+<ol class="task-steps">
+<li><strong>Acción de confirmación:</strong> Hacer clic en <strong><code>Cerrar Caja y Firmar Acta de Arqueo</code></strong>.</li>
+<li><strong>Resultado en pantalla:</strong> Se emite el acta de arqueo foliada con sello criptográfico digital y se registra en la bitácora histórica de auditoría.</li>
+</ol>
+<h4 class="task-title">Tarea 10.3: Control y Reposición de Caja Chica (Fondo Fijo)</h4>
+<ol class="task-steps">
+<li><strong>Acción inicial:</strong> En la misma pestaña de <em>Cajas y Fondos Fijos</em>, ubicar la tarjeta de <code>Caja Chica Administrativa (Fondo Fijo: $500.00 USD)</code>.</li>
+<li><strong>Acción en pantalla:</strong> Al detectar que el saldo disponible está bajo (ej. saldo de <code><span class="math-inline">120.00</code> con gastos comprobados de <code></span>380.00</code>), presionar el botón azul <strong><code>⚡ Solicitar Reposición de Fondo</code></strong>.</li>
+<li><strong>Confirmación en modal:</strong></li>
+</ol>
+<ul class="custom-list">
+<li>Se muestra el desglose de comprobantes de gastos menores a reintegrar (<code>$380.00 USD</code>).</li>
+<li>Banco emisor del cheque o transferencia de reembolso: <code>BBVA Bancomer</code>.</li>
+</ul>
+<ol class="task-steps">
+<li><strong>Acción de confirmación:</strong> Presionar <strong><code>Aprobar y Emitir Reposición</code></strong>.</li>
+<li><strong>Resultado en pantalla:</strong></li>
+</ol>
+<ul class="custom-list">
+<li>El saldo de la Caja Chica se restablece a su techo formal de <code>$500.00 USD</code>.</li>
+<li>Muestra alerta: <code>✓ Reposición completada por $380.00 USD. Póliza contable POL-EGR-XXXX generada.</code></li>
+</ul>
+<ol class="task-steps">
+<li><strong>Efecto de Integración:</strong></li>
+</ol>
+<ul class="custom-list">
+<li><strong>[10] Tesorería:</strong> Descuenta <code>$380.00</code> de la cuenta bancaria BBVA.</li>
+<li><strong>[12] Contabilidad:</strong> Genera la <strong>Póliza de Egresos</strong> afectando las subcuentas de gastos administrativos y acreditamiento de IVA.</li>
+</ul>
+<h4 class="task-title">Tarea 10.4: Cierre Diario de Cobros (Liquidación de Cartera CxC)</h4>
+<ol class="task-steps">
+<li><strong>Acción inicial:</strong> Cambiar a la pestaña <strong><code>Cierres de Operación Diaria</code></strong>.</li>
+<li><strong>Disparador:</strong> En la tarjeta de <em>Cierre Diario de Cobros (CxC)</em>, hacer clic en el botón azul <strong><code>🔒 Ejecutar Cierre de Cobros</code></strong>.</li>
+<li><strong>Campos en el modal:</strong></li>
+</ol>
+<ul class="custom-list">
+<li><strong>Título del Cierre:</strong> <code>Corte Diario de Cobranza - [Fecha Actual]</code>.</li>
+<li><strong>Monto Total Recaudado:</strong> Verificar el importe acumulado del día (ej. <code>$24,500.00 USD</code>).</li>
+<li><strong>Notas del Supervisor:</strong> Digitar <code>Cobranza recibida vía transferencias SPEI y depósitos bancarios verificados con comprobante.</code>.</li>
+</ul>
+<ol class="task-steps">
+<li><strong>Acción de confirmación:</strong> Hacer clic en <strong><code>Aplicar Cierre Definitivo</code></strong>.</li>
+<li><strong>Resultado en pantalla:</strong></li>
+</ol>
+<ul class="custom-list">
+<li>Se bloquea la edición de cobranzas con fecha del día cerrado.</li>
+<li>Se genera el registro de cierre con estatus <strong><code>CERRADO / SELLADO</code></strong> y hash de verificación.</li>
+</ul>
+<ol class="task-steps">
+<li><strong>Efecto de Integración:</strong> Notifica a Contabilidad y Dirección Financiera el corte formal de ingresos líquidos.</li>
+</ol>
+<h4 class="task-title">Tarea 10.5: Cierre Diario de Pagos (Dispersión y Control CxP)</h4>
+<ol class="task-steps">
+<li><strong>Acción inicial:</strong> En la pestaña <strong><code>Cierres de Operación Diaria</code></strong>, en la tarjeta de <em>Cierre Diario de Pagos (CxP)</em>, hacer clic en <strong><code>🔒 Ejecutar Cierre de Pagos</code></strong>.</li>
+<li><strong>Campos en el modal:</strong></li>
+</ol>
+<ul class="custom-list">
+<li><strong>Título del Cierre:</strong> <code>Corte Diario de Dispersión a Proveedores y Pasivos</code>.</li>
+<li><strong>Monto Total Dispersado:</strong> Verificar total liquidado (ej. <code>$18,920.00 USD</code>).</li>
+<li><strong>Notas:</strong> Digitar <code>Transferencias de pago a proveedores de materia prima y servicios autorizadas según calendario semanal.</code>.</li>
+</ul>
+<ol class="task-steps">
+<li><strong>Acción de confirmación:</strong> Hacer clic en <strong><code>Aplicar Cierre Definitivo</code></strong>.</li>
+<li><strong>Resultado en pantalla:</strong> El lote de transferencias del día queda archivado y sellado, garantizando que no se puedan emitir pagos retroactivos sin previa autorización gerencial.</li>
+</ol>
+<h4 class="task-title">Tarea 10.6: Cierre de Compras Diarias (Validación Recepciones vs Facturas)</h4>
+<ol class="task-steps">
+<li><strong>Acción inicial:</strong> En la tarjeta de <em>Cierre de Compras Diarias</em>, presionar el botón <strong><code>🔒 Ejecutar Cierre de Compras</code></strong>.</li>
+<li><strong>Campos en el modal:</strong></li>
+</ol>
+<ul class="custom-list">
+<li><strong>Título del Cierre:</strong> <code>Corte Diario de Recepción y Facturación de Compras</code>.</li>
+<li><strong>Monto Comprometido:</strong> Verificar volumen diario de compras (ej. <code>$32,400.00 USD</code>).</li>
+<li><strong>Notas:</strong> Digitar <code>Validación 3-Way Match completada: Órdenes de compra aprobadas coinciden con entradas físicas a almacén y CFDI de proveedores.</code>.</li>
+</ul>
+<ol class="task-steps">
+<li><strong>Acción de confirmación:</strong> Hacer clic en <strong><code>Aplicar Cierre Definitivo</code></strong>.</li>
+<li><strong>Resultado en pantalla:</strong> Se cierra el período diario de compras, impidiendo la alteración de precios de compra o inventarios recepcionados durante esa jornada.</li>
+</ol>
+<h4 class="task-title">Tarea 10.7: Conciliación Bancaria Automática y Sello Criptográfico</h4>
+<ol class="task-steps">
+<li><strong>Acción inicial:</strong> Cambiar a la pestaña <strong><code>Conciliación Bancaria Automática</code></strong>.</li>
+<li><strong>Parámetros de consulta:</strong></li>
+</ol>
+<ul class="custom-list">
+<li><strong>Cuenta Bancaria:</strong> Seleccionar <code>BBVA Bancomer - Cta Maestra Pesos (BCO-BBVA-01)</code>.</li>
+<li><strong>Período:</strong> Seleccionar <code>2026-10</code> (Octubre 2026).</li>
+</ul>
+<ol class="task-steps">
+<li><strong>Mecanismo de conciliación interactivo:</strong></li>
+</ol>
+<ul class="custom-list">
+<li>En la tabla de partidas conciliatorias, revisar las filas que cruzan los movimientos del <strong>Libro Mayor de Bancos (ERP)</strong> contra el <strong>Extracto Bancario Oficial</strong>.</li>
+<li>Hacer clic en el botón de punteo o switch de conciliación de las partidas pendientes (ej. comisiones bancarias, depósitos en tránsito).</li>
+<li>Verificar cómo la <strong>Diferencia No Conciliada</strong> se reduce dinámicamente hasta llegar a <code>$0.00 USD</code>.</li>
+</ul>
+<ol class="task-steps">
+<li><strong>Acción de confirmación:</strong> Hacer clic en el botón verde superior <strong><code>✓ Cerrar Conciliación Formal del Período</code></strong>.</li>
+<li><strong>Resultado en pantalla:</strong></li>
+</ol>
+<ul class="custom-list">
+<li>Aparece la alerta: <code>✓ Conciliación bancaria cerrada con éxito. Sello criptográfico SHA-256: 7f8a9b1c2d3e4f5a6b7c8d...</code>.</li>
+<li>Se genera el reporte oficial de conciliación en formato imprimible con valor probatorio para auditorías externas e internas.</li>
+</ul>
+<h4 class="task-title">Tarea 10.8: Gobernanza Financiera y Matriz de Autorizaciones</h4>
+<ol class="task-steps">
+<li><strong>Acción de consulta:</strong> En el encabezado del módulo, revisar los umbrales de autorización y firmas electrónicas configuradas:</li>
+</ol>
+<ul class="custom-list">
+<li><strong>Nivel Operativo:</strong> Pagos y transferencias hasta <code>$5,000 USD</code> (Aprobación por Jefe de Tesorería).</li>
+<li><strong>Nivel Gerencial:</strong> Pagos entre <code><span class="math-inline">5,001 USD</code> y <code></span>25,000 USD</code> (Requiere firma mancomunada de Gerente Administrativo).</li>
+<li><strong>Nivel Dirección General:</strong> Egresos superiores a <code>$25,000 USD</code> (Requiere doble token y autorización del Director de Finanzas o CEO).</li>
+</ul>
+<ol class="task-steps">
+<li><strong>Efecto de Integración:</strong> Todo movimiento que exceda el límite operativo activa de forma inmediata un workflow jerárquico en <strong>[15] Synex Process Suite</strong>.</li>
+</ol>
+<hr class="divider" />
+<h3 class="module-title">[11] MÓDULO DE ACTIVOS FIJOS Y DEPRECIACIONES</h3>
+<ul class="custom-list">
+<li><strong>Ruta de Acceso:</strong> <code>/app/activosfijos</code> o Pestaña <strong>[11] Activos Fijos</strong> en el Workspace.</li>
+<li><strong>Propósito:</strong> Padrón de bienes de capital, maquinaria industrial y corrida de depreciación según NIF C-6.</li>
+</ul>
+<h4 class="task-title">Tarea 11.1: Registrar Nuevo Activo de Planta</h4>
+<ol class="task-steps">
+<li><strong>Acción inicial:</strong> Hacer clic en el botón <strong><code>+ ALTA DE ACTIVO FIJO</code></strong>.</li>
+<li><strong>Campos a registrar en el modal:</strong></li>
+</ol>
+<ul class="custom-list">
+<li><strong>Nombre / Descripción del Activo:</strong> Digitar <code>Telar Circular Mayer & Cie Relanit 3.2 II (30 Pulgadas)</code>.</li>
+<li><strong>Categoría:</strong> Seleccionar <code>Maquinaria & Equipo Fabril</code> (opciones: <em>Equipo de Transporte, Mobiliario de Oficina, Equipo de Cómputo</em>).</li>
+<li><strong>Costo de Adquisición ($):</strong> Digitar <code>385,000.00</code>.</li>
+<li><strong>Vida Útil Estimada:</strong> Digitar <code>10</code> (años).</li>
+<li><strong>Centro de Costos / Ubicación:</strong> Seleccionar <code>Planta 1 - Tejeduría</code>.</li>
+</ul>
+<ol class="task-steps">
+<li><strong>Acción de confirmación:</strong> Hacer clic en <strong><code>Guardar Activo Fijo</code></strong>.</li>
+<li><strong>Resultado en pantalla:</strong> El activo se incorpora a la lista con código <code>AF-XXXX</code>, valor en libros inicial de <code><span class="math-inline">385,000.00</code> y depreciación acumulada de <code></span>0.00</code>.</li>
+</ol>
+<h4 class="task-title">Tarea 11.2: Ejecutar Depreciación Mensual Automática</h4>
+<ol class="task-steps">
+<li><strong>Acción inicial:</strong> En la cabecera superior, hacer clic en el botón morado <strong><code>⚡ EJECUTAR DEPRECIACIÓN MENSUAL</code></strong>.</li>
+<li><strong>Resultado en pantalla:</strong></li>
+</ol>
+<ul class="custom-list">
+<li>Se muestra la alerta: <code>✓ Depreciación mensual ejecutada exitosamente para todos los activos del padrón.</code></li>
+<li>La depreciación acumulada se incrementa proporcionalmente en cada renglón y el <em>Valor Residual en Libros</em> se actualiza.</li>
+</ul>
+<ol class="task-steps">
+<li><strong>Efecto de Integración:</strong> Genera automáticamente en <strong>[12] Contabilidad</strong> la <strong>Póliza de Diario de Depreciación</strong> (Cargo a Gasto de Operación por Depreciación, Abono a Depreciación Acumulada de Maquinaria).</li>
+</ol>
+<hr class="divider" />
+<h3 class="module-title">[12] MÓDULO DE CONTABILIDAD CENTRAL & PÓLIZAS AUTOMÁTICAS</h3>
+<ul class="custom-list">
+<li><strong>Ruta de Acceso:</strong> <code>/app/contabilidad</code> o Pestaña <strong>[12] Contabilidad</strong> en el Workspace.</li>
+<li><strong>Propósito:</strong> Libro Diario, Libro Mayor, consulta de partida doble y Balanza de Comprobación fiscal.</li>
+</ul>
+<h4 class="task-title">Tarea 12.1: Auditoría y Filtrado de Pólizas Contables</h4>
+<ol class="task-steps">
+<li><strong>Acción inicial:</strong> En la pestaña principal <strong>Pólizas</strong>, hacer clic en los filtros:</li>
+</ol>
+<ul class="custom-list">
+<li><code>Todas</code>: Muestra todas las pólizas del ejercicio.</li>
+<li><code>Ingreso</code>: Pólizas originadas por cobros y depósitos en Tesorería.</li>
+<li><code>Egreso</code>: Pólizas de pagos a proveedores y dispersión de nómina.</li>
+<li><code>Diario</code>: Pólizas de facturación, depreciaciones y ajustes de almacén.</li>
+</ul>
+<ol class="task-steps">
+<li><strong>Consulta de detalle de partida doble:</strong></li>
+</ol>
+<ul class="custom-list">
+<li>Hacer clic en el botón <strong><code>Ver Asiento</code></strong> de cualquier póliza.</li>
+<li>El modal despliega las cuentas de catálogo (ej. <em>1100 Bancos, 1120 Clientes, 2100 Proveedores, 4100 Ventas, 5100 Costo</em>), verificando que la suma de la columna <strong>Debe</strong> sea exactamente igual a la columna <strong>Haber</strong>.</li>
+</ul>
+<h4 class="task-title">Tarea 12.2: Consulta de la Balanza de Comprobación Cuadrada</h4>
+<ol class="task-steps">
+<li><strong>Acción inicial:</strong> Cambiar a la pestaña <strong><code>Balanza de Comprobación</code></strong>.</li>
+<li><strong>Verificación operativa:</strong></li>
+</ol>
+<ul class="custom-list">
+<li>Revisar los saldos iniciales, movimientos acumulados y saldos finales de cada cuenta.</li>
+<li>Constatar al final de la tabla la leyenda verde: <code>✓ Balanza Cuadrada al 100% (Activo = Pasivo + Capital)</code>.</li>
+</ul>
+<hr class="divider" />
+<h2 class="section-title">👥 BLOQUE 4: TALENTO HUMANO Y NÓMINA</h2>
+<hr class="divider" />
+<h3 class="module-title">[13] MÓDULO DE RECURSOS HUMANOS (RRHH)</h3>
+<ul class="custom-list">
+<li><strong>Ruta de Acceso:</strong> <code>/app/rrhh</code> o Pestaña <strong>[13] RRHH</strong> en el Workspace.</li>
+<li><strong>Propósito:</strong> Padrón de colaboradores, expedientes laborales y captura de incidencias periódicas.</li>
+</ul>
+<h4 class="task-title">Tarea 13.1: Registrar Nuevo Colaborador</h4>
+<ol class="task-steps">
+<li><strong>Acción inicial:</strong> En la pestaña <em>Directorio</em>, hacer clic en el botón <strong><code>+ Registrar Colaborador</code></strong>.</li>
+<li><strong>Campos a registrar en el modal:</strong></li>
+</ol>
+<ul class="custom-list">
+<li><strong>Nombre Completo:</strong> Digitar <code>Carlos Alberto Ramos Solís</code>.</li>
+<li><strong>Departamento:</strong> Seleccionar <code>Producción Fabril</code> (opciones: <em>Calidad Textil, Almacén & Logística, Ventas & Marketing, Finanzas & Administración</em>).</li>
+<li><strong>Puesto / Cargo:</strong> Digitar <code>Operador Maestro de Telar Mayer & Cie</code>.</li>
+<li><strong>RFC:</strong> Digitar <code>RASC880315HJ2</code>.</li>
+<li><strong>NSS (Seguridad Social IMSS):</strong> Digitar <code>45088891234</code>.</li>
+<li><strong>Salario Diario ($):</strong> Digitar <code>650.00</code>.</li>
+<li><strong>Banco para Dispersión:</strong> Seleccionar <code>BBVA</code> o <code>Banorte</code>.</li>
+<li><strong>Cuenta / CLABE Interbancaria:</strong> Digitar <code>012180001234567890</code>.</li>
+</ul>
+<ol class="task-steps">
+<li><strong>Acción de confirmación:</strong> Hacer clic en <strong><code>Guardar Colaborador</code></strong>.</li>
+<li><strong>Resultado en pantalla:</strong> El colaborador se agrega con código <code>EMP-XXXX</code> en estado activo.</li>
+</ol>
+<h4 class="task-title">Tarea 13.2: Capturar Incidencia Laboral (Horas Extra o Bonos)</h4>
+<ol class="task-steps">
+<li><strong>Acción inicial:</strong> Cambiar a la pestaña <em>Incidencias</em> y hacer clic en <strong><code>+ Capturar Incidencia</code></strong>.</li>
+<li><strong>Campos a registrar:</strong></li>
+</ol>
+<ul class="custom-list">
+<li><strong>Colaborador:</strong> Seleccionar a <code>Carlos Alberto Ramos Solís</code>.</li>
+<li><strong>Tipo de Incidencia:</strong> Seleccionar <code>Horas Extra Dobles</code> (opciones: <em>Horas Extra Triples, Bono de Productividad, Falta Injustificada, Incapacidad IMSS</em>).</li>
+<li><strong>Horas / Cantidad:</strong> Digitar <code>4</code>.</li>
+<li><strong>Fecha de Aplicación:</strong> Seleccionar fecha del turno.</li>
+</ul>
+<ol class="task-steps">
+<li><strong>Acción de confirmación:</strong> Hacer clic en <strong><code>Aplicar a Nómina</code></strong>.</li>
+<li><strong>Resultado en pantalla:</strong> La incidencia queda indexada para acumularse en el próximo cálculo de nómina.</li>
+</ol>
+<hr class="divider" />
+<h3 class="module-title">[14] MÓDULO DE NÓMINA & FISCAL</h3>
+<ul class="custom-list">
+<li><strong>Ruta de Acceso:</strong> <code>/app/nomina</code> o Pestaña <strong>[14] Nómina</strong> en el Workspace.</li>
+<li><strong>Propósito:</strong> Pre-nómina, retenciones fiscales de ley (ISR / IMSS / AFP), cálculo de percepciones y dispersión bancaria.</li>
+</ul>
+<h4 class="task-title">Tarea 14.1: Calcular Corrida Periódica de Nómina</h4>
+<ol class="task-steps">
+<li><strong>Acción inicial:</strong> Hacer clic en el botón morado <strong><code>⚡ Calcular Nómina del Período</code></strong>.</li>
+<li><strong>Parámetros:</strong> Seleccionar período <code>Quincena 1 - Octubre 2026</code>.</li>
+<li><strong>Resultado en pantalla:</strong></li>
+</ol>
+<ul class="custom-list">
+<li>El sistema calcula percepciones brutas, horas extras registradas, retenciones obligatorias de ISR e IMSS/AFP y sueldos netos a pagar.</li>
+<li>La tabla muestra el estatus amarillo <strong><code>Calculada / En Revisión</code></strong>.</li>
+</ul>
+<h4 class="task-title">Tarea 14.2: Dispersión Bancaria y Timbrado Fiscal de Recibos</h4>
+<ol class="task-steps">
+<li><strong>Acción inicial:</strong> Una vez validada la nómina por el Gerente de RRHH, presionar el botón verde <strong><code>🏦 Dispersar Nómina y Timbrar CFDI</code></strong>.</li>
+<li><strong>Resultado en pantalla:</strong></li>
+</ol>
+<ul class="custom-list">
+<li>Los recibos se marcan con badge verde <strong><code>Dispersada & Timbrada</code></strong>.</li>
+<li>Se muestra la alerta: <code>Dispersión completada exitosamente vía layout bancario BBVA y recibos timbrados ante la autoridad tributaria.</code></li>
+</ul>
+<ol class="task-steps">
+<li><strong>Efecto de Integración Automatizada:</strong></li>
+</ol>
+<ul class="custom-list">
+<li><strong>[10] Tesorería:</strong> Descuenta de bancos el monto neto pagado a los colaboradores.</li>
+<li><strong>[12] Contabilidad:</strong> Genera la <strong>Póliza de Nómina</strong> (Cargo a Gasto de Sueldos y Salarios, Abono a Retenciones por Pagar y Abono a Bancos).</li>
+</ul>
+<hr class="divider" />
+<h2 class="section-title">🔄 BLOQUE 5: PROCESOS, MINERÍA Y GOBERNANZA</h2>
+<hr class="divider" />
+<h3 class="module-title">[15] SYNEX PROCESS SUITE (Modelador BPMN & Workflows)</h3>
+<ul class="custom-list">
+<li><strong>Ruta de Acceso:</strong> <code>/app/processsuite</code> o Pestaña <strong>[15] Process Suite</strong> en el Workspace.</li>
+<li><strong>Propósito:</strong> Diseñar flujos de trabajo, modelado BPMN 2.0 interactivo y autorización jerárquica de tareas.</li>
+</ul>
+<h4 class="task-title">Tarea 15.1: Modelar Flujo en Diseñador Visual BPMN 2.0 Interactivo</h4>
+<ol class="task-steps">
+<li><strong>Acción inicial:</strong> Hacer clic en la pestaña <strong><code>Diseñador Visual BPMN 2.0</code></strong>.</li>
+<li><strong>Interacción con el Canvas:</strong></li>
+</ol>
+<ul class="custom-list">
+<li>Utilizar la paleta izquierda de herramientas BPMN para arrastrar o agregar elementos:</li>
+<li><strong>Evento de Inicio (Start Event):</strong> Disparo de la solicitud o evento operativo.</li>
+<li><strong>Tareas de Usuario y de Servicio (Tasks):</strong> Etapas de revisión, cálculo o ejecución técnica.</li>
+<li><strong>Compuertas Exclusivas y Paralelas (Gateways):</strong> Bifurcación por montos, tipos de cliente o validaciones de crédito.</li>
+<li><strong>Evento de Fin (End Event):</strong> Culminación y archivo del flujo.</li>
+<li>Seleccionar un nodo en pantalla y consultar el panel de propiedades para parametrizar el rol ejecutor, SLA en horas y condiciones de aprobación.</li>
+</ul>
+<ol class="task-steps">
+<li><strong>Acción de confirmación:</strong> Hacer clic en <strong><code>Guardar y Publicar Diagrama BPMN</code></strong>.</li>
+<li><strong>Resultado en pantalla:</strong> El nuevo flujo queda activo y listo para gobernar las transacciones del ERP.</li>
+</ol>
+<h4 class="task-title">Tarea 15.2: Lanzar Nueva Instancia de Flujo de Aprobación</h4>
+<ol class="task-steps">
+<li><strong>Acción inicial:</strong> Hacer clic en la pestaña <strong><code>Lanzar Flujo / Instancia</code></strong>.</li>
+<li><strong>Campos a registrar:</strong></li>
+</ol>
+<ul class="custom-list">
+<li><strong>Proceso:</strong> Seleccionar <code>WF-COM-01 | Aprobación de Órdenes de Compra Mayores</code>.</li>
+<li><strong>Título de la Tarea:</strong> Digitar <code>Autorización de Compra de Hilo de Algodón Lote Especial</code>.</li>
+<li><strong>Documento de Referencia:</strong> Digitar <code>PO-2026-088</code>.</li>
+<li><strong>Solicitante:</strong> Digitar <code>Ing. Juan Pérez (Compras)</code>.</li>
+<li><strong>Rol Aprobador Asignado:</strong> Seleccionar <code>Director de Finanzas</code> (opciones: <em>Gerente de Planta, Director General, Jefe de Almacén</em>).</li>
+<li><strong>Prioridad:</strong> Seleccionar <code>Alta</code>.</li>
+<li><strong>Monto Involucrado ($):</strong> Digitar <code>65,000.00</code>.</li>
+<li><strong>Fecha Límite:</strong> Seleccionar fecha y hora límite.</li>
+</ul>
+<ol class="task-steps">
+<li><strong>Acción de confirmación:</strong> Hacer clic en <strong><code>Iniciar Instancia de Proceso</code></strong>.</li>
+<li><strong>Resultado en pantalla:</strong> Se notifica: <code>Instancia de workflow lanzada exitosamente a la bandeja de aprobación.</code></li>
+</ol>
+<h4 class="task-title">Tarea 15.3: Resolver Tarea Pendiente en la Bandeja de Aprobaciones</h4>
+<ol class="task-steps">
+<li><strong>Acción inicial:</strong> Hacer clic en la pestaña <strong><code>Bandeja de Aprobaciones (Inbox)</code></strong>.</li>
+<li><strong>Acción resolutiva:</strong> En la tarjeta de la tarea pendiente, hacer clic en:</li>
+</ol>
+<ul class="custom-list">
+<li>Botón verde <strong><code>Aprobar (Visto Bueno)</code></strong> para autorizar el avance.</li>
+<li>Botón rojo <strong><code>Rechazar</code></strong> para cancelar con observaciones.</li>
+<li>Botón gris <strong><code>Solicitar Aclaración</code></strong> para devolver al solicitante.</li>
+</ul>
+<ol class="task-steps">
+<li><strong>Resultado en pantalla:</strong> La tarea se retira de la bandeja y el contador de <em>Tareas Pendientes</em> se reduce.</li>
+</ol>
+<hr class="divider" />
+<h3 class="module-title">[16] PROCESS MINING (Minería de Procesos & Conformidad)</h3>
+<ul class="custom-list">
+<li><strong>Ruta de Acceso:</strong> <code>/app/processmining</code> o Pestaña <strong>[16] Process Mining</strong> en el Workspace.</li>
+<li><strong>Propósito:</strong> Descubrimiento de procesos reales a partir de los event logs del ERP y detección de cuellos de botella.</li>
+</ul>
+<h4 class="task-title">Tarea 16.1: Simular Descubrimiento de Nuevo Caso en Vivo</h4>
+<ol class="task-steps">
+<li><strong>Acción inicial:</strong> En la cabecera del módulo, hacer clic en el botón verde <strong><code>⚡ Descubrir Nuevo Caso en Vivo</code></strong>.</li>
+<li><strong>Resultado en pantalla:</strong></li>
+</ol>
+<ul class="custom-list">
+<li>El sistema analiza los logs cronológicos de Ventas, WMS y Cobranza.</li>
+<li>Aparece la confirmación: <code>✓ Nuevo caso minado e indexado en el grafo DFG.</code></li>
+<li>Se actualizan los KPIs de <em>Casos Analizados</em>, <em>Tiempo Ciclo Promedio</em> y <em>Tasa de Conformidad</em>.</li>
+</ul>
+<ol class="task-steps">
+<li><strong>Auditoría visual:</strong></li>
+</ol>
+<ul class="custom-list">
+<li>En el grafo de procesos, revisar el nodo rojo que resalta el cuello de botella identificado (ej. <em>Demora promedio de 4.2 horas en Aprobación de Crédito</em>).</li>
+<li>En la tabla de casos recientes, revisar los desvíos respecto a la norma corporativa BPMN.</li>
+</ul>
+<hr class="divider" />
+<h3 class="module-title">[26] CONFIGURACIÓN DEL SISTEMA, LOCALIZACIÓN FISCAL MULTI-PAÍS & AUDITORÍA INMUTABLE</h3>
+<ul class="custom-list">
+<li><strong>Ruta de Acceso:</strong> <code>/app/configuracion</code> o Pestaña <strong>[26] Configuración</strong> en el Workspace.</li>
+<li><strong>Propósito:</strong> Parámetros de la empresa, selección de país y autoridad tributaria (El Salvador MH DTE, Guatemala SAT FEL, Honduras SAR, Costa Rica DGT, Panamá DGI, México SAT), catálogo de divisas y bitácora de auditoría inmutable con sellos criptográficos.</li>
+</ul>
+<h4 class="task-title">Tarea 26.1: Configurar Localización Fiscal y Cambiaria Regional</h4>
+<ol class="task-steps">
+<li><strong>Acción inicial:</strong> En la pestaña <strong>Localización Fiscal & Divisas</strong>:</li>
+</ol>
+<ul class="custom-list">
+<li><strong>País de Operación:</strong> Seleccionar el país objetivo (ej. <code>🇸🇻 El Salvador</code> o <code>🇬🇹 Guatemala</code>).</li>
+<li>El sistema carga automáticamente el driver de facturación electrónica (<code>DTE</code> para El Salvador, <code>FEL</code> para Guatemala, <code>CAI</code> para Honduras, <code>SFEP</code> para Panamá) y la tasa de IVA correspondiente (ej. 13% en El Salvador, 12% en Guatemala, 15% en Honduras).</li>
+<li><strong>Razón Social:</strong> <code>NyTEX Textil de Centroamérica S.A. de C.V.</code></li>
+<li><strong>Identificación Fiscal:</strong> Digitar NIT/NRC para El Salvador (ej. <code>0614-180612-102-4</code>) o el formato respectivo del país seleccionado.</li>
+<li><strong>Autoridad Tributaria:</strong> <code>Ministerio de Hacienda (MH)</code> o la entidad local correspondiente.</li>
+<li><strong>Régimen Fiscal:</strong> <code>Régimen General / Mediano Contribuyente</code></li>
+<li><strong>Tipo de Cambio:</strong> Ajustar paridades cambiarias (USD base).</li>
+</ul>
+<ol class="task-steps">
+<li><strong>Acción de confirmación:</strong> Hacer clic en el botón negro <strong><code>Guardar y Auditar Cambios</code></strong>.</li>
+<li><strong>Resultado en pantalla:</strong> Aparece el mensaje de confirmación: <code>✓ Parámetros de [País] y configuración fiscal actualizados con éxito. Evento auditado en bitácora inmutable.</code></li>
+</ol>
+<h4 class="task-title">Tarea 26.2: Consultar la Bitácora Inmutable de Auditoría (Audit Trail)</h4>
+<ol class="task-steps">
+<li><strong>Acción inicial:</strong> Hacer clic en la pestaña <strong>Bitácora Inmutable de Auditoría</strong>.</li>
+<li><strong>Verificación operativa y blindaje tributario:</strong></li>
+</ol>
+<ul class="custom-list">
+<li>Constatar que la operación anterior quedó sellada en el primer renglón con timestamp ISO, severidad, módulo, usuario e IP de origen.</li>
+<li>Estos registros son inmutables (no pueden borrarse ni sobreescribirse), brindando blindaje corporativo y trazabilidad ante auditorías fiscales de cualquier ministerio de hacienda de la región.</li>
+</ul>
+<hr class="divider" />
+<h2 class="section-title">📊 BLOQUE 6: INTELIGENCIA DE NEGOCIOS, ANALÍTICA Y MODELOS PREDICTIVOS</h2>
+<hr class="divider" />
+<h3 class="module-title">[18] BI Y REPORTES FINANCIEROS (NIF / IFRS)</h3>
+<ul class="custom-list">
+<li><strong>Ruta de Acceso:</strong> <code>/app/reportes</code> o Pestaña <strong>[18] Reportes</strong> en el Workspace.</li>
+<li><strong>Propósito:</strong> Emisión ejecutiva de los 4 estados financieros básicos reglamentarios bajo normas NIF/IFRS.</li>
+</ul>
+<h4 class="task-title">Tarea 18.1: Generar Estado de Resultados y Balance General</h4>
+<ol class="task-steps">
+<li><strong>Acción inicial:</strong> Seleccionar el reporte deseado en los botones superiores:</li>
+</ol>
+<ul class="custom-list">
+<li><strong>Estado de Resultados Integral (P&L):</strong> Muestra Ingresos Netos, Costo de Ventas, Margen Bruto, Gastos Operativos y Utilidad Neta del Ejercicio.</li>
+<li><strong>Estado de Situación Financiera (Balance General):</strong> Desglosa Activo Circulante/Fijo, Pasivo a Corto/Largo Plazo y Capital Contable.</li>
+<li><strong>Estado de Flujo de Efectivo:</strong> Muestra entradas y salidas clasificadas en actividades de Operación, Inversión y Financiamiento.</li>
+</ul>
+<ol class="task-steps">
+<li><strong>Acción de exportación:</strong> Hacer clic en el botón <strong><code>📥 Descargar PDF Auditado</code></strong> o <strong><code>📊 Exportar a Excel</code></strong>.</li>
+</ol>
+<hr class="divider" />
+<h3 class="module-title">[19] DASHBOARDS EJECUTIVOS EN TIEMPO REAL</h3>
+<ul class="custom-list">
+<li><strong>Ruta de Acceso:</strong> <code>/app/dashboards</code> o Pestaña <strong>[19] Dashboards</strong> en el Workspace.</li>
+<li><strong>Propósito:</strong> Cuadro de Mando Integral (KPI Cockpit) con métricas de ventas, rentabilidad, rotación de inventarios y utilización de planta.</li>
+</ul>
+<h4 class="task-title">Tarea 19.1: Análisis de Indicadores Clave de Desempeño (KPIs)</h4>
+<ol class="task-steps">
+<li><strong>Acción inicial:</strong> En el selector de rango temporal, elegir <code>Mes Actual</code> o <code>Último Trimestre</code>.</li>
+<li><strong>Revisión de cuadrantes:</strong></li>
+</ol>
+<ul class="custom-list">
+<li><strong>Card de Ventas Totales:</strong> Comparativa de ventas reales vs presupuesto comercial.</li>
+<li><strong>Card de Eficiencia OEE de Planta:</strong> Porcentaje de disponibilidad, rendimiento y calidad de los telares Mayer & Cie.</li>
+<li><strong>Card de Días de Cartera (DSO):</strong> Plazo promedio de cobro a clientes.</li>
+<li><strong>Card de Rotación de Inventarios:</strong> Días de permanencia de materias primas y producto terminado en almacén.</li>
+</ul>
+<hr class="divider" />
+<h3 class="module-title">[20] BI CUBO MULTIDIMENSIONAL (OLAP HyperCube)</h3>
+<ul class="custom-list">
+<li><strong>Ruta de Acceso:</strong> <code>/app/bicube</code> o Pestaña <strong>[20] BI Cubo</strong> en el Workspace.</li>
+<li><strong>Propósito:</strong> Análisis multidimensional (OLAP Slice & Dice / Drill-Down) para cruzar métricas contra múltiples jerarquías de datos.</li>
+</ul>
+<h4 class="task-title">Tarea 20.1: Ejecutar Navegación Slice & Dice en Cubo de Ventas</h4>
+<ol class="task-steps">
+<li><strong>Acción inicial:</strong> En el selector de dimensiones, arrastrar o marcar:</li>
+</ol>
+<ul class="custom-list">
+<li><strong>Eje Filas:</strong> <code>Familia de Productos</code> (Gabardinas, Mezclillas, Popelinas).</li>
+<li><strong>Eje Columnas:</strong> <code>Región Geográfica</code> (Norte, Centro, Occidente, Exportación).</li>
+<li><strong>Métrica / Valor:</strong> <code>Margen de Contribución Bruto ($)</code>.</li>
+</ul>
+<ol class="task-steps">
+<li><strong>Acción Drill-Down:</strong> Hacer doble clic en la celda de <em>Gabardinas - Región Norte</em> para abrir el desglose individual por cliente y vendedor.</li>
+<li><strong>Resultado en pantalla:</strong> La matriz se recalcula al instante mostrando subcuentas y totales consolidados.</li>
+</ol>
+<hr class="divider" />
+<h3 class="module-title">[21] BIG DATA & TELEMETRÍA IOT INDUSTRIAL</h3>
+<ul class="custom-list">
+<li><strong>Ruta de Acceso:</strong> <code>/app/bigdata</code> o Pestaña <strong>[21] Big Data</strong> en el Workspace.</li>
+<li><strong>Propósito:</strong> Ingestión de señales de sensores industriales en tiempo real instalados en telares circulares, urdidoras y ramas tensoras.</li>
+</ul>
+<h4 class="task-title">Tarea 21.1: Monitor de Telemetría IoT en Vivo</h4>
+<ol class="task-steps">
+<li><strong>Acción inicial:</strong> En el monitor de telemetría, seleccionar la máquina <code>Telar Circular #3 (Mayer & Cie)</code>.</li>
+<li><strong>Lectura de parámetros en pantalla:</strong></li>
+</ol>
+<ul class="custom-list">
+<li><strong>Velocidad de RPM:</strong> <code>28.4 RPM</code> (Rango operativo normal: 25 - 30 RPM).</li>
+<li><strong>Temperatura de Rodamientos:</strong> <code>48.2 °C</code> (Umbral de alarma: > 65 °C).</li>
+<li><strong>Tensión del Hilo:</strong> <code>14.2 cN</code> (Sensor de rotura de trama).</li>
+<li><strong>Metros de Tela Tejidos en el Turno:</strong> <code>1,420 m</code>.</li>
+</ul>
+<ol class="task-steps">
+<li><strong>Simulación de Alerta Preventiva:</strong> Si un sensor detecta micro-paradas o vibración anómala, el sistema emite una orden de servicio a Mantenimiento.</li>
+</ol>
+<hr class="divider" />
+<h3 class="module-title">[22] MINERÍA DE DATOS & MACHINE LEARNING</h3>
+<ul class="custom-list">
+<li><strong>Ruta de Acceso:</strong> <code>/app/datamining</code> o Pestaña <strong>[22] Data Mining</strong> en el Workspace.</li>
+<li><strong>Propósito:</strong> Algoritmos de clustering (K-Means), reglas de asociación (Market Basket Analysis) y detección de anomalías en consumo.</li>
+</ul>
+<h4 class="task-title">Tarea 22.1: Ejecutar Segmentación de Clientes con K-Means</h4>
+<ol class="task-steps">
+<li><strong>Acción inicial:</strong> En la pestaña <em>Clustering</em>, hacer clic en <strong><code>⚡ Entrenar Modelo de Segmentación K-Means</code></strong>.</li>
+<li><strong>Resultado en pantalla:</strong></li>
+</ol>
+<ul class="custom-list">
+<li>El algoritmo clasifica a la cartera en 3 clusters visuales:</li>
+<li><strong>Cluster 1 (Diamante):</strong> Clientes de alto volumen y pago inmediato a 15 días.</li>
+<li><strong>Cluster 2 (Frecuentes / Volumen Medio):</strong> Clientes con pedidos recurrentes y crédito a 30 días.</li>
+<li><strong>Cluster 3 (Riesgo / Compras Esporádicas):</strong> Clientes con mora habitual o pedidos aislados.</li>
+</ul>
+<ol class="task-steps">
+<li><strong>Efecto de Integración:</strong> Sugiere dinámicamente límites de crédito diferenciados en <strong>[6] Business Partners</strong>.</li>
+</ol>
+<hr class="divider" />
+<h3 class="module-title">[23] ASISTENTE COGNITIVO IA (Copilot Empresarial)</h3>
+<ul class="custom-list">
+<li><strong>Ruta de Acceso:</strong> <code>/app/ai-assistant</code> o Pestaña <strong>[23] Asistente IA</strong> en el Workspace.</li>
+<li><strong>Propósito:</strong> Interfaz de lenguaje natural impulsada por Inteligencia Artificial para consultas ejecutivas, auditoría de datos y toma de decisiones.</li>
+</ul>
+<h4 class="task-title">Tarea 23.1: Consultar Disponibilidad y Rentabilidad con Prompt</h4>
+<ol class="task-steps">
+<li><strong>Acción inicial:</strong> En la caja de chat del asistente, escribir el siguiente prompt:</li>
+</ol>
+<p class="doc-text"><code>"¿Cuál es el margen promedio de la gabardina este mes y cuántos rollos tenemos disponibles en Almacén Central?"</code></p>
+<ol class="task-steps">
+<li><strong>Presionar:</strong> <code>Enter</code> o el botón azul de envío.</li>
+<li><strong>Resultado en pantalla:</strong> El Asistente IA responde en 1.5 segundos con datos verídicos cruzados del ERP:</li>
+</ol>
+<ul class="custom-list">
+<li><em>Margen promedio de Gabardina Algodón Peinado:</em> <code>42.8%</code></li>
+<li><em>Existencias actuales en Almacén Central:</em> <code>180 rollos</code></li>
+<li><em>Sugerencia proactiva:</em> Hay 3 pedidos de entrega programada para la próxima semana por 45 rollos; se recomienda mantener el plan de manufactura activo.</li>
+</ul>
+<hr class="divider" />
+<h3 class="module-title">[24] MODELOS PREDICTIVOS & RIESGO CREDITICIO</h3>
+<ul class="custom-list">
+<li><strong>Ruta de Acceso:</strong> <code>/app/predictivos</code> o Pestaña <strong>[24] Predictivos</strong> en el Workspace.</li>
+<li><strong>Propósito:</strong> Simulación de regresión logística inferencial (Logit) y pronóstico de series de tiempo (ARIMA).</li>
+</ul>
+<h4 class="task-title">Tarea 24.1: Simular Probabilidad de Mora e Incumplimiento (Logit)</h4>
+<ol class="task-steps">
+<li><strong>Acción inicial:</strong> En la pestaña <em>Inferencia Causal</em>, seleccionar el caso de uso <code>Predicción de Mora & Incumplimiento Crediticio (CxC)</code>.</li>
+<li><strong>Digitar variables en los controles / sliders:</strong></li>
+</ol>
+<ul class="custom-list">
+<li><strong>Días de atraso histórico:</strong> Mover a <code>25</code> días.</li>
+<li><strong>Porcentaje de línea de crédito utilizada:</strong> Mover al <code>85%</code>.</li>
+<li><strong>Antigüedad de la cuenta:</strong> Digitar <code>6</code> meses.</li>
+<li><strong>Facturas en disputa previa:</strong> Digitar <code>2</code>.</li>
+</ul>
+<ol class="task-steps">
+<li><strong>Acción de confirmación:</strong> Hacer clic en <strong><code>⚡ Calcular Probabilidad de Riesgo e Inferencia</code></strong>.</li>
+<li><strong>Resultado en pantalla:</strong></li>
+</ol>
+<ul class="custom-list">
+<li>El motor logístico calcula la probabilidad (ej. <code>78.4% - Riesgo Crítico</code>).</li>
+<li>Se muestra el Odds Ratio y la recomendación: <em>Exigir pago de contado o garantía prendaria previa al despacho de nuevos pedidos</em>.</li>
+</ul>
+<hr class="divider" />
+<h3 class="module-title">[25] PLANEACIÓN DE LA DEMANDA & S&OP (MRP II)</h3>
+<ul class="custom-list">
+<li><strong>Ruta de Acceso:</strong> <code>/app/planeacion</code> o Pestaña <strong>[25] Planeación</strong> en el Workspace.</li>
+<li><strong>Propósito:</strong> Sincronización entre demanda comercial proyectada, capacidad de maquinaria y explosión de materiales MRP.</li>
+</ul>
+<h4 class="task-title">Tarea 25.1: Ejecutar la Sincronización S&OP y Disparar Requerimientos</h4>
+<ol class="task-steps">
+<li><strong>Acción inicial:</strong> Hacer clic en el botón <strong><code>⚡ Ejecutar Sincronización S&OP (MRP II)</code></strong>.</li>
+<li><strong>Resultado en pantalla:</strong></li>
+</ol>
+<ul class="custom-list">
+<li>El sistema calcula:</li>
+<li>Demanda comercial total comprometida (ej. <code>50 rollos</code>).</li>
+<li>Déficit neto de materia prima a adquirir (ej. <code>600 kg de hilo</code>).</li>
+<li>Carga de trabajo en horas de telares Mayer & Cie.</li>
+<li>Aparece la confirmación: <code>✓ Sincronización completada. Se han enviado las solicitudes de abastecimiento a Compras y las órdenes sugeridas a Producción.</code></li>
+</ul>
+<ol class="task-steps">
+<li><strong>Efecto de Integración:</strong> Genera las solicitudes correspondientes en los módulos [4] Compras y [5] Producción.</li>
+</ol>
+<hr class="divider" />
+<h2 class="section-title">🚀 LOS 4 CIRCUITOS DE DEMOSTRACIÓN INTEGRADA</h2>
+<p class="doc-text">Para demostraciones ejecutivas o pruebas de punta a punta, el sistema dispone de 4 circuitos guiados de un solo clic alineados a las fases de contratación del cliente:</p>
+<div class="table-responsive"><table class="data-table">
+<thead><tr><th>Circuito</th><th>Ruta</th><th>Módulos Integrados en el Flujo</th></tr></thead><tbody>
+<tr><td><strong>Circuito Fase 1 (Starter)</strong></td><td><code>/app/circuito-fase1</code></td><td>[1] Ventas ➔ [3] Inventario ➔ [4] Compras ➔ [5] Producción ➔ [6] Partners ➔ [17] WMS</td></tr>
+<tr><td><strong>Circuito Fase 2 (Express)</strong></td><td><code>/app/circuito-fase2</code></td><td>Starter + [7] Logística, [8] CxC, [9] CxP, [10] Tesorería & Cajas, [11] Activos Fijos, [12] Contabilidad, [13] RRHH, [14] Nómina, [15] Process Suite BPMN, [16] Process Mining</td></tr>
+<tr><td><strong>Circuito Fase 3 (Advanced)</strong></td><td><code>/app/circuito-fase3</code></td><td>Express + [18] BI Reportes, [19] Dashboards, [20] BI Cubo OLAP, [21] Big Data IoT, [22] Data Mining</td></tr>
+<tr><td><strong>Circuito Fase 4 (Enterprise)</strong></td><td><code>/app/circuito-fase4</code></td><td>Todos los 25 Módulos completos con IA Copilot [23], Modelos Predictivos [24], Planeación S&OP [25] y Configuración Fiscal [26]</td></tr>
+</tbody></table></div>
+<h3 class="module-title">Tarea de Simulación en los Circuitos de Fase:</h3>
+<ol class="task-steps">
+<li>Entrar a la ruta del circuito deseado (ej. <code>/app/circuito-fase1</code>).</li>
+<li>Presionar el botón principal <strong><code>▶ EJECUTAR FLUJO COMPLETO EN VIVO</code></strong> (o presionar paso a paso cada botón de la secuencia).</li>
+<li>Observar cómo la transacción avanza automáticamente por compras, inventarios, manufactura, facturación, cobro bancario, arqueo y póliza contable en una sola pantalla interactiva.</li>
+</ol>
+<hr class="divider" />
+<h2 class="section-title">🖥️ ESPACIO DE TRABAJO UNIFICADO (WORKSPACE INTEGRADO)</h2>
+<ul class="custom-list">
+<li><strong>Ruta de Acceso:</strong> <code>https://nytex-erp-portal.onrender.com/app/workspace</code> (o local <code>http://localhost:5173/app/workspace</code>).</li>
+<li><strong>Ventaja Operativa:</strong> Permite al usuario u operador alternar libremente entre los 25 módulos a través de una barra de pestañas superior persistente sin necesidad de abrir múltiples pestañas del navegador ni perder el contexto de trabajo.</li>
+<li><strong>Selector de Fase:</strong> Filtra la visualización para mostrar solo los módulos contratados (Fase 1: 7 módulos, Fase 2: 17 módulos, Fase 3: 22 módulos, Fase 4: 25 módulos).</li>
+</ul>
+
+  <div class="doc-footer">
+    <div>NyTEX ERP © 2026 Consultores NyT. Todos los derechos reservados.</div>
+    <div>Documento Confidencial para Capacitación y Simulación de Procesos Empresariales.</div>
+  </div>
+
+</body>
+</html>
