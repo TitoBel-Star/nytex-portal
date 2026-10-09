@@ -2,8 +2,7 @@
   "name": "nytex-portal-root",
   "version": "1.0.0",
   "scripts": {
-    "build": "cd portal-backend && npm install",
-    "start": "cd portal-backend && node server.js",
-    "build:client": "cd portal-frontend && npm run build && node -e \"const fs=require('fs');fs.rmSync('portal-backend/public',{recursive:true,force:true});fs.cpSync('portal-frontend/dist','portal-backend/public',{recursive:true});\""
+    "build": "cd portal-frontend && npm install && npm run build && cd .. && node -e \"const fs=require('fs');fs.cpSync('portal-frontend/dist','portal-backend/public',{recursive:true});\" && cd portal-backend && npm install",
+    "start": "cd portal-backend && node server.js"
   }
 }
