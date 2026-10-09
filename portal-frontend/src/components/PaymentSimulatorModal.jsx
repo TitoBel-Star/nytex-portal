@@ -6,6 +6,7 @@ const PaymentSimulatorModal = ({ isOpen, onClose, phaseInfo, onSuccess }) => {
   const [clientEmail, setClientEmail] = useState('demo@consultores-nyt.com');
   const [copied, setCopied] = useState(false);
   const [credentials, setCredentials] = useState(null);
+  const [showDistribution, setShowDistribution] = useState(false);
 
   if (!isOpen || !phaseInfo) return null;
 
@@ -67,6 +68,19 @@ const PaymentSimulatorModal = ({ isOpen, onClose, phaseInfo, onSuccess }) => {
   const totalDueToday = impVal + licVal;
   const totalDueTodayFormatted = `$${totalDueToday.toLocaleString()} USD`;
 
+  // ==============================================================
+  // DISTRIBUCIÓN FINANCIERA (REVENUE SPLIT DE VENTANILLA):
+  // - 100% Implementación: Para el Partner Asignado
+  // - 20% Licencia Mensual: Para el Partner (Comisión recurrente)
+  // - 80% Licencia Mensual: Para NyTEX (Infraestructura SaaS Core)
+  // ==============================================================
+  const partnerImpAmount = Number(impVal.toFixed(2));
+  const partnerLicAmount = Number((licVal * 0.20).toFixed(2));
+  const partnerTotalInitial = Number((partnerImpAmount + partnerLicAmount).toFixed(2));
+
+  const nytexLicAmount = Number((licVal * 0.80).toFixed(2));
+  const nytexTotalInitial = Number(nytexLicAmount.toFixed(2));
+
   const handlePay = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -110,6 +124,11 @@ const PaymentSimulatorModal = ({ isOpen, onClose, phaseInfo, onSuccess }) => {
         impDisplay,
         licDisplay,
         totalPaidFormatted: totalDueTodayFormatted,
+        partnerImpAmount,
+        partnerLicAmount,
+        partnerTotalInitial,
+        nytexLicAmount,
+        nytexTotalInitial,
         finalSubscriptions
       };
 
@@ -121,7 +140,21 @@ const PaymentSimulatorModal = ({ isOpen, onClose, phaseInfo, onSuccess }) => {
 
   const handleCopyCredentials = () => {
     if (!credentials) return;
-    const textToCopy = `=== CREDENCIALES DE ACCESO NyTEX ERP ===\n1. Tipo de Usuario: ${credentials.roleName}\n2. Usuario: ${credentials.email}\n3. Clave de Acceso: ${credentials.password}\n4. Fase Contratada: ${credentials.phaseName} (Fase ${credentials.phaseId})\n5. Liquidación Inicial Pagada: ${credentials.totalPaidFormatted} (Implementación: ${credentials.impDisplay} + 1ª Cuota Licencia: ${credentials.licDisplay})\n6. Licencia Criptográfica: ${credentials.licenseKey}\nPortal: https://nytex-erp-portal.onrender.com/login`;
+    const textToCopy = `=== CREDENCIALES DE ACCESO NyTEX ERP ===
+1. Tipo de Usuario: ${credentials.roleName}
+2. Usuario: ${credentials.email}
+3. Clave de Acceso: ${credentials.password}
+4. Fase Contratada: ${credentials.phaseName} (Fase ${credentials.phaseId})
+5. Liquidación Total Pagada: ${credentials.totalPaidFormatted}
+--- CLASIFICACIÓN Y DISTRIBUCIÓN FINANCIERA ---
+• Partner Asignado (100% Imp + 20% Lic): $${credentials.partnerTotalInitial?.toFixed(2)} USD
+  - Implementación (100%): $${credentials.partnerImpAmount?.toFixed(2)} USD
+  - Comisión 1ª Licencia (20%): $${credentials.partnerLicAmount?.toFixed(2)} USD (Recurrente 20% mensual)
+• Plataforma NyTEX SaaS (80% Lic): $${credentials.nytexTotalInitial?.toFixed(2)} USD
+  - Infraestructura Cloud (80%): $${credentials.nytexLicAmount?.toFixed(2)} USD (Recurrente 80% mensual)
+---
+6. Licencia Criptográfica: ${credentials.licenseKey}
+Portal: https://nytex-erp-portal.onrender.com/login`;
     
     navigator.clipboard.writeText(textToCopy).then(() => {
       setCopied(true);
@@ -217,6 +250,53 @@ const PaymentSimulatorModal = ({ isOpen, onClose, phaseInfo, onSuccess }) => {
               <p className="text-[10px] text-gray-400 text-right mt-1">
                 * Puesta en marcha + 1er mes de servicio. Cuota mensual regular ({licDisplay}) aplica a partir del mes 2.
               </p>
+
+              {/* Botón para Desplegar Clasificación de Repartición (Partner / NyTEX) */}
+              <div className="mt-3 pt-2.5 border-t border-slate-200/80">
+                <button
+                  type="button"
+                  onClick={() => setShowDistribution(!showDistribution)}
+                  className="w-full py-1.5 px-2.5 bg-purple-50 hover:bg-purple-100 text-purple-900 border border-purple-200 rounded-lg text-[11px] font-bold transition-all flex items-center justify-between"
+                >
+                  <span className="flex items-center gap-1.5">
+                    <span>⚖️</span>
+                    <span>Ver Clasificación de Distribución (Partner / NyTEX)</span>
+                  </span>
+                  <span className="text-[10px] text-purple-700 font-extrabold">{showDistribution ? '▲ Ocultar' : '▼ Ver Desglose'}</span>
+                </button>
+
+                {showDistribution && (
+                  <div className="mt-2 p-2.5 bg-slate-900 text-white rounded-lg border border-purple-400/30 text-xs space-y-2 animate-fade-in">
+                    <div className="text-[10px] font-black uppercase tracking-wider text-purple-300 border-b border-slate-800 pb-1 flex justify-between">
+                      <span>Distribución Contable de este Cobro</span>
+                      <span className="text-emerald-400 font-mono text-[9px]">100% Conciliado</span>
+                    </div>
+
+                    {/* Partner */}
+                    <div className="bg-slate-950/80 p-2 rounded border border-slate-800">
+                      <div className="flex justify-between items-center text-[11px]">
+                        <span className="font-extrabold text-purple-300">🤝 Para el Partner (100% Imp + 20% Lic):</span>
+                        <strong className="text-emerald-300 font-mono text-xs">${partnerTotalInitial.toFixed(2)} USD</strong>
+                      </div>
+                      <div className="text-[10px] text-slate-400 mt-1 pl-2 space-y-0.5">
+                        <div>• 100% Implementación: <strong className="text-slate-200 font-mono">${partnerImpAmount.toFixed(2)} USD</strong></div>
+                        <div>• 20% Comisión Licencia (Mes 1): <strong className="text-slate-200 font-mono">${partnerLicAmount.toFixed(2)} USD</strong> (Recurrente 20% en meses 2+)</div>
+                      </div>
+                    </div>
+
+                    {/* NyTEX */}
+                    <div className="bg-slate-950/80 p-2 rounded border border-slate-800">
+                      <div className="flex justify-between items-center text-[11px]">
+                        <span className="font-extrabold text-cyan-300">🏢 Para NyTEX SaaS (80% Lic):</span>
+                        <strong className="text-cyan-300 font-mono text-xs">${nytexTotalInitial.toFixed(2)} USD</strong>
+                      </div>
+                      <div className="text-[10px] text-slate-400 mt-1 pl-2">
+                        <div>• 80% Infraestructura Core y Servidores: <strong className="text-slate-200 font-mono">${nytexLicAmount.toFixed(2)} USD</strong> (Recurrente 80% en meses 2+)</div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
 
             <form onSubmit={handlePay}>
@@ -356,17 +436,41 @@ const PaymentSimulatorModal = ({ isOpen, onClose, phaseInfo, onSuccess }) => {
                   </span>
                 </div>
 
-                {/* Liquidación Pagada */}
-                <div className="bg-slate-950/60 p-2 rounded-lg border border-slate-800">
-                  <div className="flex justify-between items-center mb-1">
-                    <span className="text-slate-400 font-bold text-[11px]">Liquidación Inicial Pagada:</span>
-                    <span className="font-black text-emerald-400 text-xs">
+                {/* Liquidación Pagada y Distribución */}
+                <div className="bg-slate-950/80 p-2.5 rounded-xl border border-purple-500/30 text-xs">
+                  <div className="flex justify-between items-center mb-1.5">
+                    <span className="text-slate-300 font-bold text-[11px]">Total Liquidado en Ventanilla:</span>
+                    <span className="font-black text-emerald-400 text-xs font-mono">
                       {credentials.totalPaidFormatted}
                     </span>
                   </div>
-                  <div className="text-[10px] text-slate-400 border-t border-slate-800/80 pt-1 flex justify-between">
-                    <span>🔧 Imp: <strong className="text-slate-200">{credentials.impDisplay}</strong></span>
-                    <span>💳 1ª Licencia: <strong className="text-emerald-300">{credentials.licDisplay}</strong></span>
+
+                  <div className="border-t border-slate-800 pt-1.5 space-y-1.5">
+                    {/* Split Partner */}
+                    <div className="bg-slate-900/90 p-1.5 rounded border border-slate-800 flex justify-between items-center">
+                      <div>
+                        <span className="font-extrabold text-purple-300 text-[11px]">🤝 Partner (100% Imp + 20% Lic):</span>
+                        <div className="text-[9px] text-slate-400">
+                          Imp: ${credentials.partnerImpAmount?.toFixed(2)} + Lic: ${credentials.partnerLicAmount?.toFixed(2)}
+                        </div>
+                      </div>
+                      <span className="font-mono font-black text-purple-200 text-xs">
+                        ${credentials.partnerTotalInitial?.toFixed(2)} USD
+                      </span>
+                    </div>
+
+                    {/* Split NyTEX */}
+                    <div className="bg-slate-900/90 p-1.5 rounded border border-slate-800 flex justify-between items-center">
+                      <div>
+                        <span className="font-extrabold text-cyan-300 text-[11px]">🏢 NyTEX SaaS (80% Lic):</span>
+                        <div className="text-[9px] text-slate-400">
+                          Infraestructura Cloud & Plataforma Core
+                        </div>
+                      </div>
+                      <span className="font-mono font-black text-cyan-200 text-xs">
+                        ${credentials.nytexTotalInitial?.toFixed(2)} USD
+                      </span>
+                    </div>
                   </div>
                 </div>
 
