@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Navigate, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, Link, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import Dashboard from './components/Dashboard';
 import DashboardView from './views/DashboardView'; 
@@ -46,15 +46,49 @@ import CircuitoFase3View from './views/CircuitoFase3View';
 import CircuitoFase4View from './views/CircuitoFase4View';
 import PhaseWorkspaceView from './views/PhaseWorkspaceView';
 
+// Guardia de Seguridad para el Portal y Workspace
+const ProtectedPortalRoute = ({ children }) => {
+  const { isAuthenticated, loading } = useAuth();
+  const location = useLocation();
+  const params = new URLSearchParams(location.search);
+  const checkoutParam = params.get('checkout') || params.get('contratar');
+
+  // Si el usuario viene a contratar en línea desde la landing page, permitimos abrir el checkout
+  if (checkoutParam) {
+    return children;
+  }
+
+  if (loading) {
+    return (
+      <div className="h-screen w-screen flex items-center justify-center bg-slate-900 text-white font-sans text-sm">
+        <div className="flex items-center gap-3">
+          <svg className="animate-spin h-5 w-5 text-cyan-400" fill="none" viewBox="0 0 24 24">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          <span>Verificando credenciales de seguridad...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return children;
+};
+
+// Guardia para módulos individuales
 const ProtectedModuleRoute = ({ moduleId, children }) => {
-  const { user, loading } = useAuth();
+  const { user, isAuthenticated, loading } = useAuth();
   
   if (loading) {
-    return <div className="h-screen w-screen flex items-center justify-center bg-gray-100">Cargando...</div>;
+    return <div className="h-screen w-screen flex items-center justify-center bg-gray-100 font-semibold">Cargando...</div>;
   }
   
-  if (!user) {
-    return <Navigate to="/portal" replace />;
+  if (!isAuthenticated || !user) {
+    return <Navigate to="/login" replace />;
   }
   
   const hasAccess = user.role === 'Admin' || user.role === 'Partner' || user.subscriptions?.includes(moduleId);
@@ -65,8 +99,9 @@ const ProtectedModuleRoute = ({ moduleId, children }) => {
 };
 
 const ModuleLayout = ({ children }) => {
+  const { logout } = useAuth();
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col">
+    <div className="min-h-screen bg-gray-100 flex flex-col font-sans">
       <nav className="bg-[#0A2540] text-white p-3.5 px-6 flex justify-between items-center shadow-lg border-b border-slate-700">
         <div className="flex items-center gap-4">
           <Link to="/portal" className="font-black text-xl tracking-tight text-white flex items-center gap-2">
@@ -89,6 +124,14 @@ const ModuleLayout = ({ children }) => {
           <Link to="/portal" className="bg-slate-800 hover:bg-slate-700 text-slate-200 px-3.5 py-1.5 rounded-lg transition-colors text-xs font-semibold border border-slate-700">
             Menú Principal (Portal) ➔
           </Link>
+          <Link 
+            to="/login"
+            onClick={() => logout && logout()}
+            className="bg-rose-600/20 hover:bg-rose-600 text-rose-300 hover:text-white px-3 py-1.5 rounded-lg transition-all text-xs font-bold border border-rose-500/40 flex items-center gap-1 shadow-sm"
+            title="Cerrar sesión y volver al Control de Acceso"
+          >
+            <span>🔒</span> Salir
+          </Link>
         </div>
       </nav>
       <main className="flex-1 h-full w-full">
@@ -102,9 +145,17 @@ function AppRoutes() {
   return (
     <Router>
       <Routes>
+        {/* Rutas de autenticación y seguridad */}
         <Route path="/" element={<LoginView />} />
+        <Route path="/login" element={<LoginView />} />
         <Route path="/dashboard" element={<DashboardView />} />
-        <Route path="/portal" element={<Dashboard />} />
+
+        {/* Portal principal protegido */}
+        <Route path="/portal" element={
+          <ProtectedPortalRoute>
+            <Dashboard />
+          </ProtectedPortalRoute>
+        } />
         
         {/* Rutas de módulos protegidas */}
         <Route path="/app/ventas" element={<ProtectedModuleRoute moduleId="Ventas"><ModuleLayout><Ventas /></ModuleLayout></ProtectedModuleRoute>} />
@@ -119,39 +170,41 @@ function AppRoutes() {
         <Route path="/app/rrhh" element={<ProtectedModuleRoute moduleId="RRHH"><ModuleLayout><RRHH /></ModuleLayout></ProtectedModuleRoute>} />
         <Route path="/app/nomina" element={<ProtectedModuleRoute moduleId="Nomina"><ModuleLayout><Nomina /></ModuleLayout></ProtectedModuleRoute>} />
         <Route path="/app/processsuite" element={<ProtectedModuleRoute moduleId="ProcessSuite"><ModuleLayout><SynexProcessSuiteView /></ModuleLayout></ProtectedModuleRoute>} />
-        <Route path="/app/processmining" element={<ProtectedModuleRoute moduleId="ProcessMining"><ModuleLayout><ProcessMiningView /></ModuleLayout></ProtectedModuleRoute>} />
         <Route path="/app/businesspartners" element={<ProtectedModuleRoute moduleId="BusinessPartners"><ModuleLayout><BusinessPartnersView /></ModuleLayout></ProtectedModuleRoute>} />
         <Route path="/app/biyreportes" element={<ProtectedModuleRoute moduleId="BIyReportes"><ModuleLayout><BIyReportes /></ModuleLayout></ProtectedModuleRoute>} />
         <Route path="/app/configuracion" element={<ProtectedModuleRoute moduleId="Configuracion"><ModuleLayout><Configuracion /></ModuleLayout></ProtectedModuleRoute>} />
-        
-        {/* Módulos Operativos Integrados: Circuito Comercial O2C */}
-        <Route path="/app/cxc" element={<ProtectedModuleRoute moduleId="CxC"><ModuleLayout><CxcView /></ModuleLayout></ProtectedModuleRoute>} />
-        <Route path="/app/wms" element={<ProtectedModuleRoute moduleId="WMS"><ModuleLayout><WmsView /></ModuleLayout></ProtectedModuleRoute>} />
         <Route path="/app/rop" element={<ProtectedModuleRoute moduleId="Rop"><ModuleLayout><RopView /></ModuleLayout></ProtectedModuleRoute>} />
-        <Route path="/app/circuito-comercial" element={<ModuleLayout><CircuitoComercialView /></ModuleLayout>} />
-        {/* Módulos Operativos Integrados: Circuito Compras, Inventario y Producción (P2P & M) */}
+        <Route path="/app/wms" element={<ProtectedModuleRoute moduleId="WMS"><ModuleLayout><WmsView /></ModuleLayout></ProtectedModuleRoute>} />
+        <Route path="/app/cxc" element={<ProtectedModuleRoute moduleId="CxC"><ModuleLayout><CxcView /></ModuleLayout></ProtectedModuleRoute>} />
         <Route path="/app/cxp" element={<ProtectedModuleRoute moduleId="CxP"><ModuleLayout><CxpView /></ModuleLayout></ProtectedModuleRoute>} />
+        <Route path="/app/processmining" element={<ProtectedModuleRoute moduleId="ProcessMining"><ModuleLayout><ProcessMiningView /></ModuleLayout></ProtectedModuleRoute>} />
+        
+        {/* Circuitos Integrados de Operación */}
+        <Route path="/app/circuito-comercial" element={<ModuleLayout><CircuitoComercialView /></ModuleLayout>} />
         <Route path="/app/circuito-produccion" element={<ModuleLayout><CircuitoProduccionView /></ModuleLayout>} />
-        {/* Módulos Operativos Integrados: Núcleo Financiero y Contable ([10], [11], [12]) */}
         <Route path="/app/circuito-financiero" element={<ModuleLayout><CircuitoFinancieroView /></ModuleLayout>} />
-        {/* Módulos Operativos Integrados: Talento Humano y Nómina ([13], [14]) */}
         <Route path="/app/circuito-nomina" element={<ModuleLayout><CircuitoNominaView /></ModuleLayout>} />
-        {/* Módulos Operativos Integrados: Gobernanza y Minería de Procesos ([15], [16]) */}
         <Route path="/app/circuito-procesos" element={<ModuleLayout><CircuitoProcesosView /></ModuleLayout>} />
-        {/* Módulos Operativos Integrados: IA, Predictivos y Planeación S&OP ([23], [24], [25], [19]) */}
         <Route path="/app/circuito-ia-planeacion" element={<ModuleLayout><CircuitoIaPlaneacionView /></ModuleLayout>} />
-        {/* Circuito 7: Inteligencia de Negocios, Big Data y Gobernanza Global ([20], [18], [21], [22], [26]) */}
         <Route path="/app/circuito-gobernanza" element={<ModuleLayout><CircuitoGobernanzaView /></ModuleLayout>} />
         
-        {/* LOS 4 CIRCUITOS DE DEMOSTRACIÓN ALINEADOS A LAS 4 FASES COMERCIALES */}
+        {/* Los 4 Circuitos de Demostración por Fases */}
         <Route path="/app/circuito-fase1" element={<ModuleLayout><CircuitoFase1View /></ModuleLayout>} />
         <Route path="/app/circuito-fase2" element={<ModuleLayout><CircuitoFase2View /></ModuleLayout>} />
         <Route path="/app/circuito-fase3" element={<ModuleLayout><CircuitoFase3View /></ModuleLayout>} />
         <Route path="/app/circuito-fase4" element={<ModuleLayout><CircuitoFase4View /></ModuleLayout>} />
 
-        {/* ESPACIO DE TRABAJO UNIFICADO DE FASE (WORKSPACE INTEGRADO) */}
-        <Route path="/app/workspace" element={<ModuleLayout><PhaseWorkspaceView /></ModuleLayout>} />
-        <Route path="/app/mi-fase" element={<ModuleLayout><PhaseWorkspaceView /></ModuleLayout>} />
+        {/* Espacio de Trabajo Unificado de Fase (Workspace Protegido) */}
+        <Route path="/app/workspace" element={
+          <ProtectedPortalRoute>
+            <ModuleLayout><PhaseWorkspaceView /></ModuleLayout>
+          </ProtectedPortalRoute>
+        } />
+        <Route path="/app/mi-fase" element={
+          <ProtectedPortalRoute>
+            <ModuleLayout><PhaseWorkspaceView /></ModuleLayout>
+          </ProtectedPortalRoute>
+        } />
 
         <Route path="/app/dashboards" element={<ProtectedModuleRoute moduleId="Dashboards"><ModuleLayout><DashboardsView /></ModuleLayout></ProtectedModuleRoute>} />
         <Route path="/app/bi" element={<ProtectedModuleRoute moduleId="BI"><ModuleLayout><BiCubeView /></ModuleLayout></ProtectedModuleRoute>} />
@@ -161,7 +214,8 @@ function AppRoutes() {
         <Route path="/app/predictivos" element={<ProtectedModuleRoute moduleId="Predictivos"><ModuleLayout><PredictiveModelsView /></ModuleLayout></ProtectedModuleRoute>} />
         <Route path="/app/planeacion" element={<ProtectedModuleRoute moduleId="Planeacion"><ModuleLayout><PlaneacionView /></ModuleLayout></ProtectedModuleRoute>} />
         
-        <Route path="*" element={<Navigate to="/portal" replace />} />
+        {/* Redirección por defecto a la ventana de login */}
+        <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </Router>
   );

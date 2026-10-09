@@ -488,12 +488,21 @@ const ALL_26_MODULES = [
 
 app.post('/api/auth/login', async (req, res) => {
   try {
-    const { email, role } = req.body;
+    const { email, role, phaseId } = req.body;
     let subscriptions = [];
     
-    if (role === 'Admin') subscriptions = [...ALL_26_MODULES];
-    if (role === 'Partner') subscriptions = [...ALL_26_MODULES];
-    if (role === 'Client') subscriptions = ['Ventas', 'Inventario', 'BIyReportes'];
+    if (role === 'Admin' || role === 'Partner') {
+      subscriptions = [...ALL_26_MODULES];
+    } else if (role === 'Client') {
+      const p1 = ['Ventas', 'Inventario', 'Compras', 'Contabilidad', 'CxC', 'CxP', 'Tesoreria'];
+      const p2 = [...p1, 'CRM', 'Rop', 'Produccion', 'Logistica', 'RRHH', 'Nomina', 'ProcessSuite', 'ProcessMining', 'WMS', 'Dashboards'];
+      const p3 = [...p2, 'ActivosFijos', 'BIyReportes', 'BigData', 'BI', 'Planeacion'];
+      const pVal = parseInt(phaseId, 10) || 1;
+      if (pVal === 1) subscriptions = p1;
+      else if (pVal === 2) subscriptions = p2;
+      else if (pVal === 3) subscriptions = p3;
+      else subscriptions = [...ALL_26_MODULES];
+    }
 
     const [user] = await User.findOrCreate({
       where: { email },

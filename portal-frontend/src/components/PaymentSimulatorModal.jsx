@@ -2,12 +2,16 @@ import React, { useState } from 'react';
 
 const PaymentSimulatorModal = ({ isOpen, onClose, phaseInfo, onSuccess }) => {
   const [loading, setLoading] = useState(false);
-  const [step, setStep] = useState(1); // 1 = checkout, 2 = success
+  const [step, setStep] = useState(1); // 1 = checkout, 2 = success con credenciales
+  const [clientEmail, setClientEmail] = useState('demo@consultores-nyt.com');
+  const [copied, setCopied] = useState(false);
+  const [credentials, setCredentials] = useState(null);
 
   if (!isOpen || !phaseInfo) return null;
 
-  // Normalización de textos y montos para evitar cualquier "undefined"
+  // Normalización de textos y montos
   const planTitle = phaseInfo.name || phaseInfo.title || 'Plan Empresarial NyTEX';
+  const phaseId = phaseInfo.phaseId || phaseInfo.id || 1;
   const modulesText = phaseInfo.modulesText || 
     (Array.isArray(phaseInfo.modulesArray) ? phaseInfo.modulesArray.join(', ') : 
     (Array.isArray(phaseInfo.modules) ? phaseInfo.modules.join(', ') : 'Módulos operativos incluidos'));
@@ -31,9 +35,9 @@ const PaymentSimulatorModal = ({ isOpen, onClose, phaseInfo, onSuccess }) => {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            email: 'demo@consultores-nyt.com',
+            email: clientEmail,
             newModules: modulesToUnlock,
-            phaseId: phaseInfo.phaseId || 1
+            phaseId: phaseId
           })
         });
         
@@ -47,26 +51,52 @@ const PaymentSimulatorModal = ({ isOpen, onClose, phaseInfo, onSuccess }) => {
         console.warn('Simulación de pago en modo offline/fallback local:', error);
       }
 
+      // Generar los Códigos de Acceso Oficiales para el Cliente
+      const randomPin = Math.floor(1000 + Math.random() * 9000);
+      const generatedCreds = {
+        roleName: 'Cliente Final',
+        roleKey: 'Client',
+        email: clientEmail,
+        password: `NyTEX-Pass-${randomPin}`,
+        licenseKey: `LIC-NYTEX-F${phaseId}-${Date.now().toString(36).toUpperCase()}`,
+        phaseId: phaseId,
+        phaseName: planTitle,
+        finalSubscriptions
+      };
+
+      setCredentials(generatedCreds);
       setLoading(false);
-      setStep(2); // Pantalla de éxito
-
-      setTimeout(() => {
-        if (onSuccess) {
-          onSuccess(finalSubscriptions, phaseInfo);
-        }
-        setStep(1);
-        if (onClose) onClose();
-      }, 1800);
-
+      setStep(2); // Mostrar Voucher de Códigos de Acceso
     }, 1500);
   };
 
+  const handleCopyCredentials = () => {
+    if (!credentials) return;
+    const textToCopy = `=== CREDENCIALES DE ACCESO NyTEX ERP ===\n1. Tipo de Usuario: ${credentials.roleName}\n2. Usuario: ${credentials.email}\n3. Clave de Acceso: ${credentials.password}\n4. Fase Contratada: ${credentials.phaseName} (Fase ${credentials.phaseId})\n5. Licencia Criptográfica: ${credentials.licenseKey}\nPortal: https://nytex-erp-portal.onrender.com/login`;
+    
+    navigator.clipboard.writeText(textToCopy).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+    }).catch(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+    });
+  };
+
+  const handleEnterWorkspace = () => {
+    if (onSuccess && credentials) {
+      onSuccess(credentials.finalSubscriptions, phaseInfo, credentials);
+    }
+    setStep(1);
+    if (onClose) onClose();
+  };
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm transition-opacity p-4">
-      <div className="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden relative animate-fade-in-up border border-slate-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm transition-opacity p-4 font-sans">
+      <div className="bg-white w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden relative animate-fade-in border border-slate-200">
         
-        {/* Botón Cerrar */}
-        {step === 1 && !loading && (
+        {/* Botón Cerrar (en paso 1 o 2) */}
+        {!loading && (
           <button 
             type="button"
             onClick={onClose} 
@@ -76,12 +106,14 @@ const PaymentSimulatorModal = ({ isOpen, onClose, phaseInfo, onSuccess }) => {
           </button>
         )}
 
-        {/* Paso 1: Formulario de Pago */}
+        {/* ============================================================== */}
+        {/* PASO 1: FORMULARIO DE PAGO CON TARJETA (STRIPE SIMULADO)       */}
+        {/* ============================================================== */}
         {step === 1 && (
           <div className="p-6 sm:p-8">
-            <div className="flex justify-center mb-5">
+            <div className="flex justify-center mb-4">
               <div className="text-[#635BFF] font-bold text-2xl tracking-tighter flex items-center gap-2">
-                <i className="fab fa-stripe fa-2x"></i> 
+                <span className="font-black text-3xl">stripe</span>
                 <span className="text-[10px] text-gray-500 font-mono font-bold border border-gray-300 rounded px-1.5 py-0.5 tracking-normal bg-gray-50">
                   TEST MODE
                 </span>
@@ -91,30 +123,31 @@ const PaymentSimulatorModal = ({ isOpen, onClose, phaseInfo, onSuccess }) => {
             <h2 className="text-xl font-extrabold text-[#0A2540] mb-1">
               Contratar {planTitle}
             </h2>
-            <p className="text-xs text-gray-500 mb-5 leading-relaxed">
+            <p className="text-xs text-gray-500 mb-4 leading-relaxed">
               <strong className="text-gray-700">Módulos:</strong> {modulesText}
             </p>
 
-            <div className="bg-slate-50 p-4 rounded-xl mb-5 border border-slate-200 flex justify-between items-center shadow-inner">
-              <span className="font-bold text-sm text-gray-700">Total a pagar hoy:</span>
+            <div className="bg-slate-50 p-3.5 rounded-xl mb-4 border border-slate-200 flex justify-between items-center shadow-inner">
+              <span className="font-bold text-xs text-gray-700 uppercase tracking-wide">Total a pagar hoy:</span>
               <span className="text-2xl font-black text-[#0A2540]">{priceText}</span>
             </div>
 
             <form onSubmit={handlePay}>
-              <div className="mb-4">
-                <label className="block text-xs font-bold uppercase text-gray-600 mb-1.5">
-                  Correo Electrónico
+              <div className="mb-3.5">
+                <label className="block text-xs font-bold uppercase text-gray-600 mb-1">
+                  Correo Electrónico del Cliente
                 </label>
                 <input 
                   type="email" 
-                  value="demo@consultores-nyt.com" 
-                  readOnly 
-                  className="w-full px-3.5 py-2.5 border border-gray-300 rounded-lg bg-gray-50 text-gray-600 text-sm font-medium cursor-not-allowed focus:outline-none" 
+                  value={clientEmail} 
+                  onChange={(e) => setClientEmail(e.target.value)}
+                  required 
+                  className="w-full px-3.5 py-2.5 border border-gray-300 rounded-lg bg-white text-gray-800 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-[#635BFF]" 
                 />
               </div>
 
-              <div className="mb-5">
-                <label className="block text-xs font-bold uppercase text-gray-600 mb-1.5">
+              <div className="mb-4">
+                <label className="block text-xs font-bold uppercase text-gray-600 mb-1">
                   Información de la Tarjeta (Simulada)
                 </label>
                 <div className="relative">
@@ -123,7 +156,7 @@ const PaymentSimulatorModal = ({ isOpen, onClose, phaseInfo, onSuccess }) => {
                     type="text" 
                     defaultValue="4242 4242 4242 4242" 
                     required 
-                    className="w-full pl-9 pr-3 py-2.5 border border-gray-300 rounded-t-lg focus:outline-none focus:ring-2 focus:ring-[#635BFF] font-mono text-sm" 
+                    className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-t-lg focus:outline-none focus:ring-2 focus:ring-[#635BFF] font-mono text-xs" 
                   />
                 </div>
                 <div className="flex">
@@ -131,13 +164,13 @@ const PaymentSimulatorModal = ({ isOpen, onClose, phaseInfo, onSuccess }) => {
                     type="text" 
                     defaultValue="12 / 28" 
                     required 
-                    className="w-1/2 px-3 py-2.5 border border-t-0 border-r-0 border-gray-300 rounded-bl-lg focus:outline-none focus:ring-2 focus:ring-[#635BFF] text-sm font-mono text-center" 
+                    className="w-1/2 px-3 py-2 border border-t-0 border-r-0 border-gray-300 rounded-bl-lg focus:outline-none focus:ring-2 focus:ring-[#635BFF] text-xs font-mono text-center" 
                   />
                   <input 
                     type="text" 
                     defaultValue="888" 
                     required 
-                    className="w-1/2 px-3 py-2.5 border border-t-0 border-gray-300 rounded-br-lg focus:outline-none focus:ring-2 focus:ring-[#635BFF] text-sm font-mono text-center" 
+                    className="w-1/2 px-3 py-2 border border-t-0 border-gray-300 rounded-br-lg focus:outline-none focus:ring-2 focus:ring-[#635BFF] text-xs font-mono text-center" 
                   />
                 </div>
               </div>
@@ -145,7 +178,7 @@ const PaymentSimulatorModal = ({ isOpen, onClose, phaseInfo, onSuccess }) => {
               <button 
                 type="submit" 
                 disabled={loading}
-                className={`w-full py-3.5 px-4 rounded-xl text-white font-extrabold text-base shadow-lg transition-all flex items-center justify-center gap-2 ${
+                className={`w-full py-3.5 px-4 rounded-xl text-white font-extrabold text-sm shadow-lg transition-all flex items-center justify-center gap-2 ${
                   loading 
                     ? 'bg-[#635BFF]/80 cursor-wait' 
                     : 'bg-[#635BFF] hover:bg-[#5249ea] hover:shadow-indigo-500/25 active:scale-[0.99]'
@@ -153,18 +186,18 @@ const PaymentSimulatorModal = ({ isOpen, onClose, phaseInfo, onSuccess }) => {
               >
                 {loading ? (
                   <>
-                    <svg className="animate-spin -ml-1 mr-2 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
-                    <span>Procesando pago con Stripe...</span>
+                    <span>Procesando pago con tarjeta...</span>
                   </>
                 ) : (
                   <span>Pagar {priceText}</span>
                 )}
               </button>
               
-              <div className="mt-4 text-center text-[11px] text-gray-400 flex items-center justify-center gap-1.5">
+              <div className="mt-3.5 text-center text-[10px] text-gray-400 flex items-center justify-center gap-1.5">
                 <span>🔒</span>
                 <span>Transacción segura y encriptada (Ambiente de pruebas)</span>
               </div>
@@ -172,24 +205,101 @@ const PaymentSimulatorModal = ({ isOpen, onClose, phaseInfo, onSuccess }) => {
           </div>
         )}
 
-        {/* Paso 2: Pantalla de Éxito */}
-        {step === 2 && (
-          <div className="p-8 text-center flex flex-col items-center animate-fade-in">
-            <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center text-3xl mb-4 animate-bounce">
-              ✓
+        {/* ============================================================== */}
+        {/* PASO 2: ENTREGA FORMAL DE CÓDIGOS DE ACCESO A LA FASE          */}
+        {/* ============================================================== */}
+        {step === 2 && credentials && (
+          <div className="p-6 sm:p-8 animate-fade-in flex flex-col">
+            <div className="text-center mb-4">
+              <div className="w-14 h-14 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center text-2xl mx-auto mb-2 font-black shadow-inner">
+                ✓
+              </div>
+              <h2 className="text-xl font-black text-[#0A2540]">
+                ¡Pago Exitoso & Suscripción Activada!
+              </h2>
+              <p className="text-xs text-emerald-700 font-bold uppercase tracking-wider mt-0.5">
+                {credentials.phaseName}
+              </p>
+              <p className="text-xs text-slate-500 mt-1">
+                A continuación se han generado sus <strong>códigos de acceso oficiales</strong> a la plataforma:
+              </p>
             </div>
-            <h2 className="text-2xl font-black text-[#0A2540] mb-1">
-              ¡Pago Exitoso!
-            </h2>
-            <p className="text-xs text-emerald-700 font-bold mb-2 uppercase tracking-wide">
-              {planTitle} Activado
-            </p>
-            <p className="text-xs text-gray-500 mb-6 max-w-xs">
-              Su contratación ha sido confirmada. Abriendo su <strong>Espacio de Trabajo (Workspace)</strong> con todos sus módulos...
-            </p>
-            <div className="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
-              <div className="bg-emerald-500 h-2 rounded-full animate-pulse w-full"></div>
+
+            {/* FICHA TÉCNICA DE CREDENCIALES DE ACCESO */}
+            <div className="bg-slate-900 border border-slate-700 rounded-2xl p-4 text-white shadow-xl mb-5">
+              <div className="flex items-center justify-between border-b border-slate-800 pb-2 mb-3">
+                <span className="text-[10px] uppercase font-black tracking-widest text-cyan-400 flex items-center gap-1">
+                  <span>🔐</span> Ficha de Acceso de Seguridad
+                </span>
+                <span className="text-[10px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 px-2 py-0.5 rounded font-mono font-bold">
+                  Activa
+                </span>
+              </div>
+
+              <div className="space-y-2 text-xs">
+                {/* 1. Tipo de Usuario */}
+                <div className="flex justify-between items-center bg-slate-950/60 p-2 rounded-lg border border-slate-800">
+                  <span className="text-slate-400 font-bold text-[11px]">1. Tipo de Usuario:</span>
+                  <span className="font-extrabold text-cyan-300">
+                    🏢 {credentials.roleName}
+                  </span>
+                </div>
+
+                {/* 2. Usuario */}
+                <div className="flex justify-between items-center bg-slate-950/60 p-2 rounded-lg border border-slate-800">
+                  <span className="text-slate-400 font-bold text-[11px]">2. Usuario / Correo:</span>
+                  <span className="font-mono font-bold text-white text-[11px] truncate max-w-[200px]">
+                    {credentials.email}
+                  </span>
+                </div>
+
+                {/* 3. Clave de Acceso */}
+                <div className="flex justify-between items-center bg-slate-950/60 p-2 rounded-lg border border-slate-800">
+                  <span className="text-slate-400 font-bold text-[11px]">3. Clave Temporal:</span>
+                  <span className="font-mono font-black text-amber-300 tracking-wider">
+                    {credentials.password}
+                  </span>
+                </div>
+
+                {/* Fase y Licencia */}
+                <div className="flex justify-between items-center bg-slate-950/60 p-2 rounded-lg border border-slate-800">
+                  <span className="text-slate-400 font-bold text-[11px]">Fase Contratada:</span>
+                  <span className="font-bold text-emerald-400 text-[11px]">
+                    Fase {credentials.phaseId} ({credentials.finalSubscriptions.length} Módulos)
+                  </span>
+                </div>
+
+                <div className="flex justify-between items-center bg-slate-950/60 p-2 rounded-lg border border-slate-800">
+                  <span className="text-slate-400 font-bold text-[10px]">Licencia SHA-256:</span>
+                  <span className="font-mono text-[10px] text-slate-400">
+                    {credentials.licenseKey}
+                  </span>
+                </div>
+              </div>
             </div>
+
+            {/* BOTONES DE ACCIÓN */}
+            <div className="space-y-2.5">
+              <button
+                type="button"
+                onClick={handleCopyCredentials}
+                className="w-full py-2.5 px-4 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs rounded-xl transition-all border border-slate-300 flex items-center justify-center gap-2"
+              >
+                <span>{copied ? '✅ ¡Copiado al portapapeles!' : '📋 Copiar Códigos de Acceso'}</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={handleEnterWorkspace}
+                className="w-full py-3.5 px-4 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-extrabold text-sm rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 hover:shadow-xl hover:-translate-y-0.5"
+              >
+                <span>🚀 Ingresar a mi Espacio de Trabajo con mis Credenciales ➔</span>
+              </button>
+            </div>
+
+            <p className="text-[10px] text-center text-slate-400 mt-3">
+              Sus credenciales han quedado registradas en el sistema para futuros inicios de sesión.
+            </p>
           </div>
         )}
 

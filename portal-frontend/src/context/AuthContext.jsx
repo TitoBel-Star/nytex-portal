@@ -11,25 +11,25 @@ const ALL_MODULES = [
   'Predictivos', 'Planeacion'
 ];
 
-const getDefaultUser = (role = 'Partner', customEmail = null) => {
+const getDefaultUser = (role = 'Partner', customEmail = null, customPhase = null) => {
   let email = customEmail || 'partner@nytex.com';
   let name = 'Distribuidor Partner';
   let subscriptions = ALL_MODULES;
 
   if (role === 'Admin') {
     email = customEmail || 'admin@nytex.com';
-    name = 'Super Admin';
+    name = 'Super Admin (Control Total)';
     subscriptions = ALL_MODULES;
   } else if (role === 'Client') {
     email = customEmail || 'cliente@empresa.com';
-    name = 'Cliente Final';
-    const savedPhase = parseInt(localStorage.getItem('nytex_active_phase'), 10) || 1;
+    name = 'Cliente Final (Empresa)';
+    const phaseVal = customPhase || parseInt(localStorage.getItem('nytex_active_phase'), 10) || 1;
     const p1 = ['Ventas', 'Inventario', 'Compras', 'Contabilidad', 'CxC', 'CxP', 'Tesoreria'];
     const p2 = [...p1, 'CRM', 'Rop', 'Produccion', 'Logistica', 'RRHH', 'Nomina', 'ProcessSuite', 'ProcessMining', 'WMS', 'Dashboards'];
     const p3 = [...p2, 'ActivosFijos', 'BIyReportes', 'BigData', 'BI', 'Planeacion'];
-    if (savedPhase === 1) subscriptions = p1;
-    else if (savedPhase === 2) subscriptions = p2;
-    else if (savedPhase === 3) subscriptions = p3;
+    if (phaseVal === 1) subscriptions = p1;
+    else if (phaseVal === 2) subscriptions = p2;
+    else if (phaseVal === 3) subscriptions = p3;
     else subscriptions = ALL_MODULES;
   }
 
@@ -43,15 +43,32 @@ const getDefaultUser = (role = 'Partner', customEmail = null) => {
 };
 
 export function AuthProvider({ children }) {
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    return localStorage.getItem('nytex_authenticated') === 'true';
+  });
+
   const [user, setUser] = useState(() => {
+    const isAuth = localStorage.getItem('nytex_authenticated') === 'true';
+    if (!isAuth) return null;
     const savedRole = localStorage.getItem('nytex_role') || 'Partner';
     const savedEmail = localStorage.getItem('nytex_email') || 'partner@nytex.com';
-    return getDefaultUser(savedRole, savedEmail);
+    const savedPhase = parseInt(localStorage.getItem('nytex_active_phase'), 10) || 1;
+    return getDefaultUser(savedRole, savedEmail, savedPhase);
   });
+
   const [loading, setLoading] = useState(false);
 
-  const fetchUser = (email = localStorage.getItem('nytex_email') || 'partner@nytex.com') => {
+  const fetchUser = (email = localStorage.getItem('nytex_email')) => {
+    const isAuth = localStorage.getItem('nytex_authenticated') === 'true';
+    if (!isAuth || !email) {
+      setUser(null);
+      setIsAuthenticated(false);
+      setLoading(false);
+      return;
+    }
+
     const savedRole = localStorage.getItem('nytex_role') || (email.includes('admin') ? 'Admin' : email.includes('cliente') ? 'Client' : 'Partner');
+    const savedPhase = parseInt(localStorage.getItem('nytex_active_phase'), 10) || 1;
 
     fetch(`/api/auth/me?email=${encodeURIComponent(email)}`)
       .then(async (res) => {
@@ -67,30 +84,46 @@ export function AuthProvider({ children }) {
           setUser(data);
           localStorage.setItem('nytex_email', data.email);
           if (data.role) localStorage.setItem('nytex_role', data.role);
+          setIsAuthenticated(true);
         } else {
-          setUser(getDefaultUser(savedRole, email));
+          setUser(getDefaultUser(savedRole, email, savedPhase));
+          setIsAuthenticated(true);
         }
         setLoading(false);
       })
       .catch(err => {
         console.warn('Backend unavailable, using fallback auth user:', err);
-        setUser(getDefaultUser(savedRole, email));
+        setUser(getDefaultUser(savedRole, email, savedPhase));
+        setIsAuthenticated(true);
         setLoading(false);
       });
   };
 
-  const login = async (role) => {
-    let email = 'partner@nytex.com';
-    if (role === 'Admin') email = 'admin@nytex.com';
-    if (role === 'Client') email = 'cliente@empresa.com';
+  const login = async (role = 'Partner', customEmail = null, customPassword = null, customPhase = null) => {
+    let email = customEmail;
+    if (!email || email.trim() === '') {
+      if (role === 'Admin') email = 'admin@nytex.com';
+      else if (role === 'Client') email = 'cliente@empresa.com';
+      else email = 'partner@nytex.com';
+    }
 
-    const fallbackUser = getDefaultUser(role, email);
+    const phaseNumber = customPhase ? parseInt(customPhase, 10) : (parseInt(localStorage.getItem('nytex_active_phase'), 10) || 1);
+    if (role === 'Client') {
+      localStorage.setItem('nytex_active_phase', phaseNumber.toString());
+    }
+
+    const fallbackUser = getDefaultUser(role, email, phaseNumber);
+    localStorage.setItem('nytex_authenticated', 'true');
+    localStorage.setItem('nytex_email', email);
+    localStorage.setItem('nytex_role', role);
+    setIsAuthenticated(true);
+    setUser(fallbackUser);
 
     try {
       const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, role })
+        body: JSON.stringify({ email, role, phaseId: phaseNumber, password: customPassword })
       });
 
       const contentType = response.headers.get('content-type') || '';
@@ -98,22 +131,28 @@ export function AuthProvider({ children }) {
         const data = await response.json();
         setUser(data);
         localStorage.setItem('nytex_email', data.email);
-        localStorage.setItem('nytex_role', role);
+        localStorage.setItem('nytex_role', data.role || role);
         return data;
       }
     } catch (error) {
-      console.warn('Backend login endpoint failed, using fallback auth user:', error);
+      console.warn('Backend login endpoint offline, usando sesión local fallback:', error);
     }
 
-    // Always succeed so navigation is never blocked
-    setUser(fallbackUser);
-    localStorage.setItem('nytex_email', fallbackUser.email);
-    localStorage.setItem('nytex_role', role);
     return fallbackUser;
   };
 
+  const logout = () => {
+    localStorage.removeItem('nytex_authenticated');
+    localStorage.removeItem('nytex_role');
+    localStorage.removeItem('nytex_email');
+    setUser(null);
+    setIsAuthenticated(false);
+  };
+
   useEffect(() => {
-    fetchUser();
+    if (localStorage.getItem('nytex_authenticated') === 'true') {
+      fetchUser();
+    }
   }, []);
 
   const replaceSubscriptions = (modulesArray) => {
@@ -124,7 +163,7 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, replaceSubscriptions, login }}>
+    <AuthContext.Provider value={{ user, isAuthenticated, loading, replaceSubscriptions, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
@@ -133,4 +172,3 @@ export function AuthProvider({ children }) {
 export function useAuth() {
   return useContext(AuthContext);
 }
-

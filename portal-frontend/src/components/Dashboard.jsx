@@ -79,7 +79,7 @@ const phases = [
 ];
 
 export default function Dashboard() {
-  const { user, login } = useAuth();
+  const { user, login, logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -195,12 +195,12 @@ export default function Dashboard() {
     setIsModalOpen(true);
   };
 
-  const handlePaymentSuccess = (newSubscriptions, phase) => {
-    const pId = phase?.phaseId || phase?.id || activePhase || 1;
+  const handlePaymentSuccess = (newSubscriptions, phase, credentials) => {
+    const pId = credentials?.phaseId || phase?.phaseId || phase?.id || activePhase || 1;
     localStorage.setItem('nytex_active_phase', pId.toString());
     localStorage.setItem('nytex_user_plan', phase?.name || `Fase ${pId}`);
     if (login) {
-      login('Client');
+      login('Client', credentials?.email || 'demo@consultores-nyt.com', credentials?.password || 'cliente2026', pId);
     }
     navigate(`/app/workspace?phase=${pId}`);
   };
@@ -303,8 +303,20 @@ export default function Dashboard() {
               to="/login"
               className="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800 hover:bg-slate-700 text-amber-300 border border-amber-500/30 transition-all flex items-center gap-1"
             >
-              <span>⚙️</span> Selector Detallado
+              <span>⚙️</span> Cambiar Rol
             </Link>
+
+            <button
+              type="button"
+              onClick={() => {
+                logout();
+                navigate('/login');
+              }}
+              className="px-3 py-1.5 rounded-lg text-xs font-bold bg-rose-600/20 hover:bg-rose-600 text-rose-300 hover:text-white border border-rose-500/40 transition-all flex items-center gap-1 shadow-sm"
+              title="Cerrar sesión de seguridad"
+            >
+              <span>🔒</span> Cerrar Sesión
+            </button>
           </div>
         </div>
         

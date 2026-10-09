@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation, Link } from 'react-router-dom';
+import { useLocation, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 // Importar todos los componentes de módulos
@@ -155,7 +155,8 @@ const PHASES_CONFIG = {
 
 export default function PhaseWorkspaceView() {
   const location = useLocation();
-  const { user, login } = useAuth();
+  const navigate = useNavigate();
+  const { user, login, logout } = useAuth();
   const [activePhase, setActivePhase] = useState(1);
   const [activeTab, setActiveTab] = useState('circuito'); // 'circuito' o moduleId
 
@@ -319,6 +320,18 @@ export default function PhaseWorkspaceView() {
             >
               Menú Principal (Portal) ➔
             </Link>
+
+            <button
+              type="button"
+              onClick={() => {
+                logout();
+                navigate('/login');
+              }}
+              className="bg-rose-600/20 hover:bg-rose-600 text-rose-300 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all border border-rose-500/40 flex items-center gap-1 shadow-sm"
+              title="Cerrar sesión y volver al Control de Acceso"
+            >
+              <span>🔒</span> Salir
+            </button>
           </div>
         </div>
 
