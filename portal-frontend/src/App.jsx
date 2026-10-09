@@ -54,7 +54,7 @@ const ProtectedModuleRoute = ({ moduleId, children }) => {
   }
   
   if (!user) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/portal" replace />;
   }
   
   const hasAccess = user.role === 'Admin' || user.role === 'Partner' || user.subscriptions?.includes(moduleId);
@@ -161,7 +161,7 @@ function AppRoutes() {
         <Route path="/app/predictivos" element={<ProtectedModuleRoute moduleId="Predictivos"><ModuleLayout><PredictiveModelsView /></ModuleLayout></ProtectedModuleRoute>} />
         <Route path="/app/planeacion" element={<ProtectedModuleRoute moduleId="Planeacion"><ModuleLayout><PlaneacionView /></ModuleLayout></ProtectedModuleRoute>} />
         
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="*" element={<Navigate to="/portal" replace />} />
       </Routes>
     </Router>
   );

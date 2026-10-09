@@ -43,8 +43,12 @@ const getDefaultUser = (role = 'Partner', customEmail = null) => {
 };
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(() => {
+    const savedRole = localStorage.getItem('nytex_role') || 'Partner';
+    const savedEmail = localStorage.getItem('nytex_email') || 'partner@nytex.com';
+    return getDefaultUser(savedRole, savedEmail);
+  });
+  const [loading, setLoading] = useState(false);
 
   const fetchUser = (email = localStorage.getItem('nytex_email') || 'partner@nytex.com') => {
     const savedRole = localStorage.getItem('nytex_role') || (email.includes('admin') ? 'Admin' : email.includes('cliente') ? 'Client' : 'Partner');

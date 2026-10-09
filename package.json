@@ -4,8 +4,5 @@
   "scripts": {
     "build": "node build.js",
     "start": "cd portal-backend && node server.js"
-  },
-  "dependencies": {
-    "playwright": "^1.63.0"
   }
 }
