@@ -175,16 +175,40 @@ export default function Dashboard() {
     const phaseObj = phases.find(p => p.id === phaseId) || {};
     const title = phaseObj.name || (phaseId === 'custom' ? `Plan a su medida (${customModules.length} Módulos)` : `Fase ${phaseId}`);
     const modulesText = phaseObj.modulesText || (customModules.length > 0 ? customModules.join(', ') : 'Módulos operativos incluidos');
-    const imp = phaseObj.imp && phaseObj.imp !== '$0 USD' && phaseObj.imp !== '$0'
-      ? phaseObj.imp
-      : (phaseObj.lic || '$35 USD / mes');
 
-    let amount = 35;
-    if (phaseId === 1) amount = 35;
-    else if (phaseId === 2) amount = 1500;
-    else if (phaseId === 3) amount = 4500;
-    else if (phaseId === 4) amount = safeUser.customQuoteAmount || 499;
-    else if (phaseId === 'custom') amount = customModules.length * 400 || 125;
+    let impAmount = 0;
+    let licAmount = 35;
+    let impText = '$0 USD';
+    let licText = '$35 USD / mes';
+
+    if (phaseId === 1) {
+      impAmount = 0;
+      licAmount = 35;
+      impText = '$0 USD (Sin costo inicial)';
+      licText = '$35 USD / mes';
+    } else if (phaseId === 2) {
+      impAmount = 1500;
+      licAmount = 149;
+      impText = '$1,500 USD';
+      licText = '$149 USD / mes';
+    } else if (phaseId === 3) {
+      impAmount = 4500;
+      licAmount = 299;
+      impText = '$4,500 USD';
+      licText = '$299 USD / mes';
+    } else if (phaseId === 4) {
+      impAmount = safeUser.customQuoteAmount ? Math.max(0, safeUser.customQuoteAmount - 499) : 0;
+      licAmount = 499;
+      impText = safeUser.customQuoteAmount ? `$${impAmount.toLocaleString()} USD` : 'Cotización a Medida';
+      licText = '$499 USD / mes';
+    } else if (phaseId === 'custom') {
+      impAmount = customModules.length * 400 || 0;
+      licAmount = customModules.length * 20 || 35;
+      impText = `$${impAmount.toLocaleString()} USD`;
+      licText = `$${licAmount.toLocaleString()} USD / mes`;
+    }
+
+    const totalAmount = impAmount + licAmount;
 
     setSelectedPhaseForPayment({
       phaseId,
@@ -193,9 +217,12 @@ export default function Dashboard() {
       title,
       subtitle: phaseObj.subtitle || '',
       modulesText,
-      imp,
-      lic: phaseObj.lic || '$35 USD / mes',
-      amount,
+      imp: impText,
+      lic: licText,
+      impAmount,
+      licAmount,
+      totalAmount,
+      amount: totalAmount,
       modulesArray: phaseModules || phaseObj.modulesArray || customModules || []
     });
     setIsModalOpen(true);

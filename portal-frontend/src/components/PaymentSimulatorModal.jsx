@@ -16,10 +16,56 @@ const PaymentSimulatorModal = ({ isOpen, onClose, phaseInfo, onSuccess }) => {
     (Array.isArray(phaseInfo.modulesArray) ? phaseInfo.modulesArray.join(', ') : 
     (Array.isArray(phaseInfo.modules) ? phaseInfo.modules.join(', ') : 'Módulos operativos incluidos'));
   
-  let priceText = phaseInfo.imp;
-  if (!priceText || priceText === '$0 USD' || priceText === '$0') {
-    priceText = phaseInfo.lic || (phaseInfo.amount ? `$${phaseInfo.amount} USD / mes` : '$35 USD / mes');
+  // Determinación de valores de Implementación y 1ª Cuota de Licencia
+  let impVal = 0;
+  let licVal = 35;
+  let impDisplay = '$0 USD';
+  let licDisplay = '$35 USD / mes';
+
+  if (phaseId === 1) {
+    impVal = 0;
+    licVal = 35;
+    impDisplay = '$0 USD (Sin costo inicial)';
+    licDisplay = '$35 USD / mes';
+  } else if (phaseId === 2) {
+    impVal = 1500;
+    licVal = 149;
+    impDisplay = '$1,500 USD';
+    licDisplay = '$149 USD / mes';
+  } else if (phaseId === 3) {
+    impVal = 4500;
+    licVal = 299;
+    impDisplay = '$4,500 USD';
+    licDisplay = '$299 USD / mes';
+  } else if (phaseId === 4) {
+    if (typeof phaseInfo.impAmount === 'number' && phaseInfo.impAmount > 0) {
+      impVal = phaseInfo.impAmount;
+      impDisplay = `$${impVal.toLocaleString()} USD`;
+    } else if (typeof phaseInfo.amount === 'number' && phaseInfo.amount > 499) {
+      impVal = phaseInfo.amount - 499;
+      impDisplay = `$${impVal.toLocaleString()} USD`;
+    } else {
+      impVal = 0;
+      impDisplay = phaseInfo.imp || 'Cotización a Medida';
+    }
+    licVal = 499;
+    licDisplay = '$499 USD / mes';
+  } else if (phaseId === 'custom') {
+    const count = phaseInfo.modulesArray?.length || phaseInfo.modules?.length || 1;
+    impVal = typeof phaseInfo.impAmount === 'number' ? phaseInfo.impAmount : (count * 400);
+    licVal = typeof phaseInfo.licAmount === 'number' ? phaseInfo.licAmount : (count * 20);
+    impDisplay = `$${impVal.toLocaleString()} USD`;
+    licDisplay = `$${licVal.toLocaleString()} USD / mes`;
+  } else {
+    impVal = typeof phaseInfo.impAmount === 'number' ? phaseInfo.impAmount : (parseInt(String(phaseInfo.imp || '').replace(/[^0-9]/g, ''), 10) || 0);
+    licVal = typeof phaseInfo.licAmount === 'number' ? phaseInfo.licAmount : (parseInt(String(phaseInfo.lic || '').replace(/[^0-9]/g, ''), 10) || 35);
+    impDisplay = phaseInfo.imp || (impVal > 0 ? `$${impVal.toLocaleString()} USD` : '$0 USD');
+    licDisplay = phaseInfo.lic || `$${licVal.toLocaleString()} USD / mes`;
   }
+
+  // Total a pagar hoy: Implementación (pago único) + Primera Cuota de Licencia Mensual (Mes 1)
+  const totalDueToday = impVal + licVal;
+  const totalDueTodayFormatted = `$${totalDueToday.toLocaleString()} USD`;
 
   const handlePay = async (e) => {
     e.preventDefault();
@@ -61,6 +107,9 @@ const PaymentSimulatorModal = ({ isOpen, onClose, phaseInfo, onSuccess }) => {
         licenseKey: `LIC-NYTEX-F${phaseId}-${Date.now().toString(36).toUpperCase()}`,
         phaseId: phaseId,
         phaseName: planTitle,
+        impDisplay,
+        licDisplay,
+        totalPaidFormatted: totalDueTodayFormatted,
         finalSubscriptions
       };
 
@@ -72,7 +121,7 @@ const PaymentSimulatorModal = ({ isOpen, onClose, phaseInfo, onSuccess }) => {
 
   const handleCopyCredentials = () => {
     if (!credentials) return;
-    const textToCopy = `=== CREDENCIALES DE ACCESO NyTEX ERP ===\n1. Tipo de Usuario: ${credentials.roleName}\n2. Usuario: ${credentials.email}\n3. Clave de Acceso: ${credentials.password}\n4. Fase Contratada: ${credentials.phaseName} (Fase ${credentials.phaseId})\n5. Licencia Criptográfica: ${credentials.licenseKey}\nPortal: https://nytex-erp-portal.onrender.com/login`;
+    const textToCopy = `=== CREDENCIALES DE ACCESO NyTEX ERP ===\n1. Tipo de Usuario: ${credentials.roleName}\n2. Usuario: ${credentials.email}\n3. Clave de Acceso: ${credentials.password}\n4. Fase Contratada: ${credentials.phaseName} (Fase ${credentials.phaseId})\n5. Liquidación Inicial Pagada: ${credentials.totalPaidFormatted} (Implementación: ${credentials.impDisplay} + 1ª Cuota Licencia: ${credentials.licDisplay})\n6. Licencia Criptográfica: ${credentials.licenseKey}\nPortal: https://nytex-erp-portal.onrender.com/login`;
     
     navigator.clipboard.writeText(textToCopy).then(() => {
       setCopied(true);
@@ -127,9 +176,47 @@ const PaymentSimulatorModal = ({ isOpen, onClose, phaseInfo, onSuccess }) => {
               <strong className="text-gray-700">Módulos:</strong> {modulesText}
             </p>
 
-            <div className="bg-slate-50 p-3.5 rounded-xl mb-4 border border-slate-200 flex justify-between items-center shadow-inner">
-              <span className="font-bold text-xs text-gray-700 uppercase tracking-wide">Total a pagar hoy:</span>
-              <span className="text-2xl font-black text-[#0A2540]">{priceText}</span>
+            {/* DESGLOSE CLARO DE IMPLEMENTACIÓN + PRIMERA CUOTA DE LICENCIA */}
+            <div className="bg-slate-50 p-4 rounded-xl mb-4 border border-slate-200 shadow-inner">
+              <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2.5 pb-1.5 border-b border-slate-200 flex justify-between items-center">
+                <span>Desglose de Liquidación Inicial</span>
+                <span className="text-[10px] bg-blue-100 text-blue-800 font-extrabold px-2 py-0.5 rounded">
+                  Fase {phaseId}
+                </span>
+              </div>
+
+              <div className="space-y-2 text-xs">
+                {/* Concepto 1: Implementación */}
+                <div className="flex justify-between items-center text-gray-700">
+                  <span className="flex items-center gap-1.5 font-medium">
+                    <span className="text-slate-400">🔧</span>
+                    <span>Servicio de Implementación (Pago único):</span>
+                  </span>
+                  <span className="font-extrabold text-gray-900">{impDisplay}</span>
+                </div>
+
+                {/* Concepto 2: Primera cuota mensual de licencia */}
+                <div className="flex justify-between items-center text-gray-700 pb-2 border-b border-dashed border-slate-200">
+                  <span className="flex items-center gap-1.5 font-medium">
+                    <span className="text-emerald-600">💳</span>
+                    <span>1ª Cuota de Licencia Mensual (Mes 1):</span>
+                  </span>
+                  <span className="font-extrabold text-emerald-600">{licDisplay}</span>
+                </div>
+              </div>
+
+              {/* Total a pagar hoy */}
+              <div className="flex justify-between items-center pt-2.5 mt-1">
+                <span className="font-black text-xs text-gray-800 uppercase tracking-wide">
+                  Total a pagar hoy:
+                </span>
+                <span className="text-2xl font-black text-[#0A2540]">
+                  {totalDueTodayFormatted}
+                </span>
+              </div>
+              <p className="text-[10px] text-gray-400 text-right mt-1">
+                * Puesta en marcha + 1er mes de servicio. Cuota mensual regular ({licDisplay}) aplica a partir del mes 2.
+              </p>
             </div>
 
             <form onSubmit={handlePay}>
@@ -193,7 +280,7 @@ const PaymentSimulatorModal = ({ isOpen, onClose, phaseInfo, onSuccess }) => {
                     <span>Procesando pago con tarjeta...</span>
                   </>
                 ) : (
-                  <span>Pagar {priceText}</span>
+                  <span>Pagar {totalDueTodayFormatted}</span>
                 )}
               </button>
               
@@ -267,6 +354,20 @@ const PaymentSimulatorModal = ({ isOpen, onClose, phaseInfo, onSuccess }) => {
                   <span className="font-bold text-emerald-400 text-[11px]">
                     Fase {credentials.phaseId} ({credentials.finalSubscriptions.length} Módulos)
                   </span>
+                </div>
+
+                {/* Liquidación Pagada */}
+                <div className="bg-slate-950/60 p-2 rounded-lg border border-slate-800">
+                  <div className="flex justify-between items-center mb-1">
+                    <span className="text-slate-400 font-bold text-[11px]">Liquidación Inicial Pagada:</span>
+                    <span className="font-black text-emerald-400 text-xs">
+                      {credentials.totalPaidFormatted}
+                    </span>
+                  </div>
+                  <div className="text-[10px] text-slate-400 border-t border-slate-800/80 pt-1 flex justify-between">
+                    <span>🔧 Imp: <strong className="text-slate-200">{credentials.impDisplay}</strong></span>
+                    <span>💳 1ª Licencia: <strong className="text-emerald-300">{credentials.licDisplay}</strong></span>
+                  </div>
                 </div>
 
                 <div className="flex justify-between items-center bg-slate-950/60 p-2 rounded-lg border border-slate-800">
