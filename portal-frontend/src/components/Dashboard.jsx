@@ -84,10 +84,16 @@ export default function Dashboard() {
   const navigate = useNavigate();
 
   const safeUser = user || {
-    email: 'demo@consultores-nyt.com',
+    role: localStorage.getItem('nytex_role') || 'Client',
+    email: localStorage.getItem('nytex_email') || 'demo@consultores-nyt.com',
     subscriptions: modulesList.map(m => m.id),
     customQuoteAmount: null
   };
+
+  const isClient = safeUser.role === 'Client';
+  const contractedPhase = isClient 
+    ? (parseInt(localStorage.getItem('nytex_contracted_phase') || localStorage.getItem('nytex_active_phase'), 10) || 1)
+    : 4;
 
   const [activePhase, setActivePhase] = useState(null);
   const [customModules, setCustomModules] = useState([]);
@@ -197,8 +203,13 @@ export default function Dashboard() {
 
   const handlePaymentSuccess = (newSubscriptions, phase, credentials) => {
     const pId = credentials?.phaseId || phase?.phaseId || phase?.id || activePhase || 1;
+    localStorage.setItem('nytex_contracted_phase', pId.toString());
     localStorage.setItem('nytex_active_phase', pId.toString());
     localStorage.setItem('nytex_user_plan', phase?.name || `Fase ${pId}`);
+    localStorage.setItem('nytex_role', 'Client');
+    if (credentials?.email) {
+      localStorage.setItem('nytex_email', credentials.email);
+    }
     if (login) {
       login('Client', credentials?.email || 'demo@consultores-nyt.com', credentials?.password || 'cliente2026', pId);
     }
@@ -206,6 +217,7 @@ export default function Dashboard() {
   };
 
   const handleSwitchRole = (newRole, phaseNum = 1) => {
+    if (isClient) return; // Clientes no pueden alternar roles
     if (newRole === 'Client') {
       localStorage.setItem('nytex_active_phase', phaseNum.toString());
       const p = phases.find(ph => ph.id === phaseNum);
@@ -228,97 +240,105 @@ export default function Dashboard() {
 
       <div className="max-w-[1600px] mx-auto relative z-10">
 
-        {/* BARRA SUPERIOR: SIMULADOR DE ROLES NYTEX */}
-        <div className="mb-6 bg-slate-900 border border-slate-700/80 rounded-xl p-3.5 shadow-xl flex flex-wrap items-center justify-between gap-3 text-white">
-          <div className="flex items-center gap-3">
-            <span className="bg-amber-400/20 text-amber-300 border border-amber-400/40 text-[10px] font-black uppercase px-2.5 py-1 rounded tracking-wide flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
-              Simulador de Roles
-            </span>
-            <div className="text-xs">
-              <span className="text-slate-400">Rol Activo: </span>
-              <strong className="text-cyan-300 font-bold">
-                {safeUser.role === 'Admin' ? '👑 Administrador' : safeUser.role === 'Client' ? `🏢 Cliente Final (Fase ${localStorage.getItem('nytex_active_phase') || '1'})` : '🤝 Partner Consultor'}
-              </strong>
+        {/* BARRA SUPERIOR: PERFIL DE CLIENTE O SIMULADOR PARA CONSULTOR */}
+        {isClient ? (
+          <div className="mb-6 bg-slate-900 border border-emerald-500/40 rounded-xl p-3.5 shadow-xl flex flex-wrap items-center justify-between gap-3 text-white">
+            <div className="flex items-center gap-3">
+              <span className="bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[10px] font-black uppercase px-2.5 py-1 rounded tracking-wide flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                Licencia de Cliente Activa
+              </span>
+              <div className="text-xs">
+                <span className="text-slate-400">Cliente: </span>
+                <strong className="text-white font-bold">{safeUser.email || 'demo@consultores-nyt.com'}</strong>
+                <span className="text-slate-500 mx-2">|</span>
+                <span className="text-slate-400">Plan Oficial: </span>
+                <strong className="text-emerald-400 font-extrabold">{phases.find(p => p.id === contractedPhase)?.name || `Fase ${contractedPhase}`}</strong>
+              </div>
             </div>
-          </div>
 
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="text-xs text-slate-400 mr-1">Probar como:</span>
-            
-            <button
-              type="button"
-              onClick={() => handleSwitchRole('Admin')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all border ${
-                safeUser.role === 'Admin'
-                  ? 'bg-blue-600 border-blue-400 text-white shadow-md'
-                  : 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700 hover:text-white'
-              }`}
-            >
-              👑 Administrador
-            </button>
-
-            <button
-              type="button"
-              onClick={() => handleSwitchRole('Partner')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all border ${
-                safeUser.role === 'Partner' || (!safeUser.role && !safeUser.email?.includes('admin') && !safeUser.email?.includes('cliente'))
-                  ? 'bg-purple-600 border-purple-400 text-white shadow-md'
-                  : 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700 hover:text-white'
-              }`}
-            >
-              🤝 Partner
-            </button>
-
-            <div className="flex items-center bg-slate-800 border border-slate-700 rounded-lg p-0.5">
+            <div className="flex items-center gap-2.5">
+              <Link
+                to={`/app/workspace?phase=${contractedPhase}`}
+                className="bg-blue-600 hover:bg-blue-500 text-white px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all shadow-sm flex items-center gap-1.5"
+              >
+                <span>🚀</span> Mi Espacio de Trabajo ({phases.find(p => p.id === contractedPhase)?.moduleCount || '7 Módulos'})
+              </Link>
               <button
                 type="button"
-                onClick={() => handleSwitchRole('Client', parseInt(localStorage.getItem('nytex_active_phase') || '1', 10))}
-                className={`px-2.5 py-1 rounded text-xs font-bold transition-all ${
-                  safeUser.role === 'Client'
-                    ? 'bg-emerald-600 text-white shadow-sm'
-                    : 'text-slate-300 hover:text-white'
-                }`}
+                onClick={() => {
+                  logout();
+                  navigate('/login');
+                }}
+                className="px-3 py-1.5 rounded-lg text-xs font-bold bg-rose-600/20 hover:bg-rose-600 text-rose-300 hover:text-white border border-rose-500/40 transition-all flex items-center gap-1 shadow-sm"
+                title="Cerrar sesión de seguridad"
               >
-                🏢 Cliente Final:
+                <span>🔒</span> Cerrar Sesión
               </button>
-              {[1, 2, 3, 4].map((pNum) => (
-                <button
-                  type="button"
-                  key={pNum}
-                  onClick={() => handleSwitchRole('Client', pNum)}
-                  className={`px-2 py-1 text-[11px] font-bold rounded transition-colors ${
-                    safeUser.role === 'Client' && (localStorage.getItem('nytex_active_phase') || '1') === pNum.toString()
-                      ? 'bg-emerald-500 text-slate-950 font-black'
-                      : 'text-slate-400 hover:text-white'
-                  }`}
-                  title={`Cliente con Fase ${pNum}`}
-                >
-                  F{pNum}
-                </button>
-              ))}
+            </div>
+          </div>
+        ) : (
+          <div className="mb-6 bg-slate-900 border border-slate-700/80 rounded-xl p-3.5 shadow-xl flex flex-wrap items-center justify-between gap-3 text-white">
+            <div className="flex items-center gap-3">
+              <span className="bg-amber-400/20 text-amber-300 border border-amber-400/40 text-[10px] font-black uppercase px-2.5 py-1 rounded tracking-wide flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+                Simulador de Roles (Consultor)
+              </span>
+              <div className="text-xs">
+                <span className="text-slate-400">Rol Activo: </span>
+                <strong className="text-cyan-300 font-bold">
+                  {safeUser.role === 'Admin' ? '👑 Administrador' : '🤝 Partner Consultor'}
+                </strong>
+              </div>
             </div>
 
-            <Link
-              to="/login"
-              className="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800 hover:bg-slate-700 text-amber-300 border border-amber-500/30 transition-all flex items-center gap-1"
-            >
-              <span>⚙️</span> Cambiar Rol
-            </Link>
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-xs text-slate-400 mr-1">Probar como:</span>
+              <button
+                type="button"
+                onClick={() => handleSwitchRole('Admin')}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all border ${
+                  safeUser.role === 'Admin'
+                    ? 'bg-blue-600 border-blue-400 text-white shadow-md'
+                    : 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700 hover:text-white'
+                }`}
+              >
+                👑 Administrador
+              </button>
 
-            <button
-              type="button"
-              onClick={() => {
-                logout();
-                navigate('/login');
-              }}
-              className="px-3 py-1.5 rounded-lg text-xs font-bold bg-rose-600/20 hover:bg-rose-600 text-rose-300 hover:text-white border border-rose-500/40 transition-all flex items-center gap-1 shadow-sm"
-              title="Cerrar sesión de seguridad"
-            >
-              <span>🔒</span> Cerrar Sesión
-            </button>
+              <button
+                type="button"
+                onClick={() => handleSwitchRole('Partner')}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all border ${
+                  safeUser.role === 'Partner' || (!safeUser.role && !safeUser.email?.includes('admin') && !safeUser.email?.includes('cliente'))
+                    ? 'bg-purple-600 border-purple-400 text-white shadow-md'
+                    : 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700 hover:text-white'
+                }`}
+              >
+                🤝 Partner
+              </button>
+
+              <Link
+                to="/login"
+                className="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800 hover:bg-slate-700 text-amber-300 border border-amber-500/30 transition-all flex items-center gap-1"
+              >
+                <span>⚙️</span> Cambiar Rol
+              </Link>
+
+              <button
+                type="button"
+                onClick={() => {
+                  logout();
+                  navigate('/login');
+                }}
+                className="px-3 py-1.5 rounded-lg text-xs font-bold bg-rose-600/20 hover:bg-rose-600 text-rose-300 hover:text-white border border-rose-500/40 transition-all flex items-center gap-1 shadow-sm"
+                title="Cerrar sesión de seguridad"
+              >
+                <span>🔒</span> Cerrar Sesión
+              </button>
+            </div>
           </div>
-        </div>
+        )}
         
         {/* Banner Cotización Pendiente */}
         {safeUser.customQuoteAmount && (
@@ -365,7 +385,7 @@ export default function Dashboard() {
 
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 shrink-0">
               <Link 
-                to="/app/workspace" 
+                to={isClient ? `/app/workspace?phase=${contractedPhase}` : "/app/workspace"} 
                 className="px-6 py-3.5 bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 text-slate-950 font-black rounded-xl text-sm transition-all shadow-xl shadow-teal-500/30 flex items-center justify-center gap-2 text-center group"
               >
                 <span>🚀</span>
@@ -378,18 +398,36 @@ export default function Dashboard() {
           {/* Accesos directos por fase */}
           <div className="mt-5 pt-4 border-t border-white/10 flex flex-wrap items-center gap-2 text-xs">
             <span className="text-slate-300 font-semibold mr-1">Abrir Workspace por Fase:</span>
-            <Link to="/app/workspace?phase=1" className="bg-white/10 hover:bg-white/25 text-blue-200 px-3 py-1.5 rounded-lg font-bold transition-colors border border-blue-400/30 flex items-center gap-1.5">
-              <span>Fase 1: Starter (7 Módulos)</span> ➔
-            </Link>
-            <Link to="/app/workspace?phase=2" className="bg-white/10 hover:bg-white/25 text-amber-200 px-3 py-1.5 rounded-lg font-bold transition-colors border border-amber-400/30 flex items-center gap-1.5">
-              <span>Fase 2: Express (17 Módulos)</span> ➔
-            </Link>
-            <Link to="/app/workspace?phase=3" className="bg-white/10 hover:bg-white/25 text-cyan-200 px-3 py-1.5 rounded-lg font-bold transition-colors border border-cyan-400/30 flex items-center gap-1.5">
-              <span>Fase 3: Advanced (20 Módulos)</span> ➔
-            </Link>
-            <Link to="/app/workspace?phase=4" className="bg-white/10 hover:bg-white/25 text-purple-200 px-3 py-1.5 rounded-lg font-bold transition-colors border border-purple-400/30 flex items-center gap-1.5">
-              <span>Fase 4: Enterprise (25 Módulos)</span> ➔
-            </Link>
+            {[
+              { id: 1, name: 'Fase 1: Starter (7 Módulos)', color: 'blue' },
+              { id: 2, name: 'Fase 2: Express (17 Módulos)', color: 'amber' },
+              { id: 3, name: 'Fase 3: Advanced (20 Módulos)', color: 'cyan' },
+              { id: 4, name: 'Fase 4: Enterprise (25 Módulos)', color: 'purple' },
+            ].map(p => {
+              const isLocked = isClient && p.id > contractedPhase;
+              if (isLocked) {
+                return (
+                  <button
+                    key={p.id}
+                    type="button"
+                    onClick={() => handleContratar(p.id)}
+                    className="bg-white/5 hover:bg-amber-500/20 text-slate-400 hover:text-amber-200 px-3 py-1.5 rounded-lg font-bold transition-colors border border-dashed border-slate-600 hover:border-amber-400 flex items-center gap-1.5 cursor-pointer"
+                    title={`Requiere Upgrade a ${p.name}`}
+                  >
+                    <span>🔒 {p.name} (Upgrade)</span> ➔
+                  </button>
+                );
+              }
+              return (
+                <Link
+                  key={p.id}
+                  to={`/app/workspace?phase=${p.id}`}
+                  className={`bg-white/10 hover:bg-white/25 text-${p.color}-200 px-3 py-1.5 rounded-lg font-bold transition-colors border border-${p.color}-400/30 flex items-center gap-1.5`}
+                >
+                  <span>{p.name}</span> ➔
+                </Link>
+              );
+            })}
           </div>
         </div>
 
@@ -485,12 +523,22 @@ export default function Dashboard() {
                   ))}
                 </div>
                 <div className="flex flex-col gap-2">
-                  <Link 
-                    to="/app/workspace?phase=2"
-                    className="w-full text-center py-2 px-3 rounded-lg text-xs font-black bg-amber-600 hover:bg-amber-700 text-white shadow transition-all flex items-center justify-center gap-1.5"
-                  >
-                    <span>🚀</span> Abrir Workspace (17 Módulos)
-                  </Link>
+                  {isClient && contractedPhase < 2 ? (
+                    <button 
+                      type="button"
+                      onClick={() => handleContratar(2)}
+                      className="w-full text-center py-2 px-3 rounded-lg text-xs font-black bg-slate-800 hover:bg-amber-600 text-amber-200 hover:text-white border border-amber-500/40 shadow transition-all flex items-center justify-center gap-1.5"
+                    >
+                      <span>🔒</span> Solicitar Upgrade a Fase 2 (17 Módulos)
+                    </button>
+                  ) : (
+                    <Link 
+                      to="/app/workspace?phase=2"
+                      className="w-full text-center py-2 px-3 rounded-lg text-xs font-black bg-amber-600 hover:bg-amber-700 text-white shadow transition-all flex items-center justify-center gap-1.5"
+                    >
+                      <span>🚀</span> Abrir Workspace (17 Módulos)
+                    </Link>
+                  )}
                   <Link 
                     to="/app/circuito-fase2"
                     className="w-full text-center py-1.5 px-3 rounded-lg text-xs font-bold text-amber-800 hover:bg-amber-50 border border-amber-200 transition-colors"
@@ -528,12 +576,22 @@ export default function Dashboard() {
                   ))}
                 </div>
                 <div className="flex flex-col gap-2">
-                  <Link 
-                    to="/app/workspace?phase=3"
-                    className="w-full text-center py-2 px-3 rounded-lg text-xs font-black bg-cyan-600 hover:bg-cyan-700 text-white shadow transition-all flex items-center justify-center gap-1.5"
-                  >
-                    <span>🚀</span> Abrir Workspace (20 Módulos)
-                  </Link>
+                  {isClient && contractedPhase < 3 ? (
+                    <button 
+                      type="button"
+                      onClick={() => handleContratar(3)}
+                      className="w-full text-center py-2 px-3 rounded-lg text-xs font-black bg-slate-800 hover:bg-cyan-600 text-cyan-200 hover:text-white border border-cyan-500/40 shadow transition-all flex items-center justify-center gap-1.5"
+                    >
+                      <span>🔒</span> Solicitar Upgrade a Fase 3 (20 Módulos)
+                    </button>
+                  ) : (
+                    <Link 
+                      to="/app/workspace?phase=3"
+                      className="w-full text-center py-2 px-3 rounded-lg text-xs font-black bg-cyan-600 hover:bg-cyan-700 text-white shadow transition-all flex items-center justify-center gap-1.5"
+                    >
+                      <span>🚀</span> Abrir Workspace (20 Módulos)
+                    </Link>
+                  )}
                   <Link 
                     to="/app/circuito-fase3"
                     className="w-full text-center py-1.5 px-3 rounded-lg text-xs font-bold text-cyan-800 hover:bg-cyan-50 border border-cyan-200 transition-colors"
@@ -571,12 +629,22 @@ export default function Dashboard() {
                   ))}
                 </div>
                 <div className="flex flex-col gap-2">
-                  <Link 
-                    to="/app/workspace?phase=4"
-                    className="w-full text-center py-2 px-3 rounded-lg text-xs font-black bg-purple-700 hover:bg-purple-800 text-white shadow transition-all flex items-center justify-center gap-1.5"
-                  >
-                    <span>🚀</span> Abrir Workspace (25 Módulos)
-                  </Link>
+                  {isClient && contractedPhase < 4 ? (
+                    <button 
+                      type="button"
+                      onClick={() => handleContratar(4)}
+                      className="w-full text-center py-2 px-3 rounded-lg text-xs font-black bg-slate-800 hover:bg-purple-600 text-purple-200 hover:text-white border border-purple-500/40 shadow transition-all flex items-center justify-center gap-1.5"
+                    >
+                      <span>🔒</span> Solicitar Upgrade a Fase 4 (25 Módulos)
+                    </button>
+                  ) : (
+                    <Link 
+                      to="/app/workspace?phase=4"
+                      className="w-full text-center py-2 px-3 rounded-lg text-xs font-black bg-purple-700 hover:bg-purple-800 text-white shadow transition-all flex items-center justify-center gap-1.5"
+                    >
+                      <span>🚀</span> Abrir Workspace (25 Módulos)
+                    </Link>
+                  )}
                   <Link 
                     to="/app/circuito-fase4"
                     className="w-full text-center py-1.5 px-3 rounded-lg text-xs font-bold text-purple-900 hover:bg-purple-50 border border-purple-200 transition-colors"
@@ -622,6 +690,27 @@ export default function Dashboard() {
                   <p className="text-sm font-bold text-amber-400">{phase.lic}</p>
                 </div>
 
+                {/* Indicador de estado para Clientes */}
+                {isClient && (
+                  <div className="mb-3">
+                    {phase.id === contractedPhase && (
+                      <span className="w-full block bg-emerald-500 text-slate-950 text-[10px] font-black uppercase py-1 px-2 rounded text-center tracking-wide shadow-sm">
+                        ✓ Su Plan Actual Contratado
+                      </span>
+                    )}
+                    {phase.id > contractedPhase && (
+                      <span className="w-full block bg-amber-500/20 text-amber-300 border border-amber-400/40 text-[10px] font-extrabold uppercase py-0.5 px-2 rounded text-center">
+                        Requiere Upgrade
+                      </span>
+                    )}
+                    {phase.id < contractedPhase && (
+                      <span className="w-full block bg-blue-500/20 text-blue-300 border border-blue-400/40 text-[10px] font-bold uppercase py-0.5 px-2 rounded text-center">
+                        Incluido en su plan
+                      </span>
+                    )}
+                  </div>
+                )}
+
                 {/* Botón Ver / Aplicaciones incluidas */}
                 <button 
                   type="button"
@@ -636,25 +725,47 @@ export default function Dashboard() {
                 </button>
 
                 {/* Botón Contratar */}
-                <button 
-                  type="button"
-                  onClick={() => handleContratar(phase.id, phase.modulesArray)}
-                  className={`w-full py-2 px-4 rounded text-sm font-bold text-center shadow-lg transition-colors border block ${
-                    phase.id === 4 && !safeUser.customQuoteAmount 
-                    ? 'bg-purple-600 hover:bg-purple-700 text-white border-purple-600'
-                    : 'bg-[#0070BA] hover:bg-[#005ea6] text-white border-transparent'
-                  }`}
-                >
-                  {phase.id === 4 && !safeUser.customQuoteAmount ? 'SOLICITAR COTIZACIÓN' : 'CONTRATAR EN PORTAL'}
-                </button>
+                {isClient && phase.id === contractedPhase ? (
+                  <button 
+                    type="button"
+                    disabled
+                    className="w-full py-2 px-4 rounded text-sm font-bold text-center border block bg-emerald-700/60 text-emerald-100 border-emerald-500/50 cursor-default"
+                  >
+                    ✓ PLAN ACTIVO (AL DÍA)
+                  </button>
+                ) : (
+                  <button 
+                    type="button"
+                    onClick={() => handleContratar(phase.id, phase.modulesArray)}
+                    className={`w-full py-2 px-4 rounded text-sm font-bold text-center shadow-lg transition-colors border block ${
+                      phase.id === 4 && !safeUser.customQuoteAmount 
+                      ? 'bg-purple-600 hover:bg-purple-700 text-white border-purple-600'
+                      : 'bg-[#0070BA] hover:bg-[#005ea6] text-white border-transparent'
+                    }`}
+                  >
+                    {isClient && phase.id > contractedPhase 
+                      ? `CONTRATAR UPGRADE (FASE ${phase.id})`
+                      : (phase.id === 4 && !safeUser.customQuoteAmount ? 'SOLICITAR COTIZACIÓN' : 'CONTRATAR EN PORTAL')}
+                  </button>
+                )}
 
                 {/* Acceso Directo al Workspace de la Fase */}
-                <Link
-                  to={`/app/workspace?phase=${phase.id}`}
-                  className="w-full mt-2 py-1.5 px-3 rounded text-xs font-bold text-center text-cyan-300 hover:text-white hover:bg-white/10 transition-colors border border-cyan-500/30 flex items-center justify-center gap-1"
-                >
-                  <span>🚀</span> Abrir en Workspace ➔
-                </Link>
+                {isClient && phase.id > contractedPhase ? (
+                  <button
+                    type="button"
+                    onClick={() => handleContratar(phase.id, phase.modulesArray)}
+                    className="w-full mt-2 py-1.5 px-3 rounded text-xs font-bold text-center text-amber-300 hover:text-amber-200 bg-amber-950/30 hover:bg-amber-950/50 transition-colors border border-amber-500/30 flex items-center justify-center gap-1"
+                  >
+                    <span>🔒</span> Solicitar Upgrade ➔
+                  </button>
+                ) : (
+                  <Link
+                    to={`/app/workspace?phase=${phase.id}`}
+                    className="w-full mt-2 py-1.5 px-3 rounded text-xs font-bold text-center text-cyan-300 hover:text-white hover:bg-white/10 transition-colors border border-cyan-500/30 flex items-center justify-center gap-1"
+                  >
+                    <span>🚀</span> Abrir en Workspace ➔
+                  </Link>
+                )}
 
                 {/* Desglose de Módulos Activos de esta Fase */}
                 {activePhase === phase.id && (

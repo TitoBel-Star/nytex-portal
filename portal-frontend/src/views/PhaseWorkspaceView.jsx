@@ -160,31 +160,53 @@ export default function PhaseWorkspaceView() {
   const [activePhase, setActivePhase] = useState(1);
   const [activeTab, setActiveTab] = useState('circuito'); // 'circuito' o moduleId
 
-  const safeUser = user || { role: localStorage.getItem('nytex_role') || 'Client' };
+  const safeUser = user || { 
+    role: localStorage.getItem('nytex_role') || 'Client',
+    email: localStorage.getItem('nytex_email') || 'demo@consultores-nyt.com'
+  };
+
+  const isClient = safeUser.role === 'Client';
+  const contractedPhase = isClient 
+    ? (parseInt(localStorage.getItem('nytex_contracted_phase') || localStorage.getItem('nytex_active_phase'), 10) || 1)
+    : 4;
+
+  const [upgradeModalPhase, setUpgradeModalPhase] = useState(null);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
-    const p = parseInt(params.get('phase'), 10);
+    let p = parseInt(params.get('phase'), 10);
     const mod = params.get('mod');
     
-    if (p >= 1 && p <= 4) {
+    // Si el usuario es Cliente, no puede ver una fase mayor a la contratada
+    if (isClient && p > contractedPhase) {
+      p = contractedPhase;
+    }
+
+    if (p >= 1 && p <= 4 && (!isClient || p <= contractedPhase)) {
       setActivePhase(p);
       localStorage.setItem('nytex_active_phase', p.toString());
     } else {
-      const saved = parseInt(localStorage.getItem('nytex_active_phase'), 10);
-      if (saved >= 1 && saved <= 4) {
-        setActivePhase(saved);
-      }
+      const saved = isClient ? contractedPhase : (parseInt(localStorage.getItem('nytex_active_phase'), 10) || 1);
+      setActivePhase(saved);
     }
 
     if (mod) {
-      setActiveTab(mod);
+      const allowed = PHASES_CONFIG[contractedPhase]?.modules.map(m => m.id) || [];
+      if (!isClient || allowed.includes(mod)) {
+        setActiveTab(mod);
+      } else {
+        setActiveTab('circuito');
+      }
     }
-  }, [location]);
+  }, [location, isClient, contractedPhase]);
 
   const currentConfig = PHASES_CONFIG[activePhase] || PHASES_CONFIG[1];
 
   const handleSelectPhase = (pId) => {
+    if (isClient && pId > contractedPhase) {
+      setUpgradeModalPhase(pId);
+      return;
+    }
     setActivePhase(pId);
     setActiveTab('circuito');
     localStorage.setItem('nytex_active_phase', pId.toString());
@@ -192,6 +214,7 @@ export default function PhaseWorkspaceView() {
   };
 
   const handleSwitchRole = (newRole, phaseNum = activePhase) => {
+    if (isClient) return; // Clientes no pueden cambiar su rol
     if (newRole === 'Client') {
       handleSelectPhase(phaseNum);
       if (login) login('Client');
@@ -258,60 +281,77 @@ export default function PhaseWorkspaceView() {
             <div className="flex items-center gap-2">
               <span className="text-xs text-slate-300 font-semibold">Fase Activa:</span>
               <div className="flex bg-slate-900/90 p-0.5 rounded-lg border border-slate-700">
-                {[1, 2, 3, 4].map(pId => (
-                  <button
-                    key={pId}
-                    onClick={() => handleSelectPhase(pId)}
-                    className={`px-3 py-1 rounded-md text-xs font-bold transition-all ${
-                      activePhase === pId
-                        ? 'bg-blue-600 text-white shadow-sm'
-                        : 'text-slate-400 hover:text-white'
-                    }`}
-                  >
-                    Fase {pId} ({PHASES_CONFIG[pId].modules.length} mód)
-                  </button>
-                ))}
+                {[1, 2, 3, 4].map(pId => {
+                  const isLocked = isClient && pId > contractedPhase;
+                  return (
+                    <button
+                      key={pId}
+                      onClick={() => handleSelectPhase(pId)}
+                      className={`px-3 py-1 rounded-md text-xs font-bold transition-all flex items-center gap-1.5 ${
+                        activePhase === pId
+                          ? 'bg-blue-600 text-white shadow-sm'
+                          : isLocked
+                          ? 'text-slate-500 hover:text-amber-300 hover:bg-slate-800 cursor-pointer'
+                          : 'text-slate-400 hover:text-white'
+                      }`}
+                      title={isLocked ? `Fase ${pId} no incluida en su plan. Requiere Upgrade.` : `Fase ${pId}`}
+                    >
+                      {isLocked && <span className="text-[10px]">🔒</span>}
+                      <span>Fase {pId} ({PHASES_CONFIG[pId].modules.length} mód)</span>
+                    </button>
+                  );
+                })}
               </div>
             </div>
           </div>
 
-          {/* Simulador de Rol Activo & Navegación */}
+          {/* Simulador de Rol (SOLO para Admin/Partner) o Ficha de Cliente */}
           <div className="flex flex-wrap items-center gap-3 w-full xl:w-auto justify-between xl:justify-end">
-            <div className="flex items-center gap-1.5 bg-slate-900/90 border border-slate-700 rounded-lg p-1 text-xs">
-              <span className="text-slate-400 px-1 font-semibold">Simular:</span>
-              <button
-                type="button"
-                onClick={() => handleSwitchRole('Admin')}
-                className={`px-2 py-0.5 rounded text-[11px] font-bold transition-all ${
-                  safeUser.role === 'Admin' ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-400 hover:text-white'
-                }`}
-              >
-                👑 Admin
-              </button>
-              <button
-                type="button"
-                onClick={() => handleSwitchRole('Partner')}
-                className={`px-2 py-0.5 rounded text-[11px] font-bold transition-all ${
-                  safeUser.role === 'Partner' || (!safeUser.role && !safeUser.email?.includes('admin') && !safeUser.email?.includes('cliente')) ? 'bg-purple-600 text-white shadow-sm' : 'text-slate-400 hover:text-white'
-                }`}
-              >
-                🤝 Partner
-              </button>
-              <button
-                type="button"
-                onClick={() => handleSwitchRole('Client', activePhase)}
-                className={`px-2 py-0.5 rounded text-[11px] font-bold transition-all ${
-                  safeUser.role === 'Client' ? 'bg-emerald-600 text-white shadow-sm' : 'text-slate-400 hover:text-white'
-                }`}
-              >
-                🏢 Cliente (F{activePhase})
-              </button>
-            </div>
+            {!isClient ? (
+              <div className="flex items-center gap-1.5 bg-slate-900/90 border border-slate-700 rounded-lg p-1 text-xs">
+                <span className="text-slate-400 px-1 font-semibold">Simular:</span>
+                <button
+                  type="button"
+                  onClick={() => handleSwitchRole('Admin')}
+                  className={`px-2 py-0.5 rounded text-[11px] font-bold transition-all ${
+                    safeUser.role === 'Admin' ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-400 hover:text-white'
+                  }`}
+                >
+                  👑 Admin
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleSwitchRole('Partner')}
+                  className={`px-2 py-0.5 rounded text-[11px] font-bold transition-all ${
+                    safeUser.role === 'Partner' || (!safeUser.role && !safeUser.email?.includes('admin') && !safeUser.email?.includes('cliente')) ? 'bg-purple-600 text-white shadow-sm' : 'text-slate-400 hover:text-white'
+                  }`}
+                >
+                  🤝 Partner
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleSwitchRole('Client', activePhase)}
+                  className={`px-2 py-0.5 rounded text-[11px] font-bold transition-all ${
+                    safeUser.role === 'Client' ? 'bg-emerald-600 text-white shadow-sm' : 'text-slate-400 hover:text-white'
+                  }`}
+                >
+                  🏢 Cliente (F{activePhase})
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2 bg-slate-900/90 border border-emerald-500/40 rounded-lg px-3 py-1.5 text-xs text-white">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span className="text-slate-400">Cliente:</span>
+                <strong className="text-emerald-300 font-bold">{safeUser.email || 'demo@consultores-nyt.com'}</strong>
+                <span className="text-slate-500">|</span>
+                <span className="text-slate-300">Plan: <strong className="text-cyan-300">Fase {contractedPhase}</strong></span>
+              </div>
+            )}
 
             <div className="flex items-center gap-2 text-xs">
               <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
               <span className="text-emerald-400 font-bold hidden sm:inline">Licencia:</span>
-              <strong className="text-white font-extrabold">{currentConfig.name}</strong>
+              <strong className="text-white font-extrabold">{PHASES_CONFIG[contractedPhase]?.name || currentConfig.name}</strong>
             </div>
 
             <Link
@@ -381,6 +421,52 @@ export default function PhaseWorkspaceView() {
       <div className="flex-1 w-full max-w-[1700px] mx-auto p-4 md:p-6">
         {renderModuleContent()}
       </div>
+
+      {/* Modal de Bloqueo / Upgrade para Clientes */}
+      {upgradeModalPhase && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4 animate-fade-in font-sans">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 text-slate-800 shadow-2xl border border-slate-200 text-center animate-scale-up">
+            <div className="w-14 h-14 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center text-2xl mx-auto mb-3">
+              🔒
+            </div>
+            <h3 className="text-lg font-black text-slate-900 mb-1">
+              Fase {upgradeModalPhase} no incluida en su plan
+            </h3>
+            <p className="text-xs text-slate-500 mb-4 leading-relaxed">
+              Su empresa cuenta actualmente con la licencia activa para la <strong>{PHASES_CONFIG[contractedPhase]?.name}</strong>. Para acceder a los módulos de la <strong>{PHASES_CONFIG[upgradeModalPhase]?.name}</strong> ({PHASES_CONFIG[upgradeModalPhase]?.badge}), active su ampliación de suscripción.
+            </p>
+            <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 mb-5 text-left text-xs">
+              <div className="flex justify-between mb-1.5">
+                <span className="text-slate-600 font-bold">Precio mensual:</span>
+                <span className="font-black text-blue-900">{PHASES_CONFIG[upgradeModalPhase]?.price}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-600 font-bold">Total módulos:</span>
+                <span className="font-black text-emerald-700">{PHASES_CONFIG[upgradeModalPhase]?.modules.length} Módulos</span>
+              </div>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-2.5">
+              <button
+                type="button"
+                onClick={() => setUpgradeModalPhase(null)}
+                className="w-full py-2.5 px-4 rounded-xl border border-slate-300 text-slate-700 font-bold text-xs hover:bg-slate-100 transition-colors"
+              >
+                Volver a mi Plan
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setUpgradeModalPhase(null);
+                  navigate(`/portal?phase=${upgradeModalPhase}&checkout=true`);
+                }}
+                className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-extrabold text-xs shadow-md transition-all flex items-center justify-center gap-1.5"
+              >
+                <span>🚀 Contratar Upgrade ➔</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );
