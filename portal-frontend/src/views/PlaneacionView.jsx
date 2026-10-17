@@ -105,7 +105,7 @@ export default function PlaneacionView() {
               </span>
               <h2 className="text-2xl font-black">Plan Maestro de Producción & Requerimientos MRP</h2>
               <p className="text-sm text-amber-100 leading-relaxed">
-                El motor S&OP lee los pedidos comerciales confirmados en <strong>[1] Ventas</strong>, los contrasta con el inventario de hilaturas en <strong>[3] Almacén</strong> y la capacidad de telares en <strong>[5] Producción</strong>, calculando las compras y órdenes fabriles necesarias para cumplir entregas sin sobrecostos.
+                El motor S&OP lee los pedidos comerciales confirmados en <strong>[1] Ventas</strong>, los contrasta con el inventario de materias primas e insumos en <strong>[3] Almacén</strong> y la capacidad instalada en <strong>[5] Producción</strong>, calculando las compras y órdenes fabriles necesarias para cumplir entregas sin sobrecostos.
               </p>
             </div>
 
@@ -121,23 +121,23 @@ export default function PlaneacionView() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6 pt-4 border-t border-white/20">
             <div>
               <span className="text-xs text-amber-200 font-bold uppercase">1. Demanda Comprometida</span>
-              <div className="text-2xl font-black font-mono">{demand?.totalRollsDemanded || 0} Rollos</div>
-              <div className="text-xs text-amber-200">Tela Jersey Algodón Crudo</div>
+              <div className="text-2xl font-black font-mono">{demand?.totalRollsDemanded || 0} Unidades</div>
+              <div className="text-xs text-amber-200">Pedidos Confirmados</div>
             </div>
             <div>
-              <span className="text-xs text-amber-200 font-bold uppercase">2. Hilatura Requerida (BOM)</span>
-              <div className="text-2xl font-black font-mono">{(mrp?.totalRequiredKg || 0).toLocaleString()} kg</div>
-              <div className="text-xs text-amber-200">21 kg / rollo (5% merma técnica)</div>
+              <span className="text-xs text-amber-200 font-bold uppercase">2. Insumos Requeridos (BOM)</span>
+              <div className="text-2xl font-black font-mono">{(mrp?.totalRequiredKg || 0).toLocaleString()} kg / un</div>
+              <div className="text-xs text-amber-200">Requerimiento con merma técnica</div>
             </div>
             <div>
               <span className="text-xs text-amber-200 font-bold uppercase">3. Déficit de Compra</span>
               <div className="text-2xl font-black font-mono text-rose-300">
-                {(mrp?.deficitKg || 0).toLocaleString()} kg
+                {(mrp?.deficitKg || 0).toLocaleString()} kg / un
               </div>
               <div className="text-xs text-rose-200">${(mrp?.suggestedPurchaseAmount || 0).toLocaleString()} USD a emitir</div>
             </div>
             <div>
-              <span className="text-xs text-amber-200 font-bold uppercase">4. Utilización de Telares</span>
+              <span className="text-xs text-amber-200 font-bold uppercase">4. Utilización de Planta</span>
               <div className="text-2xl font-black font-mono text-emerald-300">
                 {capacity?.loomUtilizationPct || 0}%
               </div>
@@ -193,12 +193,12 @@ export default function PlaneacionView() {
             </div>
           </div>
 
-          {/* Tarjeta 2: Capacidad de Planta & Telares (RCCP) */}
+          {/* Tarjeta 2: Capacidad de Planta & Maquinaria (RCCP) */}
           <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-4">
             <div className="flex justify-between items-center border-b pb-3">
               <div>
                 <h4 className="font-bold text-gray-900 text-sm flex items-center gap-2">
-                  <span>⚙️</span> Capacidad de Planta (Tejeduría en Telar)
+                  <span>⚙️</span> Capacidad de Planta (Líneas de Producción)
                 </h4>
                 <p className="text-xs text-gray-500">Balance de horas máquina vs calendario fabril.</p>
               </div>
@@ -209,8 +209,8 @@ export default function PlaneacionView() {
 
             <div className="space-y-3 text-xs">
               <div className="flex justify-between items-center p-3 rounded-xl bg-gray-50 border">
-                <span className="text-gray-600">Telares Circulares Disponibles:</span>
-                <span className="font-bold text-gray-900">{capacity?.activeLooms} Unidades (Mayer & Cie)</span>
+                <span className="text-gray-600">Máquinas Industriales Disponibles:</span>
+                <span className="font-bold text-gray-900">{capacity?.activeLooms} Unidades Operativas</span>
               </div>
               <div className="flex justify-between items-center p-3 rounded-xl bg-gray-50 border">
                 <span className="text-gray-600">Capacidad Teórica Mensual:</span>

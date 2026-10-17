@@ -25,8 +25,8 @@ const getDefaultUser = (role = 'Partner', customEmail = null, customPhase = null
     name = 'Cliente Final (Empresa)';
     const phaseVal = customPhase || parseInt(localStorage.getItem('nytex_active_phase'), 10) || 1;
     const p1 = ['Ventas', 'Inventario', 'Compras', 'Contabilidad', 'CxC', 'CxP', 'Tesoreria'];
-    const p2 = [...p1, 'CRM', 'Rop', 'Produccion', 'Logistica', 'RRHH', 'Nomina', 'ProcessSuite', 'ProcessMining', 'WMS', 'Dashboards'];
-    const p3 = [...p2, 'ActivosFijos', 'BIyReportes', 'BigData', 'BI', 'Planeacion'];
+    const p2 = [...p1, 'CRM', 'Rop', 'Produccion', 'Logistica', 'RRHH', 'Nomina', 'WMS'];
+    const p3 = [...p2, 'ActivosFijos', 'ProcessSuite', 'ProcessMining', 'Dashboards', 'BI', 'Planeacion'];
     if (phaseVal === 1) subscriptions = p1;
     else if (phaseVal === 2) subscriptions = p2;
     else if (phaseVal === 3) subscriptions = p3;

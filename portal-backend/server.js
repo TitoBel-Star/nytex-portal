@@ -478,13 +478,13 @@ const AuditLog = sequelize.define('AuditLog', {
 // --- ENDPOINTS COMUNES Y DE AUTENTICACIÓN ---
 // ==========================================
 
-const ALL_26_MODULES = [
-  'Ventas', 'CRM', 'Inventario', 'Compras', 'Produccion',
-  'Contabilidad', 'CxC', 'CxP', 'Tesoreria', 'ActivosFijos',
-  'Logistica', 'RRHH', 'Nomina', 'ProcessSuite', 'ProcessMining',
-  'BusinessPartners', 'BIyReportes', 'Configuracion', 'WMS',
-  'Dashboards', 'BI', 'BigData', 'MineriaDatos', 'IA', 'Predictivos', 'Planeacion'
+const ALL_25_MODULES = [
+  'Ventas', 'Inventario', 'Compras', 'Contabilidad', 'CxC', 'CxP',
+  'Tesoreria', 'CRM', 'Rop', 'Produccion', 'Logistica', 'RRHH', 'Nomina', 'WMS',
+  'ProcessSuite', 'ProcessMining', 'Dashboards', 'BI', 'Planeacion',
+  'BigData', 'MineriaDatos', 'IA', 'Predictivos', 'BusinessPartners', 'Configuracion'
 ];
+const ALL_26_MODULES = ALL_25_MODULES; // Compatibilidad
 
 app.post('/api/auth/login', async (req, res) => {
   try {
@@ -492,16 +492,16 @@ app.post('/api/auth/login', async (req, res) => {
     let subscriptions = [];
     
     if (role === 'Admin' || role === 'Partner') {
-      subscriptions = [...ALL_26_MODULES];
+      subscriptions = [...ALL_25_MODULES];
     } else if (role === 'Client') {
-      const p1 = ['Ventas', 'Inventario', 'Compras', 'Contabilidad', 'CxC', 'CxP', 'Tesoreria'];
-      const p2 = [...p1, 'CRM', 'Rop', 'Produccion', 'Logistica', 'RRHH', 'Nomina', 'ProcessSuite', 'ProcessMining', 'WMS', 'Dashboards'];
-      const p3 = [...p2, 'ActivosFijos', 'BIyReportes', 'BigData', 'BI', 'Planeacion'];
+      const p1 = ['Ventas', 'Inventario', 'Compras', 'Contabilidad', 'CxC', 'CxP'];
+      const p2 = [...p1, 'Tesoreria', 'CRM', 'Rop', 'Produccion', 'Logistica', 'RRHH', 'Nomina', 'WMS'];
+      const p3 = [...p2, 'ProcessSuite', 'ProcessMining', 'Dashboards', 'BI', 'Planeacion'];
       const pVal = parseInt(phaseId, 10) || 1;
       if (pVal === 1) subscriptions = p1;
       else if (pVal === 2) subscriptions = p2;
       else if (pVal === 3) subscriptions = p3;
-      else subscriptions = [...ALL_26_MODULES];
+      else subscriptions = [...ALL_25_MODULES];
     }
 
     const [user] = await User.findOrCreate({
@@ -3324,16 +3324,16 @@ app.post('/api/fase6/ia/chat', async (req, res) => {
         { label: 'Probabilidad de Mora Max', value: '68.5% (Crítico)' },
         { label: 'Score Z Relativo', value: '+1.28' }
       ];
-    } else if (lower.includes('producción') || lower.includes('telar') || lower.includes('capacidad') || lower.includes('fabril')) {
+    } else if (lower.includes('producción') || lower.includes('capacidad') || lower.includes('fabril') || lower.includes('planta')) {
       category = 'Manufactura & Eficiencia Fabril';
-      reply = `En Planta 1 de Tejeduría, los telares circulares Mayer & Cie Relanit 3.2 II operan con una utilización estimada del **78% de la capacidad mensual instalada** (936 horas programadas de 1,200 horas disponibles). Los parámetros de tensión y velocidad a 850 RPM se encuentran dentro del rango óptimo, pero es vital asegurar que la humedad relativa en nave no baje del 55% para evitar roturas de hilo.`;
+      reply = `En Planta 1, las líneas de producción operan con una utilización estimada del **78% de la capacidad mensual instalada** (936 horas programadas de 1,200 horas disponibles). Los parámetros operativos y tiempos de ciclo se encuentran dentro del rango óptimo.`;
       recommendations = [
-        'Mantener programa de lubricación preventiva en agujas cada 120 horas de marcha.',
-        'Secuenciar las partidas de tela cruda previo a teñido para reducir tiempos de cambio.',
+        'Mantener programa de mantenimiento preventivo en maquinaria cada 120 horas de marcha.',
+        'Secuenciar las partidas de producción para reducir tiempos de cambio y preparación.',
         'Monitorear el cuello de botella detectado por Process Mining en la liberación hacia transporte.'
       ];
       keyMetrics = [
-        { label: 'Utilización Telar', value: '78.2%' },
+        { label: 'Utilización Planta', value: '78.2%' },
         { label: 'Órdenes Activas', value: `${production.length} órdenes` },
         { label: 'Horas Máquina', value: '125 h estimadas' }
       ];
@@ -3341,7 +3341,7 @@ app.post('/api/fase6/ia/chat', async (req, res) => {
       category = 'Diagnóstico Ejecutivo Global';
       reply = `Resumen integral del ecosistema NyTEX: Las ventas acumuladas registran **$${totalSales.toLocaleString()} USD**, respaldadas por una liquidez líquida en bancos de **$${totalBankBalance.toLocaleString()} USD** en Tesorería. La balanza contable central cuadra al 100% y el ciclo operativo O2C y P2P opera con 5 circuitos sincronizados.`;
       recommendations = [
-        'Coordinar el plan S&OP de octubre entre Ventas y Producción para nivelar carga en telares.',
+        'Coordinar el plan S&OP de octubre entre Ventas y Producción para nivelar carga en planta fabril.',
         'Acelerar la cobranza en CxC para sostener el ritmo de dispersión salarial y compras de materia prima.',
         'Revisar la bandeja de aprobaciones de Process Suite para destrabar órdenes de compra mayores.'
       ];
@@ -3473,18 +3473,18 @@ app.get('/api/fase7/reports/list', (req, res) => {
     {
       id: 'kardex',
       code: 'REP-OPE-03',
-      title: 'Kardex Valuado de Inventario de Hilatura y Fibras',
+      title: 'Kardex Valuado de Inventario de Materias Primas',
       category: 'Operativo',
       format: 'Costo Promedio Ponderado',
-      description: 'Movimientos de entrada por órdenes de compra, consumo en telares circulares y existencias valuadas por almacén.'
+      description: 'Movimientos de entrada por órdenes de compra, consumo en piso de producción y existencias valuadas por almacén.'
     },
     {
       id: 'oee',
       code: 'REP-IND-04',
-      title: 'Reporte de Eficiencia Global de Planta Textil (OEE)',
+      title: 'Reporte de Eficiencia Global de Planta (OEE)',
       category: 'Industrial',
       format: 'World Class Manufacturing',
-      description: 'Disponibilidad de telares Mayer & Cie, velocidad real de marcha e índice de calidad de metros sin tara.'
+      description: 'Disponibilidad de maquinaria, velocidad real de marcha e índice de calidad de producto terminado.'
     }
   ]);
 });
@@ -3522,11 +3522,11 @@ app.get('/api/fase7/reports/generate', async (req, res) => {
         period,
         headers: ['Concepto Contable', 'Importe ($ USD)', '% Sobre Ventas'],
         rows: [
-          { concept: '(+) Ingresos Netos por Venta de Tejido', amount: salesTotal, pct: '100.0%' },
-          { concept: '(-) Costo de Ventas (Materia Prima & Tejeduría)', amount: -Math.round(purchasesTotal * 0.75), pct: `${((purchasesTotal * 0.75 / (salesTotal || 1)) * 100).toFixed(1)}%` },
-          { concept: '(=) Utilidad Bruta Industrial', amount: Math.round(grossMargin), pct: `${((grossMargin / (salesTotal || 1)) * 100).toFixed(1)}%`, isTotal: true },
-          { concept: '(-) Gastos de Personal y Nómina IMSS/SAT', amount: -Math.round(payrollTotal), pct: `${((payrollTotal / (salesTotal || 1)) * 100).toFixed(1)}%` },
-          { concept: '(-) Depreciación Acelerada de Maquinaria y Telares', amount: -Math.round(monthlyDepreciation), pct: `${((monthlyDepreciation / (salesTotal || 1)) * 100).toFixed(1)}%` },
+          { concept: '(+) Ingresos Netos por Ventas', amount: salesTotal, pct: '100.0%' },
+          { concept: '(-) Costo de Ventas (Materia Prima & Operaciones)', amount: -Math.round(purchasesTotal * 0.75), pct: `${((purchasesTotal * 0.75 / (salesTotal || 1)) * 100).toFixed(1)}%` },
+          { concept: '(=) Utilidad Bruta Operativa', amount: Math.round(grossMargin), pct: `${((grossMargin / (salesTotal || 1)) * 100).toFixed(1)}%`, isTotal: true },
+          { concept: '(-) Gastos de Personal y Nómina', amount: -Math.round(payrollTotal), pct: `${((payrollTotal / (salesTotal || 1)) * 100).toFixed(1)}%` },
+          { concept: '(-) Depreciación Acelerada de Maquinaria y Equipo', amount: -Math.round(monthlyDepreciation), pct: `${((monthlyDepreciation / (salesTotal || 1)) * 100).toFixed(1)}%` },
           { concept: '(=) EBITDA Operativo', amount: Math.round(ebitda), pct: `${((ebitda / (salesTotal || 1)) * 100).toFixed(1)}%`, isTotal: true },
           { concept: '(-) Provisión Impuesto Sobre la Renta (ISR 30%)', amount: -Math.round(taxes), pct: '30.0%' },
           { concept: '(=) Utilidad Neta del Ejercicio', amount: Math.round(netIncome), pct: `${((netIncome / (salesTotal || 1)) * 100).toFixed(1)}%`, isFinalTotal: true }
@@ -3546,8 +3546,8 @@ app.get('/api/fase7/reports/generate', async (req, res) => {
         rows: [
           { code: '101.01', name: 'Bancos e Instituciones Financieras (BBVA/Banorte)', init: 1200000, debit: salesTotal, credit: payrollTotal + purchasesTotal, final: 1200000 + salesTotal - payrollTotal - purchasesTotal },
           { code: '105.01', name: 'Clientes Nacionales (Cartera CxC)', init: 85000, debit: salesTotal, credit: salesTotal * 0.85, final: 85000 + salesTotal * 0.15 },
-          { code: '115.01', name: 'Inventario de Materias Primas e Hilados', init: 140000, debit: purchasesTotal, credit: purchasesTotal * 0.7, final: 140000 + purchasesTotal * 0.3 },
-          { code: '152.01', name: 'Maquinaria y Equipo Industrial (Telares Mayer & Cie)', init: 3600000, debit: 0, credit: 0, final: 3600000 },
+          { code: '115.01', name: 'Inventario de Materias Primas e Insumos', init: 140000, debit: purchasesTotal, credit: purchasesTotal * 0.7, final: 140000 + purchasesTotal * 0.3 },
+          { code: '152.01', name: 'Maquinaria y Equipo Industrial de Planta', init: 3600000, debit: 0, credit: 0, final: 3600000 },
           { code: '201.01', name: 'Proveedores Nacionales (CxP Fibras)', init: 60000, debit: purchasesTotal * 0.8, credit: purchasesTotal, final: 60000 + purchasesTotal * 0.2 },
           { code: '401.01', name: 'Ventas Gravadas Tasa General 13%', init: 0, debit: 0, credit: salesTotal, final: salesTotal }
         ],
@@ -3840,7 +3840,7 @@ app.get('/api/fase7/config/roles', (req, res) => {
     },
     {
       role: 'Jefe de Planta / Producción',
-      description: 'Supervisión de Piso Fabril, Órdenes de Producción, Telemetría Big Data de Telares, S&OP y Mantenimiento.',
+      description: 'Supervisión de Piso Fabril, Órdenes de Producción, Telemetría Big Data de Planta, S&OP y Mantenimiento.',
       usersCount: 6,
       permissions: ['PRODUCTION_MANUFACTURING', 'TELEMETRY_BIGDATA', 'SOP_PLANNING', 'MAINTENANCE_VIEW']
     }
@@ -4022,8 +4022,8 @@ app.get('/api/fases/fase2/summary', async (req, res) => {
       subtitle: 'Productividad, Cadena Operativa & Nómina',
       price: '$149 USD / mes',
       implementation: '$1,500 USD',
-      moduleCount: 15,
-      modules: ['Ventas', 'Inventario', 'Compras', 'Contabilidad', 'CxC', 'CxP', 'Tesoreria', 'CRM', 'WMS', 'Logistica', 'Produccion', 'RRHH', 'Nomina', 'Dashboards', 'ProcessSuite'],
+      moduleCount: 14,
+      modules: ['Ventas', 'Inventario', 'Compras', 'Contabilidad', 'CxC', 'CxP', 'Tesoreria', 'CRM', 'WMS', 'Logistica', 'Produccion', 'RRHH', 'Nomina', 'Rop'],
       metrics: {
         activeLoomsCount: activeLooms,
         totalRollsPlanned,
@@ -4082,7 +4082,7 @@ app.post('/api/fases/fase2/simulate', async (req, res) => {
 
     res.json({
       success: true,
-      message: `Ciclo Express ejecutado: Orden Fabril ${opCode} montada en Telar Mayer & Cie #2, asignada a WMS y enviada a bandeja de aprobación BPMN.`,
+      message: `Ciclo Express ejecutado: Orden Fabril ${opCode} montada en Telar Mayer & Cie #2, asignada a WMS y lista para producción.`,
       op
     });
   } catch (error) {
@@ -4090,7 +4090,7 @@ app.post('/api/fases/fase2/simulate', async (req, res) => {
   }
 });
 
-// FASE 3: NYTEX ADVANCED (20 Módulos: Express + BI, BI y Reportes, Big Data, Planeación S&OP, Activos Fijos)
+// FASE 3: NYTEX ADVANCED (20 Módulos: Express + Process Suite, Process Mining, Dashboards, BI Cubo, Planeación S&OP, Activos Fijos)
 app.get('/api/fases/fase3/summary', async (req, res) => {
   try {
     const [assets, orders] = await Promise.all([
@@ -4105,11 +4105,11 @@ app.get('/api/fases/fase3/summary', async (req, res) => {
     res.json({
       phaseId: 3,
       phaseName: 'Fase 3: NyTEX Advanced',
-      subtitle: 'Inteligencia de Negocios, S&OP & Data Lake',
+      subtitle: 'Procesos, Dashboards, S&OP & Cubo OLAP',
       price: '$299 USD / mes',
       implementation: '$4,500 USD',
       moduleCount: 20,
-      modules: ['Ventas', 'Inventario', 'Compras', 'Contabilidad', 'CxC', 'CxP', 'Tesoreria', 'CRM', 'WMS', 'Logistica', 'Produccion', 'RRHH', 'Nomina', 'Dashboards', 'ProcessSuite', 'BI', 'BIyReportes', 'BigData', 'Planeacion', 'ActivosFijos'],
+      modules: ['Ventas', 'Inventario', 'Compras', 'Contabilidad', 'CxC', 'CxP', 'Tesoreria', 'CRM', 'WMS', 'Logistica', 'Produccion', 'RRHH', 'Nomina', 'Rop', 'ActivosFijos', 'ProcessSuite', 'ProcessMining', 'Dashboards', 'BI', 'Planeacion'],
       metrics: {
         totalAssetsValue,
         assetsCount: assets.length,
@@ -4147,7 +4147,7 @@ app.post('/api/fases/fase3/simulate', async (req, res) => {
 
     res.json({
       success: true,
-      message: 'Ciclo Advanced ejecutado: Ingesta de +10,000 registros en Data Lake, recálculo S&OP de capacidad de telares y sincronización del Cubo OLAP.',
+      message: 'Ciclo Advanced ejecutado: Ingesta de +10,000 registros en Data Lake, recálculo S&OP de capacidad de planta y sincronización del Cubo OLAP.',
       lakeStats: dataLakeStats
     });
   } catch (error) {
@@ -4155,7 +4155,7 @@ app.post('/api/fases/fase3/simulate', async (req, res) => {
   }
 });
 
-// FASE 4: NYTEX ENTERPRISE (26 Módulos - Ecosistema Completo 100%)
+// FASE 4: NYTEX ENTERPRISE (25 Módulos - Ecosistema Completo 100%)
 app.get('/api/fases/fase4/summary', async (req, res) => {
   try {
     const [partners, logs, config, orders] = await Promise.all([
@@ -4171,18 +4171,18 @@ app.get('/api/fases/fase4/summary', async (req, res) => {
       subtitle: 'Anticipación, IA Cognitiva & Escala Global',
       price: '$499 USD / mes',
       implementation: 'Cotización a Medida',
-      moduleCount: 26,
-      modules: ALL_26_MODULES,
+      moduleCount: 25,
+      modules: ALL_25_MODULES,
       metrics: {
         totalPartnersCount: partners.length,
         auditLogsCount: logs.length,
-        aiAssistantModel: 'NyTEX Textile Copilot v4.2 (SQLite Conectado)',
+        aiAssistantModel: 'NyTEX Copilot IA v4.2 (SQLite Conectado)',
         predictiveModel: 'ARIMA (Demanda) + Logit (Score de Cobranza)',
         clusteringModel: 'K-Means RFM (k=4, Silhouette 0.784)',
         associationRulesModel: 'Apriori (Lift máx 3.28x)',
         processMiningStatus: 'Direct-Follows Graph (DFG) con detección de cuellos de botella',
         fiscalStatus: 'Cumplimiento Fiscal y Trazabilidad Inmutable (DTE / SAT / SAR / DGI)',
-        ecosystemCompleteness: '100% (26 de 26 Módulos Enlazados)'
+        ecosystemCompleteness: '100% (25 de 25 Módulos Enlazados)'
       }
     });
   } catch (error) {

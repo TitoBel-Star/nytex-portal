@@ -14,8 +14,8 @@ export default function Produccion() {
   const [productName, setProductName] = useState('Rollo Tela Gabardina Algodón Peinado (Azul)');
   const [targetQuantity, setTargetQuantity] = useState(25);
   const [unit, setUnit] = useState('rollos');
-  const [workcenter, setWorkcenter] = useState('Telar Circular #3 - Planta 1');
-  const [operator, setOperator] = useState('Ing. Miguel Tejeduría');
+  const [workcenter, setWorkcenter] = useState('Línea de Producción #1 - Planta Principal');
+  const [operator, setOperator] = useState('Ing. Miguel Operaciones');
   const [bom, setBom] = useState([
     { sku: 'MP-HIL-01', name: 'Hilo de Algodón Peinado 100% 30/1', quantityPerUnit: 3, unit: 'kg' },
     { sku: 'MP-POL-02', name: 'Hilo de Poliéster Alta Tenacidad 150D', quantityPerUnit: 1.5, unit: 'kg' },
@@ -191,7 +191,7 @@ export default function Produccion() {
               <span className="block text-3xl font-extrabold text-blue-600">
                 {ops.filter(o => o.status === 'En Proceso de Fabricación').length}
               </span>
-              <span className="text-xs text-blue-500 font-semibold">En telares y telares circulares</span>
+              <span className="text-xs text-blue-500 font-semibold">En líneas de piso de planta</span>
             </div>
             <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center text-xl font-bold">
               ⚙️

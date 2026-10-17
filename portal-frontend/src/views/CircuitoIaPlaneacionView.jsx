@@ -126,9 +126,9 @@ export default function CircuitoIaPlaneacionView() {
               <div className="text-xs text-rose-200">Requerimientos netos calculados</div>
             </div>
             <div>
-              <span className="text-xs text-rose-200 font-bold uppercase">4. Capacidad de Telares</span>
+              <span className="text-xs text-rose-200 font-bold uppercase">4. Capacidad de Planta</span>
               <div className="text-2xl font-black font-mono text-cyan-200">1,200 horas/mes</div>
-              <div className="text-xs text-rose-200">{metrics?.loonsCount || 2} Telares Mayer & Cie</div>
+              <div className="text-xs text-rose-200">{metrics?.loonsCount || 2} Líneas de Producción</div>
             </div>
           </div>
         </div>
@@ -152,7 +152,7 @@ export default function CircuitoIaPlaneacionView() {
               </div>
               <h4 className="font-bold text-gray-900 text-xs mt-2">Pronóstico de Demanda</h4>
               <p className="text-[11px] text-gray-500">
-                Modelos de series de tiempo y regresión para estimar ventas de rollos de tela y riesgo en CxC.
+                Modelos de series de tiempo y regresión para estimar ventas de productos y riesgo en CxC.
               </p>
             </div>
             <button 
@@ -172,7 +172,7 @@ export default function CircuitoIaPlaneacionView() {
               </div>
               <h4 className="font-bold text-gray-900 text-xs mt-2">Explosión MRP & Capacidad</h4>
               <p className="text-[11px] text-gray-500">
-                Cálculo de kilos de hilo de algodón requeridos y balance de horas máquina en telares.
+                Cálculo de insumos/materia prima requeridos y balance de horas máquina en producción.
               </p>
             </div>
             <button 

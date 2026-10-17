@@ -5,7 +5,7 @@ if exist "%~dp0demo_por_fases.js" (cd /d "%~dp0") else (cd /d "%~dp0..")
 
 echo =======================================================================
 echo          NyTEX ERP - CAPACITACION FASE 2: EXPRESS ($149 USD/mes)
-echo         Manufactura, Cadena y Gobernanza Financiera (17 Modulos)
+echo         Manufactura, Cadena y Gobernanza Financiera (15 Modulos)
 echo =======================================================================
 echo.
 echo  Modulos a demostrar de forma independiente y literal a la Guia v4.0:
@@ -19,8 +19,6 @@ echo   - [11] Activos Fijos (Alta de Telar Mayer & Cie y Depreciacion NIF C-6)
 echo   - [12] Contabilidad Central (Polizas Automaticas y Balanza Cuadrada)
 echo   - [13] Recursos Humanos - RRHH (Alta de Operarios e Incidencias)
 echo   - [14] Nomina & Fiscal (Calculo Quincenal, ISR, IMSS y Timbrado CFDI)
-echo   - [15] Synex Process Suite (Disenador Visual BPMN 2.0 y Workflows)
-echo   - [16] Process Mining (Mineria de Procesos, Grafo DFG y Cuellos de Botella)
 echo.
 echo  * La locutora explicara cada ventana, boton y campo a capturar.
 echo  * FFmpeg integrara automaticamente el video y la voz en MP4.

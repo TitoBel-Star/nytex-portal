@@ -41,7 +41,7 @@ const PHASES_CONFIG = {
   1: {
     id: 1,
     name: 'Fase 1: NyTEX Starter',
-    badge: 'Starter (7 Módulos)',
+    badge: 'Starter (6 Módulos)',
     price: '$35 USD/mes',
     imp: '$0 USD',
     color: 'blue',
@@ -51,14 +51,13 @@ const PHASES_CONFIG = {
       { id: 'compras', name: '[4] Compras', label: 'Compras', icon: '🛒' },
       { id: 'cxc', name: '[8] CxC', label: 'CxC', icon: '📄' },
       { id: 'cxp', name: '[9] CxP', label: 'CxP', icon: '💳' },
-      { id: 'tesoreria', name: '[10] Finanzas & Tesorería', label: 'Tesorería & Cajas', icon: '🏦' },
       { id: 'contabilidad', name: '[12] Contabilidad', label: 'Contabilidad', icon: '⚖️' }
     ]
   },
   2: {
     id: 2,
     name: 'Fase 2: NyTEX Express',
-    badge: 'Express (17 Módulos)',
+    badge: 'Express (14 Módulos)',
     price: '$149 USD/mes',
     imp: '$1,500 USD',
     color: 'amber',
@@ -76,16 +75,13 @@ const PHASES_CONFIG = {
       { id: 'contabilidad', name: '[12] Contabilidad', label: 'Contabilidad', icon: '⚖️' },
       { id: 'rrhh', name: '[13] RRHH', label: 'RRHH', icon: '🧑‍💼' },
       { id: 'nomina', name: '[14] Nómina', label: 'Nómina', icon: '💵' },
-      { id: 'processsuite', name: '[15] Process Suite', label: 'BPMN', icon: '🔄' },
-      { id: 'processmining', name: '[16] Process Mining', label: 'Process Mining', icon: '🕸️' },
-      { id: 'wms', name: '[17] WMS', label: 'WMS', icon: '🏷️' },
-      { id: 'dashboards', name: '[19] Dashboards', label: 'Dashboards', icon: '📈' }
+      { id: 'wms', name: '[17] WMS', label: 'WMS', icon: '🏷️' }
     ]
   },
   3: {
     id: 3,
     name: 'Fase 3: NyTEX Advanced',
-    badge: 'Advanced (22 Módulos)',
+    badge: 'Advanced (19 Módulos)',
     price: '$299 USD/mes',
     imp: '$4,500 USD',
     color: 'cyan',
@@ -100,54 +96,56 @@ const PHASES_CONFIG = {
       { id: 'cxc', name: '[8] CxC', label: 'CxC', icon: '📄' },
       { id: 'cxp', name: '[9] CxP', label: 'CxP', icon: '💳' },
       { id: 'tesoreria', name: '[10] Finanzas & Tesorería', label: 'Tesorería & Cajas', icon: '🏦' },
-      { id: 'activosfijos', name: '[11] Activos Fijos', label: 'Activos Fijos', icon: '🏗️' },
       { id: 'contabilidad', name: '[12] Contabilidad', label: 'Contabilidad', icon: '⚖️' },
       { id: 'rrhh', name: '[13] RRHH', label: 'RRHH', icon: '🧑‍💼' },
       { id: 'nomina', name: '[14] Nómina', label: 'Nómina', icon: '💵' },
+      { id: 'wms', name: '[17] WMS', label: 'WMS', icon: '🏷️' },
       { id: 'processsuite', name: '[15] Process Suite', label: 'BPMN', icon: '🔄' },
       { id: 'processmining', name: '[16] Process Mining', label: 'Process Mining', icon: '🕸️' },
-      { id: 'wms', name: '[17] WMS', label: 'WMS', icon: '🏷️' },
-      { id: 'biyreportes', name: '[18] BI y Reportes', label: 'Reportes NIF', icon: '📑' },
       { id: 'dashboards', name: '[19] Dashboards', label: 'Dashboards', icon: '📈' },
       { id: 'bi', name: '[20] BI Cubo', label: 'BI Cubo OLAP', icon: '🧊' },
-      { id: 'bigdata', name: '[21] Big Data', label: 'Big Data IoT', icon: '📡' },
       { id: 'planeacion', name: '[25] Planeación', label: 'Planeación S&OP', icon: '🗓️' }
     ]
   },
   4: {
     id: 4,
     name: 'Fase 4: NyTEX Enterprise',
-    badge: 'Enterprise (27 Módulos)',
+    badge: 'Enterprise (25 Módulos)',
     price: '$499 USD/mes',
     imp: 'A Medida',
     color: 'purple',
     modules: [
+      // FASE 1: STARTER (6)
       { id: 'ventas', name: '[1] Ventas', label: 'Ventas', icon: '💰' },
-      { id: 'crm', name: '[2] CRM', label: 'CRM', icon: '👥' },
       { id: 'inventario', name: '[3] Inventario', label: 'Inventario', icon: '📦' },
       { id: 'compras', name: '[4] Compras', label: 'Compras', icon: '🛒' },
-      { id: 'rop', name: '[4.1] ROP Inteligente', label: 'ROP Inteligente', icon: '📊' },
-      { id: 'produccion', name: '[5] Producción', label: 'Producción', icon: '🏭' },
-      { id: 'businesspartners', name: '[6] Partners', label: 'Partners', icon: '🤝' },
-      { id: 'logistica', name: '[7] Logística', label: 'Logística', icon: '🚚' },
       { id: 'cxc', name: '[8] CxC', label: 'CxC', icon: '📄' },
       { id: 'cxp', name: '[9] CxP', label: 'CxP', icon: '💳' },
-      { id: 'tesoreria', name: '[10] Finanzas & Tesorería', label: 'Tesorería & Cajas', icon: '🏦' },
-      { id: 'activosfijos', name: '[11] Activos Fijos', label: 'Activos Fijos', icon: '🏗️' },
       { id: 'contabilidad', name: '[12] Contabilidad', label: 'Contabilidad', icon: '⚖️' },
+
+      // FASE 2: EXPRESS (8)
+      { id: 'crm', name: '[2] CRM', label: 'CRM', icon: '👥' },
+      { id: 'rop', name: '[4.1] ROP Inteligente', label: 'ROP Inteligente', icon: '📊' },
+      { id: 'produccion', name: '[5] Producción', label: 'Producción', icon: '🏭' },
+      { id: 'logistica', name: '[7] Logística', label: 'Logística', icon: '🚚' },
+      { id: 'tesoreria', name: '[10] Finanzas & Tesorería', label: 'Tesorería & Cajas', icon: '🏦' },
       { id: 'rrhh', name: '[13] RRHH', label: 'RRHH', icon: '🧑‍💼' },
       { id: 'nomina', name: '[14] Nómina', label: 'Nómina', icon: '💵' },
+      { id: 'wms', name: '[17] WMS', label: 'WMS', icon: '🏷️' },
+
+      // FASE 3: ADVANCED (5)
       { id: 'processsuite', name: '[15] Process Suite', label: 'BPMN', icon: '🔄' },
       { id: 'processmining', name: '[16] Process Mining', label: 'Process Mining', icon: '🕸️' },
-      { id: 'wms', name: '[17] WMS', label: 'WMS', icon: '🏷️' },
-      { id: 'biyreportes', name: '[18] BI y Reportes', label: 'Reportes NIF', icon: '📑' },
       { id: 'dashboards', name: '[19] Dashboards', label: 'Dashboards', icon: '📈' },
       { id: 'bi', name: '[20] BI Cubo', label: 'BI Cubo OLAP', icon: '🧊' },
+      { id: 'planeacion', name: '[25] Planeación', label: 'Planeación S&OP', icon: '🗓️' },
+
+      // FASE 4: ENTERPRISE (6)
       { id: 'bigdata', name: '[21] Big Data', label: 'Big Data IoT', icon: '📡' },
       { id: 'mineriadatos', name: '[22] Minería', label: 'Minería K-Means', icon: '🎯' },
       { id: 'ia', name: '[23] IA Copilot', label: 'IA Cognitiva', icon: '🧠' },
       { id: 'predictivos', name: '[24] Predictivos', label: 'Predictivos', icon: '🔮' },
-      { id: 'planeacion', name: '[25] Planeación', label: 'Planeación S&OP', icon: '🗓️' },
+      { id: 'businesspartners', name: '[6] Partners', label: 'Partners', icon: '🤝' },
       { id: 'configuracion', name: '[26] Configuración', label: 'Configuración', icon: '⚙️' }
     ]
   }

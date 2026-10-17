@@ -88,7 +88,7 @@ export default function CircuitoGobernanzaView() {
               Inteligencia de Negocios, Big Data & Gobernanza Central
             </h1>
             <p className="text-sm text-slate-300 mt-1 max-w-2xl">
-              Cierre maestro del ecosistema NyTEX conectando la telemetría masiva de telares con minería no supervisada, cubos OLAP, estados financieros auditados y cumplimiento fiscal.
+              Cierre maestro del ecosistema NyTEX conectando la telemetría masiva de planta y operaciones con minería no supervisada, cubos OLAP, estados financieros auditados y cumplimiento fiscal.
             </p>
           </div>
 
@@ -132,7 +132,7 @@ export default function CircuitoGobernanzaView() {
             <div className="text-xl font-black text-cyan-400 mt-1 font-mono">
               {summary?.dataLakeVolume}
             </div>
-            <p className="text-[11px] text-slate-500 mt-1">Ingesta continua por telares y autoclaves</p>
+            <p className="text-[11px] text-slate-500 mt-1">Ingesta continua por sensores y líneas productivas</p>
           </div>
 
           <div className="bg-slate-900 border border-slate-800 p-5 rounded-2xl">
@@ -273,7 +273,7 @@ export default function CircuitoGobernanzaView() {
                 <h4 className="font-bold text-white text-base group-hover:text-emerald-400 transition-colors">
                   Big Data IoT
                 </h4>
-                <p className="text-xs text-slate-400 mt-1">Data Lakehouse de telares y autoclaves.</p>
+                <p className="text-xs text-slate-400 mt-1">Data Lakehouse industrial y operacional.</p>
               </div>
               <div className="mt-4 pt-3 border-t border-slate-800 text-xs font-bold text-emerald-400 flex justify-between items-center">
                 <span>Abrir Módulo</span>

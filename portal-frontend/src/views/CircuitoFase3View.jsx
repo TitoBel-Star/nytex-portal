@@ -64,14 +64,14 @@ export default function CircuitoFase3View() {
                   Circuito 3 • Paquete Comercial
                 </span>
                 <span className="bg-white/20 text-white text-xs px-3 py-1 rounded-full font-bold">
-                  20 Módulos de Inteligencia
+                  19 Módulos de Procesos, BI & S&OP
                 </span>
               </div>
               <h1 className="text-3xl lg:text-4xl font-black tracking-tight">
-                Fase 3: NyTEX Advanced — Inteligencia & Rentabilidad
+                Fase 3: NyTEX Advanced — Procesos, Dashboards & S&OP
               </h1>
               <p className="text-cyan-200 text-sm mt-2 max-w-2xl leading-relaxed">
-                El salto analítico para empresas que buscan rentabilidad estratégica: Cubo OLAP para análisis multidimensional de márgenes, Data Lake con 96 sensores IoT en telares, planeación S&OP / MRP II y reportes ejecutivos auditados NIF/SAT.
+                El salto analítico y de orquestación para empresas en consolidación: BPMN con Process Suite para flujos autorizados, auditoría de cuellos de botella con Process Mining, Dashboards operativos en tiempo real, BI Cubo OLAP y planeación de demanda S&OP / presupuestos.
               </p>
               <div className="flex items-center gap-6 mt-4 pt-4 border-t border-white/10 text-xs">
                 <div>
@@ -84,7 +84,7 @@ export default function CircuitoFase3View() {
                 </div>
                 <div>
                   <span className="text-cyan-300 block uppercase font-bold text-[10px]">Cobertura Total</span>
-                  <strong className="text-xl text-emerald-400 font-black">20 Módulos (Express + 5)</strong>
+                  <strong className="text-xl text-emerald-400 font-black">19 Módulos (Express 14 + 5)</strong>
                 </div>
               </div>
             </div>
@@ -95,7 +95,7 @@ export default function CircuitoFase3View() {
                 disabled={simulating}
                 className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-slate-950 font-black px-6 py-3 rounded-2xl text-sm transition-all shadow-lg flex items-center justify-center gap-2"
               >
-                <span>📊</span> {simulating ? 'Sincronizando Cubo...' : 'Simular S&OP & IoT'}
+                <span>📊</span> {simulating ? 'Orquestando Flujos...' : 'Simular BPMN & S&OP'}
               </button>
               <Link
                 to="/portal?phase=3"
@@ -119,7 +119,7 @@ export default function CircuitoFase3View() {
             <span className="text-2xl">✓</span>
             <div>
               <p className="font-bold">{simulationResult.message}</p>
-              <p className="text-xs text-cyan-400 font-normal mt-0.5">Se actualizó el Data Lake columnar y la matriz multidimensional del Cubo OLAP.</p>
+              <p className="text-xs text-cyan-400 font-normal mt-0.5">Se orquestaron las tareas BPMN, se auditaron eventos en Process Mining y se sincronizó la matriz multidimensional del Cubo OLAP.</p>
             </div>
           </div>
         )}
@@ -127,11 +127,11 @@ export default function CircuitoFase3View() {
         {/* Métricas Reales del Circuito Advanced */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="bg-slate-900 border border-slate-800 p-5 rounded-2xl">
-            <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block">[21] Data Lake IoT</span>
+            <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block">[15] Process Suite BPMN</span>
             <div className="text-2xl font-black text-cyan-400 mt-1 font-mono">
-              {metrics.dataLakeSizeGb} <span className="text-xs text-slate-500">GB</span>
+              12 <span className="text-xs text-slate-500">flujos</span>
             </div>
-            <p className="text-[11px] text-slate-400 mt-1">{metrics.iotRecordsCount?.toLocaleString()} eventos Parquet</p>
+            <p className="text-[11px] text-slate-400 mt-1">Compuertas de aprobación y tareas automatizadas</p>
           </div>
 
           <div className="bg-slate-900 border border-slate-800 p-5 rounded-2xl">
@@ -151,24 +151,24 @@ export default function CircuitoFase3View() {
           </div>
 
           <div className="bg-slate-900 border border-slate-800 p-5 rounded-2xl">
-            <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block">[11] Activos Fijos</span>
+            <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block">[19] Dashboards Operativos</span>
             <div className="text-2xl font-black text-purple-400 mt-1 font-mono">
-              ${metrics.totalAssetsValue?.toLocaleString()} <span className="text-xs text-slate-500">USD</span>
+              En Vivo
             </div>
-            <p className="text-[11px] text-slate-400 mt-1">Depreciación mensual: ${metrics.monthlyDepreciation?.toLocaleString()} USD</p>
+            <p className="text-[11px] text-slate-400 mt-1">KPIs en tiempo real de piso de planta y finanzas</p>
           </div>
         </div>
 
         {/* Arquitectura de Flujo Advanced */}
         <div className="bg-slate-900 rounded-2xl border border-slate-800 p-6 shadow-xl">
-          <h3 className="text-base font-extrabold text-white mb-1">Capa de Inteligencia de Negocios & Capacidad</h3>
-          <p className="text-xs text-slate-400 mb-4">Conectando sensores físicos a cubos de toma de decisiones financieras</p>
+          <h3 className="text-base font-extrabold text-white mb-1">Capa de Orquestación de Procesos, Dashboards & Capacidad</h3>
+          <p className="text-xs text-slate-400 mb-4">Conectando workflows automatizados, analítica visual y modelos de planeación</p>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="bg-slate-950 p-4 rounded-xl border border-slate-800">
-              <span className="text-[10px] font-black uppercase text-cyan-400">Ingesta</span>
-              <h4 className="font-bold text-white text-sm mt-1">[21] Big Data IoT</h4>
-              <p className="text-xs text-slate-400 mt-1">Telemetría de 96 sensores de telares (RPM, vibración y tensión) directo al Data Lake.</p>
+              <span className="text-[10px] font-black uppercase text-cyan-400">Orquestación</span>
+              <h4 className="font-bold text-white text-sm mt-1">[15] Process Suite</h4>
+              <p className="text-xs text-slate-400 mt-1">Automatización y compuertas BPMN 2.0 para autorizaciones comerciales y compras fabriles.</p>
             </div>
 
             <div className="bg-slate-950 p-4 rounded-xl border border-slate-800">
@@ -184,16 +184,16 @@ export default function CircuitoFase3View() {
             </div>
 
             <div className="bg-slate-950 p-4 rounded-xl border border-slate-800">
-              <span className="text-[10px] font-black uppercase text-blue-400">Dictamen</span>
-              <h4 className="font-bold text-white text-sm mt-1">[18] BI y Reportes</h4>
-              <p className="text-xs text-slate-400 mt-1">Emisión de estados financieros NIF B-3 y balanza de comprobación SAT Anexo 24.</p>
+              <span className="text-[10px] font-black uppercase text-purple-400">Auditoría</span>
+              <h4 className="font-bold text-white text-sm mt-1">[16] Process Mining</h4>
+              <p className="text-xs text-slate-400 mt-1">Grafos DFG para identificar cuellos de botella reales entre el almacén y el transporte.</p>
             </div>
           </div>
         </div>
 
         {/* Directorio de los Módulos de Fase 3 */}
         <div>
-          <h3 className="font-extrabold text-white text-lg mb-3">Módulos de la Fase 3 Advanced</h3>
+          <h3 className="font-extrabold text-white text-lg mb-3">Los 20 Módulos de la Fase 3 Advanced</h3>
           <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-3">
             {[
               { id: 'ventas', name: '[1] Ventas' },
@@ -213,10 +213,8 @@ export default function CircuitoFase3View() {
               { id: 'processsuite', name: '[15] Process Suite' },
               { id: 'processmining', name: '[16] Process Mining' },
               { id: 'wms', name: '[17] WMS' },
-              { id: 'biyreportes', name: '[18] BI y Reportes' },
               { id: 'dashboards', name: '[19] Dashboards' },
               { id: 'bi', name: '[20] BI Cubo' },
-              { id: 'bigdata', name: '[21] Big Data' },
               { id: 'planeacion', name: '[25] Planeación' }
             ].map(m => (
               <Link

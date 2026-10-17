@@ -9,15 +9,15 @@ export default function IaAssistantView() {
     {
       role: 'assistant',
       category: 'Diagnóstico Ejecutivo Global',
-      text: 'Bienvenido al Copilot de Inteligencia Artificial de NyTEX. He sincronizado la base de datos viva del ERP (Ventas, WMS, Telares, CxC y Tesorería). ¿Qué consulta estratégica o diagnóstico de planta desea realizar?',
+      text: 'Bienvenido al Copilot de Inteligencia Artificial de NyTEX. He sincronizado la base de datos viva del ERP (Ventas, WMS, Planta, CxC y Tesorería). ¿Qué consulta estratégica o diagnóstico de operaciones desea realizar?',
       recommendations: [
-        'Auditar inventario de materia prima previo a órdenes de tejeduría.',
+        'Auditar inventario de materia prima previo a órdenes de manufactura.',
         'Evaluar la probabilidad de mora en la cartera de clientes con crédito.',
-        'Revisar la utilización de capacidad mensual de los telares circulares.'
+        'Revisar la utilización de capacidad mensual de planta y líneas de producción.'
       ],
       keyMetrics: [
         { label: 'Estatus del Motor', value: 'Conectado a SQLite' },
-        { label: 'Módulos Auditados', value: '26 Aplicaciones' },
+        { label: 'Módulos Auditados', value: '25 Aplicaciones' },
         { label: 'Tiempo de Respuesta', value: '< 200 ms' }
       ]
     }
@@ -25,9 +25,9 @@ export default function IaAssistantView() {
 
   const quickPrompts = [
     { label: '📊 Diagnóstico General & Tesorería', prompt: '¿Cuál es el diagnóstico general del negocio y nuestra posición de liquidez en bancos?' },
-    { label: '🧵 Inventario & Compras de Hilatura', prompt: '¿Cómo estamos en inventario de hilaturas y qué compras debemos hacer para producción?' },
+    { label: '📦 Inventario & Materia Prima', prompt: '¿Cómo estamos en inventario de insumos y qué compras debemos hacer para producción?' },
     { label: '⚠️ Riesgo de Mora en CxC', prompt: '¿Qué clientes en CxC presentan mayor probabilidad de mora según los modelos predictivos?' },
-    { label: '⚙️ Capacidad Fabril de Telares', prompt: '¿Cuál es la utilización actual de los telares Mayer & Cie y nuestra capacidad fabril?' }
+    { label: '⚙️ Capacidad Fabril y Producción', prompt: '¿Cuál es la utilización actual de las líneas de producción y nuestra capacidad instalada?' }
   ];
 
   const handleSendPrompt = async (textToSend) => {
@@ -196,7 +196,7 @@ export default function IaAssistantView() {
           >
             <input 
               type="text" 
-              placeholder="Pregunte a la IA sobre inventarios, cobranza en CxC, capacidad de telares o pronóstico de ventas..."
+              placeholder="Pregunte a la IA sobre inventarios, cobranza en CxC, capacidad de planta o pronóstico de ventas..."
               value={prompt}
               onChange={e => setPrompt(e.target.value)}
               className="flex-1 bg-white border border-gray-300 rounded-xl px-4 py-3 text-xs shadow-sm focus:outline-none focus:ring-2 focus:ring-rose-500"

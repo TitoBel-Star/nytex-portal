@@ -127,12 +127,12 @@ const TEMPLATES = {
     name: 'Liberación de Calidad Fabril & Entrada a Almacén',
     category: 'Producción & Calidad',
     codePrefix: 'WF-PRD',
-    description: 'Protocolo de inspección textil de rollos producidos en telar Mayer & Cie previo al etiquetado WMS.',
+    description: 'Protocolo de inspección y control de calidad de lotes producidos previo al etiquetado WMS.',
     slaHours: 8,
     xml: `<?xml version="1.0" encoding="UTF-8"?>
 <bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" targetNamespace="http://bpmn.io/schema/bpmn" id="Definitions_QC">
   <bpmn:process id="Process_QC" isExecutable="true">
-    <bpmn:startEvent id="Start_QC" name="Rollo Producido">
+    <bpmn:startEvent id="Start_QC" name="Lote Producido">
       <bpmn:outgoing>Flow_QC_1</bpmn:outgoing>
     </bpmn:startEvent>
     <bpmn:userTask id="Task_Insp" name="Pesaje e Inspección Visual">
@@ -257,7 +257,7 @@ export default function BpmnInteractiveDesigner({ onModelSaved, nextProcessCode 
           else if (lower.includes('presup') || lower.includes('cont')) role = 'Contralor';
           else if (lower.includes('direc') || lower.includes('geren') || lower.includes('visto')) role = 'Director de Finanzas';
           else if (lower.includes('calidad') || lower.includes('inspec')) role = 'Inspector de Calidad';
-          else if (lower.includes('telar') || lower.includes('producc')) role = 'Operador Fabril';
+          else if (lower.includes('maquin') || lower.includes('fabril') || lower.includes('producc')) role = 'Operador Fabril';
           else if (lower.includes('emisión') || lower.includes('qr') || lower.includes('sistema') || lower.includes('wms')) role = 'Sistema / WMS';
         }
         return {

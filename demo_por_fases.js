@@ -470,15 +470,15 @@ async function runFase1(page, narrator) {
 }
 
 // ==================================================================================
-// BLOQUE OPERATIVO: FASE 2 - EXPRESS ($149 USD/mes) - 17 MÓDULOS INTEGRALES
+// BLOQUE OPERATIVO: FASE 2 - EXPRESS ($149 USD/mes) - 15 MÓDULOS INTEGRALES
 // ==================================================================================
 async function runFase2(page, narrator) {
-  console.log('\n--- EJECUTANDO FASE 2: EXPRESS (17 MÓDULOS INTEGRALES) ---');
+  console.log('\n--- EJECUTANDO FASE 2: EXPRESS (15 MÓDULOS INTEGRALES) ---');
 
   await goToPage(page, 'http://localhost:5173/app/workspace?phase=2');
-  await updateHUD(page, 'FASE 2 • EXPRESS ($149 USD/mes)', 'Manufactura, Cadena y Gobernanza Financiera', 'Suma 10 módulos estratégicos a la Fase 1: Logística, ROP, CxC, CxP, Tesorería & Controles Internos, Activos Fijos, Contabilidad Central, RRHH, Nómina y BPMN.', 'Explore las nuevas pestañas activas en el Workspace.');
+  await updateHUD(page, 'FASE 2 • EXPRESS ($149 USD/mes)', 'Manufactura, Cadena y Gobernanza Financiera', 'Suma 8 módulos estratégicos a la Fase 1: Logística, ROP, CxC, CxP, Tesorería & Controles Internos, Activos Fijos, Contabilidad Central, RRHH y Nómina.', 'Explore las nuevas pestañas activas en el Workspace.');
   
-  const vFase2Intro = narrator.narrate('Iniciamos la capacitación de la Fase Dos: NyTEX Express. Diseñada para empresas en expansión, amplía la solución a diecisiete módulos integrados, incorporando Logística, Punto de Reorden dinámico, Cuentas por Cobrar, Cuentas por Pagar, Tesorería con controles internos de caja, Activos Fijos, Contabilidad Central, Nómina, Recursos Humanos y modelado BPMN.');
+  const vFase2Intro = narrator.narrate('Iniciamos la capacitación de la Fase Dos: NyTEX Express. Diseñada para empresas en expansión, amplía la solución a quince módulos integrados, incorporando Logística, Punto de Reorden dinámico, Cuentas por Cobrar, Cuentas por Pagar, Tesorería con controles internos de caja, Activos Fijos, Contabilidad Central, Nómina y Recursos Humanos.');
   await sleep(500);
   await smoothScrollDown(page, 350);
   await sleep(1000);
@@ -573,6 +573,25 @@ async function runFase2(page, narrator) {
   await humanClick(page, 'button:has-text("Calcular Nómina"), button:has-text("Dispersar")');
   await sleep(800);
   await vRrhhNom;
+}
+
+// ==================================================================================
+// BLOQUE OPERATIVO: FASE 3 - ADVANCED ($299 USD/mes) - 22 MÓDULOS DE ANALÍTICA
+// ==================================================================================
+// BLOQUE OPERATIVO: FASE 3 - ADVANCED ($299 USD/mes) - 20 MÓDULOS DE GOBERNANZA Y ANALÍTICA
+// ==================================================================================
+async function runFase3(page, narrator) {
+  console.log('\n--- EJECUTANDO FASE 3: ADVANCED (20 MÓDULOS DE GOBERNANZA Y ANALÍTICA) ---');
+
+  await goToPage(page, 'http://localhost:5173/app/workspace?phase=3');
+  await updateHUD(page, 'FASE 3 • ADVANCED ($299 USD/mes)', 'Gobernanza de Procesos y Analítica Directiva', 'Alcanza 20 módulos: Incorpora Process Suite BPMN, Process Mining, Dashboards Ejecutivos, Cubo OLAP Multidimensional y Planeación S&OP.', 'Observe el ecosistema de toma de decisiones directivas.');
+  
+  const vFase3Intro = narrator.narrate('Pasamos a la capacitación de la Fase Tres: NyTEX Advanced. Es el salto estratégico hacia la gobernanza de procesos y analítica directiva, alcanzando veinte módulos. Incorpora automatización BPMN con Process Suite, minería de procesos y detección de cuellos de botella con Process Mining, cuadros de mando ejecutivos en tiempo real con Dashboards, cubo OLAP hiperdimensional y sincronización de planeación S&OP.');
+  await sleep(500);
+  await smoothScrollDown(page, 350);
+  await sleep(1000);
+  await smoothScrollUp(page, 350);
+  await vFase3Intro;
 
   // [15] PROCESS SUITE Y [16] PROCESS MINING
   await goToPage(page, 'http://localhost:5173/app/processsuite');
@@ -586,32 +605,6 @@ async function runFase2(page, narrator) {
   await humanClick(page, 'button:has-text("Descubrir"), button:has-text("Minería")');
   await sleep(800);
   await vBpm;
-}
-
-// ==================================================================================
-// BLOQUE OPERATIVO: FASE 3 - ADVANCED ($299 USD/mes) - 22 MÓDULOS DE ANALÍTICA
-// ==================================================================================
-async function runFase3(page, narrator) {
-  console.log('\n--- EJECUTANDO FASE 3: ADVANCED (22 MÓDULOS DE ANALÍTICA) ---');
-
-  await goToPage(page, 'http://localhost:5173/app/workspace?phase=3');
-  await updateHUD(page, 'FASE 3 • ADVANCED ($299 USD/mes)', 'Inteligencia de Negocios y Analítica Estratégica', 'Alcanza 22 módulos: Incorpora BI Reportes NIF/IFRS, Dashboards Ejecutivos, Cubo OLAP Multidimensional, Big Data IoT en telares y Data Mining K-Means.', 'Observe el ecosistema de toma de decisiones directivas.');
-  
-  const vFase3Intro = narrator.narrate('Pasamos a la capacitación de la Fase Tres: NyTEX Advanced. Es el salto estratégico hacia la inteligencia empresarial y analítica multidimensional, alcanzando veintidós módulos. Incorpora reportes financieros auditados bajo normas NIF, cuadros de mando ejecutivos en tiempo real, cubo OLAP hiperdimensional, telemetría IoT industrial y algoritmos de minería de datos.');
-  await sleep(500);
-  await smoothScrollDown(page, 350);
-  await sleep(1000);
-  await smoothScrollUp(page, 350);
-  await vFase3Intro;
-
-  // [18] BI Y REPORTES FINANCIEROS (NIF / IFRS)
-  await goToPage(page, 'http://localhost:5173/app/reportes');
-  await updateHUD(page, '[18] REPORTES FINANCIEROS', 'Tarea 18.1: Estados Financieros Básicos Auditados', 'Generación de Estado de Resultados (P&L), Balance General y Flujo de Efectivo.', 'Emisión de reportes ejecutivos listos para bancos y juntas directivas.');
-  const vRep = narrator.narrate('Módulo dieciocho: BI y Reportes Financieros. Tarea 18.1: Generar Estado de Resultados y Balance General. Con un solo clic, se emite el estado de pérdidas y ganancias integral y la situación patrimonial bajo normas NIF internacionales.');
-  await sleep(400);
-  await humanClick(page, 'button:has-text("Estado de Resultados"), button:has-text("Balance General")');
-  await sleep(900);
-  await vRep;
 
   // [19] DASHBOARDS EJECUTIVOS EN TIEMPO REAL
   await goToPage(page, 'http://localhost:5173/app/dashboards');
@@ -632,6 +625,41 @@ async function runFase3(page, narrator) {
   await sleep(900);
   await vCube;
 
+  // [25] PLANEACIÓN DE LA DEMANDA & S&OP (MRP II)
+  await goToPage(page, 'http://localhost:5173/app/planeacion');
+  await updateHUD(page, '[25] S&OP / MRP II', 'Tarea 25.1: Sincronización S&OP y Disparo de Requerimientos', 'Explosión de requerimientos MRP II: Demanda 50 rollos ➔ Déficit neto 600 kg hilo.', 'Disparo automático de requisición a Compras y órdenes sugeridas a Producción.');
+  const vPlan = narrator.narrate('Módulo veinticinco: Planeación de la Demanda y S&OP MRP dos. Tarea 25.1: Ejecutar la Sincronización S&OP. El motor calcula la demanda proyectada, explosiona la lista de materiales y envía automáticamente las requisiciones a Compras y el plan de tejido a Producción.');
+  await sleep(400);
+  await humanClick(page, 'button:has-text("Sincronización S&OP"), button:has-text("Ejecutar")');
+  await sleep(900);
+  await vPlan;
+}
+
+// ==================================================================================
+// BLOQUE OPERATIVO: FASE 4 - ENTERPRISE ($499 USD/mes) - 25 MÓDULOS TOTALES
+// ==================================================================================
+async function runFase4(page, narrator) {
+  console.log('\n--- EJECUTANDO FASE 4: ENTERPRISE (25 MÓDULOS TOTALES) ---');
+
+  await goToPage(page, 'http://localhost:5173/app/workspace?phase=4');
+  await updateHUD(page, 'FASE 4 • ENTERPRISE ($499 USD/mes)', 'Ecosistema Total: Big Data, IA y Gobernanza Corporativa', 'Solución Corporativa Definitiva (25 Módulos): BI y Reportes Financieros NIF/IFRS, Big Data IoT en telares, Minería de Datos K-Means, Asistente IA Copilot, Modelos Predictivos y Localización Fiscal Regional.', 'La plataforma integral para liderar la industria textil.');
+  
+  const vFase4Intro = narrator.narrate('Culminamos con la capacitación de la Fase Cuatro: NyTEX Enterprise. Representa la cúspide del ecosistema con veinticinco módulos operativos. Incorpora reportes financieros auditados bajo normas NIF, telemetría masiva Big Data e IoT industrial, algoritmos de minería de datos K-Means, Asistente Cognitivo de Inteligencia Artificial para consultas ejecutivas, modelos econométricos predictivos y gobernanza fiscal multi-país.');
+  await sleep(500);
+  await smoothScrollDown(page, 350);
+  await sleep(1000);
+  await smoothScrollUp(page, 350);
+  await vFase4Intro;
+
+  // [18] BI Y REPORTES FINANCIEROS (NIF / IFRS)
+  await goToPage(page, 'http://localhost:5173/app/reportes');
+  await updateHUD(page, '[18] REPORTES FINANCIEROS', 'Tarea 18.1: Estados Financieros Básicos Auditados', 'Generación de Estado de Resultados (P&L), Balance General y Flujo de Efectivo.', 'Emisión de reportes ejecutivos listos para bancos y juntas directivas.');
+  const vRep = narrator.narrate('Módulo dieciocho: BI y Reportes Financieros. Tarea 18.1: Generar Estado de Resultados y Balance General. Con un solo clic, se emite el estado de pérdidas y ganancias integral y la situación patrimonial bajo normas NIF internacionales.');
+  await sleep(400);
+  await humanClick(page, 'button:has-text("Estado de Resultados"), button:has-text("Balance General")');
+  await sleep(900);
+  await vRep;
+
   // [21] BIG DATA & TELEMETRÍA IOT INDUSTRIAL
   await goToPage(page, 'http://localhost:5173/app/bigdata');
   await updateHUD(page, '[21] BIG DATA & IOT', 'Tarea 21.1: Monitor de Telemetría IoT en Vivo', 'Lectura de sensores en Telar Mayer & Cie: 28.4 RPM, Temperatura 48.2 °C, Tensión 14.2 cN.', 'Prevención de fallas mecánicas y cálculo automático de metros tejidos.');
@@ -649,23 +677,6 @@ async function runFase3(page, narrator) {
   await humanClick(page, 'button:has-text("Entrenar"), button:has-text("K-Means")');
   await sleep(900);
   await vMine;
-}
-
-// ==================================================================================
-// BLOQUE OPERATIVO: FASE 4 - ENTERPRISE ($499 USD/mes) - 25 MÓDULOS TOTALES
-// ==================================================================================
-async function runFase4(page, narrator) {
-  console.log('\n--- EJECUTANDO FASE 4: ENTERPRISE (25 MÓDULOS TOTALES) ---');
-
-  await goToPage(page, 'http://localhost:5173/app/workspace?phase=4');
-  await updateHUD(page, 'FASE 4 • ENTERPRISE ($499 USD/mes)', 'Ecosistema Total: Asistente IA, Anticipación y Gobernanza', 'Solución Corporativa Definitiva (25 Módulos): Asistente IA Copilot, Modelos Predictivos Logit/ARIMA, Planeación S&OP / MRP II y Localización Fiscal Regional.', 'La plataforma integral para liderar la industria textil.');
-  
-  const vFase4Intro = narrator.narrate('Culminamos con la capacitación de la Fase Cuatro: NyTEX Enterprise. Representa la cúspide del ecosistema con veinticinco módulos operativos. Integra un Asistente Cognitivo de Inteligencia Artificial para consultas ejecutivas, modelos econométricos predictivos, planeación avanzada de la demanda ese y o pe con MRP dos, y gobernanza fiscal multi-país.');
-  await sleep(500);
-  await smoothScrollDown(page, 350);
-  await sleep(1000);
-  await smoothScrollUp(page, 350);
-  await vFase4Intro;
 
   // [23] ASISTENTE COGNITIVO IA (Copilot Empresarial)
   await goToPage(page, 'http://localhost:5173/app/ia');
@@ -688,15 +699,6 @@ async function runFase4(page, narrator) {
   await humanClick(page, 'button:has-text("Calcular"), button:has-text("Proyectar")');
   await sleep(900);
   await vPred;
-
-  // [25] PLANEACIÓN DE LA DEMANDA & S&OP (MRP II)
-  await goToPage(page, 'http://localhost:5173/app/planeacion');
-  await updateHUD(page, '[25] S&OP / MRP II', 'Tarea 25.1: Sincronización S&OP y Disparo de Requerimientos', 'Explosión de requerimientos MRP II: Demanda 50 rollos ➔ Déficit neto 600 kg hilo.', 'Disparo automático de requisición a Compras y órdenes sugeridas a Producción.');
-  const vPlan = narrator.narrate('Módulo veinticinco: Planeación de la Demanda y S&OP MRP dos. Tarea 25.1: Ejecutar la Sincronización S&OP. El motor calcula la demanda proyectada, explosiona la lista de materiales y envía automáticamente las requisiciones a Compras y el plan de tejido a Producción.');
-  await sleep(400);
-  await humanClick(page, 'button:has-text("Sincronización S&OP"), button:has-text("Ejecutar")');
-  await sleep(900);
-  await vPlan;
 
   // [26] CONFIGURACIÓN FISCAL MULTI-PAÍS & AUDITORÍA INMUTABLE
   await goToPage(page, 'http://localhost:5173/app/configuracion');

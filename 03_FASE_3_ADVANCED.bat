@@ -5,15 +5,15 @@ if exist "%~dp0demo_por_fases.js" (cd /d "%~dp0") else (cd /d "%~dp0..")
 
 echo =======================================================================
 echo          NyTEX ERP - CAPACITACION FASE 3: ADVANCED ($299 USD/mes)
-echo             Inteligencia & Rentabilidad Estrategica (22 Modulos)
+echo             Inteligencia & Rentabilidad Estrategica (20 Modulos)
 echo =======================================================================
 echo.
 echo  Modulos a demostrar de forma independiente y literal a la Guia v4.0:
-echo   - [18] BI y Reportes Financieros (NIF / IFRS, P&L, Balance y Flujo)
+echo   - [15] Synex Process Suite (Disenador Visual BPMN 2.0 y Workflows)
+echo   - [16] Process Mining (Mineria de Procesos, Grafo DFG y Cuellos de Botella)
 echo   - [19] Dashboards Ejecutivos en Tiempo Real (KPI Cockpit y OEE Planta)
 echo   - [20] BI Cubo Multidimensional (OLAP HyperCube, Slice & Dice, Drill-Down)
-echo   - [21] Big Data & Telemetria IoT Industrial (Sensores en 96 Telares)
-echo   - [22] Mineria de Datos & Machine Learning (Clustering K-Means Clientes)
+echo   - [25] Planeacion de la Demanda & S&OP (MRP II y Explosion de Materiales)
 echo.
 echo  * La locutora explicara cada ventana, boton y campo a capturar.
 echo  * FFmpeg integrara automaticamente el video y la voz en MP4.

@@ -46,9 +46,9 @@ En la parte superior de la aplicación y del Workspace se dispone del **Simulado
 ### 0.2 Selector Dinámico de Fases de Implementación
 El Workspace unificado permite filtrar y visualizar los módulos correspondientes a cada fase de transformación:
 - **Fase 1: Starter (7 Módulos):** [1] Ventas, [2] CRM, [3] Inventario, [4] Compras, [5] Producción, [6] Directorio de Business Partners, [17] WMS.
-- **Fase 2: Express (+10 = 17 Módulos):** Starter + [7] Logística y Distribución, [8] CxC, [9] CxP, [10] Tesorería, Cajas y Controles Internos, [11] Activos Fijos, [12] Contabilidad Central, [13] RRHH, [14] Nómina, [15] Synex Process Suite (BPMN), [16] Minería de Procesos.
-- **Fase 3: Advanced (+5 = 22 Módulos):** Express + [18] BI y Reportes Financieros NIF/IFRS, [19] Dashboards Ejecutivos, [20] BI Cubo OLAP HyperCube, [21] Big Data e IoT Industrial, [22] Minería de Datos y Machine Learning.
-- **Fase 4: Enterprise (+3 = 25 Módulos):** Advanced + [23] Asistente Cognitivo IA Copilot, [24] Modelos Predictivos y Riesgo Crediticio (Logit/ARIMA), [25] Planeación S&OP / MRP II.
+- **Fase 2: Express (+8 = 15 Módulos):** Starter + [7] Logística y Distribución, [8] CxC, [9] CxP, [10] Tesorería, Cajas y Controles Internos, [11] Activos Fijos, [12] Contabilidad Central, [13] RRHH, [14] Nómina.
+- **Fase 3: Advanced (+5 = 20 Módulos):** Express + [15] NyTEX Process Suite (BPMN), [16] NyTEX Process Mining, [19] NyTEX Dashboards Ejecutivos, [20] BI Cubo OLAP HyperCube, [25] Planeación S&OP / MRP II.
+- **Fase 4: Enterprise (+5 = 25 Módulos):** Advanced + [18] NyTEX BI y Reportes Financieros NIF/IFRS, [21] NyTEX Big Data e IoT Industrial, [22] Minería de Datos y Machine Learning, [23] Asistente Cognitivo IA Copilot, [24] Modelos Predictivos y Riesgo Crediticio (Logit/ARIMA).
 
 ### 0.3 Flujo de Contratación y Activación Instantánea en la Nube
 1. El cliente ingresa a la Landing Page oficial: \`https://consultores-nyt.onrender.com/\`.
@@ -829,9 +829,9 @@ Para demostraciones ejecutivas o pruebas de punta a punta, el sistema dispone de
 | Circuito | Ruta | Módulos Integrados en el Flujo |
 | :--- | :--- | :--- |
 | **Circuito Fase 1 (Starter)** | \`/app/circuito-fase1\` | [1] Ventas ➔ [3] Inventario ➔ [4] Compras ➔ [5] Producción ➔ [6] Partners ➔ [17] WMS |
-| **Circuito Fase 2 (Express)** | \`/app/circuito-fase2\` | Starter + [7] Logística, [8] CxC, [9] CxP, [10] Tesorería & Cajas, [11] Activos Fijos, [12] Contabilidad, [13] RRHH, [14] Nómina, [15] Process Suite BPMN, [16] Process Mining |
-| **Circuito Fase 3 (Advanced)** | \`/app/circuito-fase3\` | Express + [18] BI Reportes, [19] Dashboards, [20] BI Cubo OLAP, [21] Big Data IoT, [22] Data Mining |
-| **Circuito Fase 4 (Enterprise)** | \`/app/circuito-fase4\` | Todos los 25 Módulos completos con IA Copilot [23], Modelos Predictivos [24], Planeación S&OP [25] y Configuración Fiscal [26] |
+| **Circuito Fase 2 (Express)** | \`/app/circuito-fase2\` | Starter + [7] Logística, [8] CxC, [9] CxP, [10] Tesorería & Cajas, [11] Activos Fijos, [12] Contabilidad, [13] RRHH, [14] Nómina |
+| **Circuito Fase 3 (Advanced)** | \`/app/circuito-fase3\` | Express + [15] Process Suite BPMN, [16] Process Mining, [19] Dashboards, [20] BI Cubo OLAP, [25] Planeación S&OP |
+| **Circuito Fase 4 (Enterprise)** | \`/app/circuito-fase4\` | Todos los 25 Módulos completos con BI Reportes [18], Big Data [21], Data Mining [22], IA Copilot [23], Modelos Predictivos [24] y Configuración Fiscal [26] |
 
 ### Tarea de Simulación en los Circuitos de Fase:
 1. Entrar a la ruta del circuito deseado (ej. \`/app/circuito-fase1\`).
@@ -843,7 +843,7 @@ Para demostraciones ejecutivas o pruebas de punta a punta, el sistema dispone de
 ## 🖥️ ESPACIO DE TRABAJO UNIFICADO (WORKSPACE INTEGRADO)
 - **Ruta de Acceso:** \`https://nytex-erp-portal.onrender.com/app/workspace\` (o local \`http://localhost:5173/app/workspace\`).
 - **Ventaja Operativa:** Permite al usuario u operador alternar libremente entre los 25 módulos a través de una barra de pestañas superior persistente sin necesidad de abrir múltiples pestañas del navegador ni perder el contexto de trabajo.
-- **Selector de Fase:** Filtra la visualización para mostrar solo los módulos contratados (Fase 1: 7 módulos, Fase 2: 17 módulos, Fase 3: 22 módulos, Fase 4: 25 módulos).
+- **Selector de Fase:** Filtra la visualización para mostrar solo los módulos contratados (Fase 1: 7 módulos, Fase 2: 15 módulos, Fase 3: 20 módulos, Fase 4: 25 módulos).
 `;
 
 // Escribir el archivo Markdown

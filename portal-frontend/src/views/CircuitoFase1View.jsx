@@ -65,14 +65,14 @@ export default function CircuitoFase1View() {
                   Circuito 1 • Paquete Comercial
                 </span>
                 <span className="bg-white/20 text-white text-xs px-3 py-1 rounded-full font-bold">
-                  7 Módulos Esenciales
+                  6 Módulos Esenciales
                 </span>
               </div>
               <h1 className="text-3xl lg:text-4xl font-black tracking-tight">
                 Fase 1: NyTEX Starter — Control Transaccional
               </h1>
               <p className="text-blue-200 text-sm mt-2 max-w-2xl leading-relaxed">
-                El circuito medular para empresas que inician: factura pedidos, gestiona stock en almacén, administra cartera en CxC, compras y CxP, cobra en Tesorería y cuadra automáticamente la contabilidad.
+                El circuito medular para empresas que inician: factura pedidos, gestiona stock en almacén, administra cartera en CxC, compras y CxP y cuadra automáticamente la contabilidad.
               </p>
               <div className="flex items-center gap-6 mt-4 pt-4 border-t border-white/10 text-xs">
                 <div>
@@ -85,7 +85,7 @@ export default function CircuitoFase1View() {
                 </div>
                 <div>
                   <span className="text-blue-300 block uppercase font-bold text-[10px]">Cobertura</span>
-                  <strong className="text-xl text-white font-black">7 Módulos</strong>
+                  <strong className="text-xl text-white font-black">6 Módulos</strong>
                 </div>
               </div>
             </div>
@@ -200,17 +200,16 @@ export default function CircuitoFase1View() {
           </div>
         </div>
 
-        {/* Directorio de los 7 Módulos de esta Fase */}
+        {/* Directorio de los 6 Módulos de esta Fase */}
         <div>
           <h3 className="font-extrabold text-slate-900 text-lg mb-3">Módulos Incluidos en la Fase 1 Starter</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {[
               { id: 'ventas', name: '[1] Ventas', desc: 'Gestión de cotizaciones, pedidos y facturación CFDI.' },
               { id: 'inventario', name: '[3] Inventario', desc: 'Control multialmacén, existencias y costos PEPS.' },
               { id: 'compras', name: '[4] Compras', desc: 'Órdenes de compra a proveedores y recepción de insumos.' },
               { id: 'cxc', name: '[8] CxC', desc: 'Cuentas por cobrar, antigüedad de saldos y cobranza.' },
               { id: 'cxp', name: '[9] CxP', desc: 'Cuentas por pagar a proveedores de materias primas.' },
-              { id: 'tesoreria', name: '[10] Tesorería', desc: 'Bancos, flujo de efectivo, dispersiones y SPEI.' },
               { id: 'contabilidad', name: '[12] Contabilidad', desc: 'Pólizas automáticas, balanza fiscal y libro mayor.' }
             ].map(m => (
               <div key={m.id} className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between">

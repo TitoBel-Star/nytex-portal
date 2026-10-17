@@ -16,19 +16,19 @@ echo       Ciclo Operativo Base (7 Modulos: Ventas, CRM, Inventario, Compras,
 echo       Produccion Textil, Portal Partners y WMS Almacenes)
 echo.
 echo   [2] FASE 2: EXPRESS ($149 USD/mes)
-echo       Manufactura, Cadena y Finanzas (17 Modulos: Logistica, ROP Dinamico,
+echo       Manufactura, Cadena y Finanzas (15 Modulos: Logistica, ROP Dinamico,
 echo       CxC, CxP, Tesoreria 4 Pestanas y 8 Tareas, Activos Fijos NIF C-6,
-echo       Contabilidad IFRS, RRHH, Nomina Quincenal, BPMN y Process Mining)
+echo       Contabilidad IFRS, RRHH, Nomina Quincenal)
 echo.
 echo   [3] FASE 3: ADVANCED ($299 USD/mes)
-echo       Inteligencia & Analitica Predictiva (22 Modulos: BI Reportes Financieros,
-echo       Dashboards Ejecutivos, Cubo OLAP Multidimensional, Telemetria IoT
-echo       en 96 Telares y Data Mining K-Means de Clientes)
+echo       Inteligencia & Gobernanza de Procesos (20 Modulos: Process Suite BPMN,
+echo       Process Mining, Dashboards Ejecutivos, Cubo OLAP Multidimensional,
+echo       Planeacion S&OP / MRP II)
 echo.
 echo   [4] FASE 4: ENTERPRISE ($499 USD/mes)
-echo       Ecosistema Autonomo & Gobernanza Total (25 Modulos: Copilot Asistente IA,
-echo       Modelos Predictivos Logit/ARIMA, S&OP MRP II, Localizacion Fiscal
-echo       Multi-Pais y Auditoria Inmutable SHA-256)
+echo       Ecosistema Total, Big Data & IA (25 Modulos: BI y Reportes Financieros,
+echo       Big Data IoT en 96 Telares, Data Mining K-Means, Copilot Asistente IA,
+echo       Modelos Predictivos Logit/ARIMA, Localizacion Fiscal y Auditoria SHA-256)
 echo.
 echo   [5] RECORRIDO COMPLETO (Las 4 Fases Integradas de punta a punta)
 echo.
@@ -58,8 +58,8 @@ goto MENU
 :FASE2
 echo.
 echo =======================================================================
-echo Iniciando Capacitacion FASE 2: EXPRESS (17 Modulos)...
-echo Narracion literal segun Guia de Simulacion v4.0 (Logistica, ROP, CxC, CxP, Tesoreria 4 Pestanas/8 Tareas, Activos, Contabilidad, RRHH, Nomina, BPMN, Mining)
+echo Iniciando Capacitacion FASE 2: EXPRESS (15 Modulos)...
+echo Narracion literal segun Guia de Simulacion v4.0 (Logistica, ROP, CxC, CxP, Tesoreria 4 Pestanas/8 Tareas, Activos, Contabilidad, RRHH, Nomina)
 echo =======================================================================
 node demo_por_fases.js --fase=2
 pause
@@ -68,8 +68,8 @@ goto MENU
 :FASE3
 echo.
 echo =======================================================================
-echo Iniciando Capacitacion FASE 3: ADVANCED (22 Modulos)...
-echo Narracion literal segun Guia de Simulacion v4.0 (Reportes NIF/IFRS, Dashboards, Cubo OLAP, IoT 96 Telares, Data Mining K-Means)
+echo Iniciando Capacitacion FASE 3: ADVANCED (20 Modulos)...
+echo Narracion literal segun Guia de Simulacion v4.0 (Process Suite BPMN, Process Mining, Dashboards, Cubo OLAP, Planeacion S&OP)
 echo =======================================================================
 node demo_por_fases.js --fase=3
 pause
@@ -79,7 +79,7 @@ goto MENU
 echo.
 echo =======================================================================
 echo Iniciando Capacitacion FASE 4: ENTERPRISE (25 Modulos)...
-echo Narracion literal segun Guia de Simulacion v4.0 (Copilot IA, Modelos Predictivos Logit/ARIMA, S&OP MRP II, Gobernanza Multi-Pais y Auditoria SHA-256)
+echo Narracion literal segun Guia de Simulacion v4.0 (BI Reportes NIF, Big Data IoT, Data Mining, Copilot IA, Modelos Predictivos, Localizacion Fiscal y Auditoria SHA-256)
 echo =======================================================================
 node demo_por_fases.js --fase=4
 pause

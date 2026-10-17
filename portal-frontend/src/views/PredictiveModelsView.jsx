@@ -35,12 +35,12 @@ export default function PredictiveModelsView() {
       ]
     },
     prod_defect: {
-      title: 'Detección de Defectos Críticos en Tejido / Producción',
-      target: 'Probabilidad de Falla de Resistencia / Rechazo de Lote',
+      title: 'Detección de Defectos Críticos en Fabricación / Producción',
+      target: 'Probabilidad de Falla de Tolerancia / Rechazo de Lote',
       intercept: -3.20,
       factors: [
-        { id: 'p1', name: 'Humedad relativa en nave < 45%', beta: 1.45, or: 4.26, icLow: 2.80, icHigh: 6.48, pValue: '< 0.001', type: 'Riesgo Crítico' },
-        { id: 'p2', name: 'Velocidad de telar > 850 RPM', beta: 0.88, or: 2.41, icLow: 1.55, icHigh: 3.75, pValue: '0.001', type: 'Riesgo Alto' },
+        { id: 'p1', name: 'Condiciones ambientales fuera de rango (< 45% HR / T°)', beta: 1.45, or: 4.26, icLow: 2.80, icHigh: 6.48, pValue: '< 0.001', type: 'Riesgo Crítico' },
+        { id: 'p2', name: 'Velocidad de máquina por encima de tolerancia', beta: 0.88, or: 2.41, icLow: 1.55, icHigh: 3.75, pValue: '0.001', type: 'Riesgo Alto' },
         { id: 'p3', name: 'Materia prima de proveedor Lote B', beta: 0.72, or: 2.05, icLow: 1.28, icHigh: 3.28, pValue: '0.004', type: 'Riesgo Moderado' },
         { id: 'p4', name: 'Mantenimiento preventivo en < 15 días', beta: -1.30, or: 0.27, icLow: 0.16, icHigh: 0.46, pValue: '< 0.001', type: 'Factor Protector' },
         { id: 'p5', name: 'Operario certificado nivel Senior', beta: -0.92, or: 0.40, icLow: 0.23, icHigh: 0.69, pValue: '0.006', type: 'Factor Protector' }

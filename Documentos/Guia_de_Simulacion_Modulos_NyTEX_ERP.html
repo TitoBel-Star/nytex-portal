@@ -252,9 +252,9 @@
 <p class="doc-text">El Workspace unificado permite filtrar y visualizar los módulos correspondientes a cada fase de transformación:</p>
 <ul class="custom-list">
 <li><strong>Fase 1: Starter (7 Módulos):</strong> [1] Ventas, [2] CRM, [3] Inventario, [4] Compras, [5] Producción, [6] Directorio de Business Partners, [17] WMS.</li>
-<li><strong>Fase 2: Express (+10 = 17 Módulos):</strong> Starter + [7] Logística y Distribución, [8] CxC, [9] CxP, [10] Tesorería, Cajas y Controles Internos, [11] Activos Fijos, [12] Contabilidad Central, [13] RRHH, [14] Nómina, [15] Synex Process Suite (BPMN), [16] Minería de Procesos.</li>
-<li><strong>Fase 3: Advanced (+5 = 22 Módulos):</strong> Express + [18] BI y Reportes Financieros NIF/IFRS, [19] Dashboards Ejecutivos, [20] BI Cubo OLAP HyperCube, [21] Big Data e IoT Industrial, [22] Minería de Datos y Machine Learning.</li>
-<li><strong>Fase 4: Enterprise (+3 = 25 Módulos):</strong> Advanced + [23] Asistente Cognitivo IA Copilot, [24] Modelos Predictivos y Riesgo Crediticio (Logit/ARIMA), [25] Planeación S&OP / MRP II.</li>
+<li><strong>Fase 2: Express (+8 = 15 Módulos):</strong> Starter + [7] Logística y Distribución, [8] CxC, [9] CxP, [10] Tesorería, Cajas y Controles Internos, [11] Activos Fijos, [12] Contabilidad Central, [13] RRHH, [14] Nómina.</li>
+<li><strong>Fase 3: Advanced (+5 = 20 Módulos):</strong> Express + [15] NyTEX Process Suite (BPMN), [16] NyTEX Process Mining, [19] NyTEX Dashboards Ejecutivos, [20] BI Cubo OLAP HyperCube, [25] Planeación S&OP / MRP II.</li>
+<li><strong>Fase 4: Enterprise (+5 = 25 Módulos):</strong> Advanced + [18] NyTEX BI y Reportes Financieros NIF/IFRS, [21] NyTEX Big Data e IoT Industrial, [22] Minería de Datos y Machine Learning, [23] Asistente Cognitivo IA Copilot, [24] Modelos Predictivos y Riesgo Crediticio (Logit/ARIMA).</li>
 </ul>
 <h3 class="module-title">0.3 Flujo de Contratación y Activación Instantánea en la Nube</h3>
 <ol class="task-steps">
@@ -1317,9 +1317,9 @@
 <div class="table-responsive"><table class="data-table">
 <thead><tr><th>Circuito</th><th>Ruta</th><th>Módulos Integrados en el Flujo</th></tr></thead><tbody>
 <tr><td><strong>Circuito Fase 1 (Starter)</strong></td><td><code>/app/circuito-fase1</code></td><td>[1] Ventas ➔ [3] Inventario ➔ [4] Compras ➔ [5] Producción ➔ [6] Partners ➔ [17] WMS</td></tr>
-<tr><td><strong>Circuito Fase 2 (Express)</strong></td><td><code>/app/circuito-fase2</code></td><td>Starter + [7] Logística, [8] CxC, [9] CxP, [10] Tesorería & Cajas, [11] Activos Fijos, [12] Contabilidad, [13] RRHH, [14] Nómina, [15] Process Suite BPMN, [16] Process Mining</td></tr>
-<tr><td><strong>Circuito Fase 3 (Advanced)</strong></td><td><code>/app/circuito-fase3</code></td><td>Express + [18] BI Reportes, [19] Dashboards, [20] BI Cubo OLAP, [21] Big Data IoT, [22] Data Mining</td></tr>
-<tr><td><strong>Circuito Fase 4 (Enterprise)</strong></td><td><code>/app/circuito-fase4</code></td><td>Todos los 25 Módulos completos con IA Copilot [23], Modelos Predictivos [24], Planeación S&OP [25] y Configuración Fiscal [26]</td></tr>
+<tr><td><strong>Circuito Fase 2 (Express)</strong></td><td><code>/app/circuito-fase2</code></td><td>Starter + [7] Logística, [8] CxC, [9] CxP, [10] Tesorería & Cajas, [11] Activos Fijos, [12] Contabilidad, [13] RRHH, [14] Nómina</td></tr>
+<tr><td><strong>Circuito Fase 3 (Advanced)</strong></td><td><code>/app/circuito-fase3</code></td><td>Express + [15] Process Suite BPMN, [16] Process Mining, [19] Dashboards, [20] BI Cubo OLAP, [25] Planeación S&OP</td></tr>
+<tr><td><strong>Circuito Fase 4 (Enterprise)</strong></td><td><code>/app/circuito-fase4</code></td><td>Todos los 25 Módulos completos con BI Reportes [18], Big Data [21], Data Mining [22], IA Copilot [23], Modelos Predictivos [24] y Configuración Fiscal [26]</td></tr>
 </tbody></table></div>
 <h3 class="module-title">Tarea de Simulación en los Circuitos de Fase:</h3>
 <ol class="task-steps">
@@ -1332,7 +1332,7 @@
 <ul class="custom-list">
 <li><strong>Ruta de Acceso:</strong> <code>https://nytex-erp-portal.onrender.com/app/workspace</code> (o local <code>http://localhost:5173/app/workspace</code>).</li>
 <li><strong>Ventaja Operativa:</strong> Permite al usuario u operador alternar libremente entre los 25 módulos a través de una barra de pestañas superior persistente sin necesidad de abrir múltiples pestañas del navegador ni perder el contexto de trabajo.</li>
-<li><strong>Selector de Fase:</strong> Filtra la visualización para mostrar solo los módulos contratados (Fase 1: 7 módulos, Fase 2: 17 módulos, Fase 3: 22 módulos, Fase 4: 25 módulos).</li>
+<li><strong>Selector de Fase:</strong> Filtra la visualización para mostrar solo los módulos contratados (Fase 1: 7 módulos, Fase 2: 15 módulos, Fase 3: 20 módulos, Fase 4: 25 módulos).</li>
 </ul>
 
   <div class="doc-footer">

@@ -64,7 +64,7 @@ export default function CircuitoFase4View() {
                   Circuito 4 • Paquete Comercial
                 </span>
                 <span className="bg-emerald-500/20 text-emerald-400 text-xs px-2.5 py-1 rounded-full font-bold border border-emerald-500/30">
-                  ⭐ 26 de 26 Módulos (100% Ecosistema)
+                  ⭐ 25 de 25 Módulos (100% Ecosistema)
                 </span>
               </div>
               <h1 className="text-3xl lg:text-4xl font-black tracking-tight">
@@ -84,7 +84,7 @@ export default function CircuitoFase4View() {
                 </div>
                 <div>
                   <span className="text-purple-300 block uppercase font-bold text-[10px]">Ecosistema</span>
-                  <strong className="text-xl text-emerald-400 font-black">26 Módulos (Totalidad)</strong>
+                  <strong className="text-xl text-emerald-400 font-black">25 Módulos (Totalidad)</strong>
                 </div>
               </div>
             </div>
@@ -178,9 +178,9 @@ export default function CircuitoFase4View() {
             </div>
 
             <div className="bg-slate-950 p-4 rounded-xl border border-slate-800">
-              <span className="text-[10px] font-black uppercase text-amber-400">Gobernanza</span>
-              <h4 className="font-bold text-white text-sm mt-1">[16] Process Mining</h4>
-              <p className="text-xs text-slate-400 mt-1">Grafos DFG para identificar cuellos de botella reales entre el almacén y el transporte.</p>
+              <span className="text-[10px] font-black uppercase text-amber-400">Big Data & IoT</span>
+              <h4 className="font-bold text-white text-sm mt-1">[21] Big Data</h4>
+              <p className="text-xs text-slate-400 mt-1">Ingesta masiva de telemetría de sensores industriales y operacionales, Data Lake columnar y analítica ejecutiva.</p>
             </div>
 
             <div className="bg-slate-950 p-4 rounded-xl border border-slate-800">
@@ -191,10 +191,10 @@ export default function CircuitoFase4View() {
           </div>
         </div>
 
-        {/* Los 26 Módulos Completos */}
+        {/* Los 25 Módulos Completos */}
         <div>
           <div className="flex justify-between items-center mb-3">
-            <h3 className="font-extrabold text-white text-lg">Catálogo Total del Ecosistema (26 de 26 Módulos)</h3>
+            <h3 className="font-extrabold text-white text-lg">Catálogo Total del Ecosistema (25 de 25 Módulos)</h3>
             <span className="text-xs font-bold text-purple-400 bg-purple-950/60 border border-purple-800 px-3 py-1 rounded-full">
               Todo Incluido en Enterprise
             </span>
@@ -202,31 +202,37 @@ export default function CircuitoFase4View() {
 
           <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-2.5">
             {[
+              // FASE 1: STARTER (6)
               { id: 'ventas', name: '[1] Ventas' },
-              { id: 'crm', name: '[2] CRM' },
               { id: 'inventario', name: '[3] Inventario' },
               { id: 'compras', name: '[4] Compras' },
-              { id: 'produccion', name: '[5] Producción' },
-              { id: 'businesspartners', name: '[6] Partners' },
-              { id: 'logistica', name: '[7] Logística' },
               { id: 'cxc', name: '[8] CxC' },
               { id: 'cxp', name: '[9] CxP' },
-              { id: 'tesoreria', name: '[10] Tesorería' },
-              { id: 'activosfijos', name: '[11] Activos Fijos' },
               { id: 'contabilidad', name: '[12] Contabilidad' },
+
+              // FASE 2: EXPRESS (8)
+              { id: 'crm', name: '[2] CRM' },
+              { id: 'rop', name: '[4.1] ROP Inteligente' },
+              { id: 'produccion', name: '[5] Producción' },
+              { id: 'logistica', name: '[7] Logística' },
+              { id: 'tesoreria', name: '[10] Tesorería' },
               { id: 'rrhh', name: '[13] RRHH' },
               { id: 'nomina', name: '[14] Nómina' },
+              { id: 'wms', name: '[17] WMS' },
+
+              // FASE 3: ADVANCED (5)
               { id: 'processsuite', name: '[15] Process Suite' },
               { id: 'processmining', name: '[16] Process Mining' },
-              { id: 'wms', name: '[17] WMS' },
-              { id: 'biyreportes', name: '[18] Reportes' },
               { id: 'dashboards', name: '[19] Dashboards' },
-              { id: 'bi', name: '[20] BI Cubo' },
+              { id: 'bi', name: '[20] BI Cubo OLAP' },
+              { id: 'planeacion', name: '[25] Planeación S&OP' },
+
+              // FASE 4: ENTERPRISE (6)
               { id: 'bigdata', name: '[21] Big Data' },
               { id: 'mineriadatos', name: '[22] Minería' },
               { id: 'ia', name: '[23] IA Copilot' },
               { id: 'predictivos', name: '[24] Predictivos' },
-              { id: 'planeacion', name: '[25] Planeación' },
+              { id: 'businesspartners', name: '[6] Partners' },
               { id: 'configuracion', name: '[26] Configuración' }
             ].map(m => (
               <Link

@@ -8,31 +8,38 @@ import NytexVideoCard from './NytexVideoCard';
 import ComoTrabajamosConUsted from './ComoTrabajamosConUsted';
 
 const modulesList = [
+  // FASE 1: STARTER
   { id: 'Ventas', name: 'NyTEX Ventas', description: 'Gestión de ventas y facturación.' },
-  { id: 'CRM', name: 'NyTEX CRM', description: 'Gestión de relaciones con los clientes.' },
   { id: 'Inventario', name: 'NyTEX Inventario', description: 'Control de stock y almacén.' },
   { id: 'Compras', name: 'NyTEX Compras', description: 'Gestión de proveedores y compras.' },
-  { id: 'Rop', name: 'NyTEX Reabastecimiento ROP Inteligente', description: 'Cálculo dinámico de punto de reorden (ROP), stock de seguridad y control de pedidos.' },
-  { id: 'Produccion', name: 'NyTEX Producción', description: 'Control de procesos de manufactura.' },
   { id: 'Contabilidad', name: 'NyTEX Contabilidad', description: 'Gestión contable financiera.' },
   { id: 'CxC', name: 'NyTEX Cuentas por Cobrar (CxC)', description: 'Gestión de cuentas por cobrar.' },
   { id: 'CxP', name: 'NyTEX Cuentas por Pagar (CxP)', description: 'Gestión de cuentas por pagar.' },
+
+  // FASE 2: EXPRESS
   { id: 'Tesoreria', name: 'NyTEX Tesorería', description: 'Control de flujo de caja y bancos.' },
+  { id: 'CRM', name: 'NyTEX CRM', description: 'Gestión de relaciones con los clientes.' },
+  { id: 'Rop', name: 'NyTEX Reabastecimiento ROP Inteligente', description: 'Cálculo dinámico de punto de reorden (ROP), stock de seguridad y control de pedidos.' },
+  { id: 'WMS', name: 'NyTEX WMS', description: 'Racks, picking RF y control FEFO.' },
   { id: 'Logistica', name: 'NyTEX Logística', description: 'Gestión de despachos y distribución.' },
+  { id: 'Produccion', name: 'NyTEX Producción', description: 'Control de procesos de manufactura.' },
   { id: 'RRHH', name: 'NyTEX RRHH', description: 'Gestión de recursos humanos.' },
   { id: 'Nomina', name: 'NyTEX Nómina', description: 'Cálculo y pago de planillas.' },
+
+  // FASE 3: ADVANCED
   { id: 'ProcessSuite', name: 'NyTEX Process Suite', description: 'Reglas de negocio y flujos automatizados.' },
   { id: 'ProcessMining', name: 'NyTEX Process Mining', description: 'Auditoría de logs y cuellos de botella.' },
-  { id: 'BusinessPartners', name: 'NyTEX Business Partners', description: 'Ficha única de clientes y proveedores.' },
-  { id: 'BIyReportes', name: 'NyTEX BI y Reportes', description: 'Inteligencia de negocios y analítica.' },
-  { id: 'Configuracion', name: 'NyTEX Configuración', description: 'Seguridad RBAC, multi-empresa y APIs.' },
-  { id: 'WMS', name: 'NyTEX WMS', description: 'Racks, picking RF y control FEFO.' },
   { id: 'Dashboards', name: 'NyTEX Dashboards Operativos', description: 'Visualización de métricas en tiempo real.' },
+  { id: 'BIyReportes', name: 'NyTEX BI y Reportes (Cubo OLAP)', description: 'Inteligencia de negocios y analítica multidimensional.' },
+  { id: 'Planeacion', name: 'NyTEX Planeación', description: 'Planificación S&OP y presupuestos.' },
+
+  // FASE 4: ENTERPRISE
   { id: 'BigData', name: 'NyTEX Big Data', description: 'Procesamiento de grandes volúmenes de datos.' },
   { id: 'MineriaDatos', name: 'NyTEX Minería de Datos', description: 'Descubrimiento de patrones y minería masiva.' },
   { id: 'IA', name: 'NyTEX IA', description: 'Inteligencia artificial aplicada a negocios.' },
   { id: 'Predictivos', name: 'NyTEX Modelos Predictivos', description: 'Series de tiempo y proyecciones a futuro.' },
-  { id: 'Planeacion', name: 'NyTEX Planeación', description: 'Planificación S&OP y presupuestos.' }
+  { id: 'BusinessPartners', name: 'NyTEX Business Partners', description: 'Ficha única de clientes y proveedores.' },
+  { id: 'Configuracion', name: 'NyTEX Configuración', description: 'Seguridad RBAC, multi-empresa y APIs.' }
 ];
 
 const phases = [
@@ -40,9 +47,9 @@ const phases = [
     id: 1,
     name: 'Fase 1: NyTEX Starter',
     subtitle: 'Control Transaccional',
-    moduleCount: '7 MÓDULOS:',
-    modulesText: 'Ventas, Inventario, Compras, Contabilidad, CxC, CxP, Tesorería',
-    modulesArray: ['Ventas', 'Inventario', 'Compras', 'Contabilidad', 'CxC', 'CxP', 'Tesoreria'],
+    moduleCount: '6 MÓDULOS:',
+    modulesText: 'Ventas, Inventario, Compras, Contabilidad, CxC, CxP',
+    modulesArray: ['Ventas', 'Inventario', 'Compras', 'Contabilidad', 'CxC', 'CxP'],
     imp: '$0 USD',
     lic: '$35 USD / mes'
   },
@@ -50,9 +57,9 @@ const phases = [
     id: 2,
     name: 'Fase 2: NyTEX Express',
     subtitle: 'Productividad y Flujo',
-    moduleCount: '17 MÓDULOS:',
-    modulesText: 'Incluye Fase 1 + CRM, ROP Inteligente, WMS, Logística, Producción, RRHH, Nómina, Dashboards, Process Suite, Process Mining',
-    modulesArray: ['Ventas', 'Inventario', 'Compras', 'Contabilidad', 'CxC', 'CxP', 'Tesoreria', 'CRM', 'Rop', 'WMS', 'Logistica', 'Produccion', 'RRHH', 'Nomina', 'Dashboards', 'ProcessSuite', 'ProcessMining'],
+    moduleCount: '14 MÓDULOS:',
+    modulesText: 'Incluye Fase 1 + Tesorería & Cajas, CRM, ROP Inteligente, WMS, Logística, Producción, RRHH, Nómina',
+    modulesArray: ['Ventas', 'Inventario', 'Compras', 'Contabilidad', 'CxC', 'CxP', 'Tesoreria', 'CRM', 'Rop', 'WMS', 'Logistica', 'Produccion', 'RRHH', 'Nomina'],
     imp: '$1,500 USD',
     lic: '$149 USD / mes'
   },
@@ -60,9 +67,9 @@ const phases = [
     id: 3,
     name: 'Fase 3: NyTEX Advanced',
     subtitle: 'Inteligencia y Rentabilidad',
-    moduleCount: '20 MÓDULOS:',
-    modulesText: 'Incluye Fase 2 + BI y Reportes, Big Data, Planeación',
-    modulesArray: ['Ventas', 'Inventario', 'Compras', 'Contabilidad', 'CxC', 'CxP', 'Tesoreria', 'CRM', 'Rop', 'WMS', 'Logistica', 'Produccion', 'RRHH', 'Nomina', 'Dashboards', 'ProcessSuite', 'ProcessMining', 'BIyReportes', 'BigData', 'Planeacion'],
+    moduleCount: '19 MÓDULOS:',
+    modulesText: 'Incluye Fase 2 + Process Suite, Process Mining, Dashboards, BI Cubo OLAP, Planeación',
+    modulesArray: ['Ventas', 'Inventario', 'Compras', 'Contabilidad', 'CxC', 'CxP', 'Tesoreria', 'CRM', 'Rop', 'WMS', 'Logistica', 'Produccion', 'RRHH', 'Nomina', 'ProcessSuite', 'ProcessMining', 'Dashboards', 'BIyReportes', 'Planeacion'],
     imp: '$4,500 USD',
     lic: '$299 USD / mes'
   },
@@ -71,7 +78,7 @@ const phases = [
     name: 'Fase 4: NyTEX Enterprise',
     subtitle: 'Anticipación y Escala',
     moduleCount: '25 MÓDULOS:',
-    modulesText: 'Todo el Ecosistema: Fase 3 + IA, Modelos Predictivos, Minería de Datos, Business Partners, Configuración',
+    modulesText: 'Todo el Ecosistema: Fase 3 + Big Data, IA, Modelos Predictivos, Minería de Datos, Business Partners, Configuración',
     modulesArray: modulesList.map(m => m.id),
     imp: 'Cotización a Medida',
     lic: '$499 USD / mes'
@@ -426,9 +433,9 @@ export default function Dashboard() {
           <div className="mt-5 pt-4 border-t border-white/10 flex flex-wrap items-center gap-2 text-xs">
             <span className="text-slate-300 font-semibold mr-1">Abrir Workspace por Fase:</span>
             {[
-              { id: 1, name: 'Fase 1: Starter (7 Módulos)', color: 'blue' },
-              { id: 2, name: 'Fase 2: Express (17 Módulos)', color: 'amber' },
-              { id: 3, name: 'Fase 3: Advanced (20 Módulos)', color: 'cyan' },
+              { id: 1, name: 'Fase 1: Starter (6 Módulos)', color: 'blue' },
+              { id: 2, name: 'Fase 2: Express (14 Módulos)', color: 'amber' },
+              { id: 3, name: 'Fase 3: Advanced (19 Módulos)', color: 'cyan' },
               { id: 4, name: 'Fase 4: Enterprise (25 Módulos)', color: 'purple' },
             ].map(p => {
               const isLocked = isClient && p.id > contractedPhase;
@@ -498,9 +505,9 @@ export default function Dashboard() {
               </div>
 
               <div className="mt-4 pt-3 border-t border-blue-100">
-                <span className="text-[10px] font-bold text-slate-500 block mb-1.5">7 Módulos Núcleo:</span>
+                <span className="text-[10px] font-bold text-slate-500 block mb-1.5">6 Módulos Núcleo:</span>
                 <div className="flex flex-wrap gap-1 mb-3">
-                  {['Ventas', 'Inventario', 'Compras', 'CxC', 'CxP', 'Tesoreria', 'Contabilidad'].map(m => (
+                  {['Ventas', 'Inventario', 'Compras', 'CxC', 'CxP', 'Contabilidad'].map(m => (
                     <span key={m} className="text-[9px] font-bold bg-white text-blue-900 border border-blue-200 px-1.5 py-0.5 rounded">
                       {m}
                     </span>
@@ -511,7 +518,7 @@ export default function Dashboard() {
                     to="/app/workspace?phase=1"
                     className="w-full text-center py-2 px-3 rounded-lg text-xs font-black bg-blue-600 hover:bg-blue-700 text-white shadow transition-all flex items-center justify-center gap-1.5"
                   >
-                    <span>🚀</span> Abrir Workspace (7 Módulos)
+                    <span>🚀</span> Abrir Workspace (6 Módulos)
                   </Link>
                   <Link 
                     to="/app/circuito-fase1"
@@ -536,14 +543,14 @@ export default function Dashboard() {
                   Circuito Express: Manufactura & Nómina
                 </h4>
                 <p className="text-xs text-gray-600 mt-1.5 leading-relaxed">
-                  Añade órdenes en telares circulares Mayer & Cie, surtido con código de barras en WMS, logística con camiones, nómina quincenal con horas extra y BPMN.
+                  Añade órdenes de producción y manufactura, control de recetas/BOM, surtido con código de barras en WMS, logística con despachos y nómina quincenal con incidencias.
                 </p>
               </div>
 
               <div className="mt-4 pt-3 border-t border-amber-100">
-                <span className="text-[10px] font-bold text-slate-500 block mb-1.5">17 Módulos (Starter + 10):</span>
+                <span className="text-[10px] font-bold text-slate-500 block mb-1.5">14 Módulos (Starter 6 + 8):</span>
                 <div className="flex flex-wrap gap-1 mb-3">
-                  {['CRM', 'ROP Inteligente', 'WMS', 'Logistica', 'Produccion', 'RRHH', 'Nomina', 'Dashboards', 'ProcessSuite', 'ProcessMining'].map(m => (
+                  {['Tesoreria', 'CRM', 'ROP Inteligente', 'WMS', 'Logistica', 'Produccion', 'RRHH', 'Nomina'].map(m => (
                     <span key={m} className="text-[9px] font-bold bg-white text-amber-900 border border-amber-200 px-1.5 py-0.5 rounded">
                       +{m}
                     </span>
@@ -556,14 +563,14 @@ export default function Dashboard() {
                       onClick={() => handleContratar(2)}
                       className="w-full text-center py-2 px-3 rounded-lg text-xs font-black bg-slate-800 hover:bg-amber-600 text-amber-200 hover:text-white border border-amber-500/40 shadow transition-all flex items-center justify-center gap-1.5"
                     >
-                      <span>🔒</span> Solicitar Upgrade a Fase 2 (17 Módulos)
+                      <span>🔒</span> Solicitar Upgrade a Fase 2 (14 Módulos)
                     </button>
                   ) : (
                     <Link 
                       to="/app/workspace?phase=2"
                       className="w-full text-center py-2 px-3 rounded-lg text-xs font-black bg-amber-600 hover:bg-amber-700 text-white shadow transition-all flex items-center justify-center gap-1.5"
                     >
-                      <span>🚀</span> Abrir Workspace (17 Módulos)
+                      <span>🚀</span> Abrir Workspace (14 Módulos)
                     </Link>
                   )}
                   <Link 
@@ -586,17 +593,17 @@ export default function Dashboard() {
                   <span className="text-[10px] text-gray-500 font-bold">Imp. $4,500 USD</span>
                 </div>
                 <h4 className="font-extrabold text-base text-gray-900">
-                  Circuito Advanced: Inteligencia & IoT
+                  Circuito Advanced: Procesos, Dashboards & S&OP
                 </h4>
                 <p className="text-xs text-gray-600 mt-1.5 leading-relaxed">
-                  Cubo OLAP multidimensional de rentabilidad, Data Lake con 96 sensores IoT en telares, planeación S&OP / MRP II y reportes fiscales auditados NIF/Tributarios.
+                  Orquestación BPMN con Process Suite, auditoría de cuellos de botella con Process Mining, Dashboards en tiempo real, BI Cubo OLAP y planeación de demanda S&OP.
                 </p>
               </div>
 
               <div className="mt-4 pt-3 border-t border-cyan-100">
-                <span className="text-[10px] font-bold text-slate-500 block mb-1.5">20 Módulos (Express + 3):</span>
+                <span className="text-[10px] font-bold text-slate-500 block mb-1.5">19 Módulos (Express + 5):</span>
                 <div className="flex flex-wrap gap-1 mb-3">
-                  {['BI Reportes', 'BigData IoT', 'Planeacion'].map(m => (
+                  {['Process Suite', 'Process Mining', 'Dashboards', 'BI Cubo OLAP', 'Planeacion'].map(m => (
                     <span key={m} className="text-[9px] font-bold bg-white text-cyan-900 border border-cyan-200 px-1.5 py-0.5 rounded">
                       +{m}
                     </span>
@@ -609,14 +616,14 @@ export default function Dashboard() {
                       onClick={() => handleContratar(3)}
                       className="w-full text-center py-2 px-3 rounded-lg text-xs font-black bg-slate-800 hover:bg-cyan-600 text-cyan-200 hover:text-white border border-cyan-500/40 shadow transition-all flex items-center justify-center gap-1.5"
                     >
-                      <span>🔒</span> Solicitar Upgrade a Fase 3 (20 Módulos)
+                      <span>🔒</span> Solicitar Upgrade a Fase 3 (19 Módulos)
                     </button>
                   ) : (
                     <Link 
                       to="/app/workspace?phase=3"
                       className="w-full text-center py-2 px-3 rounded-lg text-xs font-black bg-cyan-600 hover:bg-cyan-700 text-white shadow transition-all flex items-center justify-center gap-1.5"
                     >
-                      <span>🚀</span> Abrir Workspace (20 Módulos)
+                      <span>🚀</span> Abrir Workspace (19 Módulos)
                     </Link>
                   )}
                   <Link 
@@ -642,14 +649,14 @@ export default function Dashboard() {
                   Circuito Enterprise: IA Autónoma 360°
                 </h4>
                 <p className="text-xs text-gray-600 mt-1.5 leading-relaxed">
-                  Ecosistema total autónomo: Asistente IA cognitivo con SQLite, pronósticos ARIMA, clustering K-Means, minería DFG y gobernanza fiscal inmutable multi-país (DTE / SAT / SAR / DGI).
+                  Ecosistema total autónomo: BI y Reportes, Big Data IoT, asistente IA cognitivo con SQLite, pronósticos ARIMA, clustering K-Means y gobernanza fiscal inmutable (DTE / SAT / SAR / DGI).
                 </p>
               </div>
 
               <div className="mt-4 pt-3 border-t border-purple-100">
                 <span className="text-[10px] font-bold text-slate-500 block mb-1.5">Los 25 Módulos Completos:</span>
                 <div className="flex flex-wrap gap-1 mb-3">
-                  {['IA Copilot', 'Predictivos', 'MineriaDatos', 'Partners', 'Configuracion'].map(m => (
+                  {['BigData IoT', 'Minería K-Means', 'IA Copilot', 'Predictivos', 'Partners', 'Configuración'].map(m => (
                     <span key={m} className="text-[9px] font-bold bg-white text-purple-900 border border-purple-200 px-1.5 py-0.5 rounded">
                       +{m}
                     </span>

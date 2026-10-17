@@ -128,7 +128,7 @@ export default function DashboardsView() {
           {/* Manufactura */}
           <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm space-y-2">
             <div className="flex justify-between items-center text-xs text-gray-500 font-bold uppercase">
-              <span>Activos & Telar</span>
+              <span>Activos & Planta</span>
               <span className="text-purple-600 bg-purple-50 px-2 py-0.5 rounded">Planta</span>
             </div>
             <div className="text-2xl font-black font-mono text-purple-900">
@@ -218,25 +218,25 @@ export default function DashboardsView() {
             </button>
           </div>
 
-          {/* Panel 3: Eficiencia y OEE de Manufactura Textil */}
+          {/* Panel 3: Eficiencia y OEE de Manufactura y Producción */}
           <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-4">
             <div className="flex justify-between items-center border-b pb-2">
               <h4 className="font-bold text-gray-900 text-sm flex items-center gap-2">
-                <span>⚙️</span> OEE Fabril & Telares Circulares
+                <span>⚙️</span> OEE Fabril & Líneas de Producción
               </h4>
               <span className="text-xs text-purple-600 font-bold">Planta 1</span>
             </div>
             <div className="space-y-3">
               <div className="flex justify-between items-center">
-                <span className="text-xs text-gray-600">Disponibilidad Telar Mayer & Cie:</span>
+                <span className="text-xs text-gray-600">Disponibilidad de Maquinaria:</span>
                 <span className="font-bold text-xs font-mono text-purple-900">92.4%</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-xs text-gray-600">Rendimiento a 850 RPM:</span>
+                <span className="text-xs text-gray-600">Rendimiento Operativo:</span>
                 <span className="font-bold text-xs font-mono text-purple-900">88.1%</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-xs text-gray-600">Calidad Textil (Tasa 1ª Calidad):</span>
+                <span className="text-xs text-gray-600">Tasa de Primera Calidad:</span>
                 <span className="font-bold text-xs font-mono text-emerald-700">97.8%</span>
               </div>
               <div className="p-2.5 rounded-xl bg-purple-50 border border-purple-100 flex justify-between items-center">

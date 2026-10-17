@@ -95,7 +95,7 @@ export default function CircuitoProduccionView() {
             </div>
             <div>
               <span className="text-xs text-emerald-300 font-bold uppercase">3. Planta de Producción</span>
-              <div className="text-xl font-bold">{data?.metrics?.inProcessProduction || 0} OPs en Telar</div>
+              <div className="text-xl font-bold">{data?.metrics?.inProcessProduction || 0} OPs en Planta</div>
               <div className="text-xs text-emerald-200">Transformación activa</div>
             </div>
             <div>

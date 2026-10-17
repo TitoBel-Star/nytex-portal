@@ -9,9 +9,11 @@ echo         Ecosistema Total & Anticipacion IA (25 Modulos) - v4.0
 echo =======================================================================
 echo.
 echo  Modulos a demostrar de forma independiente y literal a la Guia v4.0:
+echo   - [18] BI y Reportes Financieros (NIF / IFRS, P&L, Balance y Flujo)
+echo   - [21] Big Data & Telemetria IoT Industrial (Sensores en 96 Telares)
+echo   - [22] Mineria de Datos & Machine Learning (Clustering K-Means Clientes)
 echo   - [23] Asistente Cognitivo IA Copilot (Consultas en Lenguaje Natural)
 echo   - [24] Modelos Predictivos & Riesgo Crediticio (Logit y Series ARIMA)
-echo   - [25] Planeacion de la Demanda & S&OP (MRP II y Explosion de Materiales)
 echo   - [26] Configuracion del Sistema, Localizacion Fiscal Multi-Pais
 echo          (DTE El Salvador, FEL Guatemala, SAR Honduras, etc.)
 echo          y Auditoria Inmutable (Audit Trail con Sellos Criptograficos)
