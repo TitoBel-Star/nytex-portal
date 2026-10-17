@@ -22,7 +22,7 @@ const TEMPLATES = {
 </bpmn:definitions>`
   },
   purchases: {
-    name: 'Aprobación de Órdenes de Compra (> $50,000 MXN)',
+    name: 'Aprobación de Órdenes de Compra Mayores (> $50,000 USD)',
     category: 'Compras & Abastecimiento',
     codePrefix: 'WF-COM',
     description: 'Flujo de autorización escalonada para adquisiciones de materia prima que superen el límite operativo estándar.',

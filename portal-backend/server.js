@@ -3872,7 +3872,6 @@ app.get('/api/circuit/gobernanza/summary', async (req, res) => {
       taxStatus: 'Cumplimiento Tributario Positivo (MH / SAT / DGT)',
       dataLakeVolume: `${dataLakeStats.dataLakeSizeGb} GB (${dataLakeStats.totalIngestedRecords.toLocaleString()} eventos IoT)`,
       auditTrailEvents: auditCount || 24,
-      cubeRevenueMxn: totalSales,
       cubeRevenueUsd: totalSales,
       treasuryLiquidity: totalLiquidity,
       ecosystemIntegrity: '100% (26 de 26 Módulos Enlazados)',

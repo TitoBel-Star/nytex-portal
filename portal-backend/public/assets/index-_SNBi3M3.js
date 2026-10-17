@@ -430,7 +430,7 @@ Portal: https://nytex-erp-portal.onrender.com/login`;navigator.clipboard.writeTe
       </bpmndi:BPMNShape>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
-</bpmn:definitions>`},purchases:{name:`Aprobación de Órdenes de Compra (> $50,000 MXN)`,category:`Compras & Abastecimiento`,codePrefix:`WF-COM`,description:`Flujo de autorización escalonada para adquisiciones de materia prima que superen el límite operativo estándar.`,slaHours:24,xml:`<?xml version="1.0" encoding="UTF-8"?>
+</bpmn:definitions>`},purchases:{name:`Aprobación de Órdenes de Compra Mayores (> $50,000 USD)`,category:`Compras & Abastecimiento`,codePrefix:`WF-COM`,description:`Flujo de autorización escalonada para adquisiciones de materia prima que superen el límite operativo estándar.`,slaHours:24,xml:`<?xml version="1.0" encoding="UTF-8"?>
 <bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" targetNamespace="http://bpmn.io/schema/bpmn" id="Definitions_PO">
   <bpmn:process id="Process_PO" isExecutable="true">
     <bpmn:startEvent id="Start_1" name="Necesidad de Compra">
