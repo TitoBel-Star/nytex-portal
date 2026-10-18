@@ -57,7 +57,7 @@ const PHASES_CONFIG = {
   2: {
     id: 2,
     name: 'Fase 2: NyTEX Express',
-    badge: 'Express (14 Módulos)',
+    badge: 'Express (15 Módulos)',
     price: '$149 USD/mes',
     imp: '$1,500 USD',
     color: 'amber',
@@ -68,6 +68,7 @@ const PHASES_CONFIG = {
       { id: 'compras', name: '[4] Compras', label: 'Compras', icon: '🛒' },
       { id: 'rop', name: '[4.1] ROP Inteligente', label: 'ROP Inteligente', icon: '📊' },
       { id: 'produccion', name: '[5] Producción', label: 'Producción', icon: '🏭' },
+      { id: 'businesspartners', name: '[6] Partners', label: 'Partners', icon: '🤝' },
       { id: 'logistica', name: '[7] Logística', label: 'Logística', icon: '🚚' },
       { id: 'cxc', name: '[8] CxC', label: 'CxC', icon: '📄' },
       { id: 'cxp', name: '[9] CxP', label: 'CxP', icon: '💳' },
@@ -81,7 +82,7 @@ const PHASES_CONFIG = {
   3: {
     id: 3,
     name: 'Fase 3: NyTEX Advanced',
-    badge: 'Advanced (19 Módulos)',
+    badge: 'Advanced (20 Módulos)',
     price: '$299 USD/mes',
     imp: '$4,500 USD',
     color: 'cyan',
@@ -92,6 +93,7 @@ const PHASES_CONFIG = {
       { id: 'compras', name: '[4] Compras', label: 'Compras', icon: '🛒' },
       { id: 'rop', name: '[4.1] ROP Inteligente', label: 'ROP Inteligente', icon: '📊' },
       { id: 'produccion', name: '[5] Producción', label: 'Producción', icon: '🏭' },
+      { id: 'businesspartners', name: '[6] Partners', label: 'Partners', icon: '🤝' },
       { id: 'logistica', name: '[7] Logística', label: 'Logística', icon: '🚚' },
       { id: 'cxc', name: '[8] CxC', label: 'CxC', icon: '📄' },
       { id: 'cxp', name: '[9] CxP', label: 'CxP', icon: '💳' },
@@ -123,10 +125,11 @@ const PHASES_CONFIG = {
       { id: 'cxp', name: '[9] CxP', label: 'CxP', icon: '💳' },
       { id: 'contabilidad', name: '[12] Contabilidad', label: 'Contabilidad', icon: '⚖️' },
 
-      // FASE 2: EXPRESS (8)
+      // FASE 2: EXPRESS (9)
       { id: 'crm', name: '[2] CRM', label: 'CRM', icon: '👥' },
       { id: 'rop', name: '[4.1] ROP Inteligente', label: 'ROP Inteligente', icon: '📊' },
       { id: 'produccion', name: '[5] Producción', label: 'Producción', icon: '🏭' },
+      { id: 'businesspartners', name: '[6] Partners', label: 'Partners', icon: '🤝' },
       { id: 'logistica', name: '[7] Logística', label: 'Logística', icon: '🚚' },
       { id: 'tesoreria', name: '[10] Finanzas & Tesorería', label: 'Tesorería & Cajas', icon: '🏦' },
       { id: 'rrhh', name: '[13] RRHH', label: 'RRHH', icon: '🧑‍💼' },
@@ -140,12 +143,11 @@ const PHASES_CONFIG = {
       { id: 'bi', name: '[20] BI Cubo', label: 'BI Cubo OLAP', icon: '🧊' },
       { id: 'planeacion', name: '[25] Planeación', label: 'Planeación S&OP', icon: '🗓️' },
 
-      // FASE 4: ENTERPRISE (6)
+      // FASE 4: ENTERPRISE (5)
       { id: 'bigdata', name: '[21] Big Data', label: 'Big Data IoT', icon: '📡' },
       { id: 'mineriadatos', name: '[22] Minería', label: 'Minería K-Means', icon: '🎯' },
       { id: 'ia', name: '[23] IA Copilot', label: 'IA Cognitiva', icon: '🧠' },
       { id: 'predictivos', name: '[24] Predictivos', label: 'Predictivos', icon: '🔮' },
-      { id: 'businesspartners', name: '[6] Partners', label: 'Partners', icon: '🤝' },
       { id: 'configuracion', name: '[26] Configuración', label: 'Configuración', icon: '⚙️' }
     ]
   }

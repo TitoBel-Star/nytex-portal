@@ -64,7 +64,7 @@ export default function CircuitoFase3View() {
                   Circuito 3 • Paquete Comercial
                 </span>
                 <span className="bg-white/20 text-white text-xs px-3 py-1 rounded-full font-bold">
-                  19 Módulos de Procesos, BI & S&OP
+                  20 Módulos de Procesos, BI & S&OP
                 </span>
               </div>
               <h1 className="text-3xl lg:text-4xl font-black tracking-tight">
@@ -84,7 +84,7 @@ export default function CircuitoFase3View() {
                 </div>
                 <div>
                   <span className="text-cyan-300 block uppercase font-bold text-[10px]">Cobertura Total</span>
-                  <strong className="text-xl text-emerald-400 font-black">19 Módulos (Express 14 + 5)</strong>
+                  <strong className="text-xl text-emerald-400 font-black">20 Módulos (Express 15 + 5)</strong>
                 </div>
               </div>
             </div>
@@ -206,7 +206,7 @@ export default function CircuitoFase3View() {
               { id: 'cxc', name: '[8] CxC' },
               { id: 'cxp', name: '[9] CxP' },
               { id: 'tesoreria', name: '[10] Tesorería' },
-              { id: 'activosfijos', name: '[11] Activos Fijos' },
+              { id: 'businesspartners', name: '[6] Business Partners' },
               { id: 'contabilidad', name: '[12] Contabilidad' },
               { id: 'rrhh', name: '[13] RRHH' },
               { id: 'nomina', name: '[14] Nómina' },

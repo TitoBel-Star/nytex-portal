@@ -18,6 +18,7 @@ const modulesList = [
 
   // FASE 2: EXPRESS
   { id: 'Tesoreria', name: 'NyTEX Tesorería', description: 'Control de flujo de caja y bancos.' },
+  { id: 'BusinessPartners', name: 'NyTEX Business Partners', description: 'Ficha única de clientes y proveedores.' },
   { id: 'CRM', name: 'NyTEX CRM', description: 'Gestión de relaciones con los clientes.' },
   { id: 'Rop', name: 'NyTEX Reabastecimiento ROP Inteligente', description: 'Cálculo dinámico de punto de reorden (ROP), stock de seguridad y control de pedidos.' },
   { id: 'WMS', name: 'NyTEX WMS', description: 'Racks, picking RF y control FEFO.' },
@@ -38,7 +39,6 @@ const modulesList = [
   { id: 'MineriaDatos', name: 'NyTEX Minería de Datos', description: 'Descubrimiento de patrones y minería masiva.' },
   { id: 'IA', name: 'NyTEX IA', description: 'Inteligencia artificial aplicada a negocios.' },
   { id: 'Predictivos', name: 'NyTEX Modelos Predictivos', description: 'Series de tiempo y proyecciones a futuro.' },
-  { id: 'BusinessPartners', name: 'NyTEX Business Partners', description: 'Ficha única de clientes y proveedores.' },
   { id: 'Configuracion', name: 'NyTEX Configuración', description: 'Seguridad RBAC, multi-empresa y APIs.' }
 ];
 
@@ -57,9 +57,9 @@ const phases = [
     id: 2,
     name: 'Fase 2: NyTEX Express',
     subtitle: 'Productividad y Flujo',
-    moduleCount: '14 MÓDULOS:',
-    modulesText: 'Incluye Fase 1 + Tesorería & Cajas, CRM, ROP Inteligente, WMS, Logística, Producción, RRHH, Nómina',
-    modulesArray: ['Ventas', 'Inventario', 'Compras', 'Contabilidad', 'CxC', 'CxP', 'Tesoreria', 'CRM', 'Rop', 'WMS', 'Logistica', 'Produccion', 'RRHH', 'Nomina'],
+    moduleCount: '15 MÓDULOS:',
+    modulesText: 'Incluye Fase 1 + Tesorería & Cajas, Business Partners, CRM, ROP Inteligente, WMS, Logística, Producción, RRHH, Nómina',
+    modulesArray: ['Ventas', 'Inventario', 'Compras', 'Contabilidad', 'CxC', 'CxP', 'Tesoreria', 'BusinessPartners', 'CRM', 'Rop', 'WMS', 'Logistica', 'Produccion', 'RRHH', 'Nomina'],
     imp: '$1,500 USD',
     lic: '$149 USD / mes'
   },
@@ -67,9 +67,9 @@ const phases = [
     id: 3,
     name: 'Fase 3: NyTEX Advanced',
     subtitle: 'Inteligencia y Rentabilidad',
-    moduleCount: '19 MÓDULOS:',
+    moduleCount: '20 MÓDULOS:',
     modulesText: 'Incluye Fase 2 + Process Suite, Process Mining, Dashboards, BI Cubo OLAP, Planeación',
-    modulesArray: ['Ventas', 'Inventario', 'Compras', 'Contabilidad', 'CxC', 'CxP', 'Tesoreria', 'CRM', 'Rop', 'WMS', 'Logistica', 'Produccion', 'RRHH', 'Nomina', 'ProcessSuite', 'ProcessMining', 'Dashboards', 'BIyReportes', 'Planeacion'],
+    modulesArray: ['Ventas', 'Inventario', 'Compras', 'Contabilidad', 'CxC', 'CxP', 'Tesoreria', 'BusinessPartners', 'CRM', 'Rop', 'WMS', 'Logistica', 'Produccion', 'RRHH', 'Nomina', 'ProcessSuite', 'ProcessMining', 'Dashboards', 'BIyReportes', 'Planeacion'],
     imp: '$4,500 USD',
     lic: '$299 USD / mes'
   },
@@ -78,7 +78,7 @@ const phases = [
     name: 'Fase 4: NyTEX Enterprise',
     subtitle: 'Anticipación y Escala',
     moduleCount: '25 MÓDULOS:',
-    modulesText: 'Todo el Ecosistema: Fase 3 + Big Data, IA, Modelos Predictivos, Minería de Datos, Business Partners, Configuración',
+    modulesText: 'Todo el Ecosistema: Fase 3 + Big Data, IA, Modelos Predictivos, Minería de Datos, Configuración',
     modulesArray: modulesList.map(m => m.id),
     imp: 'Cotización a Medida',
     lic: '$499 USD / mes'
@@ -434,8 +434,8 @@ export default function Dashboard() {
             <span className="text-slate-300 font-semibold mr-1">Abrir Workspace por Fase:</span>
             {[
               { id: 1, name: 'Fase 1: Starter (6 Módulos)', color: 'blue' },
-              { id: 2, name: 'Fase 2: Express (14 Módulos)', color: 'amber' },
-              { id: 3, name: 'Fase 3: Advanced (19 Módulos)', color: 'cyan' },
+              { id: 2, name: 'Fase 2: Express (15 Módulos)', color: 'amber' },
+              { id: 3, name: 'Fase 3: Advanced (20 Módulos)', color: 'cyan' },
               { id: 4, name: 'Fase 4: Enterprise (25 Módulos)', color: 'purple' },
             ].map(p => {
               const isLocked = isClient && p.id > contractedPhase;
@@ -548,9 +548,9 @@ export default function Dashboard() {
               </div>
 
               <div className="mt-4 pt-3 border-t border-amber-100">
-                <span className="text-[10px] font-bold text-slate-500 block mb-1.5">14 Módulos (Starter 6 + 8):</span>
+                <span className="text-[10px] font-bold text-slate-500 block mb-1.5">15 Módulos (Starter 6 + 9):</span>
                 <div className="flex flex-wrap gap-1 mb-3">
-                  {['Tesoreria', 'CRM', 'ROP Inteligente', 'WMS', 'Logistica', 'Produccion', 'RRHH', 'Nomina'].map(m => (
+                  {['Tesoreria', 'Business Partners', 'CRM', 'ROP Inteligente', 'WMS', 'Logistica', 'Produccion', 'RRHH', 'Nomina'].map(m => (
                     <span key={m} className="text-[9px] font-bold bg-white text-amber-900 border border-amber-200 px-1.5 py-0.5 rounded">
                       +{m}
                     </span>
@@ -563,14 +563,14 @@ export default function Dashboard() {
                       onClick={() => handleContratar(2)}
                       className="w-full text-center py-2 px-3 rounded-lg text-xs font-black bg-slate-800 hover:bg-amber-600 text-amber-200 hover:text-white border border-amber-500/40 shadow transition-all flex items-center justify-center gap-1.5"
                     >
-                      <span>🔒</span> Solicitar Upgrade a Fase 2 (14 Módulos)
+                      <span>🔒</span> Solicitar Upgrade a Fase 2 (15 Módulos)
                     </button>
                   ) : (
                     <Link 
                       to="/app/workspace?phase=2"
                       className="w-full text-center py-2 px-3 rounded-lg text-xs font-black bg-amber-600 hover:bg-amber-700 text-white shadow transition-all flex items-center justify-center gap-1.5"
                     >
-                      <span>🚀</span> Abrir Workspace (14 Módulos)
+                      <span>🚀</span> Abrir Workspace (15 Módulos)
                     </Link>
                   )}
                   <Link 
@@ -601,7 +601,7 @@ export default function Dashboard() {
               </div>
 
               <div className="mt-4 pt-3 border-t border-cyan-100">
-                <span className="text-[10px] font-bold text-slate-500 block mb-1.5">19 Módulos (Express + 5):</span>
+                <span className="text-[10px] font-bold text-slate-500 block mb-1.5">20 Módulos (Express + 5):</span>
                 <div className="flex flex-wrap gap-1 mb-3">
                   {['Process Suite', 'Process Mining', 'Dashboards', 'BI Cubo OLAP', 'Planeacion'].map(m => (
                     <span key={m} className="text-[9px] font-bold bg-white text-cyan-900 border border-cyan-200 px-1.5 py-0.5 rounded">
@@ -616,14 +616,14 @@ export default function Dashboard() {
                       onClick={() => handleContratar(3)}
                       className="w-full text-center py-2 px-3 rounded-lg text-xs font-black bg-slate-800 hover:bg-cyan-600 text-cyan-200 hover:text-white border border-cyan-500/40 shadow transition-all flex items-center justify-center gap-1.5"
                     >
-                      <span>🔒</span> Solicitar Upgrade a Fase 3 (19 Módulos)
+                      <span>🔒</span> Solicitar Upgrade a Fase 3 (20 Módulos)
                     </button>
                   ) : (
                     <Link 
                       to="/app/workspace?phase=3"
                       className="w-full text-center py-2 px-3 rounded-lg text-xs font-black bg-cyan-600 hover:bg-cyan-700 text-white shadow transition-all flex items-center justify-center gap-1.5"
                     >
-                      <span>🚀</span> Abrir Workspace (19 Módulos)
+                      <span>🚀</span> Abrir Workspace (20 Módulos)
                     </Link>
                   )}
                   <Link 
@@ -656,7 +656,7 @@ export default function Dashboard() {
               <div className="mt-4 pt-3 border-t border-purple-100">
                 <span className="text-[10px] font-bold text-slate-500 block mb-1.5">Los 25 Módulos Completos:</span>
                 <div className="flex flex-wrap gap-1 mb-3">
-                  {['BigData IoT', 'Minería K-Means', 'IA Copilot', 'Predictivos', 'Partners', 'Configuración'].map(m => (
+                  {['BigData IoT', 'Minería K-Means', 'IA Copilot', 'Predictivos', 'Configuración'].map(m => (
                     <span key={m} className="text-[9px] font-bold bg-white text-purple-900 border border-purple-200 px-1.5 py-0.5 rounded">
                       +{m}
                     </span>

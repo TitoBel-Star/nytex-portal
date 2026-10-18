@@ -64,7 +64,7 @@ export default function CircuitoFase2View() {
                   Circuito 2 • Paquete Comercial
                 </span>
                 <span className="bg-white/20 text-white text-xs px-3 py-1 rounded-full font-bold">
-                  14 Módulos Operativos
+                  15 Módulos Operativos
                 </span>
               </div>
               <h1 className="text-3xl lg:text-4xl font-black tracking-tight">
@@ -84,7 +84,7 @@ export default function CircuitoFase2View() {
                 </div>
                 <div>
                   <span className="text-amber-300 block uppercase font-bold text-[10px]">Cobertura Total</span>
-                  <strong className="text-xl text-emerald-400 font-black">14 Módulos (Starter 6 + 8)</strong>
+                  <strong className="text-xl text-emerald-400 font-black">15 Módulos (Starter 6 + 9)</strong>
                 </div>
               </div>
             </div>
@@ -191,9 +191,9 @@ export default function CircuitoFase2View() {
           </div>
         </div>
 
-        {/* Directorio de los 14 Módulos */}
+        {/* Directorio de los 15 Módulos */}
         <div>
-          <h3 className="font-extrabold text-slate-900 text-lg mb-3">Los 14 Módulos de la Fase 2 Express</h3>
+          <h3 className="font-extrabold text-slate-900 text-lg mb-3">Los 15 Módulos de la Fase 2 Express</h3>
           <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 gap-3">
             {[
               { id: 'ventas', name: '[1] Ventas' },
@@ -202,6 +202,7 @@ export default function CircuitoFase2View() {
               { id: 'compras', name: '[4] Compras' },
               { id: 'rop', name: '[4.1] ROP Inteligente' },
               { id: 'produccion', name: '[5] Producción' },
+              { id: 'businesspartners', name: '[6] Business Partners' },
               { id: 'logistica', name: '[7] Logística' },
               { id: 'cxc', name: '[8] CxC' },
               { id: 'cxp', name: '[9] CxP' },

@@ -201,10 +201,10 @@ const LoginView = () => {
                     onChange={(e) => setClientPhase(parseInt(e.target.value, 10))}
                     className="w-full px-3 py-2 border border-emerald-300 rounded-lg bg-white text-xs font-bold text-emerald-950 focus:outline-none focus:ring-2 focus:ring-emerald-400"
                   >
-                    <option value={1}>Fase 1: Starter (7 Módulos Núcleo Transaccional)</option>
-                    <option value={2}>Fase 2: Express (14 Módulos Manufactura, WMS y Nómina)</option>
+                    <option value={1}>Fase 1: Starter (6 Módulos Núcleo Transaccional)</option>
+                    <option value={2}>Fase 2: Express (15 Módulos Manufactura, Partners, WMS y Nómina)</option>
                     <option value={3}>Fase 3: Advanced (20 Módulos BPMN, Process Mining, Dashboards y S&OP)</option>
-                    <option value={4}>Fase 4: Enterprise (26 Módulos BI, Big Data, Copilot IA y Fiscal)</option>
+                    <option value={4}>Fase 4: Enterprise (25 Módulos Ecosistema Integral)</option>
                   </select>
                   <p className="text-[10px] text-emerald-800 mt-1.5 leading-relaxed">
                     Al ingresar se abrirá directamente su <strong>Workspace</strong> con los módulos activos de su fase.

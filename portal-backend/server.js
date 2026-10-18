@@ -495,7 +495,7 @@ app.post('/api/auth/login', async (req, res) => {
       subscriptions = [...ALL_25_MODULES];
     } else if (role === 'Client') {
       const p1 = ['Ventas', 'Inventario', 'Compras', 'Contabilidad', 'CxC', 'CxP'];
-      const p2 = [...p1, 'Tesoreria', 'CRM', 'Rop', 'Produccion', 'Logistica', 'RRHH', 'Nomina', 'WMS'];
+      const p2 = [...p1, 'Tesoreria', 'BusinessPartners', 'CRM', 'Rop', 'Produccion', 'Logistica', 'RRHH', 'Nomina', 'WMS'];
       const p3 = [...p2, 'ProcessSuite', 'ProcessMining', 'Dashboards', 'BI', 'Planeacion'];
       const pVal = parseInt(phaseId, 10) || 1;
       if (pVal === 1) subscriptions = p1;
@@ -4021,8 +4021,8 @@ app.get('/api/fases/fase2/summary', async (req, res) => {
       subtitle: 'Productividad, Cadena Operativa & Nómina',
       price: '$149 USD / mes',
       implementation: '$1,500 USD',
-      moduleCount: 14,
-      modules: ['Ventas', 'Inventario', 'Compras', 'Contabilidad', 'CxC', 'CxP', 'Tesoreria', 'CRM', 'WMS', 'Logistica', 'Produccion', 'RRHH', 'Nomina', 'Rop'],
+      moduleCount: 15,
+      modules: ['Ventas', 'Inventario', 'Compras', 'Contabilidad', 'CxC', 'CxP', 'Tesoreria', 'BusinessPartners', 'CRM', 'WMS', 'Logistica', 'Produccion', 'RRHH', 'Nomina', 'Rop'],
       metrics: {
         activeLoomsCount: activeLooms,
         totalRollsPlanned,
@@ -4108,7 +4108,7 @@ app.get('/api/fases/fase3/summary', async (req, res) => {
       price: '$299 USD / mes',
       implementation: '$4,500 USD',
       moduleCount: 20,
-      modules: ['Ventas', 'Inventario', 'Compras', 'Contabilidad', 'CxC', 'CxP', 'Tesoreria', 'CRM', 'WMS', 'Logistica', 'Produccion', 'RRHH', 'Nomina', 'Rop', 'ActivosFijos', 'ProcessSuite', 'ProcessMining', 'Dashboards', 'BI', 'Planeacion'],
+      modules: ['Ventas', 'Inventario', 'Compras', 'Contabilidad', 'CxC', 'CxP', 'Tesoreria', 'BusinessPartners', 'CRM', 'WMS', 'Logistica', 'Produccion', 'RRHH', 'Nomina', 'Rop', 'ProcessSuite', 'ProcessMining', 'Dashboards', 'BI', 'Planeacion'],
       metrics: {
         totalAssetsValue,
         assetsCount: assets.length,
