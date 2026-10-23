@@ -34,7 +34,7 @@ export default function Ventas() {
   const [deliveryAddress, setDeliveryAddress] = useState('');
   const [paymentTerms, setPaymentTerms] = useState('Crédito 30 días');
   const [items, setItems] = useState([
-    { sku: 'SKU-TEL-01', description: 'Rollo Algodón Peinado 100% 180g (Azul)', quantity: '1', unitPrice: '1850' }
+    { sku: 'SKU-TEL-01', description: 'Rollo Algodón Peinado 100% 180g (Azul)', quantity: '1', unitPrice: '1850', dispatchLocation: 'Bodega' }
   ]);
 
   // Buscador Rápido de Productos por SKU / Descripción
@@ -121,11 +121,12 @@ export default function Ventas() {
   };
 
   const handleAddItem = () => {
-    setItems([...items, { sku: 'SKU-NUEVO', description: 'Nuevo Producto / Tela', quantity: '1', unitPrice: '500' }]);
+    setItems([...items, { sku: 'SKU-NUEVO', description: 'Nuevo Producto / Tela', quantity: '1', unitPrice: '500', dispatchLocation: 'Caja' }]);
   };
 
   const handleAddCatalogItem = (product) => {
     const newPrice = product.price || Math.round((product.unitCost || 1200) * 1.35) || 1850;
+    const defaultLocation = (product.name && product.name.toLowerCase().includes('rollo')) || product.category === 'Materia Prima' ? 'Bodega' : 'Caja';
     
     // Si la lista tiene solo un ítem vacío o con 'SKU-NUEVO', lo reemplazamos
     const hasPlaceholder = items.length === 1 && (!items[0].sku || items[0].sku === 'SKU-NUEVO');
@@ -134,7 +135,8 @@ export default function Ventas() {
         sku: product.sku,
         description: product.name,
         quantity: '1',
-        unitPrice: String(newPrice)
+        unitPrice: String(newPrice),
+        dispatchLocation: defaultLocation
       }]);
     } else {
       // Si el SKU ya está en la orden, sumamos +1 a su cantidad
@@ -148,12 +150,20 @@ export default function Ventas() {
           sku: product.sku,
           description: product.name,
           quantity: '1',
-          unitPrice: String(newPrice)
+          unitPrice: String(newPrice),
+          dispatchLocation: defaultLocation
         }]);
       }
     }
-    setSearchNotification(`✓ Agregado a la orden: [${product.sku}] ${product.name}`);
+    setSearchNotification(`✓ Agregado: [${product.sku}] ${product.name} (Despacho: ${defaultLocation})`);
     setTimeout(() => setSearchNotification(''), 3500);
+  };
+
+  const toggleDispatchLocation = (index) => {
+    const newItems = [...items];
+    const current = newItems[index].dispatchLocation || 'Caja';
+    newItems[index].dispatchLocation = current === 'Caja' ? 'Bodega' : 'Caja';
+    setItems(newItems);
   };
 
   const handleRemoveItem = (index) => {
@@ -225,7 +235,8 @@ export default function Ventas() {
     const validatedItems = items.map(it => ({
       ...it,
       quantity: it.quantity === '' || Number(it.quantity) <= 0 ? 1 : Number(it.quantity),
-      unitPrice: it.unitPrice === '' || Number(it.unitPrice) < 0 ? 0 : Number(it.unitPrice)
+      unitPrice: it.unitPrice === '' || Number(it.unitPrice) < 0 ? 0 : Number(it.unitPrice),
+      dispatchLocation: it.dispatchLocation || ((it.description && it.description.toLowerCase().includes('rollo')) ? 'Bodega' : 'Caja')
     }));
     try {
       const res = await fetch('/api/ventas/orders', {
@@ -799,74 +810,119 @@ export default function Ventas() {
 
                 {/* Ítems */}
                 <div>
-                  <div className="flex justify-between items-center mb-2">
-                    <label className="text-xs font-bold text-gray-700 uppercase">Partidas de la Orden</label>
+                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 mb-2">
+                    <div>
+                      <label className="text-xs font-bold text-gray-700 uppercase">Partidas de la Orden</label>
+                      {deliveryMode === 'mixto' && (
+                        <p className="text-[11px] text-amber-800 font-semibold">
+                          💡 En cada fila puede hacer clic en <strong>[🏪 Caja]</strong> o <strong>[📦 Bodega]</strong> si el producto no está en mostrador y el cliente debe recogerlo en bodega.
+                        </p>
+                      )}
+                    </div>
                     <button
                       type="button"
                       onClick={handleAddItem}
-                      className="text-xs text-[#006EAD] hover:underline font-bold"
+                      className="text-xs text-[#006EAD] hover:underline font-bold self-start sm:self-auto"
                     >
                       + Agregar Fila Manual
                     </button>
                   </div>
 
-                  <div className="space-y-2 border border-gray-200 rounded-lg p-3 bg-gray-50 max-h-48 overflow-y-auto">
-                    {items.map((it, idx) => (
-                      <div key={idx} className="grid grid-cols-12 gap-2 items-center text-xs">
-                        <input
-                          type="text"
-                          list="inventory-sku-datalist"
-                          placeholder="SKU"
-                          value={it.sku}
-                          onChange={(e) => handleItemChange(idx, 'sku', e.target.value)}
-                          className="col-span-3 px-2 py-1.5 border border-gray-300 rounded bg-white font-mono font-bold text-blue-900"
-                        />
-                        <input
-                          type="text"
-                          list="inventory-desc-datalist"
-                          placeholder="Descripción"
-                          value={it.description}
-                          onChange={(e) => handleItemChange(idx, 'description', e.target.value)}
-                          className="col-span-4 px-2 py-1.5 border border-gray-300 rounded bg-white"
-                        />
-                        <input
-                          type="text"
-                          inputMode="numeric"
-                          pattern="[0-9]*"
-                          placeholder="Cant"
-                          value={it.quantity}
-                          onFocus={(e) => e.target.select()}
-                          onBlur={() => {
-                            if (!it.quantity || Number(it.quantity) <= 0) {
-                              handleItemChange(idx, 'quantity', '1');
-                            }
-                          }}
-                          onChange={(e) => handleItemChange(idx, 'quantity', e.target.value)}
-                          className="col-span-2 px-2 py-1.5 border border-gray-300 rounded bg-white font-mono text-right"
-                        />
-                        <input
-                          type="text"
-                          inputMode="decimal"
-                          placeholder="P. Unit"
-                          value={it.unitPrice}
-                          onFocus={(e) => e.target.select()}
-                          onBlur={() => {
-                            if (it.unitPrice === '' || Number(it.unitPrice) < 0) {
-                              handleItemChange(idx, 'unitPrice', '0');
-                            }
-                          }}
-                          onChange={(e) => handleItemChange(idx, 'unitPrice', e.target.value)}
-                          className="col-span-2 px-2 py-1.5 border border-gray-300 rounded bg-white font-mono text-right"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveItem(idx)}
-                          className="col-span-1 text-red-500 hover:text-red-700 font-bold text-center"
-                        >
-                          ✕
-                        </button>
-                      </div>
-                    ))}
+                  <div className="space-y-2 border border-gray-200 rounded-lg p-3 bg-gray-50 max-h-56 overflow-y-auto">
+                    {items.map((it, idx) => {
+                      const loc = it.dispatchLocation || ((it.description && it.description.toLowerCase().includes('rollo')) ? 'Bodega' : 'Caja');
+                      return (
+                        <div key={idx} className="flex flex-wrap md:flex-nowrap gap-2 items-center text-xs bg-white p-2 rounded-md border border-gray-200 shadow-2xs">
+                          {/* SKU */}
+                          <input
+                            type="text"
+                            list="inventory-sku-datalist"
+                            placeholder="SKU"
+                            value={it.sku}
+                            onChange={(e) => handleItemChange(idx, 'sku', e.target.value)}
+                            className="w-28 px-2 py-1.5 border border-gray-300 rounded bg-white font-mono font-bold text-blue-900 shrink-0"
+                          />
+
+                          {/* Descripción */}
+                          <input
+                            type="text"
+                            list="inventory-desc-datalist"
+                            placeholder="Descripción"
+                            value={it.description}
+                            onChange={(e) => handleItemChange(idx, 'description', e.target.value)}
+                            className="flex-1 min-w-[130px] px-2 py-1.5 border border-gray-300 rounded bg-white"
+                          />
+
+                          {/* BOTÓN INTERACTIVO DEL CAJERO: CAJA VS BODEGA */}
+                          {deliveryMode === 'mixto' && (
+                            <button
+                              type="button"
+                              onClick={() => toggleDispatchLocation(idx)}
+                              title="Haga clic si el producto no está en piso de venta y el cliente debe retirarlo en bodega"
+                              className={`px-2 py-1.5 rounded-md font-bold text-[11px] border shrink-0 transition-all flex items-center gap-1 cursor-pointer ${
+                                loc === 'Bodega'
+                                  ? 'bg-amber-100 text-amber-900 border-amber-300 hover:bg-amber-200'
+                                  : 'bg-emerald-100 text-emerald-900 border-emerald-300 hover:bg-emerald-200'
+                              }`}
+                            >
+                              <span>{loc === 'Bodega' ? '📦 Bodega' : '🏪 Caja'}</span>
+                              <span className="text-[9px] text-gray-500 font-normal underline">cambiar</span>
+                            </button>
+                          )}
+
+                          {/* Cantidad */}
+                          <div className="w-16 shrink-0">
+                            <input
+                              type="text"
+                              inputMode="numeric"
+                              pattern="[0-9]*"
+                              placeholder="Cant"
+                              value={it.quantity}
+                              onFocus={(e) => e.target.select()}
+                              onBlur={() => {
+                                if (!it.quantity || Number(it.quantity) <= 0) {
+                                  handleItemChange(idx, 'quantity', '1');
+                                }
+                              }}
+                              onChange={(e) => handleItemChange(idx, 'quantity', e.target.value)}
+                              className="w-full px-2 py-1.5 border border-gray-300 rounded bg-white font-mono text-right"
+                            />
+                          </div>
+
+                          {/* Precio */}
+                          <div className="w-20 shrink-0">
+                            <input
+                              type="text"
+                              inputMode="decimal"
+                              placeholder="P. Unit"
+                              value={it.unitPrice}
+                              onFocus={(e) => e.target.select()}
+                              onBlur={() => {
+                                if (it.unitPrice === '' || Number(it.unitPrice) < 0) {
+                                  handleItemChange(idx, 'unitPrice', '0');
+                                }
+                              }}
+                              onChange={(e) => handleItemChange(idx, 'unitPrice', e.target.value)}
+                              className="w-full px-2 py-1.5 border border-gray-300 rounded bg-white font-mono text-right"
+                            />
+                          </div>
+
+                          {/* Subtotal */}
+                          <div className="w-16 text-right font-mono font-bold text-gray-700 text-xs shrink-0">
+                            ${((Number(it.quantity) || 0) * (Number(it.unitPrice) || 0)).toLocaleString('es-MX')}
+                          </div>
+
+                          {/* Eliminar */}
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveItem(idx)}
+                            className="text-red-500 hover:text-red-700 font-bold px-1 text-center shrink-0 cursor-pointer"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
 
@@ -929,15 +985,26 @@ export default function Ventas() {
 
                 <div>
                   <span className="font-bold text-gray-400 uppercase">Partidas de la Orden:</span>
-                  <div className="space-y-1.5 mt-1 max-h-40 overflow-y-auto">
+                  <div className="space-y-1.5 mt-1 max-h-48 overflow-y-auto">
                     {selectedOrder.items && selectedOrder.items.map((it, idx) => (
-                      <div key={idx} className="flex justify-between p-2 bg-gray-50 rounded border text-xs">
+                      <div key={idx} className="flex justify-between items-center p-2 bg-gray-50 rounded border text-xs">
                         <div>
-                          <div className="font-semibold text-gray-800">{it.description || it.sku}</div>
+                          <div className="font-semibold text-gray-800 flex items-center gap-1.5">
+                            <span>{it.description || it.sku}</span>
+                            {it.dispatchLocation && (
+                              <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold border ${
+                                it.dispatchLocation === 'Bodega'
+                                  ? 'bg-amber-100 text-amber-900 border-amber-300'
+                                  : 'bg-emerald-100 text-emerald-900 border-emerald-300'
+                              }`}>
+                                {it.dispatchLocation === 'Bodega' ? '📦 Retiro en Bodega' : '🏪 Entregado en Caja'}
+                              </span>
+                            )}
+                          </div>
                           <div className="text-gray-400 font-mono">SKU: {it.sku} x {it.quantity} un.</div>
                         </div>
                         <div className="font-mono font-bold text-gray-800">
-                          ${((it.quantity || 1) * (it.unitPrice || 0)).toLocaleString('es-MX', { minimumFractionDigits: 2 })}
+                          ${((Number(it.quantity) || 1) * (Number(it.unitPrice) || 0)).toLocaleString('es-MX', { minimumFractionDigits: 2 })}
                         </div>
                       </div>
                     ))}

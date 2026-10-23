@@ -679,17 +679,19 @@ app.post('/api/ventas/orders', async (req, res) => {
       isInvoiced: false
     });
 
-    // Si es despacho mixto, se genera la orden de alistamiento en rampa en WMS
+    // Si es despacho mixto, se genera la orden de alistamiento en rampa en WMS (solo para los productos de Bodega)
     if (deliveryMode === 'mixto') {
       const wmsCount = await WmsTask.count();
       const taskCode = `WMS-PK-${String(wmsCount + 1).padStart(3, '0')}`;
+      const bodegaItems = formattedItems.filter(it => it.dispatchLocation === 'Bodega' || (it.description && it.description.toLowerCase().includes('rollo')));
+      const itemsForWms = bodegaItems.length > 0 ? bodegaItems : formattedItems;
       await WmsTask.create({
         taskCode,
         orderCode,
         clientName: clientName || 'Cliente General',
         warehouse: 'Bodega Central - Andén Rampa Retiro',
         zone: 'Rampa de Entrega Mostrador',
-        items: formattedItems,
+        items: itemsForWms,
         operator: 'Carlos Almacenista',
         status: 'En Picking'
       });
