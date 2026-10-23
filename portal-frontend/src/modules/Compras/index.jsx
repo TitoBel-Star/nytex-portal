@@ -59,17 +59,42 @@ export default function Compras() {
 
   const handleItemChange = (index, field, value) => {
     const updated = [...poItems];
-    updated[index][field] = field === 'quantity' || field === 'unitCost' ? parseFloat(value) || 0 : value;
+    if (field === 'quantity') {
+      let clean = String(value ?? '').replace(/[^0-9]/g, '');
+      if (clean.length > 1 && clean.startsWith('0')) {
+        clean = clean.replace(/^0+/, '');
+      }
+      updated[index][field] = clean;
+    } else if (field === 'unitCost') {
+      let clean = String(value ?? '').replace(/[^0-9.]/g, '');
+      const parts = clean.split('.');
+      if (parts.length > 2) clean = parts[0] + '.' + parts.slice(1).join('');
+      if (clean.length > 1 && clean.startsWith('0') && !clean.startsWith('0.')) {
+        clean = clean.replace(/^0+/, '');
+      }
+      updated[index][field] = clean;
+    } else {
+      updated[index][field] = value;
+    }
     setPoItems(updated);
   };
 
-  const subtotalCalc = poItems.reduce((sum, it) => sum + (it.quantity * it.unitCost), 0);
+  const subtotalCalc = poItems.reduce((sum, it) => {
+    const q = it.quantity === '' ? 0 : (Number(it.quantity) || 0);
+    const c = it.unitCost === '' ? 0 : (Number(it.unitCost) || 0);
+    return sum + (q * c);
+  }, 0);
   const taxCalc = Math.round(subtotalCalc * 0.13 * 100) / 100;
   const totalCalc = Math.round((subtotalCalc + taxCalc) * 100) / 100;
 
   const handleCreatePO = async (e) => {
     e.preventDefault();
     const vendor = partners.find(p => p.code === selectedVendorCode) || { name: 'Proveedor General' };
+    const validatedItems = poItems.map(it => ({
+      ...it,
+      quantity: it.quantity === '' || Number(it.quantity) <= 0 ? 1 : Number(it.quantity),
+      unitCost: it.unitCost === '' || Number(it.unitCost) < 0 ? 0 : Number(it.unitCost)
+    }));
     try {
       const res = await fetch('/api/compras/orders', {
         method: 'POST',
@@ -77,7 +102,7 @@ export default function Compras() {
         body: JSON.stringify({
           vendorCode: selectedVendorCode,
           vendorName: vendor.name,
-          items: poItems,
+          items: validatedItems,
           paymentTerms,
           deliveryDate
         })
@@ -401,18 +426,31 @@ export default function Compras() {
                           className="col-span-3 px-2 py-1.5 border border-gray-300 rounded bg-white"
                         />
                         <input
-                          type="number"
-                          min="1"
+                          type="text"
+                          inputMode="numeric"
+                          pattern="[0-9]*"
                           placeholder="Cant"
                           value={it.quantity}
+                          onFocus={(e) => e.target.select()}
+                          onBlur={() => {
+                            if (!it.quantity || Number(it.quantity) <= 0) {
+                              handleItemChange(idx, 'quantity', '1');
+                            }
+                          }}
                           onChange={(e) => handleItemChange(idx, 'quantity', e.target.value)}
                           className="col-span-2 px-2 py-1.5 border border-gray-300 rounded bg-white font-mono text-right"
                         />
                         <input
-                          type="number"
-                          min="0"
+                          type="text"
+                          inputMode="decimal"
                           placeholder="C. Unit"
                           value={it.unitCost}
+                          onFocus={(e) => e.target.select()}
+                          onBlur={() => {
+                            if (it.unitCost === '' || Number(it.unitCost) < 0) {
+                              handleItemChange(idx, 'unitCost', '0');
+                            }
+                          }}
                           onChange={(e) => handleItemChange(idx, 'unitCost', e.target.value)}
                           className="col-span-2 px-2 py-1.5 border border-gray-300 rounded bg-white font-mono text-right"
                         />

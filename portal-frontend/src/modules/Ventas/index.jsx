@@ -33,7 +33,7 @@ export default function Ventas() {
   const [deliveryAddress, setDeliveryAddress] = useState('');
   const [paymentTerms, setPaymentTerms] = useState('Crédito 30 días');
   const [items, setItems] = useState([
-    { sku: 'SKU-TEL-01', description: 'Rollo Algodón Peinado 100% 180g (Azul)', quantity: 10, unitPrice: 1850 }
+    { sku: 'SKU-TEL-01', description: 'Rollo Algodón Peinado 100% 180g (Azul)', quantity: '1', unitPrice: '1850' }
   ]);
 
   // Buscador Rápido de Productos por SKU / Descripción
@@ -105,7 +105,7 @@ export default function Ventas() {
   };
 
   const handleAddItem = () => {
-    setItems([...items, { sku: 'SKU-NUEVO', description: 'Nuevo Producto / Tela', quantity: 1, unitPrice: 500 }]);
+    setItems([...items, { sku: 'SKU-NUEVO', description: 'Nuevo Producto / Tela', quantity: '1', unitPrice: '500' }]);
   };
 
   const handleAddCatalogItem = (product) => {
@@ -117,22 +117,22 @@ export default function Ventas() {
       setItems([{
         sku: product.sku,
         description: product.name,
-        quantity: 1,
-        unitPrice: newPrice
+        quantity: '1',
+        unitPrice: String(newPrice)
       }]);
     } else {
       // Si el SKU ya está en la orden, sumamos +1 a su cantidad
       const existingIdx = items.findIndex(it => it.sku.toLowerCase() === product.sku.toLowerCase());
       if (existingIdx !== -1) {
         const updated = [...items];
-        updated[existingIdx].quantity += 1;
+        updated[existingIdx].quantity = String((Number(updated[existingIdx].quantity) || 0) + 1);
         setItems(updated);
       } else {
         setItems([...items, {
           sku: product.sku,
           description: product.name,
-          quantity: 1,
-          unitPrice: newPrice
+          quantity: '1',
+          unitPrice: String(newPrice)
         }]);
       }
     }
@@ -146,8 +146,20 @@ export default function Ventas() {
 
   const handleItemChange = (index, field, value) => {
     const newItems = [...items];
-    if (field === 'quantity' || field === 'unitPrice') {
-      newItems[index][field] = parseFloat(value) || 0;
+    if (field === 'quantity') {
+      let clean = String(value ?? '').replace(/[^0-9]/g, '');
+      if (clean.length > 1 && clean.startsWith('0')) {
+        clean = clean.replace(/^0+/, '');
+      }
+      newItems[index][field] = clean;
+    } else if (field === 'unitPrice') {
+      let clean = String(value ?? '').replace(/[^0-9.]/g, '');
+      const parts = clean.split('.');
+      if (parts.length > 2) clean = parts[0] + '.' + parts.slice(1).join('');
+      if (clean.length > 1 && clean.startsWith('0') && !clean.startsWith('0.')) {
+        clean = clean.replace(/^0+/, '');
+      }
+      newItems[index][field] = clean;
     } else {
       newItems[index][field] = value;
       // Autocompletar inteligente al escribir o seleccionar un SKU
@@ -155,13 +167,13 @@ export default function Ventas() {
         const found = inventoryCatalog.find(c => c.sku.toLowerCase() === value.trim().toLowerCase());
         if (found) {
           newItems[index].description = found.name;
-          newItems[index].unitPrice = found.price || Math.round((found.unitCost || 1200) * 1.35) || 1850;
+          newItems[index].unitPrice = String(found.price || Math.round((found.unitCost || 1200) * 1.35) || 1850);
         }
       } else if (field === 'description') {
         const found = inventoryCatalog.find(c => c.name.toLowerCase() === value.trim().toLowerCase());
         if (found) {
           newItems[index].sku = found.sku;
-          newItems[index].unitPrice = found.price || Math.round((found.unitCost || 1200) * 1.35) || 1850;
+          newItems[index].unitPrice = String(found.price || Math.round((found.unitCost || 1200) * 1.35) || 1850);
         }
       }
     }
@@ -183,13 +195,22 @@ export default function Ventas() {
     return skuMatch || nameMatch || catMatch;
   });
 
-  const subtotalCalc = items.reduce((sum, it) => sum + (it.quantity * it.unitPrice), 0);
+  const subtotalCalc = items.reduce((sum, it) => {
+    const q = it.quantity === '' ? 0 : (Number(it.quantity) || 0);
+    const p = it.unitPrice === '' ? 0 : (Number(it.unitPrice) || 0);
+    return sum + (q * p);
+  }, 0);
   const taxCalc = Math.round(subtotalCalc * 0.13 * 100) / 100;
   const totalCalc = Math.round((subtotalCalc + taxCalc) * 100) / 100;
 
   const handleCreateOrder = async (e) => {
     e.preventDefault();
     const partner = partners.find(p => p.code === selectedPartnerCode) || { name: 'Cliente General' };
+    const validatedItems = items.map(it => ({
+      ...it,
+      quantity: it.quantity === '' || Number(it.quantity) <= 0 ? 1 : Number(it.quantity),
+      unitPrice: it.unitPrice === '' || Number(it.unitPrice) < 0 ? 0 : Number(it.unitPrice)
+    }));
     try {
       const res = await fetch('/api/ventas/orders', {
         method: 'POST',
@@ -199,7 +220,7 @@ export default function Ventas() {
           clientName: partner.name,
           deliveryAddress,
           paymentTerms,
-          items
+          items: validatedItems
         })
       });
       const newOrd = await res.json();
@@ -707,18 +728,31 @@ export default function Ventas() {
                           className="col-span-4 px-2 py-1.5 border border-gray-300 rounded bg-white"
                         />
                         <input
-                          type="number"
-                          min="1"
+                          type="text"
+                          inputMode="numeric"
+                          pattern="[0-9]*"
                           placeholder="Cant"
                           value={it.quantity}
+                          onFocus={(e) => e.target.select()}
+                          onBlur={() => {
+                            if (!it.quantity || Number(it.quantity) <= 0) {
+                              handleItemChange(idx, 'quantity', '1');
+                            }
+                          }}
                           onChange={(e) => handleItemChange(idx, 'quantity', e.target.value)}
                           className="col-span-2 px-2 py-1.5 border border-gray-300 rounded bg-white font-mono text-right"
                         />
                         <input
-                          type="number"
-                          min="0"
+                          type="text"
+                          inputMode="decimal"
                           placeholder="P. Unit"
                           value={it.unitPrice}
+                          onFocus={(e) => e.target.select()}
+                          onBlur={() => {
+                            if (it.unitPrice === '' || Number(it.unitPrice) < 0) {
+                              handleItemChange(idx, 'unitPrice', '0');
+                            }
+                          }}
                           onChange={(e) => handleItemChange(idx, 'unitPrice', e.target.value)}
                           className="col-span-2 px-2 py-1.5 border border-gray-300 rounded bg-white font-mono text-right"
                         />
