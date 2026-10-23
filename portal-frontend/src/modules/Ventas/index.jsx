@@ -110,6 +110,9 @@ export default function Ventas() {
     if (mode === 'mostrador') {
       setDeliveryAddress('Mostrador / Caja Principal (Entrega Inmediata)');
       setPaymentTerms('Contado / Anticipado');
+    } else if (mode === 'mixto') {
+      setDeliveryAddress('Caja (Menudeo) + Andén Bodega (Bultos Grandes)');
+      setPaymentTerms('Contado / Anticipado');
     } else {
       const p = partners.find(part => part.code === selectedPartnerCode);
       setDeliveryAddress(p?.address || 'Dirección de Entrega Predeterminada');
@@ -240,7 +243,9 @@ export default function Ventas() {
       const newOrd = await res.json();
       if (res.ok) {
         if (deliveryMode === 'mostrador') {
-          setActionMessage(`Venta de Mostrador / Supermercado ${newOrd.orderCode} registrada exitosamente con estado ENTREGADO.`);
+          setActionMessage(`Venta de Mostrador ${newOrd.orderCode} registrada exitosamente con estado ENTREGADO.`);
+        } else if (deliveryMode === 'mixto') {
+          setActionMessage(`Despacho Mixto ${newOrd.orderCode}: Mercancía ligera entregada en caja; bultos mayores enviados a Bodega para entrega en rampa.`);
         } else {
           setActionMessage(`Cotización ${newOrd.orderCode} creada exitosamente.`);
         }
@@ -249,6 +254,25 @@ export default function Ventas() {
         fetchData();
       } else {
         alert(newOrd.error || 'Error al crear orden');
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  // Confirmar entrega de bultos en bodega / rampa
+  const handleCompleteDelivery = async (orderCode) => {
+    try {
+      const res = await fetch(`/api/ventas/orders/${orderCode}/deliver`, {
+        method: 'POST'
+      });
+      const result = await res.json();
+      if (res.ok) {
+        setActionMessage(result.message);
+        setTimeout(() => setActionMessage(''), 6000);
+        fetchData();
+      } else {
+        alert(result.error || 'Error al confirmar entrega');
       }
     } catch (err) {
       console.error(err);
@@ -508,6 +532,16 @@ export default function Ventas() {
                             </button>
                           )}
 
+                          {order.status !== 'Cotización' && order.status !== 'Entregado' && (
+                            <button
+                              onClick={() => handleCompleteDelivery(order.orderCode)}
+                              className="px-2.5 py-1 text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded shadow-sm transition"
+                              title="Confirmar que el cliente retiró los bultos de bodega"
+                            >
+                              ✓ Entrega Bodega
+                            </button>
+                          )}
+
                           {!order.isInvoiced && (
                             <button
                               onClick={() => handleInvoiceOrder(order.orderCode)}
@@ -581,21 +615,32 @@ export default function Ventas() {
                       onChange={(e) => handleDeliveryModeChange(e.target.value)}
                       className="w-full px-3 py-2 border-2 border-blue-300 bg-white rounded-lg text-gray-900 font-bold text-xs focus:outline-none focus:border-blue-600 shadow-xs"
                     >
-                      <option value="logistica">🚚 Envío por Logística (Flujo B2B / Camión)</option>
+                      <option value="logistica">🚚 Envío por Logística (Flujo B2B / Camión a Domicilio)</option>
                       <option value="mostrador">🏪 Entrega Inmediata en Caja / Mostrador (Supermercado / Retail)</option>
+                      <option value="mixto">📦 Despacho Mixto (Menudeo en Caja + Bultos en Rampa Bodega)</option>
                     </select>
                   </div>
 
                   <div>
                     <label className="block text-xs font-bold text-gray-700 uppercase mb-1">
-                      {deliveryMode === 'mostrador' ? 'Punto de Entrega Física' : 'Dirección de Entrega (Logística)'}
+                      {deliveryMode === 'mostrador' 
+                        ? 'Punto de Entrega Física' 
+                        : deliveryMode === 'mixto'
+                        ? 'Punto de Entrega Mixta'
+                        : 'Dirección de Entrega (Logística)'}
                     </label>
                     <input
                       type="text"
                       required
                       value={deliveryAddress}
                       onChange={(e) => setDeliveryAddress(e.target.value)}
-                      placeholder={deliveryMode === 'mostrador' ? 'Mostrador / Caja Principal' : 'Calle, Número, Ciudad'}
+                      placeholder={
+                        deliveryMode === 'mostrador' 
+                          ? 'Mostrador / Caja Principal' 
+                          : deliveryMode === 'mixto'
+                          ? 'Caja + Andén de Bodega'
+                          : 'Calle, Número, Ciudad'
+                      }
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-800 text-xs bg-white focus:outline-none focus:border-blue-600"
                     />
                   </div>
@@ -605,6 +650,15 @@ export default function Ventas() {
                       <span className="text-base">🏪</span>
                       <span>
                         <strong>Modalidad Supermercado / Retail activada:</strong> Los artículos se entregan en el acto al cliente en caja. La orden se guardará automáticamente con el estado verde <strong>«Entregado»</strong>, lista para emitir el ticket/factura al instante sin pasar por flete ni bodega.
+                      </span>
+                    </div>
+                  )}
+
+                  {deliveryMode === 'mixto' && (
+                    <div className="col-span-full text-[11px] bg-amber-50 border border-amber-300 text-amber-900 font-semibold px-3 py-2 rounded-lg flex items-center gap-2">
+                      <span className="text-base">📦</span>
+                      <span>
+                        <strong>Modalidad Despacho Mixto activada:</strong> La mercancía pequeña/menudeo se entrega en la misma caja, y los bultos mayores (cajas, sacos o rollos) se alistan en el andén de Bodega. La orden se envía a Bodega en preparación y podrá confirmarse como <strong>«Entregado»</strong> con el botón <em>«✓ Entrega Bodega»</em> una vez que el cliente retire los bultos con su comprobante de pago.
                       </span>
                     </div>
                   )}
@@ -838,10 +892,16 @@ export default function Ventas() {
                     className={`px-5 py-2 text-sm text-white font-bold rounded-lg shadow-sm transition ${
                       deliveryMode === 'mostrador' 
                         ? 'bg-emerald-600 hover:bg-emerald-700' 
+                        : deliveryMode === 'mixto'
+                        ? 'bg-amber-600 hover:bg-amber-700'
                         : 'bg-[#006EAD] hover:bg-[#005587]'
                     }`}
                   >
-                    {deliveryMode === 'mostrador' ? '🏪 Registrar Venta Entregada en Caja' : 'Registrar Cotización'}
+                    {deliveryMode === 'mostrador' 
+                      ? '🏪 Registrar Venta Entregada en Caja' 
+                      : deliveryMode === 'mixto'
+                      ? '📦 Registrar Despacho Mixto (Caja + Bodega)'
+                      : 'Registrar Cotización'}
                   </button>
                 </div>
               </form>

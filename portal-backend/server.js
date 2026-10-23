@@ -651,26 +651,80 @@ app.post('/api/ventas/orders', async (req, res) => {
     const tax = Math.round(subtotal * 0.13 * 100) / 100;
     const total = Math.round((subtotal + tax) * 100) / 100;
 
-    const isMostrador = deliveryMode === 'mostrador';
-    const status = isMostrador ? 'Entregado' : 'Cotización';
+    let status = 'Cotización';
+    let defaultAddress = 'Dirección de Entrega';
+    let defaultTerms = 'Crédito 30 días';
+
+    if (deliveryMode === 'mostrador') {
+      status = 'Entregado';
+      defaultAddress = 'Mostrador / Caja Principal (Entrega Inmediata)';
+      defaultTerms = 'Contado / Anticipado';
+    } else if (deliveryMode === 'mixto') {
+      status = 'En Preparación WMS';
+      defaultAddress = 'Caja (Menudeo) + Andén Bodega (Bultos Grandes)';
+      defaultTerms = 'Contado / Anticipado';
+    }
 
     const newOrder = await SaleOrder.create({
       orderCode,
       clientCode: clientCode || 'BP-001',
       clientName: clientName || 'Cliente General',
-      deliveryAddress: deliveryAddress || (isMostrador ? 'Mostrador / Caja Principal (Entrega Inmediata)' : 'Dirección de Entrega'),
+      deliveryAddress: deliveryAddress || defaultAddress,
       items: formattedItems,
       subtotal,
       tax,
       total,
-      paymentTerms: paymentTerms || (isMostrador ? 'Contado / Anticipado' : 'Crédito 30 días'),
+      paymentTerms: paymentTerms || defaultTerms,
       status,
       isInvoiced: false
     });
 
+    // Si es despacho mixto, se genera la orden de alistamiento en rampa en WMS
+    if (deliveryMode === 'mixto') {
+      const wmsCount = await WmsTask.count();
+      const taskCode = `WMS-PK-${String(wmsCount + 1).padStart(3, '0')}`;
+      await WmsTask.create({
+        taskCode,
+        orderCode,
+        clientName: clientName || 'Cliente General',
+        warehouse: 'Bodega Central - Andén Rampa Retiro',
+        zone: 'Rampa de Entrega Mostrador',
+        items: formattedItems,
+        operator: 'Carlos Almacenista',
+        status: 'En Picking'
+      });
+    }
+
     res.status(201).json(newOrder);
   } catch (error) {
     res.status(400).json({ error: error.message });
+  }
+});
+
+// Entrega directa en rampa / mostrador
+app.post('/api/ventas/orders/:orderCode/deliver', async (req, res) => {
+  try {
+    const { orderCode } = req.params;
+    const order = await SaleOrder.findOne({ where: { orderCode } });
+    if (!order) return res.status(404).json({ error: 'Orden no encontrada' });
+
+    order.status = 'Entregado';
+    await order.save();
+
+    // Actualizar tarea WMS asociada si existe
+    const wmsTask = await WmsTask.findOne({ where: { orderCode } });
+    if (wmsTask) {
+      wmsTask.status = 'Listo para Despacho';
+      await wmsTask.save();
+    }
+
+    res.json({
+      success: true,
+      message: `Orden ${orderCode} confirmada como ENTREGADA exitosamente (Bultos entregados en bodega/rampa).`,
+      order
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 });
 
