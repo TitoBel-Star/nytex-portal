@@ -6,6 +6,8 @@ export default function InventoryView() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState('Todas');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('Todos');
   const [actionMessage, setActionMessage] = useState('');
 
   // Modal Nuevo Item
@@ -225,8 +227,17 @@ export default function InventoryView() {
   };
 
   const filteredItems = items.filter(it => {
-    if (activeCategory === 'Todas') return true;
-    return it.category === activeCategory;
+    if (activeCategory !== 'Todas' && it.category !== activeCategory) return false;
+    if (statusFilter !== 'Todos' && it.status !== statusFilter) return false;
+    if (searchTerm.trim()) {
+      const q = searchTerm.toLowerCase();
+      const matchSku = (it.sku || '').toLowerCase().includes(q);
+      const matchName = (it.name || '').toLowerCase().includes(q);
+      const matchWh = (it.warehouse || '').toLowerCase().includes(q);
+      const matchLoc = (it.location || '').toLowerCase().includes(q);
+      if (!matchSku && !matchName && !matchWh && !matchLoc) return false;
+    }
+    return true;
   });
 
   const totalValue = items.reduce((sum, it) => sum + ((it.stock || 0) * (it.unitCost || 0)), 0);
@@ -343,13 +354,21 @@ export default function InventoryView() {
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 flex items-center justify-between">
+          <div 
+            onClick={() => setStatusFilter(statusFilter === 'Bajo Stock' ? 'Todos' : 'Bajo Stock')}
+            className={`bg-white rounded-xl shadow-sm border p-5 flex items-center justify-between cursor-pointer transition hover:shadow-md ${
+              statusFilter === 'Bajo Stock' ? 'border-amber-500 ring-2 ring-amber-300' : 'border-gray-100'
+            }`}
+            title="Haz clic para filtrar solo SKUs con Bajo Stock"
+          >
             <div>
               <span className="text-gray-500 text-xs font-bold uppercase tracking-wider mb-1">Alertas de Bajo Stock</span>
               <span className={`block text-3xl font-extrabold ${lowStockCount > 0 ? 'text-amber-600' : 'text-gray-400'}`}>
                 {lowStockCount}
               </span>
-              <span className="text-xs text-amber-500 font-semibold">Bajo punto de reorden</span>
+              <span className="text-xs text-amber-500 font-semibold">
+                {statusFilter === 'Bajo Stock' ? '✓ Filtro activo (clic para quitar)' : 'Bajo punto de reorden'}
+              </span>
             </div>
             <div className="w-12 h-12 bg-amber-50 text-amber-600 rounded-full flex items-center justify-center text-xl font-bold">
               ⚠️
@@ -386,24 +405,72 @@ export default function InventoryView() {
         {/* Tabla de Inventario */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden flex flex-col">
           <div className="flex flex-wrap items-center justify-between border-b border-gray-100 px-6 py-4 bg-gray-50/50 gap-4">
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-bold text-gray-500 uppercase">Filtrar Categoría:</span>
-              {['Todas', 'Materia Prima', 'Insumo Químico', 'Producto Terminado'].map(cat => (
-                <button
-                  key={cat}
-                  onClick={() => setActiveCategory(cat)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition ${
-                    activeCategory === cat 
-                      ? 'bg-[#006EAD] text-white shadow-sm' 
-                      : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-100'
-                  }`}
-                >
-                  {cat}
-                </button>
-              ))}
+            <div className="flex flex-wrap items-center gap-3">
+              {/* Buscador predictivo en vivo */}
+              <div className="relative min-w-[260px]">
+                <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400 text-xs">
+                  🔍
+                </span>
+                <input
+                  type="text"
+                  placeholder="Buscar por SKU, nombre, rack..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full pl-8 pr-7 py-1.5 bg-white border border-gray-300 rounded-lg text-xs text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[#006EAD] focus:ring-1 focus:ring-[#006EAD]"
+                />
+                {searchTerm && (
+                  <button
+                    onClick={() => setSearchTerm('')}
+                    className="absolute inset-y-0 right-0 pr-2.5 flex items-center text-gray-400 hover:text-gray-600 text-xs font-bold"
+                  >
+                    ✕
+                  </button>
+                )}
+              </div>
+
+              {/* Filtro Categoría */}
+              <div className="flex items-center gap-1.5">
+                {['Todas', 'Materia Prima', 'Insumo Químico', 'Producto Terminado'].map(cat => (
+                  <button
+                    key={cat}
+                    onClick={() => setActiveCategory(cat)}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition ${
+                      activeCategory === cat 
+                        ? 'bg-[#006EAD] text-white shadow-sm' 
+                        : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-100'
+                    }`}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
+
+              {/* Filtro Estado */}
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="px-2.5 py-1.5 bg-white border border-gray-200 rounded-lg text-xs font-semibold text-gray-700 focus:outline-none focus:border-[#006EAD]"
+              >
+                <option value="Todos">Todos los Estados</option>
+                <option value="Óptimo">Solo Óptimo</option>
+                <option value="Bajo Stock">Solo Bajo Stock (Críticos)</option>
+              </select>
             </div>
-            <div className="text-xs text-gray-500">
-              Mostrando <strong className="text-gray-800">{filteredItems.length}</strong> items en catálogo
+
+            <div className="text-xs text-gray-500 flex items-center gap-2">
+              <span>Mostrando <strong className="text-gray-800">{filteredItems.length}</strong> de <strong className="text-gray-800">{items.length}</strong> items</span>
+              {(searchTerm || activeCategory !== 'Todas' || statusFilter !== 'Todos') && (
+                <button
+                  onClick={() => {
+                    setSearchTerm('');
+                    setActiveCategory('Todas');
+                    setStatusFilter('Todos');
+                  }}
+                  className="text-xs text-[#006EAD] hover:underline font-bold"
+                >
+                  Restablecer filtros
+                </button>
+              )}
             </div>
           </div>
 
