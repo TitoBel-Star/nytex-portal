@@ -29,6 +29,7 @@ export default function Ventas() {
   
   // Modal Crear Orden
   const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [deliveryMode, setDeliveryMode] = useState('logistica'); // 'logistica' | 'mostrador'
   const [selectedPartnerCode, setSelectedPartnerCode] = useState('');
   const [deliveryAddress, setDeliveryAddress] = useState('');
   const [paymentTerms, setPaymentTerms] = useState('Crédito 30 días');
@@ -99,8 +100,20 @@ export default function Ventas() {
     const code = e.target.value;
     setSelectedPartnerCode(code);
     const p = partners.find(part => part.code === code);
-    if (p && p.address) {
+    if (deliveryMode === 'logistica' && p && p.address) {
       setDeliveryAddress(p.address);
+    }
+  };
+
+  const handleDeliveryModeChange = (mode) => {
+    setDeliveryMode(mode);
+    if (mode === 'mostrador') {
+      setDeliveryAddress('Mostrador / Caja Principal (Entrega Inmediata)');
+      setPaymentTerms('Contado / Anticipado');
+    } else {
+      const p = partners.find(part => part.code === selectedPartnerCode);
+      setDeliveryAddress(p?.address || 'Dirección de Entrega Predeterminada');
+      setPaymentTerms('Crédito 30 días');
     }
   };
 
@@ -220,12 +233,17 @@ export default function Ventas() {
           clientName: partner.name,
           deliveryAddress,
           paymentTerms,
+          deliveryMode,
           items: validatedItems
         })
       });
       const newOrd = await res.json();
       if (res.ok) {
-        setActionMessage(`Cotización ${newOrd.orderCode} creada exitosamente.`);
+        if (deliveryMode === 'mostrador') {
+          setActionMessage(`Venta de Mostrador / Supermercado ${newOrd.orderCode} registrada exitosamente con estado ENTREGADO.`);
+        } else {
+          setActionMessage(`Cotización ${newOrd.orderCode} creada exitosamente.`);
+        }
         setTimeout(() => setActionMessage(''), 6000);
         setCreateModalOpen(false);
         fetchData();
@@ -544,22 +562,52 @@ export default function Ventas() {
                       onChange={(e) => setPaymentTerms(e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-800 focus:outline-none focus:border-blue-600"
                     >
-                      <option value="Crédito 30 días">Crédito 30 días</option>
-                      <option value="Crédito 15 días">Crédito 15 días</option>
                       <option value="Contado / Anticipado">Contado / Anticipado</option>
+                      <option value="Crédito 15 días">Crédito 15 días</option>
+                      <option value="Crédito 30 días">Crédito 30 días</option>
                     </select>
                   </div>
                 </div>
 
-                <div>
-                  <label className="block text-xs font-bold text-gray-700 uppercase mb-1">Dirección de Entrega (Logística)</label>
-                  <input
-                    type="text"
-                    required
-                    value={deliveryAddress}
-                    onChange={(e) => setDeliveryAddress(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-800 text-sm focus:outline-none focus:border-blue-600"
-                  />
+                {/* SELECTOR DE MODALIDAD DE DESPACHO Y DESTINO */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-3 bg-gradient-to-r from-blue-50/60 to-indigo-50/60 border border-blue-200/80 rounded-xl">
+                  <div>
+                    <label className="block text-xs font-extrabold text-[#0A2540] uppercase mb-1 flex items-center gap-1.5">
+                      <span>⚡</span>
+                      <span>Modalidad de Despacho</span>
+                    </label>
+                    <select
+                      value={deliveryMode}
+                      onChange={(e) => handleDeliveryModeChange(e.target.value)}
+                      className="w-full px-3 py-2 border-2 border-blue-300 bg-white rounded-lg text-gray-900 font-bold text-xs focus:outline-none focus:border-blue-600 shadow-xs"
+                    >
+                      <option value="logistica">🚚 Envío por Logística (Flujo B2B / Camión)</option>
+                      <option value="mostrador">🏪 Entrega Inmediata en Caja / Mostrador (Supermercado / Retail)</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-gray-700 uppercase mb-1">
+                      {deliveryMode === 'mostrador' ? 'Punto de Entrega Física' : 'Dirección de Entrega (Logística)'}
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={deliveryAddress}
+                      onChange={(e) => setDeliveryAddress(e.target.value)}
+                      placeholder={deliveryMode === 'mostrador' ? 'Mostrador / Caja Principal' : 'Calle, Número, Ciudad'}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-800 text-xs bg-white focus:outline-none focus:border-blue-600"
+                    />
+                  </div>
+
+                  {deliveryMode === 'mostrador' && (
+                    <div className="col-span-full text-[11px] bg-emerald-50 border border-emerald-300 text-emerald-900 font-semibold px-3 py-2 rounded-lg flex items-center gap-2">
+                      <span className="text-base">🏪</span>
+                      <span>
+                        <strong>Modalidad Supermercado / Retail activada:</strong> Los artículos se entregan en el acto al cliente en caja. La orden se guardará automáticamente con el estado verde <strong>«Entregado»</strong>, lista para emitir el ticket/factura al instante sin pasar por flete ni bodega.
+                      </span>
+                    </div>
+                  )}
                 </div>
 
                 {/* BUSCADOR RÁPIDO DE CATÁLOGO (SKU / DESCRIPCIÓN) CON PESTAÑAS */}
@@ -787,9 +835,13 @@ export default function Ventas() {
                   </button>
                   <button
                     type="submit"
-                    className="px-5 py-2 text-sm bg-[#006EAD] hover:bg-[#005587] text-white font-bold rounded-lg shadow-sm transition"
+                    className={`px-5 py-2 text-sm text-white font-bold rounded-lg shadow-sm transition ${
+                      deliveryMode === 'mostrador' 
+                        ? 'bg-emerald-600 hover:bg-emerald-700' 
+                        : 'bg-[#006EAD] hover:bg-[#005587]'
+                    }`}
                   >
-                    Registrar Cotización
+                    {deliveryMode === 'mostrador' ? '🏪 Registrar Venta Entregada en Caja' : 'Registrar Cotización'}
                   </button>
                 </div>
               </form>

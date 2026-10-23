@@ -637,13 +637,13 @@ app.get('/api/ventas/orders', async (req, res) => {
 
 app.post('/api/ventas/orders', async (req, res) => {
   try {
-    const { clientCode, clientName, deliveryAddress, items, paymentTerms } = req.body;
+    const { clientCode, clientName, deliveryAddress, items, paymentTerms, deliveryMode } = req.body;
     const count = await SaleOrder.count();
     const orderCode = `SO-2026-${String(count + 1).padStart(3, '0')}`;
 
     let subtotal = 0;
     const formattedItems = (items || []).map(item => {
-      const itemSub = (item.quantity || 1) * (item.unitPrice || 0);
+      const itemSub = (Number(item.quantity) || 1) * (Number(item.unitPrice) || 0);
       subtotal += itemSub;
       return { ...item, subtotal: itemSub };
     });
@@ -651,17 +651,20 @@ app.post('/api/ventas/orders', async (req, res) => {
     const tax = Math.round(subtotal * 0.13 * 100) / 100;
     const total = Math.round((subtotal + tax) * 100) / 100;
 
+    const isMostrador = deliveryMode === 'mostrador';
+    const status = isMostrador ? 'Entregado' : 'Cotización';
+
     const newOrder = await SaleOrder.create({
       orderCode,
       clientCode: clientCode || 'BP-001',
       clientName: clientName || 'Cliente General',
-      deliveryAddress: deliveryAddress || 'Dirección de Entrega',
+      deliveryAddress: deliveryAddress || (isMostrador ? 'Mostrador / Caja Principal (Entrega Inmediata)' : 'Dirección de Entrega'),
       items: formattedItems,
       subtotal,
       tax,
       total,
-      paymentTerms: paymentTerms || 'Crédito 30 días',
-      status: 'Cotización',
+      paymentTerms: paymentTerms || (isMostrador ? 'Contado / Anticipado' : 'Crédito 30 días'),
+      status,
       isInvoiced: false
     });
 
