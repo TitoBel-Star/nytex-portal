@@ -208,7 +208,7 @@ export default function RRHH() {
             <div>
               <div className="text-xs text-gray-500 font-semibold uppercase">Cumplimiento IMSS / STPS</div>
               <div className="text-xl font-black text-purple-900">Clase III Fabril</div>
-              <div className="text-[11px] text-gray-500">Riesgo Textil Integrado</div>
+              <div className="text-[11px] text-gray-500">Riesgo Operativo Integrado</div>
             </div>
           </div>
         </div>

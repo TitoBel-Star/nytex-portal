@@ -201,7 +201,7 @@ export default function BiCubeView() {
           </div>
 
           <div className="bg-slate-900 border border-slate-800 p-5 rounded-2xl">
-            <span className="text-xs font-semibold text-slate-400 uppercase">Volumen Textil</span>
+            <span className="text-xs font-semibold text-slate-400 uppercase">Volumen Operativo</span>
             <div className="text-2xl font-black text-purple-400 mt-1">
               {filteredVolumeKg.toLocaleString()} <span className="text-xs text-slate-500">kg tejido</span>
             </div>

@@ -19,7 +19,7 @@ export default function Produccion() {
   const [bom, setBom] = useState([
     { sku: 'MP-HIL-01', name: 'Hilo de Algodón Peinado 100% 30/1', quantityPerUnit: 3, unit: 'kg' },
     { sku: 'MP-POL-02', name: 'Hilo de Poliéster Alta Tenacidad 150D', quantityPerUnit: 1.5, unit: 'kg' },
-    { sku: 'MP-TIN-03', name: 'Tinte Reactivo Azul Marino Textil', quantityPerUnit: 0.4, unit: 'litros' }
+    { sku: 'MP-TIN-03', name: 'Compuesto Reactivo Azul Marino', quantityPerUnit: 0.4, unit: 'litros' }
   ]);
 
   // Modal Ver BOM
@@ -131,7 +131,7 @@ export default function Produccion() {
             <span className="mx-2 text-gray-400">/</span>
             <span className="font-bold text-[#0A2540] flex items-center gap-2">
               <span className="px-2 py-0.5 text-xs bg-indigo-100 text-indigo-800 font-bold rounded">Módulo [7]</span>
-              NyTEX Producción & Manufactura Textil
+              NyTEX Producción & Manufactura Industrial
             </span>
           </div>
           <div className="flex items-center space-x-3">

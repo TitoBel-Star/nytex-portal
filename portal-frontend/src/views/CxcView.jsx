@@ -15,7 +15,7 @@ const DEFAULT_CATALOG = [
   { sku: 'SKU-POL-01', name: 'Rollo Poliéster Dry-Fit Transpirable', price: 1450, stock: 55, unit: 'rollos', category: 'Producto Terminado' },
   { sku: 'MP-HIL-01', name: 'Hilo de Algodón Peinado 100% 30/1 (Cono 2.5kg)', price: 380, stock: 120, unit: 'kg', category: 'Materia Prima' },
   { sku: 'MP-POL-02', name: 'Hilo de Poliéster Alta Tenacidad 150D', price: 240, stock: 450, unit: 'kg', category: 'Materia Prima' },
-  { sku: 'MP-TIN-03', name: 'Tinte Reactivo Azul Marino Textil', price: 490, stock: 18, unit: 'litros', category: 'Insumo Químico' }
+  { sku: 'MP-TIN-03', name: 'Compuesto Reactivo Azul Marino', price: 490, stock: 18, unit: 'litros', category: 'Insumo Químico' }
 ];
 
 export default function CxcView() {

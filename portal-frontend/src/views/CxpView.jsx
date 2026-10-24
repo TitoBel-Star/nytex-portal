@@ -618,7 +618,7 @@ export default function CxpView() {
                       </option>
                     ))}
                     {partners.length === 0 && (
-                      <option value="PRV-001">PRV-001 - Hilos & Algodones de México S.A.</option>
+                      <option value="PRV-001">PRV-001 - Proveedora Industrial y Suministros Globales S.A.</option>
                     )}
                   </select>
                 </div>
@@ -911,7 +911,7 @@ export default function CxpView() {
 
               <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-3 text-xs">
                 <div className="flex justify-between items-center pb-2 border-b border-slate-200">
-                  <span className="font-bold text-[#006EAD]">NyTEX Textil de México S.A. de C.V.</span>
+                  <span className="font-bold text-[#006EAD]">NyTEX Corporation S.A.</span>
                   <span className="font-mono text-gray-500">RFC: NTM180612TX4</span>
                 </div>
 

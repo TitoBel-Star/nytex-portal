@@ -96,7 +96,7 @@ export default function DataMiningView() {
                 : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
             }`}
           >
-            <span>🛒</span> Reglas de Asociación Apriori (Canasta Textil)
+            <span>🛒</span> Reglas de Asociación Apriori (Canasta Industrial)
           </button>
         </div>
 
@@ -208,7 +208,7 @@ export default function DataMiningView() {
             <div className="bg-slate-900 border border-slate-800 p-5 rounded-2xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
               <div>
                 <span className="text-xs font-bold text-purple-400 uppercase tracking-wider block">
-                  Algoritmo Apriori • Canasta Textil Industrial
+                  Algoritmo Apriori • Canasta de Insumos Industriales
                 </span>
                 <h3 className="text-lg font-bold text-white mt-0.5">
                   Reglas de Afinidad de Materiales & Pedidos Combinados

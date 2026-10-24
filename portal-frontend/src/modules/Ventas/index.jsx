@@ -15,7 +15,7 @@ const DEFAULT_CATALOG = [
   { sku: 'SKU-POL-01', name: 'Rollo Poliéster Dry-Fit Transpirable', price: 1450, stock: 55, unit: 'rollos', category: 'Producto Terminado' },
   { sku: 'MP-HIL-01', name: 'Hilo de Algodón Peinado 100% 30/1 (Cono 2.5kg)', price: 380, stock: 120, unit: 'kg', category: 'Materia Prima' },
   { sku: 'MP-POL-02', name: 'Hilo de Poliéster Alta Tenacidad 150D', price: 240, stock: 450, unit: 'kg', category: 'Materia Prima' },
-  { sku: 'MP-TIN-03', name: 'Tinte Reactivo Azul Marino Textil', price: 490, stock: 18, unit: 'litros', category: 'Insumo Químico' }
+  { sku: 'MP-TIN-03', name: 'Compuesto Reactivo Azul Marino', price: 490, stock: 18, unit: 'litros', category: 'Insumo Químico' }
 ];
 
 export default function Ventas() {
@@ -1269,7 +1269,7 @@ export default function Ventas() {
               <div id="printable-ticket" className="bg-white font-mono text-[11px] text-gray-900 space-y-3 leading-tight p-2">
                 {/* Cabecera */}
                 <div className="text-center space-y-1">
-                  <div className="text-base font-black tracking-widest text-[#0A2540]">NYTEX TEXTIL INDUSTRIAL</div>
+                  <div className="text-base font-black tracking-widest text-[#0A2540]">NYTEX INDUSTRIAL & COMMERCIAL</div>
                   <div className="text-[10px] text-gray-600">S.A. DE C.V. • NIT: 0614-280392-102-1</div>
                   <div className="text-[10px] text-gray-600">Carretera Panamericana Km 28, Complejo Industrial</div>
                   <div className="text-[10px] text-gray-600">PBX: (503) 2250-9000 • ventas@nytex.com</div>

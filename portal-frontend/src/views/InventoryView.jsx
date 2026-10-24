@@ -120,7 +120,7 @@ export default function InventoryView() {
       "SKU,Nombre,Categoría,Stock,StockMínimo,Unidad,CostoUSD,Almacén,Ubicación\n" +
       "MP-HIL-05,Hilo de Algodón Cardado 24/1,Materia Prima,300,50,kg,4.25,Almacén de Materias Primas,Rack MP-03\n" +
       "MP-ELA-06,Filamento Elastano Spandex 70D,Materia Prima,150,30,kg,7.80,Almacén de Materias Primas,Rack MP-04\n" +
-      "QUIM-BLAN-01,Blanqueador Óptico Textil,Insumo Químico,80,20,litros,12.50,Almacén de Químicos,Estante Q-01\n" +
+      "QUIM-BLAN-01,Compuesto Químico Especializado,Insumo Químico,80,20,litros,12.50,Almacén de Químicos,Estante Q-01\n" +
       "PT-RIB-201,Rollo Tela Rib 1x1 Algodón,Producto Terminado,25,10,rollos,45.00,Almacén de Producto Terminado,Rack PT-08\n";
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
@@ -1082,7 +1082,7 @@ export default function InventoryView() {
                     onChange={(e) => setOutboundReason(e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-800 text-sm focus:outline-none focus:border-rose-600"
                   >
-                    <option value="Merma por Defecto de Calidad / Desecho Textil">Merma por Defecto de Calidad / Desecho Textil</option>
+                    <option value="Merma por Defecto de Calidad / desecho operativo">Merma por Defecto de Calidad / desecho operativo</option>
                     <option value="Merma por Evaporación / Merma Química">Merma por Evaporación / Merma Química</option>
                     <option value="Ajuste Negativo por Conteo Físico / Faltante">Ajuste Negativo por Conteo Físico / Faltante</option>
                     <option value="Consumo Interno / Muestras de Laboratorio">Consumo Interno / Muestras de Laboratorio</option>

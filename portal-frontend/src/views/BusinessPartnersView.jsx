@@ -89,7 +89,7 @@ const BusinessPartnersView = () => {
       email: '',
       phone: '',
       address: '',
-      bankName: 'BBVA México',
+      bankName: 'BBVA Corporativo',
       bankAccount: '0129-4820-9912',
       bankClabe: '012180001294820991',
       bankSwift: 'BBVAMXMM',
@@ -369,7 +369,7 @@ const BusinessPartnersView = () => {
                         {/* Columna: Datos Bancarios del Proveedor/Socio */}
                         <td className="px-5 py-4">
                           <div className="font-semibold text-gray-800 flex items-center gap-1 text-xs">
-                            <span>🏦</span> {partner.bankName || 'BBVA México'}
+                            <span>🏦</span> {partner.bankName || 'BBVA Corporativo'}
                           </div>
                           <div className="text-xs font-mono text-gray-500 mt-0.5">
                             Cta: {partner.bankAccount || '0129-4820-9912'}
@@ -782,7 +782,7 @@ const BusinessPartnersView = () => {
                               historyData.sales.map(so => (
                                 <tr key={so.id} className="hover:bg-gray-50">
                                   <td className="px-4 py-2 font-mono font-bold text-blue-700">{so.orderCode}</td>
-                                  <td className="px-4 py-2 text-gray-600">Pedido Textil Comercial</td>
+                                  <td className="px-4 py-2 text-gray-600">Pedido Comercial</td>
                                   <td className="px-4 py-2 text-right font-mono font-bold">${so.total?.toLocaleString('es-MX', { minimumFractionDigits: 2 })}</td>
                                   <td className="px-4 py-2 text-center">
                                     <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">{so.status}</span>

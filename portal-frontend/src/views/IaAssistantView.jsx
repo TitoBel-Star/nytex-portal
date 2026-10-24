@@ -75,7 +75,7 @@ export default function IaAssistantView() {
             <span className="mx-2 text-gray-400">/</span>
             <span className="font-bold text-[#0A2540] flex items-center gap-2">
               <span className="px-2.5 py-0.5 text-xs bg-rose-100 text-rose-900 font-bold rounded-full">[23] IA</span>
-              Copilot Cognitivo de Inteligencia Artificial Textil
+              Copilot Cognitivo de Inteligencia Artificial NyTEX Copilot
             </span>
           </div>
           <div className="flex items-center space-x-2">

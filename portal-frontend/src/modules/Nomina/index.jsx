@@ -381,7 +381,7 @@ export default function Nomina() {
                 <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-blue-800 uppercase">
                   CFDI Nómina Versión 4.0 (Simulada)
                 </span>
-                <h3 className="font-black text-gray-900 text-lg mt-1">NyTEX Soluciones Textiles S.A. de C.V.</h3>
+                <h3 className="font-black text-gray-900 text-lg mt-1">NyTEX Soluciones Corporativas S.A.</h3>
                 <p className="text-xs text-gray-500">RFC: NTE180420TX9 • Régimen General de Ley Personas Morales</p>
               </div>
               <button onClick={() => setSelectedReceipt(null)} className="text-gray-400 hover:text-gray-600 text-xl font-bold">

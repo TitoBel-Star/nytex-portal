@@ -477,7 +477,7 @@ const ProcessEventLog = sequelize.define('ProcessEventLog', {
 
 // [26] NyTEX Configuración: Configuración Corporativa y Parámetros Fiscales
 const CompanyConfig = sequelize.define('CompanyConfig', {
-  companyName: { type: DataTypes.STRING, defaultValue: 'NyTEX Textil de Centroamérica S.A. de C.V.' },
+  companyName: { type: DataTypes.STRING, defaultValue: 'NyTEX Global Corporation S.A.' },
   country: { type: DataTypes.STRING, defaultValue: 'El Salvador' },
   taxAuthority: { type: DataTypes.STRING, defaultValue: 'Ministerio de Hacienda (MH)' },
   electronicDocType: { type: DataTypes.STRING, defaultValue: 'DTE (Factura y Crédito Fiscal Electrónico)' },
@@ -2089,7 +2089,7 @@ app.get('/api/tesoreria/cajas', async (req, res) => {
         },
         {
           code: 'CAJA-CHIC-02',
-          name: 'Caja Chica - Planta Textil & Mantenimiento',
+          name: 'Caja Chica - Planta Operativa & Mantenimiento',
           type: 'Caja Chica',
           currency: 'USD',
           authorizedFund: 1200.00,
@@ -2566,7 +2566,7 @@ app.post('/api/activos/depreciate-all', async (req, res) => {
     // AUTOMATIZACIÓN CONTABLE: Póliza de Diario por Depreciación
     const autoEntry = await createAutoJournalEntry({
       type: 'Diario',
-      concept: `Depreciación Contable Mensual de Activos Fijos y Maquinaria Textil`,
+      concept: `Depreciación Contable Mensual de Activos Fijos y Maquinaria y Equipos Industriales`,
       originModule: 'Activos Fijos',
       originReference: `DEP-${new Date().toISOString().substring(0, 7)}`,
       lines: [
@@ -2845,7 +2845,7 @@ app.post('/api/nomina/calculate', async (req, res) => {
       const netPay = Math.round((grossEarnings - empTotalDeductions) * 100) / 100;
 
       // Cargas patronales (Costo Compañía)
-      const employerImss = Math.round((emp.integratedDailySalary * daysWorked * 0.185) * 100) / 100; // 18.5% Riesgo Textil
+      const employerImss = Math.round((emp.integratedDailySalary * daysWorked * 0.185) * 100) / 100; // 18.5% Riesgo Operativo
       const employerInfonavit = Math.round((emp.integratedDailySalary * daysWorked * 0.05) * 100) / 100; // 5% Infonavit
       const stateTax = Math.round(grossEarnings * 0.03 * 100) / 100; // 3% ISN
       const companyCost = Math.round((grossEarnings + employerImss + employerInfonavit + stateTax) * 100) / 100;
@@ -3480,7 +3480,7 @@ app.get('/api/fase6/planeacion/mrp', async (req, res) => {
     });
     if (totalRollsDemanded === 0) totalRollsDemanded = 50; // Base para planeación si es nuevo
 
-    // 2. Parámetros de Transformación Textil (BOM / Telar Circular)
+    // 2. Parámetros de Transformación Industrial (BOM / Telar Circular)
     // 1 Rollo de Tela (20 kg) requiere: 21 kg de Hilatura de Algodón (5% merma técnica) y 2.5 horas de telar
     const kgYarnPerRoll = 21;
     const hoursPerRoll = 2.5;
@@ -3607,7 +3607,7 @@ app.post('/api/fase6/planeacion/generate-orders', async (req, res) => {
   }
 });
 
-// [23] IA ASISTENTE TEXTIL & DIAGNÓSTICO COGNITIVO EN VIVO
+// [23] IA ASISTENTE CORPORATIVO & DIAGNÓSTICO COGNITIVO EN VIVO
 app.post('/api/fase6/ia/chat', async (req, res) => {
   try {
     const { prompt = '' } = req.body;
@@ -3634,7 +3634,7 @@ app.post('/api/fase6/ia/chat', async (req, res) => {
 
     if (lower.includes('inventario') || lower.includes('stock') || lower.includes('compras') || lower.includes('materia')) {
       category = 'Inventario & Cadena de Suministro';
-      reply = `He auditado el inventario central textil. Actualmente contamos con **${inventory.length} SKUs activos** con una valoración de inventario en almacén. Se detectaron **${lowStockItems.length} insumos en nivel crítico** por debajo del stock mínimo de seguridad. La demanda de tejeduría proyectada requiere asegurar compras inmediatas de hilatura de algodón con el proveedor *Hilados y Fibras Sintéticas (BP-003)* para evitar paros de telar.`;
+      reply = `He auditado el inventario central de insumos. Actualmente contamos con **${inventory.length} SKUs activos** con una valoración de inventario en almacén. Se detectaron **${lowStockItems.length} insumos en nivel crítico** por debajo del stock mínimo de seguridad. La demanda de tejeduría proyectada requiere asegurar compras inmediatas de hilatura de algodón con el proveedor *Hilados y Fibras Sintéticas (BP-003)* para evitar paros de telar.`;
       recommendations = [
         'Emitir Orden de Compra urgente por hilatura de algodón peinado 30/1.',
         'Revisar el punto de reorden en WMS para programar recepción en Pasillo A - Racks 01.',
@@ -3647,7 +3647,7 @@ app.post('/api/fase6/ia/chat', async (req, res) => {
       ];
     } else if (lower.includes('cxc') || lower.includes('mora') || lower.includes('cobranza') || lower.includes('crédito') || lower.includes('riesgo')) {
       category = 'Riesgo Crediticio & CxC';
-      reply = `El análisis del modelo predictivo Logit sobre la cartera de cuentas por cobrar revela una cartera total de **$${totalReceivables.toLocaleString()} USD**. El cliente con mayor riesgo detectado es *Distribuidora Textil del Norte* (Score Z: +1.28, probabilidad de mora > 68% debido a disputas previas y línea de crédito al 85%).`;
+      reply = `El análisis del modelo predictivo Logit sobre la cartera de cuentas por cobrar revela una cartera total de **$${totalReceivables.toLocaleString()} USD**. El cliente con mayor riesgo detectado es *Distribuidora Comercial del Norte* (Score Z: +1.28, probabilidad de mora > 68% debido a disputas previas y línea de crédito al 85%).`;
       recommendations = [
         'Condicionar nuevos despachos comerciales a la liquidación de facturas vencidas.',
         'Activar recordatorio automático de cobro vía notificación antes del vencimiento a 30 días.',
@@ -3917,7 +3917,7 @@ app.get('/api/fase7/reports/generate', async (req, res) => {
   }
 });
 
-// [21] BIG DATA: Telemetría Industrial IoT & Data Lake de Planta Textil
+// [21] BIG DATA: Telemetría Industrial IoT & Data Lake de Planta Operativa
 let dataLakeStats = {
   totalIngestedRecords: 42854910,
   dataLakeSizeGb: 18.64,
@@ -3993,7 +3993,7 @@ app.get('/api/fase7/datamining/clusters', async (req, res) => {
         avgFrequencyOrders: 22,
         avgMonetaryAmount: 485000,
         strategy: 'Atención personalizada, línea de crédito preferente y entrega prioritaria en 24h.',
-        representative: 'Distribuidora Textil del Norte S.A.'
+        representative: 'Distribuidora Comercial del Norte S.A.'
       },
       {
         id: 1,
@@ -4031,10 +4031,10 @@ app.get('/api/fase7/datamining/clusters', async (req, res) => {
     ];
 
     const scatterPoints = [
-      { name: 'Distribuidora Textil del Norte', recency: 4, frequency: 24, monetary: 540000, cluster: 0 },
+      { name: 'Distribuidora Comercial del Norte', recency: 4, frequency: 24, monetary: 540000, cluster: 0 },
       { name: 'Modas y Confecciones El Águila', recency: 7, frequency: 19, monetary: 430000, cluster: 0 },
       { name: 'Confecciones del Bajío', recency: 12, frequency: 11, monetary: 165000, cluster: 1 },
-      { name: 'Textiles Guadalajara', recency: 16, frequency: 8, monetary: 120000, cluster: 1 },
+      { name: 'Manufacturas Globales', recency: 16, frequency: 8, monetary: 120000, cluster: 1 },
       { name: 'Pantalones y Tejidos León', recency: 18, frequency: 7, monetary: 98000, cluster: 1 },
       { name: 'Manufacturas del Valle', recency: 65, frequency: 3, monetary: 48000, cluster: 2 },
       { name: 'Deportivos Puebla', recency: 78, frequency: 2, monetary: 38000, cluster: 2 },
@@ -4083,7 +4083,7 @@ app.get('/api/fase7/datamining/rules', (req, res) => {
       {
         id: 'R-03',
         antecedent: ['Tinte Reactivo Azul Marino', 'Fijador de Color'],
-        consequent: ['Suavizante Textil Catiónico'],
+        consequent: ['Componente Aditivo Industrial'],
         support: 0.26,
         confidence: 0.82,
         lift: 2.45,
@@ -4198,7 +4198,7 @@ app.get('/api/circuit/gobernanza/summary', async (req, res) => {
 
     res.json({
       circuitName: 'Circuito 7: Inteligencia de Negocios, Big Data y Gobernanza Global',
-      company: config ? config.companyName : 'NyTEX Textil de Centroamérica S.A. de C.V.',
+      company: config ? config.companyName : 'NyTEX Global Corporation S.A.',
       country: config ? config.country : 'El Salvador',
       taxAuthority: config ? config.taxAuthority : 'Ministerio de Hacienda (MH)',
       electronicDocType: config ? config.electronicDocType : 'DTE (Facturación Electrónica)',
@@ -4280,7 +4280,7 @@ app.post('/api/fases/fase1/simulate', async (req, res) => {
     const order = await SaleOrder.create({
       orderCode,
       clientCode: 'BP-001',
-      clientName: 'Distribuidora Textil del Norte S.A.',
+      clientName: 'Distribuidora Comercial del Norte S.A.',
       clientRfc: 'DTN980312TX1',
       deliveryAddress: 'Parque Industrial Huinalá, Apodaca, N.L.',
       items: [{ sku: 'TEL-JER-01', name: 'Tela Jersey 100% Algodón Crudo', quantity: 20, unitPrice: 2090.52, total: 41810.34 }],
@@ -4565,7 +4565,7 @@ async function startServer() {
           updated = true;
         }
         if (!p.bankName) {
-          p.bankName = p.type === 'Proveedor' ? 'BBVA México' : 'Banorte Corporativo';
+          p.bankName = p.type === 'Proveedor' ? 'BBVA Corporativo' : 'Banorte Corporativo';
           updated = true;
         }
         if (!p.bankAccount) {
@@ -4627,11 +4627,11 @@ async function startServer() {
     const bpCount = await BusinessPartner.count();
     if (bpCount === 0) {
       await BusinessPartner.bulkCreate([
-        { code: 'BP-001', name: 'Distribuidora Textil del Norte S.A.', type: 'Cliente', contactName: 'María González', email: 'mgonzalez@dtextil.com', phone: '81-8123-4567', address: 'Parque Industrial Apodaca, N.L.', balance: 54200 },
-        { code: 'BP-002', name: 'Confecciones del Bajío S.A.', type: 'Cliente', contactName: 'Carlos Ruiz', email: 'cruiz@bajiotextil.com', phone: '47-7890-1234', address: 'León, Guanajuato', balance: 32000 },
-        { code: 'BP-003', name: 'Hilados y Fibras Sintéticas S.A.', type: 'Proveedor', contactName: 'John Smith', email: 'jsmith@hilados.com', phone: '55-5555-8888', address: 'Tlalnepantla, Edo. Mex', balance: -45000 },
+        { code: 'BP-001', name: 'Distribuidora Comercial del Norte S.A.', type: 'Cliente', contactName: 'María González', email: 'mgonzalez@dcomercial.com', phone: '81-8123-4567', address: 'Parque Industrial Apodaca, N.L.', balance: 54200 },
+        { code: 'BP-002', name: 'Confecciones del Bajío S.A.', type: 'Cliente', contactName: 'Carlos Ruiz', email: 'cruiz@bajioindustrial.com', phone: '47-7890-1234', address: 'León, Guanajuato', balance: 32000 },
+        { code: 'BP-003', name: 'Materiales y Fibras Sintéticas S.A.', type: 'Proveedor', contactName: 'John Smith', email: 'jsmith@fibrascorp.com', phone: '55-5555-8888', address: 'Tlalnepantla, Edo. Mex', balance: -45000 },
         { code: 'BP-004', name: 'Transportes Express del Norte', type: 'Fletero', contactName: 'Roberto Méndez', email: 'rmendez@transnorte.com', phone: '81-2345-6789', address: 'Escobedo, N.L.', balance: 0 },
-        { code: 'BP-005', name: 'Químicos y Colorantes de México', type: 'Proveedor', contactName: 'Laura Vega', email: 'lvega@quimicosmex.com', phone: '33-3333-2222', address: 'Guadalajara, Jalisco', balance: -18000 }
+        { code: 'BP-005', name: 'Químicos y Componentes Globales S.A.', type: 'Proveedor', contactName: 'Laura Vega', email: 'lvega@quimicoscorp.com', phone: '33-3333-2222', address: 'Guadalajara, Jalisco', balance: -18000 }
       ]);
       console.log('Seed: Business Partners insertados.');
     }
@@ -4773,7 +4773,7 @@ async function startServer() {
           curp: 'CARA881215HNLSTL03',
           nss: '48088819284',
           department: 'Ventas & Comercial',
-          jobTitle: 'Ejecutivo de Cuentas Clave Textil',
+          jobTitle: 'Ejecutivo de Cuentas Clave Corporativas',
           contractType: 'Tiempo Indeterminado',
           dailySalary: 750,
           integratedDailySalary: 787.50,
@@ -4917,12 +4917,12 @@ async function startServer() {
           name: 'Liberación de Calidad Fabril & Entrada a Almacén',
           category: 'Producción & Calidad',
           version: 'v3.0',
-          description: 'Protocolo de inspección textil de rollos producidos en telar Mayer & Cie previo al etiquetado WMS.',
+          description: 'Protocolo de inspección industrial de rollos producidos en telar Mayer & Cie previo al etiquetado WMS.',
           slaHours: 6,
           activeInstances: 4,
           steps: [
             { step: 1, name: 'Pesaje e Inspección Visual', role: 'Operador Telar' },
-            { step: 2, name: 'Prueba de Resistencia Textil', role: 'Ing. Calidad' },
+            { step: 2, name: 'Prueba de Resistencia de Materiales', role: 'Ing. Calidad' },
             { step: 3, name: 'Generación de QR y Ubicación en Racks', role: 'WMS' }
           ],
           status: 'Desplegado'
@@ -4963,7 +4963,7 @@ async function startServer() {
           taskCode: 'TSK-2026-002',
           processCode: 'WF-VNT-02',
           processName: 'Autorización de Crédito Extraordinario a Clientes',
-          title: 'Ampliación de Línea de Crédito: Distribuidora Textil del Norte ($120,000 USD)',
+          title: 'Ampliación de Línea de Crédito: Distribuidora Comercial del Norte ($120,000 USD)',
           referenceCode: 'BP-001',
           requester: 'Lic. Alejandro Castillo (Ventas)',
           assignedRole: 'Director General',
@@ -5052,10 +5052,10 @@ async function startServer() {
     const cfgCount = await CompanyConfig.count();
     if (cfgCount === 0) {
       await CompanyConfig.create({
-        companyName: 'NyTEX Textil de México S.A. de C.V.',
+        companyName: 'NyTEX Corporation S.A.',
         rfc: 'NTM180612TX4',
         taxRegime: '601 - General de Ley Personas Morales',
-        fiscalAddress: 'Av. de las Industrias Textiles 450, Parque Industrial Huinalá, Apodaca, N.L. C.P. 66645',
+        fiscalAddress: 'Av. de las Industrias Globales 450, Parque Industrial Huinalá, Apodaca, N.L. C.P. 66645',
         baseCurrency: 'USD',
         exchangeRateUsd: 19.85,
         exchangeRateEur: 21.40,

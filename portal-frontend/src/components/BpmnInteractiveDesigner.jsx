@@ -140,7 +140,7 @@ const TEMPLATES = {
       <bpmn:outgoing>Flow_QC_2</bpmn:outgoing>
     </bpmn:userTask>
     <bpmn:sequenceFlow id="Flow_QC_1" sourceRef="Start_QC" targetRef="Task_Insp" />
-    <bpmn:userTask id="Task_Test" name="Prueba de Resistencia Textil">
+    <bpmn:userTask id="Task_Test" name="Prueba de Resistencia de Materiales">
       <bpmn:incoming>Flow_QC_2</bpmn:incoming>
       <bpmn:outgoing>Flow_QC_3</bpmn:outgoing>
     </bpmn:userTask>
@@ -528,7 +528,7 @@ export default function BpmnInteractiveDesigner({ onModelSaved, nextProcessCode 
             className="bg-slate-800 text-slate-200 border border-slate-700 text-xs rounded-lg px-2.5 py-1.5 font-medium hover:border-purple-500 transition-colors"
           >
             <option value="purchases">📋 Plantilla: Aprobación Compras (&gt; $50k)</option>
-            <option value="quality">🔬 Plantilla: Calidad Fabril Textil</option>
+            <option value="quality">🔬 Plantilla: Calidad Fabril Operativa</option>
             <option value="blank">⚪ Plantilla: Lienzo en Blanco</option>
           </select>
 

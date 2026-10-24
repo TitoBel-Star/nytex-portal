@@ -196,7 +196,7 @@ export default function BIyReportes() {
                 <div className="flex items-center gap-3">
                   <div className="bg-slate-950 text-white font-black text-xl px-3 py-1 rounded">NyTEX</div>
                   <div>
-                    <h2 className="font-extrabold text-base text-slate-900">NyTEX Textil de México S.A. de C.V.</h2>
+                    <h2 className="font-extrabold text-base text-slate-900">NyTEX Corporation S.A.</h2>
                     <p className="text-xs text-slate-500">RFC: NTM180612TX4 • Régimen 601 General de Ley Personas Morales</p>
                   </div>
                 </div>

@@ -218,7 +218,7 @@ export default function CircuitoNominaView() {
                 </div>
                 <h4 className="font-black text-gray-900 text-sm mt-2">Incidencias & Asistencia</h4>
                 <p className="text-[11px] text-gray-600 mt-1">
-                  Control biométrico de faltas, retardos y horas extras dobles de producción textil.
+                  Control biométrico de faltas, retardos y horas extras dobles de producción industrial.
                 </p>
                 <div className="mt-3 bg-white p-2 rounded border border-blue-100 text-[11px] space-y-1">
                   <div className="text-gray-600">Incidencias activas: <strong>{data?.incidents?.length || 0}</strong></div>

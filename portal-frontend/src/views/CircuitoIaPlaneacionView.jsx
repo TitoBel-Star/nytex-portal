@@ -211,7 +211,7 @@ export default function CircuitoIaPlaneacionView() {
                 <span className="text-xs font-bold px-2 py-0.5 rounded bg-rose-100 text-rose-800">[23] IA Copilot</span>
                 <span className="text-xs text-gray-400">Paso 4</span>
               </div>
-              <h4 className="font-bold text-gray-900 text-xs mt-2">Asistente Cognitivo Textil</h4>
+              <h4 className="font-bold text-gray-900 text-xs mt-2">Asistente Cognitivo NyTEX</h4>
               <p className="text-[11px] text-gray-500">
                 Diagnósticos automatizados y consultas en lenguaje natural fundamentadas en datos reales de la BD.
               </p>

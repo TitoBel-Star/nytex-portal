@@ -49,7 +49,7 @@ export default function Configuracion() {
       setElectronicDocType('SFEP (Facturación Electrónica Panamá)');
       setVatRate(7.0);
       setExchangeRateUsd(1.00);
-    } else if (c === 'México') {
+    } else if (c === 'Regional Norte') {
       setTaxAuthority('SAT (Servicio de Administración Tributaria)');
       setElectronicDocType('CFDI 4.0');
       setVatRate(16.0);
@@ -77,7 +77,7 @@ export default function Configuracion() {
       setRoles(jsonRoles);
 
       if (jsonCfg) {
-        setCompanyName(jsonCfg.companyName || 'NyTEX Textil de Centroamérica S.A. de C.V.');
+        setCompanyName(jsonCfg.companyName || 'NyTEX Global Corporation S.A.');
         setCountry(jsonCfg.country || 'El Salvador');
         setTaxAuthority(jsonCfg.taxAuthority || 'Ministerio de Hacienda (MH)');
         setElectronicDocType(jsonCfg.electronicDocType || 'DTE (Facturación Electrónica & CCF)');
@@ -247,7 +247,7 @@ export default function Configuracion() {
                     { name: 'Honduras', flag: '🇭🇳', code: 'SAR CAI' },
                     { name: 'Costa Rica', flag: '🇨🇷', code: 'DGT 4.3' },
                     { name: 'Panamá', flag: '🇵🇦', code: 'DGI SFEP' },
-                    { name: 'México', flag: '🇲🇽', code: 'SAT CFDI' }
+                    { name: 'Regional Norte', flag: '🌐', code: 'CFDI / SAT' }
                   ].map(c => (
                     <button
                       key={c.name}
@@ -284,7 +284,7 @@ export default function Configuracion() {
                      country === 'Guatemala' ? 'NIT (Guatemala)' :
                      country === 'Honduras' ? 'RTN (Honduras)' :
                      country === 'Costa Rica' ? 'Cédula Jurídica (Costa Rica)' :
-                     country === 'Panamá' ? 'RUC / DV (Panamá)' : 'RFC (México)'}
+                     country === 'Panamá' ? 'RUC / DV (Panamá)' : 'Identificación Fiscal (RFC / Tax ID)'}
                   </label>
                   <input 
                     type="text" 

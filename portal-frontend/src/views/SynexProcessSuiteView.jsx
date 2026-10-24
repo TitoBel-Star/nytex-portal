@@ -19,7 +19,7 @@ export default function SynexProcessSuiteView() {
     processName: 'Aprobación de Órdenes de Compra Mayores',
     title: '',
     referenceCode: '',
-    requester: 'Comprador Textil',
+    requester: 'Comprador Industrial',
     assignedRole: 'Director de Finanzas',
     priority: 'Alta',
     amount: 65000,
