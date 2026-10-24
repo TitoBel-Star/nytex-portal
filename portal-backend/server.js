@@ -37,14 +37,21 @@ const User = sequelize.define('User', {
 const BusinessPartner = sequelize.define('BusinessPartner', {
   code: { type: DataTypes.STRING, unique: true, allowNull: false },
   name: { type: DataTypes.STRING, allowNull: false },
-  type: { type: DataTypes.STRING, allowNull: false }, // Cliente, Proveedor, Fletero, Prospecto
+  type: { type: DataTypes.STRING, allowNull: false }, // Cliente, Proveedor, Fletero, Prospecto, Aliado Comercial
+  taxId: { type: DataTypes.STRING, defaultValue: 'RFC-GENERICO' },
   contactName: { type: DataTypes.STRING },
   email: { type: DataTypes.STRING },
   phone: { type: DataTypes.STRING },
   address: { type: DataTypes.STRING },
+  paymentTerms: { type: DataTypes.STRING, defaultValue: 'Neto 30 días' },
   creditLimit: { type: DataTypes.FLOAT, defaultValue: 50000 },
   balance: { type: DataTypes.FLOAT, defaultValue: 0 },
-  status: { type: DataTypes.STRING, defaultValue: 'Activo' }
+  bankName: { type: DataTypes.STRING, defaultValue: 'BBVA Bancomer' },
+  bankAccount: { type: DataTypes.STRING, defaultValue: '0129-4820-9912' },
+  bankClabe: { type: DataTypes.STRING, defaultValue: '012180001294820991' },
+  bankSwift: { type: DataTypes.STRING, defaultValue: 'BBVAMXMM' },
+  status: { type: DataTypes.STRING, defaultValue: 'Activo' },
+  notes: { type: DataTypes.TEXT, allowNull: true }
 });
 
 // ==========================================
@@ -584,6 +591,61 @@ app.post('/api/business-partners', async (req, res) => {
     res.status(201).json(newPartner);
   } catch (error) {
     res.status(400).json({ error: error.message });
+  }
+});
+
+app.put('/api/business-partners/:code', async (req, res) => {
+  try {
+    const { code } = req.params;
+    const partner = await BusinessPartner.findOne({ where: { code } });
+    if (!partner) return res.status(404).json({ error: 'Socio de negocio no encontrado' });
+    await partner.update(req.body);
+    res.json(partner);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+app.get('/api/business-partners/:code/history', async (req, res) => {
+  try {
+    const { code } = req.params;
+    const partner = await BusinessPartner.findOne({ where: { code } });
+    if (!partner) return res.status(404).json({ error: 'Socio de negocio no encontrado' });
+
+    let sales = [];
+    let receivables = [];
+    let purchases = [];
+    let payables = [];
+
+    // Clientes o Aliados: Pedidos de Venta y CxC
+    sales = await SaleOrder.findAll({ 
+      where: { clientCode: code },
+      order: [['id', 'DESC']]
+    });
+    receivables = await AccountReceivable.findAll({ 
+      where: { clientCode: code },
+      order: [['id', 'DESC']]
+    });
+
+    // Proveedores o Fleteros: Órdenes de Compra y CxP
+    purchases = await PurchaseOrder.findAll({ 
+      where: { vendorCode: code },
+      order: [['id', 'DESC']]
+    });
+    payables = await AccountPayable.findAll({ 
+      where: { vendorCode: code },
+      order: [['id', 'DESC']]
+    });
+
+    res.json({
+      partner,
+      sales,
+      receivables,
+      purchases,
+      payables
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 });
 
@@ -4446,6 +4508,41 @@ const PORT = process.env.PORT || 3001;
 async function startServer() {
   try {
     await sequelize.sync({ alter: true });
+
+    // Actualizar partners existentes con datos bancarios y fiscales completos
+    try {
+      const existingPartners = await BusinessPartner.findAll();
+      for (const p of existingPartners) {
+        let updated = false;
+        if (!p.taxId || p.taxId === 'RFC-GENERICO') {
+          p.taxId = p.type === 'Proveedor' ? `PRV${p.code.replace(/\D/g, '')}880912MX1` : `CLI${p.code.replace(/\D/g, '')}920115TX0`;
+          updated = true;
+        }
+        if (!p.bankName) {
+          p.bankName = p.type === 'Proveedor' ? 'BBVA México' : 'Banorte Corporativo';
+          updated = true;
+        }
+        if (!p.bankAccount) {
+          p.bankAccount = '0129-4820-9912';
+          updated = true;
+        }
+        if (!p.bankClabe) {
+          p.bankClabe = '012180001294820991';
+          updated = true;
+        }
+        if (!p.bankSwift) {
+          p.bankSwift = 'BBVAMXMM';
+          updated = true;
+        }
+        if (!p.paymentTerms) {
+          p.paymentTerms = 'Neto 30 días';
+          updated = true;
+        }
+        if (updated) await p.save();
+      }
+    } catch (e) {
+      console.log('Error actualizando partners existentes:', e.message);
+    }
     
     // Seed 1: Business Partners
     const bpCount = await BusinessPartner.count();
