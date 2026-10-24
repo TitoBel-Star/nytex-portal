@@ -66,7 +66,10 @@ const SaleOrder = sequelize.define('SaleOrder', {
     defaultValue: 'Cotización' 
   },
   isInvoiced: { type: DataTypes.BOOLEAN, defaultValue: false },
-  invoiceCode: { type: DataTypes.STRING, allowNull: true }
+  invoiceCode: { type: DataTypes.STRING, allowNull: true },
+  paymentMethod: { type: DataTypes.STRING, defaultValue: 'Por Definir' },
+  amountReceived: { type: DataTypes.FLOAT, defaultValue: 0 },
+  changeGiven: { type: DataTypes.FLOAT, defaultValue: 0 }
 });
 
 const WmsTask = sequelize.define('WmsTask', {
@@ -140,6 +143,19 @@ const InventoryItem = sequelize.define('InventoryItem', {
     type: DataTypes.STRING, 
     defaultValue: 'Óptimo' 
   }
+});
+
+const InventoryMovement = sequelize.define('InventoryMovement', {
+  itemId: { type: DataTypes.INTEGER, allowNull: false },
+  sku: { type: DataTypes.STRING, allowNull: false },
+  type: { type: DataTypes.STRING, allowNull: false }, // 'ENTRADA', 'SALIDA_MERMA', 'ALTA_CATALOGO', 'AJUSTE'
+  quantity: { type: DataTypes.FLOAT, allowNull: false },
+  previousStock: { type: DataTypes.FLOAT, allowNull: false },
+  newStock: { type: DataTypes.FLOAT, allowNull: false },
+  unitCost: { type: DataTypes.FLOAT, defaultValue: 0 },
+  reason: { type: DataTypes.STRING, defaultValue: '' },
+  reference: { type: DataTypes.STRING, defaultValue: '' },
+  user: { type: DataTypes.STRING, defaultValue: 'Operador Almacén' }
 });
 
 const PurchaseOrder = sequelize.define('PurchaseOrder', {
@@ -637,7 +653,10 @@ app.get('/api/ventas/orders', async (req, res) => {
 
 app.post('/api/ventas/orders', async (req, res) => {
   try {
-    const { clientCode, clientName, deliveryAddress, items, paymentTerms, deliveryMode } = req.body;
+    const { 
+      clientCode, clientName, deliveryAddress, items, paymentTerms, deliveryMode,
+      paymentMethod, amountReceived, changeGiven
+    } = req.body;
     const count = await SaleOrder.count();
     const orderCode = `SO-2026-${String(count + 1).padStart(3, '0')}`;
 
@@ -676,7 +695,10 @@ app.post('/api/ventas/orders', async (req, res) => {
       total,
       paymentTerms: paymentTerms || defaultTerms,
       status,
-      isInvoiced: false
+      isInvoiced: false,
+      paymentMethod: paymentMethod || (paymentTerms === 'Contado / Anticipado' ? 'Efectivo' : 'Crédito'),
+      amountReceived: Number(amountReceived) || 0,
+      changeGiven: Number(changeGiven) || 0
     });
 
     // Si es despacho mixto, se genera la orden de alistamiento en rampa en WMS (solo para los productos de Bodega)
@@ -700,6 +722,38 @@ app.post('/api/ventas/orders', async (req, res) => {
     res.status(201).json(newOrder);
   } catch (error) {
     res.status(400).json({ error: error.message });
+  }
+});
+
+// Cancelar / Anular Orden
+app.post('/api/ventas/orders/:orderCode/cancel', async (req, res) => {
+  try {
+    const { orderCode } = req.params;
+    const { reason } = req.body || {};
+    const order = await SaleOrder.findOne({ where: { orderCode } });
+    if (!order) return res.status(404).json({ error: 'Orden no encontrada' });
+
+    if (order.isInvoiced) {
+      return res.status(400).json({ error: 'No se puede cancelar una orden ya facturada (Folio: ' + order.invoiceCode + '). Requiere nota de crédito en CxC.' });
+    }
+
+    order.status = 'Cancelada';
+    await order.save();
+
+    // Actualizar tarea WMS asociada si existe
+    const wmsTask = await WmsTask.findOne({ where: { orderCode } });
+    if (wmsTask) {
+      wmsTask.status = 'Cancelada';
+      await wmsTask.save();
+    }
+
+    res.json({
+      success: true,
+      message: `Orden ${orderCode} ha sido cancelada exitosamente.` + (reason ? ` Motivo: ${reason}` : ''),
+      order
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 });
 
@@ -1145,6 +1199,20 @@ app.get('/api/inventario/items', async (req, res) => {
 app.post('/api/inventario/items', async (req, res) => {
   try {
     const newItem = await InventoryItem.create(req.body);
+    if (newItem.stock > 0) {
+      await InventoryMovement.create({
+        itemId: newItem.id,
+        sku: newItem.sku,
+        type: 'ALTA_CATALOGO',
+        quantity: newItem.stock,
+        previousStock: 0,
+        newStock: newItem.stock,
+        unitCost: newItem.unitCost || 0,
+        reason: 'Alta de SKU con Existencia Inicial',
+        reference: `ALTA-${newItem.sku}`,
+        user: 'Control de Inventarios'
+      });
+    }
     res.status(201).json(newItem);
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -1164,14 +1232,113 @@ app.post('/api/inventario/items/:id/inbound', async (req, res) => {
       return res.status(404).json({ error: 'SKU / Material no encontrado en inventario' });
     }
 
+    const prevStock = item.stock;
     item.stock = Math.round((item.stock + qty) * 100) / 100;
     item.status = item.stock > item.minStock ? 'Óptimo' : 'Bajo Stock';
     await item.save();
+
+    await InventoryMovement.create({
+      itemId: item.id,
+      sku: item.sku,
+      type: 'ENTRADA',
+      quantity: qty,
+      previousStock: prevStock,
+      newStock: item.stock,
+      unitCost: item.unitCost || 0,
+      reason,
+      reference: `REC-${Date.now().toString().slice(-4)}`,
+      user: 'Operador Almacén'
+    });
 
     res.json({
       success: true,
       message: `Se registraron exitosamente +${qty} ${item.unit} al SKU ${item.sku} (${item.name}). Existencia actual: ${item.stock} ${item.unit}. Motivo: ${reason}`,
       item
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/api/inventario/items/:id/outbound', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { quantity, reason = 'Merma / Desecho Operativo', reference = '' } = req.body;
+    const qty = parseFloat(quantity);
+    if (isNaN(qty) || qty <= 0) {
+      return res.status(400).json({ error: 'La cantidad a rebajar debe ser un número mayor a cero' });
+    }
+    const item = await InventoryItem.findByPk(id);
+    if (!item) {
+      return res.status(404).json({ error: 'SKU / Material no encontrado en inventario' });
+    }
+    if (item.stock < qty) {
+      return res.status(400).json({ error: `Existencias insuficientes. Stock actual: ${item.stock} ${item.unit}` });
+    }
+
+    const prevStock = item.stock;
+    item.stock = Math.round((item.stock - qty) * 100) / 100;
+    item.status = item.stock <= 0 ? 'Agotado' : (item.stock <= item.minStock ? 'Bajo Stock' : 'Óptimo');
+    await item.save();
+
+    await InventoryMovement.create({
+      itemId: item.id,
+      sku: item.sku,
+      type: 'SALIDA_MERMA',
+      quantity: qty,
+      previousStock: prevStock,
+      newStock: item.stock,
+      unitCost: item.unitCost || 0,
+      reason,
+      reference: reference || `AJ-SAL-${Date.now().toString().slice(-4)}`,
+      user: 'Supervisor de Planta'
+    });
+
+    res.json({
+      success: true,
+      message: `Se rebajaron exitosamente -${qty} ${item.unit} del SKU ${item.sku}. Nuevo stock: ${item.stock} ${item.unit}. Motivo: ${reason}`,
+      item
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.get('/api/inventario/items/:id/kardex', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const item = await InventoryItem.findByPk(id);
+    if (!item) {
+      return res.status(404).json({ error: 'Item no encontrado' });
+    }
+
+    let movements = await InventoryMovement.findAll({
+      where: { itemId: id },
+      order: [['id', 'DESC']]
+    });
+
+    if (movements.length === 0) {
+      movements = [
+        {
+          id: 1,
+          itemId: item.id,
+          sku: item.sku,
+          type: 'SALDO_INICIAL',
+          quantity: item.stock,
+          previousStock: 0,
+          newStock: item.stock,
+          unitCost: item.unitCost,
+          reason: 'Carga Inicial de Inventario / Catálogo Maestro',
+          reference: 'INV-INI-001',
+          user: 'Control Central',
+          createdAt: item.createdAt || new Date()
+        }
+      ];
+    }
+
+    res.json({
+      item,
+      movements
     });
   } catch (error) {
     res.status(500).json({ error: error.message });

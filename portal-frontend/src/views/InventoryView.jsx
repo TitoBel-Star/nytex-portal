@@ -28,6 +28,22 @@ export default function InventoryView() {
   const [inboundQuantity, setInboundQuantity] = useState('');
   const [inboundReason, setInboundReason] = useState('Entrada Directa / Recepción de Almacén');
 
+  // Modal Salida / Ajuste de Merma
+  const [outboundModalOpen, setOutboundModalOpen] = useState(false);
+  const [outboundItemId, setOutboundItemId] = useState('');
+  const [outboundQuantity, setOutboundQuantity] = useState('');
+  const [outboundReason, setOutboundReason] = useState('Merma por Defecto de Calidad / Desecho');
+  const [outboundReference, setOutboundReference] = useState('');
+
+  // Modal Kardex Detallado
+  const [kardexModalOpen, setKardexModalOpen] = useState(false);
+  const [kardexData, setKardexData] = useState(null);
+  const [loadingKardex, setLoadingKardex] = useState(false);
+
+  // Paginación Dinámica
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+
   // Modal Carga Masiva (Batch) de SKUs
   const [batchModalOpen, setBatchModalOpen] = useState(false);
   const [batchText, setBatchText] = useState('');
@@ -189,6 +205,83 @@ export default function InventoryView() {
     }
   };
 
+  const handleOutboundSubmit = async (e) => {
+    e.preventDefault();
+    if (!outboundItemId) return;
+    try {
+      const res = await fetch(`/api/inventario/items/${outboundItemId}/outbound`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          quantity: parseFloat(outboundQuantity),
+          reason: outboundReason,
+          reference: outboundReference
+        })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setActionMessage(data.message);
+        setTimeout(() => setActionMessage(''), 6000);
+        setOutboundModalOpen(false);
+        setOutboundQuantity('');
+        setOutboundReference('');
+        fetchItems();
+      } else {
+        alert(data.error || 'Error al registrar salida/merma');
+      }
+    } catch (err) {
+      console.error('Error en salida:', err);
+    }
+  };
+
+  const openKardex = async (itemId) => {
+    setLoadingKardex(true);
+    setKardexModalOpen(true);
+    try {
+      const res = await fetch(`/api/inventario/items/${itemId}/kardex`);
+      const data = await res.json();
+      if (res.ok) {
+        setKardexData(data);
+      } else {
+        alert(data.error || 'Error al consultar Kardex');
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoadingKardex(false);
+    }
+  };
+
+  const handleExportCSV = () => {
+    if (items.length === 0) {
+      alert('No hay items para exportar.');
+      return;
+    }
+    const headers = ["SKU", "Nombre", "Categoría", "Existencia Actual", "Stock Mínimo", "Unidad", "Costo Unitario ($)", "Valor Total ($)", "Almacén", "Ubicación / Rack", "Estado"];
+    const rows = filteredItems.map(it => [
+      `"${it.sku}"`,
+      `"${(it.name || '').replace(/"/g, '""')}"`,
+      `"${it.category}"`,
+      it.stock,
+      it.minStock,
+      `"${it.unit}"`,
+      it.unitCost,
+      ((it.stock || 0) * (it.unitCost || 0)).toFixed(2),
+      `"${it.warehouse}"`,
+      `"${it.location}"`,
+      `"${it.status}"`
+    ]);
+    const csvContent = "\uFEFF" + [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', `kardex_inventario_nytex_${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   useEffect(() => {
     fetchItems();
   }, []);
@@ -240,6 +333,10 @@ export default function InventoryView() {
     return true;
   });
 
+  const totalPages = Math.ceil(filteredItems.length / pageSize) || 1;
+  const safeCurrentPage = Math.min(currentPage, totalPages);
+  const paginatedItems = filteredItems.slice((safeCurrentPage - 1) * pageSize, safeCurrentPage * pageSize);
+
   const totalValue = items.reduce((sum, it) => sum + ((it.stock || 0) * (it.unitCost || 0)), 0);
   const lowStockCount = items.filter(it => it.stock <= it.minStock).length;
   const rawCount = items.filter(it => it.category === 'Materia Prima' || it.category === 'Insumo Químico').length;
@@ -289,6 +386,13 @@ export default function InventoryView() {
               className="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 px-3 py-1.5 rounded-md text-xs font-semibold shadow-sm transition"
             >
               Ir a Producción [7]
+            </button>
+            <button 
+              onClick={handleExportCSV}
+              className="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 px-3 py-1.5 rounded-md text-xs font-semibold shadow-sm transition flex items-center gap-1.5"
+              title="Descargar catálogo e inventario valorizado en formato CSV para Excel"
+            >
+              <span>📊</span> EXPORTAR CSV
             </button>
             <button 
               onClick={() => {
@@ -493,12 +597,12 @@ export default function InventoryView() {
                   <tr>
                     <td colSpan="8" className="px-6 py-8 text-center text-gray-400">Cargando catálogo de inventario...</td>
                   </tr>
-                ) : filteredItems.length === 0 ? (
+                ) : paginatedItems.length === 0 ? (
                   <tr>
-                    <td colSpan="8" className="px-6 py-8 text-center text-gray-400">No hay productos en esta categoría.</td>
+                    <td colSpan="8" className="px-6 py-8 text-center text-gray-400">No hay productos que coincidan con los filtros.</td>
                   </tr>
                 ) : (
-                  filteredItems.map(it => (
+                  paginatedItems.map(it => (
                     <tr key={it.id} className="hover:bg-emerald-50/20 transition">
                       <td className="px-6 py-4 font-mono font-bold text-[#006EAD]">
                         {it.sku}
@@ -528,17 +632,36 @@ export default function InventoryView() {
                         </span>
                       </td>
                       <td className="px-6 py-4 text-right">
-                        <div className="flex items-center justify-end gap-1.5">
+                        <div className="flex items-center justify-end gap-1.5 flex-wrap">
                           <button
                             onClick={() => {
                               setInboundItemId(it.id);
                               setInboundQuantity('');
                               setInboundModalOpen(true);
                             }}
-                            className="px-2.5 py-1 text-xs bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 font-bold rounded shadow-sm transition"
+                            className="px-2 py-1 text-xs bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 font-bold rounded shadow-sm transition"
                             title={`Registrar entrada de stock para SKU ${it.sku}`}
                           >
                             + Entrada
+                          </button>
+                          <button
+                            onClick={() => {
+                              setOutboundItemId(it.id);
+                              setOutboundQuantity('');
+                              setOutboundReference('');
+                              setOutboundModalOpen(true);
+                            }}
+                            className="px-2 py-1 text-xs bg-rose-50 hover:bg-rose-100 text-rose-800 border border-rose-300 font-bold rounded shadow-sm transition"
+                            title={`Registrar salida por merma o desecho para SKU ${it.sku}`}
+                          >
+                            - Merma
+                          </button>
+                          <button
+                            onClick={() => openKardex(it.id)}
+                            className="px-2.5 py-1 text-xs bg-indigo-50 hover:bg-indigo-100 text-indigo-800 border border-indigo-300 font-bold rounded shadow-sm transition flex items-center gap-1"
+                            title={`Ver Kardex y bitácora histórica de movimientos de ${it.sku}`}
+                          >
+                            <span>📜</span> Kardex
                           </button>
                           {it.stock <= it.minStock && it.category !== 'Producto Terminado' ? (
                             <button
@@ -565,6 +688,56 @@ export default function InventoryView() {
                 )}
               </tbody>
             </table>
+          </div>
+
+          {/* Paginación y Resumen */}
+          <div className="flex flex-wrap items-center justify-between border-t border-gray-100 px-6 py-3.5 bg-gray-50/60 gap-4 text-xs text-gray-600">
+            <div className="flex items-center gap-2">
+              <span>Registros por página:</span>
+              <select
+                value={pageSize}
+                onChange={(e) => {
+                  setPageSize(Number(e.target.value));
+                  setCurrentPage(1);
+                }}
+                className="bg-white border border-gray-200 rounded px-2 py-1 font-semibold text-gray-700 focus:outline-none focus:border-[#006EAD]"
+              >
+                <option value={5}>5</option>
+                <option value={10}>10</option>
+                <option value={25}>25</option>
+                <option value={50}>50</option>
+              </select>
+              <span className="text-gray-400">|</span>
+              <span>Página <strong>{safeCurrentPage}</strong> de <strong>{totalPages}</strong> ({filteredItems.length} SKUs filtrados)</span>
+            </div>
+
+            <div className="flex items-center gap-1.5">
+              <button
+                disabled={safeCurrentPage === 1}
+                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                className="px-3 py-1 bg-white border border-gray-200 rounded hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed font-medium shadow-sm transition"
+              >
+                ← Anterior
+              </button>
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
+                <button
+                  key={p}
+                  onClick={() => setCurrentPage(p)}
+                  className={`w-7 h-7 rounded text-xs font-bold transition ${
+                    safeCurrentPage === p ? 'bg-[#006EAD] text-white shadow-sm' : 'bg-white border border-gray-200 hover:bg-gray-100 text-gray-700'
+                  }`}
+                >
+                  {p}
+                </button>
+              ))}
+              <button
+                disabled={safeCurrentPage === totalPages}
+                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                className="px-3 py-1 bg-white border border-gray-200 rounded hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed font-medium shadow-sm transition"
+              >
+                Siguiente →
+              </button>
+            </div>
           </div>
         </div>
 
@@ -797,6 +970,250 @@ export default function InventoryView() {
                   </button>
                 </div>
               </form>
+            </div>
+          </div>
+        )}
+
+        {/* Modal Registrar Salida / Merma de Stock */}
+        {outboundModalOpen && (
+          <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+            <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4">
+              <div className="flex justify-between items-center border-b pb-3">
+                <div>
+                  <h3 className="text-lg font-bold text-[#0A2540] flex items-center gap-2">
+                    <span className="text-rose-600">📉</span> Registro de Salida / Merma Operativa
+                  </h3>
+                  <p className="text-xs text-gray-500">Rebaja existencias físicas por merma, rotura o ajuste negativo</p>
+                </div>
+                <button onClick={() => setOutboundModalOpen(false)} className="text-gray-400 hover:text-gray-600 text-xl font-bold">✕</button>
+              </div>
+
+              <form onSubmit={handleOutboundSubmit} className="space-y-4 text-sm">
+                <div>
+                  <label className="block text-xs font-bold text-gray-700 uppercase mb-1">Seleccionar SKU / Material</label>
+                  <select
+                    value={outboundItemId}
+                    onChange={(e) => setOutboundItemId(e.target.value)}
+                    required
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-800 text-sm focus:outline-none focus:border-rose-600"
+                  >
+                    <option value="">-- Seleccionar SKU --</option>
+                    {items.map(it => (
+                      <option key={it.id} value={it.id}>
+                        {it.sku} - {it.name} (Existencia actual: {it.stock} {it.unit})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {(() => {
+                  const selected = items.find(it => String(it.id) === String(outboundItemId));
+                  if (!selected) return null;
+                  return (
+                    <div className="bg-rose-50/60 p-3 rounded-lg border border-rose-200 text-xs space-y-1">
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Material:</span>
+                        <strong className="text-gray-900">{selected.name}</strong>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Almacén y Ubicación:</span>
+                        <span className="font-mono text-gray-800">{selected.warehouse} ({selected.location})</span>
+                      </div>
+                      <div className="flex justify-between border-t border-rose-200 pt-1">
+                        <span className="text-gray-600">Existencia actual disponible:</span>
+                        <span className="font-mono font-bold text-rose-700 text-sm">{selected.stock} {selected.unit}</span>
+                      </div>
+                    </div>
+                  );
+                })()}
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold text-gray-700 uppercase mb-1">Cantidad a Rebajar</label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      min="0.01"
+                      required
+                      placeholder="ej. 15.5"
+                      value={outboundQuantity}
+                      onChange={(e) => setOutboundQuantity(e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg font-mono text-right text-sm focus:outline-none focus:border-rose-600 font-bold"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-gray-700 uppercase mb-1">Folio / Referencia</label>
+                    <input
+                      type="text"
+                      placeholder="ej. ACTA-MERMA-01"
+                      value={outboundReference}
+                      onChange={(e) => setOutboundReference(e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-rose-600"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-gray-700 uppercase mb-1">Motivo / Causa de la Merma</label>
+                  <select
+                    value={outboundReason}
+                    onChange={(e) => setOutboundReason(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-800 text-sm focus:outline-none focus:border-rose-600"
+                  >
+                    <option value="Merma por Defecto de Calidad / Desecho Textil">Merma por Defecto de Calidad / Desecho Textil</option>
+                    <option value="Merma por Evaporación / Merma Química">Merma por Evaporación / Merma Química</option>
+                    <option value="Ajuste Negativo por Conteo Físico / Faltante">Ajuste Negativo por Conteo Físico / Faltante</option>
+                    <option value="Consumo Interno / Muestras de Laboratorio">Consumo Interno / Muestras de Laboratorio</option>
+                    <option value="Salida Especial Autorizada por Gerencia">Salida Especial Autorizada por Gerencia</option>
+                  </select>
+                </div>
+
+                <div className="flex justify-end gap-2 pt-3 border-t">
+                  <button
+                    type="button"
+                    onClick={() => setOutboundModalOpen(false)}
+                    className="px-4 py-2 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-lg"
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-5 py-2 text-sm bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-lg shadow-sm transition"
+                  >
+                    Confirmar Salida / Merma
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* Modal Kardex Detallado por SKU */}
+        {kardexModalOpen && (
+          <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+            <div className="bg-white rounded-2xl max-w-4xl w-full p-6 shadow-2xl space-y-4 max-h-[90vh] flex flex-col">
+              <div className="flex justify-between items-center border-b pb-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center text-xl font-bold">
+                    📜
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-[#0A2540] flex items-center gap-2">
+                      Kardex Físico y Valuado de Inventario
+                    </h3>
+                    <p className="text-xs text-gray-500">Trazabilidad cronológica de entradas, consumos, mermas y saldos valorizados</p>
+                  </div>
+                </div>
+                <button onClick={() => setKardexModalOpen(false)} className="text-gray-400 hover:text-gray-600 text-xl font-bold">✕</button>
+              </div>
+
+              {loadingKardex || !kardexData ? (
+                <div className="py-16 text-center text-gray-400 text-sm">
+                  Consultando bitácora de movimientos en servidor...
+                </div>
+              ) : (
+                <div className="overflow-y-auto space-y-4 flex-1 pr-1">
+                  {/* Ficha Resumen del SKU */}
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-3 p-3.5 bg-slate-50 border border-slate-200 rounded-xl text-xs">
+                    <div>
+                      <span className="text-gray-400 font-bold uppercase block text-[10px]">SKU / Código</span>
+                      <strong className="text-sm font-mono text-[#006EAD]">{kardexData.item.sku}</strong>
+                      <span className="block text-gray-700 font-medium truncate">{kardexData.item.name}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-400 font-bold uppercase block text-[10px]">Categoría & Unidad</span>
+                      <strong className="text-gray-800">{kardexData.item.category}</strong>
+                      <span className="block text-gray-500 font-mono">Unidad: {kardexData.item.unit}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-400 font-bold uppercase block text-[10px]">Existencia Actual</span>
+                      <strong className="text-base font-extrabold text-emerald-700 font-mono">
+                        {kardexData.item.stock} {kardexData.item.unit}
+                      </strong>
+                      <span className="block text-gray-500">Ubicación: {kardexData.item.location}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-400 font-bold uppercase block text-[10px]">Valuación Total</span>
+                      <strong className="text-base font-extrabold text-[#0A2540] font-mono">
+                        ${((kardexData.item.stock || 0) * (kardexData.item.unitCost || 0)).toLocaleString('es-MX', { minimumFractionDigits: 2 })}
+                      </strong>
+                      <span className="block text-gray-500">Costo Unit: ${kardexData.item.unitCost}</span>
+                    </div>
+                  </div>
+
+                  {/* Tabla de Movimientos */}
+                  <div className="border border-gray-200 rounded-xl overflow-hidden">
+                    <table className="w-full text-left text-xs">
+                      <thead className="bg-gray-100 text-gray-600 font-bold uppercase text-[10px] border-b border-gray-200">
+                        <tr>
+                          <th className="p-3">Fecha / Hora</th>
+                          <th className="p-3">Folio / Ref</th>
+                          <th className="p-3 text-center">Tipo</th>
+                          <th className="p-3">Motivo / Detalle</th>
+                          <th className="p-3 text-right">Cantidad</th>
+                          <th className="p-3 text-right">Saldo Final</th>
+                          <th className="p-3 text-right">Costo Mov.</th>
+                          <th className="p-3">Usuario</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-100 font-mono">
+                        {kardexData.movements.map((mov, idx) => {
+                          const isPositive = mov.type.includes('ENTRADA') || mov.type.includes('ALTA') || mov.type.includes('INICIAL');
+                          return (
+                            <tr key={idx} className="hover:bg-indigo-50/20">
+                              <td className="p-3 text-gray-500 font-sans text-[11px]">
+                                {new Date(mov.createdAt).toLocaleString('es-MX', { dateStyle: 'short', timeStyle: 'short' })}
+                              </td>
+                              <td className="p-3 font-bold text-[#006EAD]">
+                                {mov.reference || `MOV-${mov.id}`}
+                              </td>
+                              <td className="p-3 text-center">
+                                <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                                  isPositive 
+                                    ? 'bg-emerald-100 text-emerald-800' 
+                                    : 'bg-rose-100 text-rose-800'
+                                }`}>
+                                  {mov.type.replace('_', ' ')}
+                                </span>
+                              </td>
+                              <td className="p-3 font-sans text-gray-700 max-w-[200px] truncate" title={mov.reason}>
+                                {mov.reason || 'Sin justificación'}
+                              </td>
+                              <td className={`p-3 text-right font-bold text-sm ${isPositive ? 'text-emerald-700' : 'text-rose-700'}`}>
+                                {isPositive ? `+${mov.quantity}` : `-${mov.quantity}`} {kardexData.item.unit}
+                              </td>
+                              <td className="p-3 text-right font-bold text-gray-900 bg-gray-50/60">
+                                {mov.newStock} {kardexData.item.unit}
+                              </td>
+                              <td className="p-3 text-right text-gray-600">
+                                ${(mov.quantity * (mov.unitCost || kardexData.item.unitCost || 0)).toFixed(2)}
+                              </td>
+                              <td className="p-3 font-sans text-gray-500 text-[11px]">
+                                {mov.user || 'Sistema'}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+
+              <div className="flex justify-between items-center pt-3 border-t">
+                <span className="text-xs text-gray-500">
+                  {kardexData ? `${kardexData.movements.length} movimientos auditados en Kardex` : ''}
+                </span>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setKardexModalOpen(false)}
+                    className="px-5 py-2 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-lg"
+                  >
+                    Cerrar Kardex
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         )}
