@@ -157,27 +157,34 @@ function AppRoutes() {
           </ProtectedPortalRoute>
         } />
         
-        {/* Rutas de módulos protegidas */}
-        <Route path="/app/ventas" element={<ProtectedModuleRoute moduleId="Ventas"><ModuleLayout><Ventas /></ModuleLayout></ProtectedModuleRoute>} />
-        <Route path="/app/crm" element={<ProtectedModuleRoute moduleId="CRM"><ModuleLayout><CrmDashboardView /></ModuleLayout></ProtectedModuleRoute>} />
-        <Route path="/app/inventario" element={<ProtectedModuleRoute moduleId="Inventario"><ModuleLayout><InventoryView /></ModuleLayout></ProtectedModuleRoute>} />
-        <Route path="/app/compras" element={<ProtectedModuleRoute moduleId="Compras"><ModuleLayout><Compras /></ModuleLayout></ProtectedModuleRoute>} />
-        <Route path="/app/produccion" element={<ProtectedModuleRoute moduleId="Produccion"><ModuleLayout><Produccion /></ModuleLayout></ProtectedModuleRoute>} />
-        <Route path="/app/contabilidad" element={<ProtectedModuleRoute moduleId="Contabilidad"><ModuleLayout><Contabilidad /></ModuleLayout></ProtectedModuleRoute>} />
-        <Route path="/app/tesoreria" element={<ProtectedModuleRoute moduleId="Tesoreria"><ModuleLayout><Tesoreria /></ModuleLayout></ProtectedModuleRoute>} />
-        <Route path="/app/activosfijos" element={<ProtectedModuleRoute moduleId="ActivosFijos"><ModuleLayout><ActivosFijos /></ModuleLayout></ProtectedModuleRoute>} />
-        <Route path="/app/logistica" element={<ProtectedModuleRoute moduleId="Logistica"><ModuleLayout><Logistica /></ModuleLayout></ProtectedModuleRoute>} />
-        <Route path="/app/rrhh" element={<ProtectedModuleRoute moduleId="RRHH"><ModuleLayout><RRHH /></ModuleLayout></ProtectedModuleRoute>} />
-        <Route path="/app/nomina" element={<ProtectedModuleRoute moduleId="Nomina"><ModuleLayout><Nomina /></ModuleLayout></ProtectedModuleRoute>} />
-        <Route path="/app/processsuite" element={<ProtectedModuleRoute moduleId="ProcessSuite"><ModuleLayout><SynexProcessSuiteView /></ModuleLayout></ProtectedModuleRoute>} />
-        <Route path="/app/businesspartners" element={<ProtectedModuleRoute moduleId="BusinessPartners"><ModuleLayout><BusinessPartnersView /></ModuleLayout></ProtectedModuleRoute>} />
-        <Route path="/app/biyreportes" element={<ProtectedModuleRoute moduleId="BIyReportes"><ModuleLayout><BIyReportes /></ModuleLayout></ProtectedModuleRoute>} />
-        <Route path="/app/configuracion" element={<ProtectedModuleRoute moduleId="Configuracion"><ModuleLayout><Configuracion /></ModuleLayout></ProtectedModuleRoute>} />
-        <Route path="/app/rop" element={<ProtectedModuleRoute moduleId="Rop"><ModuleLayout><RopView /></ModuleLayout></ProtectedModuleRoute>} />
-        <Route path="/app/wms" element={<ProtectedModuleRoute moduleId="WMS"><ModuleLayout><WmsView /></ModuleLayout></ProtectedModuleRoute>} />
-        <Route path="/app/cxc" element={<ProtectedModuleRoute moduleId="CxC"><ModuleLayout><CxcView /></ModuleLayout></ProtectedModuleRoute>} />
-        <Route path="/app/cxp" element={<ProtectedModuleRoute moduleId="CxP"><ModuleLayout><CxpView /></ModuleLayout></ProtectedModuleRoute>} />
-        <Route path="/app/processmining" element={<ProtectedModuleRoute moduleId="ProcessMining"><ModuleLayout><ProcessMiningView /></ModuleLayout></ProtectedModuleRoute>} />
+        {/* Redirección de módulos individuales al Workspace Unificado con Menú Lateral */}
+        <Route path="/app/ventas" element={<Navigate to="/app/workspace?mod=ventas" replace />} />
+        <Route path="/app/crm" element={<Navigate to="/app/workspace?mod=crm" replace />} />
+        <Route path="/app/inventario" element={<Navigate to="/app/workspace?mod=inventario" replace />} />
+        <Route path="/app/compras" element={<Navigate to="/app/workspace?mod=compras" replace />} />
+        <Route path="/app/produccion" element={<Navigate to="/app/workspace?mod=produccion" replace />} />
+        <Route path="/app/contabilidad" element={<Navigate to="/app/workspace?mod=contabilidad" replace />} />
+        <Route path="/app/tesoreria" element={<Navigate to="/app/workspace?mod=tesoreria" replace />} />
+        <Route path="/app/activosfijos" element={<Navigate to="/app/workspace?mod=activosfijos" replace />} />
+        <Route path="/app/logistica" element={<Navigate to="/app/workspace?mod=logistica" replace />} />
+        <Route path="/app/rrhh" element={<Navigate to="/app/workspace?mod=rrhh" replace />} />
+        <Route path="/app/nomina" element={<Navigate to="/app/workspace?mod=nomina" replace />} />
+        <Route path="/app/processsuite" element={<Navigate to="/app/workspace?mod=processsuite" replace />} />
+        <Route path="/app/businesspartners" element={<Navigate to="/app/workspace?mod=businesspartners" replace />} />
+        <Route path="/app/biyreportes" element={<Navigate to="/app/workspace?mod=biyreportes" replace />} />
+        <Route path="/app/configuracion" element={<Navigate to="/app/workspace?mod=configuracion" replace />} />
+        <Route path="/app/rop" element={<Navigate to="/app/workspace?mod=rop" replace />} />
+        <Route path="/app/wms" element={<Navigate to="/app/workspace?mod=wms" replace />} />
+        <Route path="/app/cxc" element={<Navigate to="/app/workspace?mod=cxc" replace />} />
+        <Route path="/app/cxp" element={<Navigate to="/app/workspace?mod=cxp" replace />} />
+        <Route path="/app/processmining" element={<Navigate to="/app/workspace?mod=processmining" replace />} />
+        <Route path="/app/dashboards" element={<Navigate to="/app/workspace?mod=dashboards" replace />} />
+        <Route path="/app/bi" element={<Navigate to="/app/workspace?mod=bi" replace />} />
+        <Route path="/app/bigdata" element={<Navigate to="/app/workspace?mod=bigdata" replace />} />
+        <Route path="/app/mineriadatos" element={<Navigate to="/app/workspace?mod=mineriadatos" replace />} />
+        <Route path="/app/ia" element={<Navigate to="/app/workspace?mod=ia" replace />} />
+        <Route path="/app/predictivos" element={<Navigate to="/app/workspace?mod=predictivos" replace />} />
+        <Route path="/app/planeacion" element={<Navigate to="/app/workspace?mod=planeacion" replace />} />
         
         {/* Circuitos Integrados de Operación */}
         <Route path="/app/circuito-comercial" element={<ModuleLayout><CircuitoComercialView /></ModuleLayout>} />
@@ -188,31 +195,23 @@ function AppRoutes() {
         <Route path="/app/circuito-ia-planeacion" element={<ModuleLayout><CircuitoIaPlaneacionView /></ModuleLayout>} />
         <Route path="/app/circuito-gobernanza" element={<ModuleLayout><CircuitoGobernanzaView /></ModuleLayout>} />
         
-        {/* Los 4 Circuitos de Demostración por Fases */}
-        <Route path="/app/circuito-fase1" element={<ModuleLayout><CircuitoFase1View /></ModuleLayout>} />
-        <Route path="/app/circuito-fase2" element={<ModuleLayout><CircuitoFase2View /></ModuleLayout>} />
-        <Route path="/app/circuito-fase3" element={<ModuleLayout><CircuitoFase3View /></ModuleLayout>} />
-        <Route path="/app/circuito-fase4" element={<ModuleLayout><CircuitoFase4View /></ModuleLayout>} />
+        {/* Los 4 Circuitos de Demostración por Fases -> Workspace */}
+        <Route path="/app/circuito-fase1" element={<Navigate to="/app/workspace?phase=1" replace />} />
+        <Route path="/app/circuito-fase2" element={<Navigate to="/app/workspace?phase=2" replace />} />
+        <Route path="/app/circuito-fase3" element={<Navigate to="/app/workspace?phase=3" replace />} />
+        <Route path="/app/circuito-fase4" element={<Navigate to="/app/workspace?phase=4" replace />} />
 
-        {/* Espacio de Trabajo Unificado de Fase (Workspace Protegido) */}
+        {/* Espacio de Trabajo Unificado de Fase (Workspace con Menú Lateral) */}
         <Route path="/app/workspace" element={
           <ProtectedPortalRoute>
-            <ModuleLayout><PhaseWorkspaceView /></ModuleLayout>
+            <PhaseWorkspaceView />
           </ProtectedPortalRoute>
         } />
         <Route path="/app/mi-fase" element={
           <ProtectedPortalRoute>
-            <ModuleLayout><PhaseWorkspaceView /></ModuleLayout>
+            <PhaseWorkspaceView />
           </ProtectedPortalRoute>
         } />
-
-        <Route path="/app/dashboards" element={<ProtectedModuleRoute moduleId="Dashboards"><ModuleLayout><DashboardsView /></ModuleLayout></ProtectedModuleRoute>} />
-        <Route path="/app/bi" element={<ProtectedModuleRoute moduleId="BI"><ModuleLayout><BiCubeView /></ModuleLayout></ProtectedModuleRoute>} />
-        <Route path="/app/bigdata" element={<ProtectedModuleRoute moduleId="BigData"><ModuleLayout><BigDataView /></ModuleLayout></ProtectedModuleRoute>} />
-        <Route path="/app/mineriadatos" element={<ProtectedModuleRoute moduleId="MineriaDatos"><ModuleLayout><DataMiningView /></ModuleLayout></ProtectedModuleRoute>} />
-        <Route path="/app/ia" element={<ProtectedModuleRoute moduleId="IA"><ModuleLayout><IaAssistantView /></ModuleLayout></ProtectedModuleRoute>} />
-        <Route path="/app/predictivos" element={<ProtectedModuleRoute moduleId="Predictivos"><ModuleLayout><PredictiveModelsView /></ModuleLayout></ProtectedModuleRoute>} />
-        <Route path="/app/planeacion" element={<ProtectedModuleRoute moduleId="Planeacion"><ModuleLayout><PlaneacionView /></ModuleLayout></ProtectedModuleRoute>} />
         
         {/* Redirección por defecto a la ventana de login */}
         <Route path="*" element={<Navigate to="/login" replace />} />
