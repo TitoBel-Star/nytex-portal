@@ -206,11 +206,18 @@ const AccountPayable = sequelize.define('AccountPayable', {
   poCode: { type: DataTypes.STRING, allowNull: false },
   vendorCode: { type: DataTypes.STRING, allowNull: false },
   vendorName: { type: DataTypes.STRING, allowNull: false },
+  invoiceNumber: { type: DataTypes.STRING },
+  uuid: { type: DataTypes.STRING },
   issueDate: { type: DataTypes.STRING },
   dueDate: { type: DataTypes.STRING },
+  subtotal: { type: DataTypes.FLOAT, defaultValue: 0 },
+  tax: { type: DataTypes.FLOAT, defaultValue: 0 },
+  retentionType: { type: DataTypes.STRING, defaultValue: 'Ninguna' },
+  retentionAmount: { type: DataTypes.FLOAT, defaultValue: 0 },
   totalAmount: { type: DataTypes.FLOAT, defaultValue: 0 },
   paidAmount: { type: DataTypes.FLOAT, defaultValue: 0 },
   balance: { type: DataTypes.FLOAT, defaultValue: 0 },
+  creditDays: { type: DataTypes.INTEGER, defaultValue: 30 },
   status: { 
     type: DataTypes.STRING, 
     defaultValue: 'Al Corriente' 
@@ -1739,24 +1746,47 @@ app.get('/api/cxp/bills', async (req, res) => {
   }
 });
 
-// Registro Directo de Factura de Proveedor desde CxP
+// Registro Directo de Factura de Proveedor desde CxP con Retenciones y UUID SAT
 app.post('/api/cxp/bills', async (req, res) => {
   try {
-    const { vendorCode, vendorName, invoiceNumber, subtotal, concept } = req.body;
+    const { 
+      vendorCode, 
+      vendorName, 
+      invoiceNumber, 
+      uuid, 
+      subtotal, 
+      concept, 
+      retentionType = 'Ninguna',
+      creditDays = 30 
+    } = req.body;
+    
     const sub = parseFloat(subtotal);
     if (isNaN(sub) || sub <= 0) {
       return res.status(400).json({ error: 'El subtotal debe ser un número mayor a cero' });
     }
     const tax = Math.round(sub * 0.13 * 100) / 100;
-    const total = Math.round((sub + tax) * 100) / 100;
+    
+    // Cálculo de retenciones fiscales según régimen
+    let retentionAmount = 0;
+    if (retentionType === 'Retención IVA Flete (4%)') {
+      retentionAmount = Math.round(sub * 0.04 * 100) / 100;
+    } else if (retentionType === 'Retención Servicios (10% ISR + 10.67% IVA)') {
+      retentionAmount = Math.round(sub * 0.2067 * 100) / 100;
+    } else if (retentionType === 'Retención RESICO (1.25% ISR)') {
+      retentionAmount = Math.round(sub * 0.0125 * 100) / 100;
+    }
+
+    const total = Math.round((sub + tax - retentionAmount) * 100) / 100;
 
     const cxpCount = await AccountPayable.count();
     const billCode = `CXP-2026-${String(cxpCount + 1).padStart(4, '0')}`;
     const invNum = invoiceNumber || `FPROV-${String(cxpCount + 1).padStart(4, '0')}`;
+    const satUuid = uuid || `SAT-${Math.random().toString(36).substring(2, 6).toUpperCase()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}-${Date.now().toString(36).toUpperCase()}`;
 
+    const days = parseInt(creditDays, 10) || 30;
     const today = new Date();
     const dueDate = new Date();
-    dueDate.setDate(today.getDate() + 30);
+    dueDate.setDate(today.getDate() + days);
 
     const newBill = await AccountPayable.create({
       billCode,
@@ -1764,12 +1794,17 @@ app.post('/api/cxp/bills', async (req, res) => {
       vendorCode: vendorCode || 'PRV-001',
       vendorName: vendorName || 'Proveedor Nacional',
       invoiceNumber: invNum,
+      uuid: satUuid,
+      subtotal: sub,
+      tax,
+      retentionType,
+      retentionAmount,
       issueDate: today.toISOString().split('T')[0],
       dueDate: dueDate.toISOString().split('T')[0],
       totalAmount: total,
       paidAmount: 0,
       balance: total,
-      creditDays: 30,
+      creditDays: days,
       status: 'Al Corriente',
       paymentsLog: []
     });
@@ -1780,21 +1815,32 @@ app.post('/api/cxp/bills', async (req, res) => {
       await bp.save();
     }
 
+    // Póliza contable cuadrada de Provisión
+    const journalLines = [
+      { accountCode: '5101-01', accountName: 'Compras y Gastos Operativos', debit: sub, credit: 0 },
+      { accountCode: '1108-01', accountName: 'IVA Acreditable por Pagar (13%)', debit: tax, credit: 0 }
+    ];
+    if (retentionAmount > 0) {
+      journalLines.push({ 
+        accountCode: '2105-01', 
+        accountName: `Impuestos Retenidos por Enterar (${retentionType})`, 
+        debit: 0, 
+        credit: retentionAmount 
+      });
+    }
+    journalLines.push({ accountCode: '2101-01', accountName: 'Proveedores Nacionales (CxP)', debit: 0, credit: total });
+
     const autoEntry = await createAutoJournalEntry({
       type: 'Diario',
-      concept: `Provisión de Compra s/ Factura Prov. ${invNum} - ${vendorName || 'Proveedor'} (${concept || 'Gasto/Compra Operativa'})`,
+      concept: `Provisión Compra s/ Factura Prov. ${invNum} (${satUuid}) - ${vendorName || 'Proveedor'} [${concept || 'Gasto Operativo'}]`,
       originModule: 'CxP',
       originReference: billCode,
-      lines: [
-        { accountCode: '5101-01', accountName: 'Compras y Gastos Operativos', debit: sub, credit: 0 },
-        { accountCode: '1108-01', accountName: 'IVA Acreditable por Pagar (13%)', debit: tax, credit: 0 },
-        { accountCode: '2101-01', accountName: 'Proveedores Nacionales (CxP)', debit: 0, credit: total }
-      ]
+      lines: journalLines
     });
 
     res.json({
       success: true,
-      message: `Factura de proveedor ${invNum} registrada en CxP ($${total.toLocaleString()} USD). Póliza Contable ${autoEntry.entryCode} generada.`,
+      message: `Factura ${invNum} (UUID: ${satUuid}) registrada en CxP por $${total.toLocaleString('es-MX', { minimumFractionDigits: 2 })} USD. Póliza ${autoEntry.entryCode} cuadrada.`,
       bill: newBill,
       journalEntry: autoEntry
     });
@@ -4542,6 +4588,39 @@ async function startServer() {
       }
     } catch (e) {
       console.log('Error actualizando partners existentes:', e.message);
+    }
+
+    // Migración segura de columnas en AccountPayables (SQLite)
+    try {
+      const cols = (await sequelize.query("PRAGMA table_info(AccountPayables)"))[0].map(c => c.name);
+      if (!cols.includes('invoiceNumber')) await sequelize.query("ALTER TABLE AccountPayables ADD COLUMN invoiceNumber VARCHAR(255)");
+      if (!cols.includes('uuid')) await sequelize.query("ALTER TABLE AccountPayables ADD COLUMN uuid VARCHAR(255)");
+      if (!cols.includes('subtotal')) await sequelize.query("ALTER TABLE AccountPayables ADD COLUMN subtotal FLOAT DEFAULT 0");
+      if (!cols.includes('tax')) await sequelize.query("ALTER TABLE AccountPayables ADD COLUMN tax FLOAT DEFAULT 0");
+      if (!cols.includes('retentionType')) await sequelize.query("ALTER TABLE AccountPayables ADD COLUMN retentionType VARCHAR(255) DEFAULT 'Ninguna'");
+      if (!cols.includes('retentionAmount')) await sequelize.query("ALTER TABLE AccountPayables ADD COLUMN retentionAmount FLOAT DEFAULT 0");
+      if (!cols.includes('creditDays')) await sequelize.query("ALTER TABLE AccountPayables ADD COLUMN creditDays INTEGER DEFAULT 30");
+
+      const bills = await AccountPayable.findAll();
+      for (const b of bills) {
+        let changed = false;
+        if (!b.uuid) {
+          b.uuid = `SAT-${Math.random().toString(36).substring(2, 6).toUpperCase()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}-${Date.now().toString(36).toUpperCase()}`;
+          changed = true;
+        }
+        if (!b.invoiceNumber) {
+          b.invoiceNumber = `FPROV-${b.id || 101}`;
+          changed = true;
+        }
+        if (!b.subtotal && b.totalAmount) {
+          b.subtotal = Math.round((b.totalAmount / 1.13) * 100) / 100;
+          b.tax = Math.round((b.totalAmount - b.subtotal) * 100) / 100;
+          changed = true;
+        }
+        if (changed) await b.save();
+      }
+    } catch (e) {
+      console.log('Error migrando columnas en AccountPayables:', e.message);
     }
     
     // Seed 1: Business Partners
