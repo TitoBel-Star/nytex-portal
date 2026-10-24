@@ -4507,7 +4507,7 @@ const PORT = process.env.PORT || 3001;
 
 async function startServer() {
   try {
-    await sequelize.sync({ alter: true });
+    await sequelize.sync();
 
     // Actualizar partners existentes con datos bancarios y fiscales completos
     try {
