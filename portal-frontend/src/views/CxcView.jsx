@@ -566,7 +566,7 @@ export default function CxcView() {
                       <span>🏷️</span> Buscar Producto en Catálogo (Escriba letra o número):
                     </span>
                     <div className="flex gap-1 text-[10px]">
-                      {['Todas', 'Producto Terminado', 'Materia Prima'].map(cat => (
+                      {['Todas', 'Producto Terminado', 'Inventario para Vender', 'Materia Prima'].map(cat => (
                         <button
                           key={cat}
                           type="button"
@@ -575,7 +575,7 @@ export default function CxcView() {
                             skuCategory === cat ? 'bg-blue-600 text-white' : 'bg-white text-gray-600 border'
                           }`}
                         >
-                          {cat === 'Producto Terminado' ? 'Telas PT' : cat === 'Materia Prima' ? 'Hilos MP' : 'Todos'}
+                          {cat === 'Producto Terminado' ? 'Telas PT' : cat === 'Inventario para Vender' ? 'Para Vender' : cat === 'Materia Prima' ? 'Hilos MP' : 'Todos'}
                         </button>
                       ))}
                     </div>
@@ -593,7 +593,13 @@ export default function CxcView() {
                     <div className="bg-white border border-blue-200 rounded-lg p-1.5 max-h-36 overflow-y-auto divide-y divide-gray-100 shadow-sm text-xs">
                       {catalog
                         .filter(c => {
-                          if (skuCategory !== 'Todas' && c.category !== skuCategory) return false;
+                          if (skuCategory !== 'Todas') {
+                            if (skuCategory === 'Inventario para Vender') {
+                              if (c.category !== 'Inventario para Vender' && c.category !== 'Producto Terminado') return false;
+                            } else if (c.category !== skuCategory) {
+                              return false;
+                            }
+                          }
                           const q = skuSearch.toLowerCase().trim();
                           return (c.sku || '').toLowerCase().includes(q) || (c.name || '').toLowerCase().includes(q);
                         })

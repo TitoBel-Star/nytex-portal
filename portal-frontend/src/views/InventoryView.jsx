@@ -320,8 +320,24 @@ export default function InventoryView() {
   };
 
   const filteredItems = items.filter(it => {
-    if (activeCategory !== 'Todas' && it.category !== activeCategory) return false;
-    if (statusFilter !== 'Todos' && it.status !== statusFilter) return false;
+    // Categoría
+    if (activeCategory !== 'Todas') {
+      if (activeCategory === 'Inventario para Vender') {
+        const isSellable = it.category === 'Inventario para Vender' || it.category === 'Producto Terminado';
+        if (!isSellable) return false;
+      } else if (it.category !== activeCategory) {
+        return false;
+      }
+    }
+    // Estado
+    if (statusFilter !== 'Todos') {
+      if (statusFilter === 'Inventario para Vender') {
+        const isSellable = it.category === 'Inventario para Vender' || it.category === 'Producto Terminado' || it.status === 'Inventario para Vender';
+        if (!isSellable || (it.stock || 0) <= 0) return false;
+      } else if (it.status !== statusFilter) {
+        return false;
+      }
+    }
     if (searchTerm.trim()) {
       const q = searchTerm.toLowerCase();
       const matchSku = (it.sku || '').toLowerCase().includes(q);
@@ -340,10 +356,13 @@ export default function InventoryView() {
   const totalValue = items.reduce((sum, it) => sum + ((it.stock || 0) * (it.unitCost || 0)), 0);
   const lowStockCount = items.filter(it => it.stock <= it.minStock).length;
   const rawCount = items.filter(it => it.category === 'Materia Prima' || it.category === 'Insumo Químico').length;
-  const finishedCount = items.filter(it => it.category === 'Producto Terminado').reduce((sum, it) => sum + (it.stock || 0), 0);
+  const finishedCount = items.filter(it => it.category === 'Producto Terminado' || it.category === 'Inventario para Vender').reduce((sum, it) => sum + (it.stock || 0), 0);
 
   const getStatusBadge = (status) => {
     switch (status) {
+      case 'Inventario para Vender':
+      case 'Disponible para Venta':
+        return 'bg-blue-100 text-blue-800 border-blue-300 font-bold';
       case 'Óptimo':
         return 'bg-emerald-100 text-emerald-800 border-emerald-300';
       case 'Bajo Stock':
@@ -494,11 +513,11 @@ export default function InventoryView() {
 
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-5 flex items-center justify-between">
             <div>
-              <span className="text-gray-500 text-xs font-bold uppercase tracking-wider mb-1">Producto Terminado (PT)</span>
+              <span className="text-gray-500 text-xs font-bold uppercase tracking-wider mb-1">Inventario para Vender (PT)</span>
               <span className="block text-3xl font-extrabold text-purple-600">
                 {finishedCount} rollos/un.
               </span>
-              <span className="text-xs text-purple-500 font-semibold">Listos para NyTEX Ventas</span>
+              <span className="text-xs text-purple-500 font-semibold">Disponibles para NyTEX Ventas</span>
             </div>
             <div className="w-12 h-12 bg-purple-50 text-purple-600 rounded-full flex items-center justify-center text-xl font-bold">
               👔
@@ -533,8 +552,8 @@ export default function InventoryView() {
               </div>
 
               {/* Filtro Categoría */}
-              <div className="flex items-center gap-1.5">
-                {['Todas', 'Materia Prima', 'Insumo Químico', 'Producto Terminado'].map(cat => (
+              <div className="flex items-center gap-1.5 flex-wrap">
+                {['Todas', 'Materia Prima', 'Insumo Químico', 'Producto Terminado', 'Inventario para Vender'].map(cat => (
                   <button
                     key={cat}
                     onClick={() => setActiveCategory(cat)}
@@ -556,6 +575,7 @@ export default function InventoryView() {
                 className="px-2.5 py-1.5 bg-white border border-gray-200 rounded-lg text-xs font-semibold text-gray-700 focus:outline-none focus:border-[#006EAD]"
               >
                 <option value="Todos">Todos los Estados</option>
+                <option value="Inventario para Vender">🏷️ Inventario para Vender (Disponible)</option>
                 <option value="Óptimo">Solo Óptimo</option>
                 <option value="Bajo Stock">Solo Bajo Stock (Críticos)</option>
               </select>
@@ -663,7 +683,7 @@ export default function InventoryView() {
                           >
                             <span>📜</span> Kardex
                           </button>
-                          {it.stock <= it.minStock && it.category !== 'Producto Terminado' ? (
+                          {it.stock <= it.minStock && it.category !== 'Producto Terminado' && it.category !== 'Inventario para Vender' ? (
                             <button
                               onClick={() => navigate('/app/compras')}
                               className="px-2.5 py-1 text-xs bg-amber-600 hover:bg-amber-700 text-white font-bold rounded shadow-sm transition"
@@ -671,10 +691,11 @@ export default function InventoryView() {
                             >
                               ⚡ Compras ➔
                             </button>
-                          ) : it.category === 'Producto Terminado' ? (
+                          ) : (it.category === 'Producto Terminado' || it.category === 'Inventario para Vender') ? (
                             <button
                               onClick={() => navigate('/app/ventas')}
                               className="px-2.5 py-1 text-xs bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded shadow-sm transition"
+                              title="Facturar o cotizar este SKU en NyTEX Ventas"
                             >
                               Ventas ➔
                             </button>
@@ -776,6 +797,7 @@ export default function InventoryView() {
                       <option value="Materia Prima">Materia Prima</option>
                       <option value="Insumo Químico">Insumo Químico</option>
                       <option value="Producto Terminado">Producto Terminado</option>
+                      <option value="Inventario para Vender">Inventario para Vender (Mercadería)</option>
                       <option value="Empaque">Empaque</option>
                     </select>
                   </div>
