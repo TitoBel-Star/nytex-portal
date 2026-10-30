@@ -11,14 +11,14 @@ export default function Produccion() {
   // Modal Crear OP
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [productSku, setProductSku] = useState('PT-TEL-101');
-  const [productName, setProductName] = useState('Rollo Tela Gabardina Algodón Peinado (Azul)');
+  const [productName, setProductName] = useState('Lote de Producto Terminado Estándar (PT-101)');
   const [targetQuantity, setTargetQuantity] = useState(25);
   const [unit, setUnit] = useState('rollos');
   const [workcenter, setWorkcenter] = useState('Línea de Producción #1 - Planta Principal');
   const [operator, setOperator] = useState('Ing. Miguel Operaciones');
   const [bom, setBom] = useState([
-    { sku: 'MP-HIL-01', name: 'Hilo de Algodón Peinado 100% 30/1', quantityPerUnit: 3, unit: 'kg' },
-    { sku: 'MP-POL-02', name: 'Hilo de Poliéster Alta Tenacidad 150D', quantityPerUnit: 1.5, unit: 'kg' },
+    { sku: 'MP-HIL-01', name: 'Materia Prima Base MP-01', quantityPerUnit: 3, unit: 'kg' },
+    { sku: 'MP-POL-02', name: 'Materia Prima Sintética MP-02', quantityPerUnit: 1.5, unit: 'kg' },
     { sku: 'MP-TIN-03', name: 'Compuesto Reactivo Azul Marino', quantityPerUnit: 0.4, unit: 'litros' }
   ]);
 

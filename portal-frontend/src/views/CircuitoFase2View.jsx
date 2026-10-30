@@ -139,7 +139,7 @@ export default function CircuitoFase2View() {
             <div className="text-2xl font-black text-slate-900 mt-1 font-mono">
               ${metrics.lastPayrollDisbursed?.toLocaleString()} <span className="text-xs text-slate-500">USD</span>
             </div>
-            <p className="text-[11px] text-blue-600 mt-1 font-semibold">{metrics.activeEmployeesCount} colaboradores con IMSS/SAT</p>
+            <p className="text-[11px] text-blue-600 mt-1 font-semibold">{metrics.activeEmployeesCount} colaboradores con registro laboral y fiscal</p>
           </div>
 
           <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
@@ -186,7 +186,7 @@ export default function CircuitoFase2View() {
             <div className="bg-slate-50 border border-slate-200 p-4 rounded-xl">
               <span className="text-[10px] font-black uppercase text-purple-600">Talento</span>
               <h4 className="font-bold text-slate-900 text-sm mt-1">[13] RRHH & [14] Nómina</h4>
-              <p className="text-xs text-slate-600 mt-1">Control de horas extra en planta, retenciones IMSS Art 96 y dispersión bancaria directa.</p>
+              <p className="text-xs text-slate-600 mt-1">Control de horas extra en planta, retenciones de ley y seguridad social y dispersión bancaria directa.</p>
             </div>
           </div>
         </div>

@@ -201,7 +201,7 @@ export default function Nomina() {
                     : 'bg-emerald-600 hover:bg-emerald-700 text-white'
                 }`}
               >
-                <span>🏦</span> Dispersar en Tesorería (SPEI)
+                <span>🏦</span> Dispersar en Tesorería (Transferencia Bancaria)
               </button>
 
               <button
@@ -238,7 +238,7 @@ export default function Nomina() {
                 -${(period?.totalDeductions || 0).toLocaleString()} USD
               </div>
               <div className="text-[11px] text-gray-400">
-                ISR: ${(period?.totalIsr || 0).toLocaleString()} • IMSS: ${(period?.totalImssWorker || 0).toLocaleString()}
+                Retención Fiscal: ${(period?.totalIsr || 0).toLocaleString()} • Seguridad Social: ${(period?.totalImssWorker || 0).toLocaleString()}
               </div>
             </div>
 
@@ -248,7 +248,7 @@ export default function Nomina() {
                 ${(period?.totalNet || 0).toLocaleString()} USD
               </div>
               <div className="text-[10px] text-emerald-600 font-medium">
-                {period?.disbursementTxCode ? `Folio SPEI: ${period.disbursementTxCode}` : 'Pendiente de dispersión'}
+                {period?.disbursementTxCode ? `Folio Transf: ${period.disbursementTxCode}` : 'Pendiente de dispersión'}
               </div>
             </div>
 
@@ -258,7 +258,7 @@ export default function Nomina() {
                 ${((period?.totalEmployerImss || 0) + (period?.totalEmployerInfonavit || 0) + (period?.totalStateTax || 0)).toLocaleString()} USD
               </div>
               <div className="text-[11px] text-gray-400">
-                IMSS + Infonavit + ISN 3%
+                Seguridad Social + Fondos Laborales
               </div>
             </div>
 
@@ -282,7 +282,7 @@ export default function Nomina() {
                 Desglose Quincenal por Colaborador ({period?.breakdown?.length || 0} Empleados)
               </h3>
               <p className="text-xs text-gray-500">
-                Cálculo automatizado con base en asistencias de [13] RRHH, tablas ISR SAT 2026 y cuotas obreras IMSS.
+                Cálculo automatizado con base en incidencias de [13] RRHH, retenciones tributarias y aportes de seguridad social.
               </p>
             </div>
           </div>
@@ -297,10 +297,10 @@ export default function Nomina() {
                   <th className="py-2.5 px-3 text-right">Horas Extra</th>
                   <th className="py-2.5 px-3 text-right">Bono Asist.</th>
                   <th className="py-2.5 px-3 text-right">Percep. Bruta</th>
-                  <th className="py-2.5 px-3 text-right text-rose-600">ISR (SAT)</th>
-                  <th className="py-2.5 px-3 text-right text-rose-600">IMSS Obrero</th>
+                  <th className="py-2.5 px-3 text-right text-rose-600">Retención Impuestos</th>
+                  <th className="py-2.5 px-3 text-right text-rose-600">Seguridad Social</th>
                   <th className="py-2.5 px-3 text-right text-emerald-700 font-black">Neto a Cobrar</th>
-                  <th className="py-2.5 px-3 text-center">Recibo CFDI</th>
+                  <th className="py-2.5 px-3 text-center">Recibo Digital</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
@@ -452,7 +452,7 @@ export default function Nomina() {
                   <span className="font-mono font-bold text-rose-700">-${selectedReceipt.isrAmount?.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-700">001 Seguridad Social (IMSS):</span>
+                  <span className="text-gray-700">001 Seguridad Social:</span>
                   <span className="font-mono font-bold text-rose-700">-${selectedReceipt.imssWorkerAmount?.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between pt-2 border-t border-rose-200 font-black text-rose-800">
@@ -479,7 +479,7 @@ export default function Nomina() {
 
             {/* Cargas Patronales (Informativo para la empresa) */}
             <div className="p-3 bg-gray-50 rounded-xl border border-gray-200 text-[11px] text-gray-600 flex justify-between items-center">
-              <span><strong>Cargas Patronales Adicionales:</strong> IMSS Patronal: ${selectedReceipt.employerImss} • INFONAVIT: ${selectedReceipt.employerInfonavit} • ISN 3%: ${selectedReceipt.stateTax}</span>
+              <span><strong>Cargas Patronales Adicionales:</strong> Seguridad Social Patronal: ${selectedReceipt.employerImss} • Fondos Laborales: ${selectedReceipt.employerInfonavit} • Contribución Nómina: ${selectedReceipt.stateTax}</span>
               <span className="font-bold text-gray-900 font-mono">Costo Empresa: ${selectedReceipt.companyCost?.toLocaleString()}</span>
             </div>
 

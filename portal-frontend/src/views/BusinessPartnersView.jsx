@@ -23,7 +23,7 @@ const BusinessPartnersView = () => {
     email: '',
     phone: '',
     address: '',
-    bankName: 'BBVA Bancomer',
+    bankName: 'Banco Corporativo Principal',
     bankAccount: '',
     bankClabe: '',
     bankSwift: 'BBVAMXMM',
@@ -82,7 +82,7 @@ const BusinessPartnersView = () => {
       code: `BP-00${nextNum}`,
       name: '',
       type: activeTab === 'Proveedores' ? 'Proveedor' : activeTab === 'Clientes' ? 'Cliente' : 'Proveedor',
-      taxId: 'NTM180612TX4',
+      taxId: '0614-180612-102-4',
       paymentTerms: 'Neto 30 días',
       creditLimit: 50000,
       contactName: '',
@@ -112,7 +112,7 @@ const BusinessPartnersView = () => {
       email: partner.email || '',
       phone: partner.phone || '',
       address: partner.address || '',
-      bankName: partner.bankName || 'BBVA Bancomer',
+      bankName: partner.bankName || 'Banco Corporativo Principal',
       bankAccount: partner.bankAccount || '',
       bankClabe: partner.bankClabe || '',
       bankSwift: partner.bankSwift || 'BBVAMXMM',
@@ -304,7 +304,7 @@ const BusinessPartnersView = () => {
                   type="text" 
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Buscar por código, nombre, banco o RFC..." 
+                  placeholder="Buscar por código, nombre, banco o Tax ID..." 
                   className="w-full pl-3 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#006EAD]"
                 />
               </div>
@@ -342,7 +342,7 @@ const BusinessPartnersView = () => {
                         </td>
                         <td className="px-5 py-4">
                           <div className="font-bold text-[#0A2540]">{partner.name}</div>
-                          <div className="text-xs text-gray-400 font-mono">RFC: {partner.taxId || 'RFC-GENERICO'}</div>
+                          <div className="text-xs text-gray-400 font-mono">Tax ID: {partner.taxId || 'RFC-GENERICO'}</div>
                         </td>
                         <td className="px-5 py-4">
                           <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${
@@ -491,12 +491,12 @@ const BusinessPartnersView = () => {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-xs font-bold text-gray-700 mb-1">IDENTIFICACIÓN FISCAL (RFC / NIT)</label>
+                    <label className="block text-xs font-bold text-gray-700 mb-1">IDENTIFICACIÓN FISCAL (Tax ID / NIT)</label>
                     <input 
                       type="text" 
                       value={formData.taxId}
                       onChange={(e) => setFormData({ ...formData, taxId: e.target.value })}
-                      placeholder="Ej. NTM180612TX4"
+                      placeholder="Ej. 0614-180612-102-4"
                       className="w-full border border-gray-300 rounded-lg p-2 text-sm font-mono" 
                     />
                   </div>
@@ -508,7 +508,7 @@ const BusinessPartnersView = () => {
                     type="text" 
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    placeholder="Ej. Hilaturas y Tintes Nacionales S.A. de C.V." 
+                    placeholder="Ej. Suministros Industriales Globales S.A." 
                     className="w-full border border-gray-300 rounded-lg p-2 text-sm font-bold text-[#0A2540]" 
                     required 
                   />
@@ -574,7 +574,7 @@ const BusinessPartnersView = () => {
                       type="text" 
                       value={formData.bankName}
                       onChange={(e) => setFormData({ ...formData, bankName: e.target.value })}
-                      placeholder="Ej. BBVA Bancomer, Banorte, Santander"
+                      placeholder="Ej. Banco Corporativo Principal, Banorte, Santander"
                       className="w-full border border-gray-300 rounded-lg p-2 text-sm bg-white" 
                     />
                   </div>
@@ -699,7 +699,7 @@ const BusinessPartnersView = () => {
                     Historial Comercial & Financiero - {selectedHistoryPartner.name}
                   </h3>
                   <p className="text-xs text-blue-200 font-mono">
-                    Código: {selectedHistoryPartner.code} | Tipo: {selectedHistoryPartner.type} | RFC: {selectedHistoryPartner.taxId || 'RFC-GENERICO'}
+                    Código: {selectedHistoryPartner.code} | Tipo: {selectedHistoryPartner.type} | Tax ID: {selectedHistoryPartner.taxId || 'RFC-GENERICO'}
                   </p>
                 </div>
               </div>
@@ -733,7 +733,7 @@ const BusinessPartnersView = () => {
                 </div>
                 <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl">
                   <span className="text-[10px] font-bold uppercase text-amber-800 block">Datos Bancarios</span>
-                  <span className="text-xs font-bold text-gray-800 block">{selectedHistoryPartner.bankName || 'BBVA Bancomer'}</span>
+                  <span className="text-xs font-bold text-gray-800 block">{selectedHistoryPartner.bankName || 'Banco Corporativo Principal'}</span>
                   <span className="text-[10px] font-mono text-gray-500 block truncate">CLABE: {selectedHistoryPartner.bankClabe || '012180001294820991'}</span>
                 </div>
               </div>

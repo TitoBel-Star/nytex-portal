@@ -205,7 +205,7 @@ export default function CircuitoFase1View() {
           <h3 className="font-extrabold text-slate-900 text-lg mb-3">Módulos Incluidos en la Fase 1 Starter</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {[
-              { id: 'ventas', name: '[1] Ventas', desc: 'Gestión de cotizaciones, pedidos y facturación CFDI.' },
+              { id: 'ventas', name: '[1] Ventas', desc: 'Gestión de cotizaciones, pedidos y facturación electrónica certificada.' },
               { id: 'inventario', name: '[3] Inventario', desc: 'Control multialmacén, existencias y costos PEPS.' },
               { id: 'compras', name: '[4] Compras', desc: 'Órdenes de compra a proveedores y recepción de insumos.' },
               { id: 'cxc', name: '[8] CxC', desc: 'Cuentas por cobrar, antigüedad de saldos y cobranza.' },

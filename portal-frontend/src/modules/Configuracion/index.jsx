@@ -13,8 +13,8 @@ export default function Configuracion() {
   // Form state
   const [companyName, setCompanyName] = useState('');
   const [country, setCountry] = useState('El Salvador');
-  const [taxAuthority, setTaxAuthority] = useState('Ministerio de Hacienda (MH)');
-  const [electronicDocType, setElectronicDocType] = useState('DTE (Factura Electrónica y CCF)');
+  const [taxAuthority, setTaxAuthority] = useState('Ministerio de Hacienda / Dirección General de Impuestos Internos (MH / DGII)');
+  const [electronicDocType, setElectronicDocType] = useState('DTE (Documentos Tributarios Electrónicos)');
   const [rfc, setRfc] = useState('');
   const [taxRegime, setTaxRegime] = useState('');
   const [fiscalAddress, setFiscalAddress] = useState('');
@@ -25,13 +25,13 @@ export default function Configuracion() {
   const handleCountryChange = (c) => {
     setCountry(c);
     if (c === 'El Salvador') {
-      setTaxAuthority('Ministerio de Hacienda (MH)');
-      setElectronicDocType('DTE (Facturación Electrónica & CCF)');
+      setTaxAuthority('Ministerio de Hacienda / Dirección General de Impuestos Internos (MH / DGII)');
+      setElectronicDocType('DTE (Documentos Tributarios Electrónicos)');
       setVatRate(13.0);
       setExchangeRateUsd(1.00);
     } else if (c === 'Guatemala') {
-      setTaxAuthority('SAT (Superintendencia de Administración Tributaria)');
-      setElectronicDocType('FEL (Factura Electrónica en Línea)');
+      setTaxAuthority('Ministerio de Hacienda / Dirección General de Impuestos Internos (MH / DGII)');
+      setElectronicDocType('DTE (Documentos Tributarios Electrónicos)');
       setVatRate(12.0);
       setExchangeRateUsd(7.75);
     } else if (c === 'Honduras') {
@@ -50,7 +50,7 @@ export default function Configuracion() {
       setVatRate(7.0);
       setExchangeRateUsd(1.00);
     } else if (c === 'Regional Norte') {
-      setTaxAuthority('SAT (Servicio de Administración Tributaria)');
+      setTaxAuthority('Ministerio de Hacienda / Dirección General de Impuestos Internos (MH / DGII)');
       setElectronicDocType('CFDI 4.0');
       setVatRate(16.0);
       setExchangeRateUsd(19.85);
@@ -243,11 +243,11 @@ export default function Configuracion() {
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2">
                   {[
                     { name: 'El Salvador', flag: '🇸🇻', code: 'MH DTE' },
-                    { name: 'Guatemala', flag: '🇬🇹', code: 'SAT FEL' },
+                    { name: 'Guatemala (Exportación)', flag: '🇬🇹', code: 'DTE Exp' },
                     { name: 'Honduras', flag: '🇭🇳', code: 'SAR CAI' },
                     { name: 'Costa Rica', flag: '🇨🇷', code: 'DGT 4.3' },
                     { name: 'Panamá', flag: '🇵🇦', code: 'DGI SFEP' },
-                    { name: 'Regional Norte', flag: '🌐', code: 'CFDI / SAT' }
+                    { name: 'El Salvador (Local)', flag: '🇸🇻', code: 'MH DTE' }
                   ].map(c => (
                     <button
                       key={c.name}
@@ -378,7 +378,7 @@ export default function Configuracion() {
               </div>
             </form>
 
-            {/* Certificados SAT & Políticas */}
+            {/* Certificados Digitales & Políticas */}
             <div className="space-y-4">
               <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 block">
@@ -390,7 +390,7 @@ export default function Configuracion() {
                   <div className="text-[11px] text-emerald-600 font-mono">Tipo: {electronicDocType}</div>
                 </div>
                 <div className="text-xs text-slate-500">
-                  Permite timbrado directo de DTE (El Salvador), FEL (Guatemala), CFDI o comprobantes tributarios electrónicos regionales con sellado digital inmutable.
+                  Permite emisión y certificación directa de DTE y comprobantes tributarios electrónicos con sellado digital inmutable.
                 </div>
               </div>
 

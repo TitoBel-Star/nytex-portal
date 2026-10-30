@@ -649,7 +649,7 @@ export default function Dashboard() {
                   Circuito Enterprise: IA Autónoma 360°
                 </h4>
                 <p className="text-xs text-gray-600 mt-1.5 leading-relaxed">
-                  Ecosistema total autónomo: BI y Reportes, Big Data IoT, asistente IA cognitivo con SQLite, pronósticos ARIMA, clustering K-Means y gobernanza fiscal inmutable (DTE / SAT / SAR / DGI).
+                  Ecosistema total autónomo: BI y Reportes, Big Data IoT, asistente IA cognitivo con SQLite, pronósticos ARIMA, clustering K-Means y gobernanza fiscal inmutable (DTE / Facturación Electrónica y Certificación Digital).
                 </p>
               </div>
 

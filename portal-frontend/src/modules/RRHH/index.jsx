@@ -175,7 +175,7 @@ export default function RRHH() {
             <div>
               <div className="text-xs text-gray-500 font-semibold uppercase">Plantilla Activa</div>
               <div className="text-xl font-black text-gray-900">{metrics?.totalActive || 0} Colaboradores</div>
-              <div className="text-[11px] text-emerald-600 font-medium">100% formalizados IMSS</div>
+              <div className="text-[11px] text-emerald-600 font-medium">100% formalizados y registrados</div>
             </div>
           </div>
 
@@ -206,7 +206,7 @@ export default function RRHH() {
               🛡️
             </div>
             <div>
-              <div className="text-xs text-gray-500 font-semibold uppercase">Cumplimiento IMSS / STPS</div>
+              <div className="text-xs text-gray-500 font-semibold uppercase">Cumplimiento Laboral y Seguridad Social</div>
               <div className="text-xl font-black text-purple-900">Clase III Fabril</div>
               <div className="text-[11px] text-gray-500">Riesgo Operativo Integrado</div>
             </div>
@@ -235,7 +235,7 @@ export default function RRHH() {
                   <tr className="bg-gray-50 border-b border-gray-200 text-gray-600 font-bold uppercase tracking-wider">
                     <th className="py-2.5 px-3">Código / Nombre</th>
                     <th className="py-2.5 px-3">Puesto & Departamento</th>
-                    <th className="py-2.5 px-3">RFC / NSS</th>
+                    <th className="py-2.5 px-3">Doc. Identidad / Reg. Laboral</th>
                     <th className="py-2.5 px-3 text-right">Salario Base (SBD)</th>
                     <th className="py-2.5 px-3 text-right">Salario Diario Integ. (SDI)</th>
                     <th className="py-2.5 px-3 text-right">Sueldo Mensual</th>
@@ -261,7 +261,7 @@ export default function RRHH() {
                       </td>
                       <td className="py-3 px-3">
                         <span className="font-mono text-gray-700 block">{emp.rfc}</span>
-                        <span className="font-mono text-[10px] text-gray-400">NSS: {emp.nss}</span>
+                        <span className="font-mono text-[10px] text-gray-400">Reg: {emp.nss}</span>
                       </td>
                       <td className="py-3 px-3 text-right font-mono font-bold text-gray-900">
                         ${emp.dailySalary?.toLocaleString()}
@@ -474,7 +474,7 @@ export default function RRHH() {
                   />
                 </div>
                 <div>
-                  <label className="font-semibold text-gray-700 block mb-1">NSS</label>
+                  <label className="font-semibold text-gray-700 block mb-1">Nº Registro Laboral / Seguridad Social</label>
                   <input 
                     type="text" 
                     required
@@ -578,7 +578,7 @@ export default function RRHH() {
                     <option value="Falta Injustificada">Falta Injustificada (-Sueldo)</option>
                     <option value="Falta Justificada">Falta Justificada</option>
                     <option value="Retardo">Retardo</option>
-                    <option value="Incapacidad IMSS">Incapacidad IMSS</option>
+                    <option value="Incapacidad Médica / Laboral">Incapacidad Médica / Laboral</option>
                   </select>
                 </div>
                 <div>

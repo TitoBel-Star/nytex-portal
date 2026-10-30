@@ -2,19 +2,19 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const DEFAULT_CATALOG = [
-  { sku: 'PT-TEL-101', name: 'Rollo Tela Gabardina Algodón Peinado (Azul)', price: 1850, stock: 35, unit: 'rollos', category: 'Producto Terminado' },
+  { sku: 'PT-TEL-101', name: 'Lote Producto Terminado Estándar Alfa', price: 1850, stock: 35, unit: 'rollos', category: 'Producto Terminado' },
   { sku: 'PT-POP-102', name: 'Rollo Popelina Estampada Premium', price: 2150, stock: 15, unit: 'rollos', category: 'Producto Terminado' },
   { sku: 'PT-RIB-103', name: 'Rollo Rib 1x1 con Spandex Elastomérico', price: 1950, stock: 22, unit: 'rollos', category: 'Producto Terminado' },
   { sku: 'PT-FLE-104', name: 'Rollo Felpa Francesa Fleece 280g Térmico', price: 2800, stock: 18, unit: 'rollos', category: 'Producto Terminado' },
-  { sku: 'PT-PIQ-105', name: 'Rollo Piqué 100% Algodón Tipo Polo', price: 2100, stock: 26, unit: 'rollos', category: 'Producto Terminado' },
-  { sku: 'SKU-TEL-01', name: 'Rollo Algodón Peinado 100% 180g (Azul)', price: 1850, stock: 45, unit: 'rollos', category: 'Producto Terminado' },
-  { sku: 'SKU-TEL-02', name: 'Rollo Algodón Peinado 100% 180g (Negro)', price: 1850, stock: 32, unit: 'rollos', category: 'Producto Terminado' },
-  { sku: 'SKU-TEL-03', name: 'Rollo Algodón Peinado 100% 180g (Blanco Óptico)', price: 1780, stock: 60, unit: 'rollos', category: 'Producto Terminado' },
+  { sku: 'PT-PIQ-105', name: 'Lote Producto Terminado Modelo Plus', price: 2100, stock: 26, unit: 'rollos', category: 'Producto Terminado' },
+  { sku: 'SKU-TEL-01', name: 'Lote Producto Terminado Serie 100', price: 1850, stock: 45, unit: 'rollos', category: 'Producto Terminado' },
+  { sku: 'SKU-TEL-02', name: 'Lote Producto Terminado Serie 200', price: 1850, stock: 32, unit: 'rollos', category: 'Producto Terminado' },
+  { sku: 'SKU-TEL-03', name: 'Lote Producto Terminado Serie 300', price: 1780, stock: 60, unit: 'rollos', category: 'Producto Terminado' },
   { sku: 'SKU-MEZ-01', name: 'Rollo Mezclilla Denim 12oz Índigo Strech', price: 2400, stock: 28, unit: 'rollos', category: 'Producto Terminado' },
   { sku: 'SKU-MEZ-02', name: 'Rollo Mezclilla Denim 14oz Rígida Pesada', price: 2650, stock: 19, unit: 'rollos', category: 'Producto Terminado' },
-  { sku: 'SKU-POL-01', name: 'Rollo Poliéster Dry-Fit Transpirable', price: 1450, stock: 55, unit: 'rollos', category: 'Producto Terminado' },
-  { sku: 'MP-HIL-01', name: 'Hilo de Algodón Peinado 100% 30/1 (Cono 2.5kg)', price: 380, stock: 120, unit: 'kg', category: 'Materia Prima' },
-  { sku: 'MP-POL-02', name: 'Hilo de Poliéster Alta Tenacidad 150D', price: 240, stock: 450, unit: 'kg', category: 'Materia Prima' },
+  { sku: 'SKU-POL-01', name: 'Lote Producto Terminado Compuesto', price: 1450, stock: 55, unit: 'rollos', category: 'Producto Terminado' },
+  { sku: 'MP-HIL-01', name: 'Materia Prima Base MP-01', price: 380, stock: 120, unit: 'kg', category: 'Materia Prima' },
+  { sku: 'MP-POL-02', name: 'Materia Prima Sintética MP-02', price: 240, stock: 450, unit: 'kg', category: 'Materia Prima' },
   { sku: 'MP-TIN-03', name: 'Compuesto Reactivo Azul Marino', price: 490, stock: 18, unit: 'litros', category: 'Insumo Químico' }
 ];
 
@@ -36,7 +36,7 @@ export default function Ventas() {
   const [paymentMethod, setPaymentMethod] = useState('Efectivo');
   const [amountReceived, setAmountReceived] = useState('');
   const [items, setItems] = useState([
-    { sku: 'SKU-TEL-01', description: 'Rollo Algodón Peinado 100% 180g (Azul)', quantity: '1', unitPrice: '1850', dispatchLocation: 'Bodega' }
+    { sku: 'SKU-TEL-01', description: 'Lote Producto Terminado Estándar Alfa', quantity: '1', unitPrice: '1850', dispatchLocation: 'Bodega' }
   ]);
 
   // Buscador Rápido en Tabla Principal

@@ -161,7 +161,7 @@ export default function PlaneacionView() {
             <div className="flex justify-between items-center border-b pb-3">
               <div>
                 <h4 className="font-bold text-gray-900 text-sm flex items-center gap-2">
-                  <span>📦</span> Explosión de Materiales MRP (Hilaturas)
+                  <span>📦</span> Explosión de Materiales MRP (Materias Primas)
                 </h4>
                 <p className="text-xs text-gray-500">Materia prima indispensable para tejeduría.</p>
               </div>

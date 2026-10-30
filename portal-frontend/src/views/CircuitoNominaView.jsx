@@ -152,7 +152,7 @@ export default function CircuitoNominaView() {
             </span>
             <h2 className="text-2xl font-black">Ciclo Completo de Nómina & Cargas Sociales</h2>
             <p className="text-sm text-emerald-100 leading-relaxed">
-              Interconexión operativa de extremo a extremo: <strong>[13] RRHH</strong> reporta incidencias y asistencias; <strong>[14] Nómina</strong> calcula deducciones progresivas ISR SAT y cuota IMSS; <strong>[10] Tesorería</strong> dispersa el neto bancario vía SPEI; y <strong>[12] Contabilidad</strong> registra de forma automática la póliza de nómina con partida doble cuadrada al centavo.
+              Interconexión operativa de extremo a extremo: <strong>[13] RRHH</strong> reporta incidencias y asistencias; <strong>[14] Nómina</strong> calcula deducciones impositivas de ley y seguridad social; <strong>[10] Tesorería</strong> dispersa el neto bancario vía transferencia electrónica; y <strong>[12] Contabilidad</strong> registra de forma automática la póliza de nómina con partida doble cuadrada al centavo.
             </p>
           </div>
 
@@ -242,9 +242,9 @@ export default function CircuitoNominaView() {
                   </span>
                   <span className="text-xs text-emerald-700 font-mono font-bold">[14] Nómina</span>
                 </div>
-                <h4 className="font-black text-gray-900 text-sm mt-2">Cálculo Fiscal SAT/IMSS</h4>
+                <h4 className="font-black text-gray-900 text-sm mt-2">Cálculo Laboral y Fiscal</h4>
                 <p className="text-[11px] text-gray-600 mt-1">
-                  Deducción de ISR Art. 96 LISR, Cuota obrera IMSS y premios de asistencia.
+                  Deducción de retenciones de ley, aportes de seguridad social y premios de asistencia.
                 </p>
                 <div className="mt-3 bg-white p-2 rounded border border-emerald-100 text-[11px] space-y-1">
                   <div className="text-gray-600">Bruto: <strong>${(currentPeriod?.totalGross || 0).toLocaleString()}</strong></div>
@@ -270,7 +270,7 @@ export default function CircuitoNominaView() {
                   </span>
                   <span className="text-xs text-cyan-700 font-mono font-bold">[10] Tesorería</span>
                 </div>
-                <h4 className="font-black text-gray-900 text-sm mt-2">Dispersión SPEI</h4>
+                <h4 className="font-black text-gray-900 text-sm mt-2">Dispersión Electrónica</h4>
                 <p className="text-[11px] text-gray-600 mt-1">
                   Débito automático al saldo líquido de Banorte Nómina (0729-1029-4411).
                 </p>

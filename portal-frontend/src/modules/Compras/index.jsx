@@ -15,7 +15,7 @@ export default function Compras() {
   const [paymentTerms, setPaymentTerms] = useState('Crédito 30 días');
   const [deliveryDate, setDeliveryDate] = useState('2026-10-10');
   const [poItems, setPoItems] = useState([
-    { sku: 'MP-HIL-01', name: 'Hilo de Algodón Peinado 100% 30/1', quantity: 200, unitCost: 145 }
+    { sku: 'MP-HIL-01', name: 'Materia Prima Base MP-01 (Componente A)', quantity: 200, unitCost: 145 }
   ]);
 
   // Modal Detalle
@@ -50,7 +50,7 @@ export default function Compras() {
   }, []);
 
   const handleAddItem = () => {
-    setPoItems([...poItems, { sku: 'MP-POL-02', name: 'Hilo de Poliéster Alta Tenacidad 150D', quantity: 100, unitCost: 88 }]);
+    setPoItems([...poItems, { sku: 'MP-POL-02', name: 'Materia Prima Sintética MP-02 (Componente B)', quantity: 100, unitCost: 88 }]);
   };
 
   const handleRemoveItem = (index) => {

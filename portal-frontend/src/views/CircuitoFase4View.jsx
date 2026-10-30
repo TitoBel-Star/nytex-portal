@@ -71,7 +71,7 @@ export default function CircuitoFase4View() {
                 Fase 4: NyTEX Enterprise — Anticipación, IA & Escala Global
               </h1>
               <p className="text-purple-200 text-sm mt-2 max-w-2xl leading-relaxed">
-                La experiencia corporativa definitiva y autónoma: integra Inteligencia Artificial Cognitiva conectada a la base de datos, proyecciones ARIMA de ventas, scoring de cobranza Logit, minería de procesos DFG, clustering K-Means y gobernanza fiscal inmutable multi-país (DTE / SAT / SAR / DGI).
+                La experiencia corporativa definitiva y autónoma: integra Inteligencia Artificial Cognitiva conectada a la base de datos, proyecciones ARIMA de ventas, scoring de cobranza Logit, minería de procesos DFG, clustering K-Means y gobernanza fiscal inmutable y certificación digital (DTE / Facturación Electrónica).
               </p>
               <div className="flex items-center gap-6 mt-4 pt-4 border-t border-white/10 text-xs">
                 <div>
@@ -186,7 +186,7 @@ export default function CircuitoFase4View() {
             <div className="bg-slate-950 p-4 rounded-xl border border-slate-800">
               <span className="text-[10px] font-black uppercase text-emerald-400">Seguridad & Compliance</span>
               <h4 className="font-bold text-white text-sm mt-1">[26] Configuración Global</h4>
-              <p className="text-xs text-slate-400 mt-1">Bitácora inmutable de auditoría forense con firmas criptográficas, cumplimiento tributario regional (MH DTE / SAT / SAR) y trazabilidad por usuario e IP.</p>
+              <p className="text-xs text-slate-400 mt-1">Bitácora inmutable de auditoría forense con firmas criptográficas, cumplimiento tributario y certificación electrónica internacional y trazabilidad por usuario e IP.</p>
             </div>
           </div>
         </div>

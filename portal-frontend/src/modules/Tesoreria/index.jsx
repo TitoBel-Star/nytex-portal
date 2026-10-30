@@ -1133,7 +1133,7 @@ export default function Tesoreria() {
                   <label className="block text-xs font-bold text-gray-700 uppercase mb-1">Referencia Bancaria (Opcional)</label>
                   <input
                     type="text"
-                    placeholder="ej. SPEI-892182 / CHQ-1049"
+                    placeholder="ej. TRANSF-892182 / CHQ-1049"
                     value={reference}
                     onChange={(e) => setReference(e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-800 font-mono text-sm"

@@ -118,10 +118,10 @@ export default function InventoryView() {
   const handleDownloadTemplate = () => {
     const csvContent = "data:text/csv;charset=utf-8," + 
       "SKU,Nombre,Categoría,Stock,StockMínimo,Unidad,CostoUSD,Almacén,Ubicación\n" +
-      "MP-HIL-05,Hilo de Algodón Cardado 24/1,Materia Prima,300,50,kg,4.25,Almacén de Materias Primas,Rack MP-03\n" +
+      "MP-MAT-05,Materia Prima Industrial Base 24/1,Materia Prima,300,50,kg,4.25,Almacén de Materias Primas,Rack MP-03\n" +
       "MP-ELA-06,Filamento Elastano Spandex 70D,Materia Prima,150,30,kg,7.80,Almacén de Materias Primas,Rack MP-04\n" +
       "QUIM-BLAN-01,Compuesto Químico Especializado,Insumo Químico,80,20,litros,12.50,Almacén de Químicos,Estante Q-01\n" +
-      "PT-RIB-201,Rollo Tela Rib 1x1 Algodón,Producto Terminado,25,10,rollos,45.00,Almacén de Producto Terminado,Rack PT-08\n";
+      "PT-MOD-201,Lote de Producto Terminado Estándar,Producto Terminado,25,10,rollos,45.00,Almacén de Producto Terminado,Rack PT-08\n";
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);

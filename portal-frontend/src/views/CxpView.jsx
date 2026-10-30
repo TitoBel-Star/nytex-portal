@@ -13,13 +13,13 @@ export default function CxpView() {
   const [payModalOpen, setPayModalOpen] = useState(false);
   const [payingBill, setPayingBill] = useState(null);
   const [payAmount, setPayAmount] = useState('');
-  const [payMethod, setPayMethod] = useState('Transferencia Bancaria SPEI');
+  const [payMethod, setPayMethod] = useState('Transferencia Bancaria Electrónica');
   const [payReference, setPayReference] = useState('');
 
   // Modal Historial de Pagos
   const [selectedBill, setSelectedBill] = useState(null);
 
-  // Modal Voucher Oficial de Pago SPEI
+  // Modal Voucher Oficial de Transferencia Bancaria
   const [voucherModalOpen, setVoucherModalOpen] = useState(false);
   const [selectedPayment, setSelectedPayment] = useState(null);
   const [voucherBill, setVoucherBill] = useState(null);
@@ -85,9 +85,9 @@ export default function CxpView() {
   let retentionCalc = 0;
   if (retentionType === 'Retención IVA Flete (4%)') {
     retentionCalc = Math.round(subNum * 0.04 * 100) / 100;
-  } else if (retentionType === 'Retención Servicios (10% ISR + 10.67% IVA)') {
+  } else if (retentionType === 'Retención de Servicios (10% Renta + IVA)') {
     retentionCalc = Math.round(subNum * 0.2067 * 100) / 100;
-  } else if (retentionType === 'Retención RESICO (1.25% ISR)') {
+  } else if (retentionType === 'Retención Simplificada (1.25% Renta)') {
     retentionCalc = Math.round(subNum * 0.0125 * 100) / 100;
   }
   const totalPasivoCalc = Math.round((subNum + ivaNum - retentionCalc) * 100) / 100;
@@ -103,7 +103,7 @@ export default function CxpView() {
           vendorCode: vendorCode || 'PRV-001',
           vendorName: selVendor.name,
           invoiceNumber: invoiceNumber || `FPROV-${Math.floor(100000 + Math.random() * 900000)}`,
-          uuid: uuid || `SAT-${Date.now()}`,
+          uuid: uuid || `UUID-DTE-${Date.now()}`,
           concept,
           subtotal: subNum,
           retentionType,
@@ -129,7 +129,7 @@ export default function CxpView() {
   const openPayModal = (bill) => {
     setPayingBill(bill);
     setPayAmount(bill.balance.toString());
-    setPayReference(`EGR-SPEI-${Math.floor(100000 + Math.random() * 900000)}`);
+    setPayReference(`EGR-TRANSF-${Math.floor(100000 + Math.random() * 900000)}`);
     setPayModalOpen(true);
   };
 
@@ -219,7 +219,7 @@ export default function CxpView() {
       'Folio CxP',
       'Orden Compra',
       'Factura Proveedor',
-      'UUID SAT',
+      'Folio Fiscal Digital',
       'Codigo Proveedor',
       'Proveedor',
       'Fecha Emision',
@@ -377,7 +377,7 @@ export default function CxpView() {
             <div>
               <span className="text-gray-500 text-xs font-bold uppercase tracking-wider mb-1">Facturas de Proveedor</span>
               <span className="block text-3xl font-extrabold text-[#006EAD]">{bills.length}</span>
-              <span className="text-xs text-gray-400">Con timbre fiscal y CFDI</span>
+              <span className="text-xs text-gray-400">Con certificación fiscal electrónica</span>
             </div>
             <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center text-xl font-bold">
               📑
@@ -520,8 +520,8 @@ export default function CxpView() {
                     <tr key={b.id} className="hover:bg-red-50/20 transition">
                       <td className="px-5 py-4">
                         <div className="font-mono font-bold text-red-700">{b.billCode}</div>
-                        <div className="text-[10px] font-mono text-gray-400 truncate max-w-[140px]" title={b.uuid || 'SAT-GENERIC'}>
-                          🏷️ {b.uuid || 'SAT-CFDI-TIMBRADO'}
+                        <div className="text-[10px] font-mono text-gray-400 truncate max-w-[140px]" title={b.uuid || 'DTE-GENERIC'}>
+                          🏷️ {b.uuid || 'DTE-CERTIFICADO'}
                         </div>
                       </td>
                       <td className="px-5 py-4">
@@ -623,7 +623,7 @@ export default function CxpView() {
                   </select>
                 </div>
 
-                {/* Folio Factura y Timbre Fiscal UUID SAT */}
+                {/* Folio Factura y Certificación DTE - Ministerio de Hacienda */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <div>
                     <label className="block font-bold text-gray-700 uppercase mb-1">Folio / N° Factura Proveedor</label>
@@ -638,7 +638,7 @@ export default function CxpView() {
                   </div>
                   <div>
                     <div className="flex justify-between items-center mb-1">
-                      <label className="font-bold text-gray-700 uppercase">Folio Fiscal Digital (UUID SAT)</label>
+                      <label className="font-bold text-gray-700 uppercase">Folio Fiscal Digital (DTE - Ministerio de Hacienda / Dirección General de Impuestos Internos)</label>
                       <button 
                         type="button" 
                         onClick={generateUuid} 
@@ -695,8 +695,8 @@ export default function CxpView() {
                     >
                       <option value="Ninguna">Ninguna (Compra Regular)</option>
                       <option value="Retención IVA Flete (4%)">Retención IVA Flete (4%)</option>
-                      <option value="Retención Servicios (10% ISR + 10.67% IVA)">Retención Servicios (10% ISR + 10.67% IVA)</option>
-                      <option value="Retención RESICO (1.25% ISR)">Retención RESICO (1.25% ISR)</option>
+                      <option value="Retención de Servicios (10% Renta + IVA)">Retención de Servicios (10% Renta + IVA)</option>
+                      <option value="Retención Simplificada (1.25% Renta)">Retención Simplificada (1.25% Renta)</option>
                     </select>
                   </div>
                 </div>
@@ -912,7 +912,7 @@ export default function CxpView() {
               <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-3 text-xs">
                 <div className="flex justify-between items-center pb-2 border-b border-slate-200">
                   <span className="font-bold text-[#006EAD]">NyTEX Corporation S.A.</span>
-                  <span className="font-mono text-gray-500">RFC: NTM180612TX4</span>
+                  <span className="font-mono text-gray-500">NIT: 0614-180612-102-4 (Ministerio de Hacienda)</span>
                 </div>
 
                 <div className="grid grid-cols-2 gap-2 text-gray-600">
@@ -926,7 +926,7 @@ export default function CxpView() {
                   </div>
                   <div>
                     <span className="block text-[10px] text-gray-400 uppercase">Cuenta Ordenante (Emisora)</span>
-                    <span className="font-mono text-gray-800">BBVA Bancomer (•9912)</span>
+                    <span className="font-mono text-gray-800">Banco Corporativo Principal (•9912)</span>
                   </div>
                   <div>
                     <span className="block text-[10px] text-gray-400 uppercase">Método Aplicado</span>

@@ -418,7 +418,7 @@ export default function PredictiveModelsView() {
             {/* Tarjetas de Métricas de Demanda */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
-                <span className="text-xs font-bold text-gray-500 uppercase">Demanda Proyectada (Tela Algodón)</span>
+                <span className="text-xs font-bold text-gray-500 uppercase">Demanda Proyectada (Productos Industriales)</span>
                 <p className="text-2xl font-extrabold text-[#0A2540] mt-1">42,500 m</p>
                 <span className="text-xs font-semibold text-emerald-600">+8.4% vs promedio histórico</span>
               </div>

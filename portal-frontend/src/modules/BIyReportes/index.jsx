@@ -81,7 +81,7 @@ export default function BIyReportes() {
               <span className="bg-blue-100 text-blue-700 text-xs px-2.5 py-1 rounded-full font-bold uppercase tracking-wider">
                 Módulo [18] • BI y Reportes
               </span>
-              <span className="text-xs text-slate-500">Motor de Emisión NIF, Hacienda / SAT e IFRS</span>
+              <span className="text-xs text-slate-500">Motor de Emisión Financiera y Tributaria bajo IFRS / NIIF</span>
             </div>
             <h1 className="text-2xl md:text-3xl font-black text-slate-900 mt-1">
               Centro de Reportes Ejecutivos & Fiscales
@@ -197,7 +197,7 @@ export default function BIyReportes() {
                   <div className="bg-slate-950 text-white font-black text-xl px-3 py-1 rounded">NyTEX</div>
                   <div>
                     <h2 className="font-extrabold text-base text-slate-900">NyTEX Corporation S.A.</h2>
-                    <p className="text-xs text-slate-500">RFC: NTM180612TX4 • Régimen 601 General de Ley Personas Morales</p>
+                    <p className="text-xs text-slate-500">NIT: 0614-180612-102-4 • NRC: 298412-3 • Ministerio de Hacienda / Dirección General de Impuestos Internos (MH / DGII)</p>
                   </div>
                 </div>
               </div>

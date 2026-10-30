@@ -46,10 +46,10 @@ const BusinessPartner = sequelize.define('BusinessPartner', {
   paymentTerms: { type: DataTypes.STRING, defaultValue: 'Neto 30 días' },
   creditLimit: { type: DataTypes.FLOAT, defaultValue: 50000 },
   balance: { type: DataTypes.FLOAT, defaultValue: 0 },
-  bankName: { type: DataTypes.STRING, defaultValue: 'BBVA Bancomer' },
+  bankName: { type: DataTypes.STRING, defaultValue: 'Banco Corporativo Principal' },
   bankAccount: { type: DataTypes.STRING, defaultValue: '0129-4820-9912' },
   bankClabe: { type: DataTypes.STRING, defaultValue: '012180001294820991' },
-  bankSwift: { type: DataTypes.STRING, defaultValue: 'BBVAMXMM' },
+  bankSwift: { type: DataTypes.STRING, defaultValue: 'CORPUS33' },
   status: { type: DataTypes.STRING, defaultValue: 'Activo' },
   notes: { type: DataTypes.TEXT, allowNull: true }
 });
@@ -191,7 +191,7 @@ const ProductionOrder = sequelize.define('ProductionOrder', {
   unit: { type: DataTypes.STRING, defaultValue: 'rollos' },
   bom: { type: DataTypes.JSON, defaultValue: [] },
   operator: { type: DataTypes.STRING, defaultValue: 'Ing. Supervisor Fabril' },
-  workcenter: { type: DataTypes.STRING, defaultValue: 'Telar Circular #3 - Planta 1' },
+  workcenter: { type: DataTypes.STRING, defaultValue: 'Línea de Producción Automatizada #3 - Planta 1' },
   startDate: { type: DataTypes.STRING },
   finishDate: { type: DataTypes.STRING, allowNull: true },
   scrapsPct: { type: DataTypes.FLOAT, defaultValue: 0 },
@@ -378,7 +378,7 @@ const Employee = sequelize.define('Employee', {
   dailySalary: { type: DataTypes.FLOAT, defaultValue: 450 }, // SBD (Salario Base Diario)
   integratedDailySalary: { type: DataTypes.FLOAT, defaultValue: 472.5 }, // SDI (Salario Diario Integrado con factor de prestaciones)
   monthlySalary: { type: DataTypes.FLOAT, defaultValue: 13500 },
-  bankName: { type: DataTypes.STRING, defaultValue: 'Banorte' },
+  bankName: { type: DataTypes.STRING, defaultValue: 'Banco Operativo Central' },
   bankAccount: { type: DataTypes.STRING, defaultValue: '072910294411' }, // Cuenta / CLABE
   hireDate: { type: DataTypes.STRING, defaultValue: '2024-01-15' },
   status: { type: DataTypes.STRING, defaultValue: 'Activo' }, // 'Activo', 'Incapacidad', 'Vacaciones', 'Baja'
@@ -391,7 +391,7 @@ const AttendanceIncident = sequelize.define('AttendanceIncident', {
   employeeCode: { type: DataTypes.STRING, allowNull: false },
   employeeName: { type: DataTypes.STRING, allowNull: false },
   date: { type: DataTypes.STRING, allowNull: false },
-  type: { type: DataTypes.STRING, allowNull: false }, // 'Falta Injustificada', 'Falta Justificada', 'Horas Extra Dobles', 'Horas Extra Triples', 'Retardo', 'Incapacidad IMSS', 'Vacaciones'
+  type: { type: DataTypes.STRING, allowNull: false }, // 'Falta Injustificada', 'Falta Justificada', 'Horas Extra Dobles', 'Horas Extra Triples', 'Retardo', 'Incapacidad Médica / Laboral', 'Vacaciones'
   hours: { type: DataTypes.FLOAT, defaultValue: 0 },
   multiplier: { type: DataTypes.FLOAT, defaultValue: 1 },
   notes: { type: DataTypes.STRING },
@@ -1138,7 +1138,7 @@ app.post('/api/cxc/invoices', async (req, res) => {
 app.post('/api/cxc/invoices/:invoiceCode/pay', async (req, res) => {
   try {
     const { invoiceCode } = req.params;
-    const { amount, method = 'Transferencia SPEI', reference = 'REF-PAGO-001' } = req.body;
+    const { amount, method = 'Transferencia Bancaria Electrónica', reference = 'REF-PAGO-001' } = req.body;
     const payAmount = parseFloat(amount);
 
     if (isNaN(payAmount) || payAmount <= 0) {
@@ -1205,7 +1205,7 @@ app.post('/api/cxc/invoices/:invoiceCode/pay', async (req, res) => {
       originModule: 'CxC',
       originReference: invoiceCode,
       lines: [
-        { accountCode: '1101-01', accountName: 'Bancos Nacionales (BBVA)', debit: appliedAmount, credit: 0 },
+        { accountCode: '1101-01', accountName: 'Bancos - Cuenta Operativa Principal', debit: appliedAmount, credit: 0 },
         { accountCode: '1105-01', accountName: 'Clientes Nacionales (CxC)', debit: 0, credit: appliedAmount }
       ]
     });
@@ -1506,7 +1506,7 @@ app.post('/api/compras/orders', async (req, res) => {
     const newPO = await PurchaseOrder.create({
       poCode,
       vendorCode: vendorCode || 'BP-003',
-      vendorName: vendorName || 'Hilados y Fibras Sintéticas S.A.',
+      vendorName: vendorName || 'Materiales y Fibras Sintéticas S.A.',
       items: formatted,
       subtotal,
       tax,
@@ -1617,11 +1617,11 @@ app.post('/api/produccion/orders', async (req, res) => {
     const newOP = await ProductionOrder.create({
       opCode,
       productSku: productSku || 'PT-TEL-101',
-      productName: productName || 'Rollo Tela Gabardina Algodón Peinado',
+      productName: productName || 'Lote de Producto Terminado Estándar (PT-101)',
       targetQuantity: parseFloat(targetQuantity) || 50,
       unit: unit || 'rollos',
       bom: bom || [],
-      workcenter: workcenter || 'Telar Circular #3 - Planta 1',
+      workcenter: workcenter || 'Línea de Producción Automatizada #3 - Planta 1',
       operator: operator || 'Ing. Supervisor Fabril',
       startDate: new Date().toISOString().split('T')[0],
       scrapsPct: 1.5,
@@ -1746,7 +1746,7 @@ app.get('/api/cxp/bills', async (req, res) => {
   }
 });
 
-// Registro Directo de Factura de Proveedor desde CxP con Retenciones y UUID SAT
+// Registro Directo de Factura de Proveedor desde CxP con Retenciones y DTE (Ministerio de Hacienda / Dirección General de Impuestos Internos)
 app.post('/api/cxp/bills', async (req, res) => {
   try {
     const { 
@@ -1770,9 +1770,9 @@ app.post('/api/cxp/bills', async (req, res) => {
     let retentionAmount = 0;
     if (retentionType === 'Retención IVA Flete (4%)') {
       retentionAmount = Math.round(sub * 0.04 * 100) / 100;
-    } else if (retentionType === 'Retención Servicios (10% ISR + 10.67% IVA)') {
+    } else if (retentionType === 'Retención de Servicios (10% Renta + IVA)') {
       retentionAmount = Math.round(sub * 0.2067 * 100) / 100;
-    } else if (retentionType === 'Retención RESICO (1.25% ISR)') {
+    } else if (retentionType === 'Retención Simplificada (1.25% Renta)') {
       retentionAmount = Math.round(sub * 0.0125 * 100) / 100;
     }
 
@@ -1781,7 +1781,7 @@ app.post('/api/cxp/bills', async (req, res) => {
     const cxpCount = await AccountPayable.count();
     const billCode = `CXP-2026-${String(cxpCount + 1).padStart(4, '0')}`;
     const invNum = invoiceNumber || `FPROV-${String(cxpCount + 1).padStart(4, '0')}`;
-    const satUuid = uuid || `SAT-${Math.random().toString(36).substring(2, 6).toUpperCase()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}-${Date.now().toString(36).toUpperCase()}`;
+    const satUuid = uuid || `UUID-${Math.random().toString(36).substring(2, 6).toUpperCase()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}-${Date.now().toString(36).toUpperCase()}`;
 
     const days = parseInt(creditDays, 10) || 30;
     const today = new Date();
@@ -1853,7 +1853,7 @@ app.post('/api/cxp/bills', async (req, res) => {
 app.post('/api/cxp/bills/:billCode/pay', async (req, res) => {
   try {
     const { billCode } = req.params;
-    const { amount, method = 'Transferencia Bancaria SPEI', reference = 'EGR-PAGO-001' } = req.body;
+    const { amount, method = 'Transferencia Bancaria Electrónica', reference = 'EGR-PAGO-001' } = req.body;
     const payAmount = parseFloat(amount);
 
     if (isNaN(payAmount) || payAmount <= 0) {
@@ -1921,7 +1921,7 @@ app.post('/api/cxp/bills/:billCode/pay', async (req, res) => {
       originReference: billCode,
       lines: [
         { accountCode: '2101-01', accountName: 'Proveedores Nacionales (CxP)', debit: appliedAmount, credit: 0 },
-        { accountCode: '1101-01', accountName: 'Bancos Nacionales (BBVA)', debit: 0, credit: appliedAmount }
+        { accountCode: '1101-01', accountName: 'Bancos - Cuenta Operativa Principal', debit: 0, credit: appliedAmount }
       ]
     });
 
@@ -2643,6 +2643,322 @@ app.get('/api/contabilidad/trial-balance', async (req, res) => {
 });
 
 // =========================================================================
+// --- [12.B] CONTABILIDAD: DECLARACIONES FISCALES, LIBROS DE IVA Y RETENCIONES ---
+// =========================================================================
+
+// Resumen y Cálculo de Declaraciones Fiscales (F-07, F-14, F-11)
+app.get('/api/contabilidad/declaraciones', async (req, res) => {
+  try {
+    const orders = await SaleOrder.findAll();
+    const payables = await AccountPayable.findAll();
+    const payrolls = await PayrollRun.findAll();
+
+    // 1. Cálculos de IVA para F-07
+    const ventasGravadasCCF = orders.filter(o => o.status !== 'Cancelada').reduce((s, o) => s + (o.subtotal || 0), 0);
+    const debitoFiscal13 = Math.round(ventasGravadasCCF * 0.13 * 100) / 100;
+    
+    const comprasGravadas = payables.reduce((s, p) => s + (p.subtotal || 0), 0);
+    const creditoFiscal13 = Math.round(comprasGravadas * 0.13 * 100) / 100;
+    
+    // Retención de IVA 1% a proveedores (DTE-07)
+    const retencionIva1Pct = Math.round(payables.reduce((s, p) => s + (p.retentionAmount || 0), 0) * 100) / 100;
+    
+    const saldoNetoIva = debitoFiscal13 - creditoFiscal13;
+    const impuestoIvaPagar = saldoNetoIva > 0 ? saldoNetoIva : 0;
+    const remanenteIvaFavor = saldoNetoIva < 0 ? Math.abs(saldoNetoIva) : 0;
+    const totalPagarF07 = Math.round((impuestoIvaPagar + retencionIva1Pct) * 100) / 100;
+
+    // 2. Cálculos para F-14 (Pago a Cuenta y Retenciones de Renta)
+    const ingresosBrutos = ventasGravadasCCF;
+    const pagoACuenta175 = Math.round(ingresosBrutos * 0.0175 * 100) / 100;
+    const retencionRentaNomina = Math.round(payrolls.reduce((s, p) => s + (p.totalIsr || 0), 0) * 100) / 100;
+    // Retención 10% por Sujetos Excluidos / Servicios DTE-14
+    const retencionRentaServicios10 = Math.round(payables.filter(p => p.retentionType === 'Renta 10%').reduce((s, p) => s + (p.retentionAmount || 0), 0) * 100) / 100 || 250.00;
+    const totalPagarF14 = Math.round((pagoACuenta175 + retencionRentaNomina + retencionRentaServicios10) * 100) / 100;
+
+    // 3. Cálculos para F-11 (Declaración Anual de Renta)
+    const utilidadEstimada = Math.max(0, ingresosBrutos - comprasGravadas - payrolls.reduce((s, p) => s + (p.totalGross || 0), 0));
+    const tasaRenta = ingresosBrutos > 150000 ? 0.30 : 0.25;
+    const impuestoRentaBruto = Math.round(utilidadEstimada * tasaRenta * 100) / 100;
+    const pagosACuentaAcreditables = Math.round(pagoACuenta175 * 12 * 100) / 100; // Anualizado
+    const impuestoRentaNetoPagar = Math.max(0, Math.round((impuestoRentaBruto - pagosACuentaAcreditables) * 100) / 100);
+
+    res.json({
+      periodoActual: 'Octubre 2026',
+      ejercicioFiscal: '2026',
+      f07: {
+        codigo: 'F-07',
+        nombre: 'Declaración Mensual de IVA',
+        ventasGravadasCCF,
+        debitoFiscal13,
+        comprasGravadas,
+        creditoFiscal13,
+        retencionIva1Pct,
+        saldoNetoIva,
+        impuestoIvaPagar,
+        remanenteIvaFavor,
+        totalPagarF07,
+        npe: '0812-9948-2819-2041-88',
+        fechaVencimiento: '2026-11-13',
+        estado: 'Listo para Presentar'
+      },
+      f14: {
+        codigo: 'F-14',
+        nombre: 'Declaración Mensual de Pago a Cuenta e Impuesto Retenido de Renta',
+        ingresosBrutos,
+        tasaPagoACuenta: '1.75%',
+        pagoACuenta175,
+        retencionRentaNomina,
+        retencionRentaServicios10,
+        totalPagarF14,
+        npe: '0812-7729-1049-5832-11',
+        fechaVencimiento: '2026-11-13',
+        estado: 'Listo para Presentar'
+      },
+      f11: {
+        codigo: 'F-11',
+        nombre: 'Declaración Anual del Impuesto sobre la Renta',
+        ingresosBrutosAnuales: ingresosBrutos * 1.5,
+        utilidadGravable: utilidadEstimada,
+        tasaAplicada: `${tasaRenta * 100}% (Sociedad Jurídica)`,
+        impuestoRentaBruto,
+        pagosACuentaAcreditables,
+        impuestoRentaNetoPagar,
+        fechaVencimiento: '2027-04-30',
+        estado: 'En Proyección y Acumulación'
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Liquidar y Contabilizar Formulario F-07
+app.post('/api/contabilidad/liquidar-f07', async (req, res) => {
+  try {
+    const { totalPagar, debitoFiscal, creditoFiscal, retenciones } = req.body;
+    
+    // Generar la Póliza de Liquidación de IVA
+    const entry = await createAutoJournalEntry({
+      type: 'Diario',
+      concept: `Liquidación Mensual de IVA (Formulario F-07) - Período Octubre 2026`,
+      originModule: 'Contabilidad Fiscal',
+      originReference: 'F-07-2026-10',
+      lines: [
+        { accountCode: '2106-01', accountName: 'Débito Fiscal IVA (Cancelación mensual)', debit: parseFloat(debitoFiscal) || 3965.00, credit: 0 },
+        { accountCode: '1106-01', accountName: 'Crédito Fiscal IVA (Acreditamiento compras)', debit: 0, credit: parseFloat(creditoFiscal) || 2825.00 },
+        { accountCode: '2106-05', accountName: 'IVA Retenido 1% por Enterar (DTE-07)', debit: 0, credit: parseFloat(retenciones) || 150.00 },
+        { accountCode: '2106-10', accountName: 'Impuesto IVA por Pagar Líquido al MH', debit: 0, credit: parseFloat(totalPagar) || 990.00 }
+      ]
+    });
+
+    res.json({
+      success: true,
+      message: `Formulario F-07 liquidado exitosamente. Póliza ${entry.entryCode} registrada. Mandamiento de Pago (NPE: 0812-9948-2819-2041-88) generado para pago en banco comercial.`,
+      entry
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Liquidar y Contabilizar Formulario F-14
+app.post('/api/contabilidad/liquidar-f14', async (req, res) => {
+  try {
+    const { pagoACuenta, retencionNomina, retencionServicios, totalPagar } = req.body;
+    
+    const entry = await createAutoJournalEntry({
+      type: 'Diario',
+      concept: `Provisión de Pago a Cuenta y Retenciones de Renta (Formulario F-14) - Octubre 2026`,
+      originModule: 'Contabilidad Fiscal',
+      originReference: 'F-14-2026-10',
+      lines: [
+        { accountCode: '1107-01', accountName: 'Anticipo Pago a Cuenta de Renta 1.75%', debit: parseFloat(pagoACuenta) || 533.75, credit: 0 },
+        { accountCode: '2106-07', accountName: 'Retenciones Renta por Salarios (Nómina)', debit: parseFloat(retencionNomina) || 850.00, credit: 0 },
+        { accountCode: '2106-08', accountName: 'Retenciones Renta 10% Servicios (DTE-14)', debit: parseFloat(retencionServicios) || 250.00, credit: 0 },
+        { accountCode: '2106-12', accountName: 'Pasivo Fiscal F-14 por Enterar al Ministerio de Hacienda', debit: 0, credit: parseFloat(totalPagar) || 1633.75 }
+      ]
+    });
+
+    res.json({
+      success: true,
+      message: `Formulario F-14 registrado formalmente. Póliza ${entry.entryCode} cuadrada y asociada al mandamiento fiscal.`,
+      entry
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Libros Legales Digitales de IVA
+app.get('/api/contabilidad/libros-iva', async (req, res) => {
+  try {
+    const payables = await AccountPayable.findAll();
+    const orders = await SaleOrder.findAll();
+
+    // 1. Libro de Compras
+    const libroCompras = payables.map((p, idx) => ({
+      numero: idx + 1,
+      fecha: p.issueDate || '2026-10-15',
+      dteTipo: 'DTE-03',
+      dteNumero: p.invoiceNumber || `CCF-${p.billCode}`,
+      uuid: p.uuid || '4A8F-99B1-20E4-883A',
+      nrcProveedor: '284910-3',
+      nitProveedor: '0614-150280-102-1',
+      proveedor: p.vendorName,
+      comprasExentas: 0,
+      comprasGravadas: p.subtotal || 0,
+      creditoFiscal: p.tax || Math.round((p.subtotal || 0) * 0.13 * 100) / 100,
+      ivaRetenido1Pct: p.retentionAmount || 0,
+      totalCompra: p.totalAmount || 0
+    }));
+
+    // 2. Libro de Ventas a Contribuyentes (CCF B2B)
+    const libroVentasCCF = orders.map((o, idx) => ({
+      numero: idx + 1,
+      fecha: '2026-10-18',
+      dteTipo: 'DTE-03',
+      dteNumero: o.invoiceCode || `CCF-001-${String(idx + 101).padStart(4, '0')}`,
+      uuid: `C8F9-10A2-993E-${String(idx + 500).padStart(4, '0')}`,
+      nrcCliente: '194820-5',
+      cliente: o.clientName,
+      ventasGravadas: o.subtotal || 0,
+      debitoFiscal: o.tax || Math.round((o.subtotal || 0) * 0.13 * 100) / 100,
+      ivaRetenidoTerceros: 0,
+      totalVenta: o.total || 0
+    }));
+
+    // 3. Libro de Ventas a Consumidor Final (DTE-01 B2C)
+    const libroConsumidorFinal = [
+      {
+        fecha: '2026-10-20',
+        delFolio: 'DTE-01-0000101',
+        alFolio: 'DTE-01-0000142',
+        sucursal: 'Mostrador Central Planta 1',
+        ventasExentas: 0,
+        ventasGravadasLocales: 4250.00,
+        debitoFiscal: 552.50,
+        totalDiario: 4802.50
+      },
+      {
+        fecha: '2026-10-21',
+        delFolio: 'DTE-01-0000143',
+        alFolio: 'DTE-01-0000185',
+        sucursal: 'Mostrador Central Planta 1',
+        ventasExentas: 0,
+        ventasGravadasLocales: 3890.00,
+        debitoFiscal: 505.70,
+        totalDiario: 4395.70
+      }
+    ];
+
+    // 4. Libro de Exportaciones (DTE-11)
+    const libroExportaciones = [
+      {
+        fecha: '2026-10-12',
+        dteNumero: 'DTE-11-0000021',
+        duca: 'DUCA-T-2026-009182',
+        paisDestino: 'Guatemala',
+        clienteExterior: 'Textiles del Norte S.A. (GT)',
+        valorFob: 25000.00,
+        tasaIva: '0% (Exenta Ley de Zonas Francas / Export)'
+      }
+    ];
+
+    res.json({
+      libroCompras,
+      libroVentasCCF,
+      libroConsumidorFinal,
+      libroExportaciones
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Informe Anual de Retenciones F-910
+app.get('/api/contabilidad/retenciones-f910', async (req, res) => {
+  try {
+    const employees = await Employee.findAll();
+    const payables = await AccountPayable.findAll();
+
+    const registrosF910 = [
+      ...employees.map(e => ({
+        tipoIdentificacion: 'DUI',
+        numeroIdentificacion: e.rfc || '01294820-1',
+        nombreCompleto: e.fullName,
+        conceptoCodigo: '01 - Sueldos y Salarios en Relación de Dependencia',
+        montoDevengadoAnual: Math.round((e.monthlySalary || 13500) * 12 * 100) / 100,
+        montoRetenidoRenta: Math.round((e.monthlySalary || 13500) * 0.08 * 12 * 100) / 100,
+        estadoConstancia: 'Emitida & Sellada'
+      })),
+      {
+        tipoIdentificacion: 'NIT',
+        numeroIdentificacion: '0614-220885-103-9',
+        nombreCompleto: 'Lic. Ernesto Javier Palacios (Asesoría Contable & Auditoría Externa)',
+        conceptoCodigo: '02 - Servicios Profesionales Sujetos Excluidos (Art. 156 / DTE-14)',
+        montoDevengadoAnual: 12000.00,
+        montoRetenidoRenta: 1200.00, // 10%
+        estadoConstancia: 'Emitida & Sellada'
+      },
+      {
+        tipoIdentificacion: 'NIT',
+        numeroIdentificacion: '0501-100492-101-2',
+        nombreCompleto: 'Ing. Carlos Mendoza (Mantenimiento Industrial de Planta)',
+        conceptoCodigo: '02 - Servicios Profesionales Sujetos Excluidos (Art. 156 / DTE-14)',
+        montoDevengadoAnual: 8500.00,
+        montoRetenidoRenta: 850.00, // 10%
+        estadoConstancia: 'Emitida & Sellada'
+      }
+    ];
+
+    const totalRetenido = registrosF910.reduce((s, r) => s + r.montoRetenidoRenta, 0);
+
+    res.json({
+      ejercicio: '2026',
+      totalRegistros: registrosF910.length,
+      totalRetenido: Math.round(totalRetenido * 100) / 100,
+      formatoNormado: 'TXT / CSV Tabulado Ministerio de Hacienda',
+      registros: registrosF910
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Candado Fiscal y Cierre Criptográfico de Período
+app.post('/api/contabilidad/candado-fiscal', async (req, res) => {
+  try {
+    const { periodo, cerradoPor, notas } = req.body;
+    const periodCode = periodo || '2026-10';
+    const hash = crypto.createHash('sha256').update(`FISCAL_LOCK|${periodCode}|${Date.now()}`).digest('hex');
+
+    const closure = await InternalClosure.create({
+      closeCode: `CLR-FISC-${periodCode}`,
+      closeType: 'CONTABLE_MENSUAL',
+      title: `Candado Fiscal Mensual e Inmutabilidad de Libros - ${periodCode}`,
+      periodOrDate: periodCode,
+      status: 'Cerrado',
+      totalAmount: 145200.00,
+      recordsCount: 48,
+      closedBy: cerradoPor || 'C.P. Mario Castaneda (Contador General)',
+      closedAt: new Date().toISOString(),
+      details: notas || 'Período fiscal bloqueado contra alteraciones retroactivas. Libros de IVA y formularios F-07/F-14 sellados y transmitidos.',
+      cryptographicHash: hash
+    });
+
+    res.json({
+      success: true,
+      message: `Candado fiscal aplicado al período ${periodCode}. Queda prohibida la edición, inserción o anulación de pólizas y DTEs con fecha del período cerrado.`,
+      hash,
+      closure
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// =========================================================================
 // --- [13] NYTEX RRHH & [14] NYTEX NÓMINA: ENDPOINTS E INTEGRACIONES ---
 // =========================================================================
 
@@ -2781,7 +3097,7 @@ app.get('/api/nomina/periods/:periodCode', async (req, res) => {
   }
 });
 
-// [14] NÓMINA: MOTOR DE CÁLCULO DE NÓMINA CON INCIDENCIAS, ISR & IMSS
+// [14] NÓMINA: MOTOR DE CÁLCULO DE NÓMINA CON INCIDENCIAS Y SEGURIDAD SOCIAL
 app.post('/api/nomina/calculate', async (req, res) => {
   try {
     const { periodCode = 'NOM-2026-Q18' } = req.body;
@@ -2839,7 +3155,7 @@ app.post('/api/nomina/calculate', async (req, res) => {
       else if (grossEarnings > 5000) isrRate = 0.09;
       const isrAmount = Math.round(grossEarnings * isrRate * 100) / 100;
 
-      // Cuota obrera IMSS (~2.725% sobre SDI * días cotizados)
+      // Aporte de Seguridad Social (~2.725% sobre salario base * días)
       const imssWorkerAmount = Math.round((emp.integratedDailySalary * daysWorked * 0.02725) * 100) / 100;
       const empTotalDeductions = Math.round((isrAmount + imssWorkerAmount) * 100) / 100;
       const netPay = Math.round((grossEarnings - empTotalDeductions) * 100) / 100;
@@ -2916,7 +3232,7 @@ app.post('/api/nomina/calculate', async (req, res) => {
 
     res.json({
       success: true,
-      message: `Nómina ${period.periodCode} calculada exitosamente para ${employees.length} colaboradores con motor fiscal IMSS/SAT.`,
+      message: `Nómina ${period.periodCode} calculada exitosamente para ${employees.length} colaboradores con motor de cálculo laboral y fiscal.`,
       period
     });
   } catch (error) {
@@ -2957,8 +3273,8 @@ app.post('/api/nomina/disburse', async (req, res) => {
       category: 'Dispersión de Nómina y Salarios',
       amount: period.totalNet,
       date: new Date().toISOString().split('T')[0],
-      concept: `Dispersión Salarial SPEI: ${period.periodName} (${period.employeesCount} Colaboradores)`,
-      reference: `LAYOUT-SPEI-${period.periodCode}`,
+      concept: `Dispersión Salarial Electrónica: ${period.periodName} (${period.employeesCount} Colaboradores)`,
+      reference: `LAYOUT-TRANSF-${period.periodCode}`,
       reconciled: true
     });
 
@@ -3000,15 +3316,15 @@ app.post('/api/nomina/post-accounting', async (req, res) => {
       { accountCode: '5101-01', accountName: 'Gastos de Personal - Sueldos y Salarios Base', debit: baseSalariesExpense, credit: 0 },
       { accountCode: '5101-02', accountName: 'Gastos de Personal - Horas Extraordinarias', debit: period.totalOvertime, credit: 0 },
       { accountCode: '5101-03', accountName: 'Gastos de Personal - Premios de Asistencia y Puntualidad', debit: period.totalBonuses, credit: 0 },
-      { accountCode: '5102-01', accountName: 'Cargas Sociales Patronales - IMSS e INFONAVIT', debit: totalPatronal, credit: 0 },
+      { accountCode: '5102-01', accountName: 'Cargas Sociales Patronales (Seguridad Social y Previsión)', debit: totalPatronal, credit: 0 },
       { accountCode: '5102-02', accountName: 'Impuestos Locales sobre Nómina (ISN 3%)', debit: period.totalStateTax, credit: 0 },
 
       // HABER (Retenciones de Impuestos, Pasivos por Enterar y Bancos)
-      { accountCode: '2105-01', accountName: 'Impuestos Retenidos por Salarios (ISR SAT por Pagar)', debit: 0, credit: period.totalIsr },
-      { accountCode: '2106-01', accountName: 'Seguridad Social - Cuota Obrera IMSS por Pagar', debit: 0, credit: period.totalImssWorker },
-      { accountCode: '2107-01', accountName: 'Seguridad Social - Cuotas Patronales IMSS/INFONAVIT por Enterar', debit: 0, credit: totalPatronal },
+      { accountCode: '2105-01', accountName: 'Impuestos Retenidos por Salarios (Retenciones Fiscales por Pagar)', debit: 0, credit: period.totalIsr },
+      { accountCode: '2106-01', accountName: 'Seguridad Social - Aportes Laborales por Pagar', debit: 0, credit: period.totalImssWorker },
+      { accountCode: '2107-01', accountName: 'Seguridad Social - Aportes Patronales por Enterar', debit: 0, credit: totalPatronal },
       { accountCode: '2107-02', accountName: 'Impuesto sobre Nómina (ISN) Estatal por Pagar', debit: 0, credit: period.totalStateTax },
-      { accountCode: '1101-02', accountName: 'Bancos Nacionales (Banorte Tesorería & Nómina)', debit: 0, credit: period.totalNet }
+      { accountCode: '1101-02', accountName: 'Bancos Nacionales (Banco Operativo Central)', debit: 0, credit: period.totalNet }
     ];
 
     const autoEntry = await createAutoJournalEntry({
@@ -3075,7 +3391,7 @@ app.get('/api/predictivos/models', (req, res) => {
       {
         name: 'Modelos Continuos / Series de Tiempo',
         algorithms: ['ARIMA', 'Prophet', 'Exponential Smoothing'],
-        useCases: ['Demanda de tela e insumos', 'Proyección de ventas $', 'Requerimientos MRP']
+        useCases: ['Demanda de productos e insumos', 'Proyección de ventas $', 'Requerimientos MRP']
       },
       {
         name: 'Modelos de Riesgo & Causalidad Binaria',
@@ -3470,7 +3786,7 @@ app.get('/api/fase6/planeacion/mrp', async (req, res) => {
     const production = await ProductionOrder.findAll();
     const assets = await FixedAsset.findAll();
 
-    // 1. Demanda Comprometida en Pedidos (Rollos de Tela Jersey)
+    // 1. Demanda Comprometida en Pedidos (Unidades de Producto Terminado)
     const confirmedOrders = orders.filter(o => o.status === 'Pedido' || o.status === 'Confirmado' || o.status === 'Entregado');
     let totalRollsDemanded = 0;
     confirmedOrders.forEach(o => {
@@ -3491,7 +3807,7 @@ app.get('/api/fase6/planeacion/mrp', async (req, res) => {
     // Stock actual de hilatura en inventario
     const yarnItem = inventory.find(i => i.name.includes('Algodón') || i.sku.includes('HIL')) || {
       sku: 'MAT-HIL-01',
-      name: 'Hilatura 100% Algodón Peinado 30/1',
+      name: 'Materia Prima Base MP-01',
       stock: 450,
       unitCost: 85,
       minStock: 200
@@ -3521,7 +3837,7 @@ app.get('/api/fase6/planeacion/mrp', async (req, res) => {
         currentStockKg: currentYarnStockKg,
         deficitKg: yarnDeficitKg,
         suggestedPurchaseAmount: purchaseCostRequired,
-        recommendedSupplier: 'Hilados y Fibras Sintéticas S.A. (BP-003)',
+        recommendedSupplier: 'Materiales y Fibras Sintéticas S.A. (BP-003)',
         urgency: yarnDeficitKg > 0 ? 'Requerida Orden de Compra Inmediata' : 'Stock Suficiente'
       },
       capacity: {
@@ -3542,7 +3858,7 @@ app.get('/api/fase6/planeacion/mrp', async (req, res) => {
         {
           id: 'act-2',
           type: 'Producción',
-          title: `Programar Orden Fabril en Telar Circular Mayer & Cie (${totalRollsDemanded} rollos)`,
+          title: `Programar Orden Fabril en Centro de Maquinado Industrial CNC (${totalRollsDemanded} rollos)`,
           hours: totalLoomHoursRequired,
           moduleTarget: 'Producción [5]'
         }
@@ -3564,14 +3880,14 @@ app.post('/api/fase6/planeacion/generate-orders', async (req, res) => {
     const newOP = await ProductionOrder.create({
       opCode,
       productSku: 'TEL-JER-01',
-      productName: 'Tela de Punto Jersey 100% Algodón Crudo (20kg/rollo)',
+      productName: 'Lote de Producto Terminado Estándar Alfa (20kg/lote)',
       targetQuantity: parseFloat(rolls),
       unit: 'rollos',
       bom: [
-        { sku: 'MAT-HIL-01', name: 'Hilo de Algodón Peinado 30/1', requiredQuantity: parseFloat(kgYarn), unit: 'kg' }
+        { sku: 'MAT-HIL-01', name: 'Materia Prima Base MP-01', requiredQuantity: parseFloat(kgYarn), unit: 'kg' }
       ],
       operator: 'Ing. Supervisor Fabril',
-      workcenter: 'Telar Circular Mayer & Cie #3 - Planta 1',
+      workcenter: 'Centro de Maquinado Industrial CNC #3 - Planta 1',
       startDate: new Date().toISOString().split('T')[0],
       finishDate: new Date(Date.now() + 10 * 86400000).toISOString().split('T')[0],
       status: 'Planificada'
@@ -3584,9 +3900,9 @@ app.post('/api/fase6/planeacion/generate-orders', async (req, res) => {
     const newPO = await PurchaseOrder.create({
       poCode,
       vendorCode: 'BP-003',
-      vendorName: 'Hilados y Fibras Sintéticas S.A.',
+      vendorName: 'Materiales y Fibras Sintéticas S.A.',
       items: [
-        { sku: 'MAT-HIL-01', name: 'Hilo de Algodón Peinado 30/1', quantity: parseFloat(kgYarn), unitPrice: 85, total: totalAmount }
+        { sku: 'MAT-HIL-01', name: 'Materia Prima Base MP-01', quantity: parseFloat(kgYarn), unitPrice: 85, total: totalAmount }
       ],
       subtotal: totalAmount,
       tax: Math.round(totalAmount * 0.13),
@@ -3634,7 +3950,7 @@ app.post('/api/fase6/ia/chat', async (req, res) => {
 
     if (lower.includes('inventario') || lower.includes('stock') || lower.includes('compras') || lower.includes('materia')) {
       category = 'Inventario & Cadena de Suministro';
-      reply = `He auditado el inventario central de insumos. Actualmente contamos con **${inventory.length} SKUs activos** con una valoración de inventario en almacén. Se detectaron **${lowStockItems.length} insumos en nivel crítico** por debajo del stock mínimo de seguridad. La demanda de tejeduría proyectada requiere asegurar compras inmediatas de hilatura de algodón con el proveedor *Hilados y Fibras Sintéticas (BP-003)* para evitar paros de telar.`;
+      reply = `He auditado el inventario central de insumos. Actualmente contamos con **${inventory.length} SKUs activos** con una valoración de inventario en almacén. Se detectaron **${lowStockItems.length} insumos en nivel crítico** por debajo del stock mínimo de seguridad. La demanda de tejeduría proyectada requiere asegurar compras inmediatas de hilatura de algodón con el proveedor *Materiales y Fibras Sintéticas (BP-003)* para evitar paros de línea.`;
       recommendations = [
         'Emitir Orden de Compra urgente por hilatura de algodón peinado 30/1.',
         'Revisar el punto de reorden en WMS para programar recepción en Pasillo A - Racks 01.',
@@ -3742,19 +4058,19 @@ app.get('/api/fase7/bi/cube', async (req, res) => {
     const inventory = await InventoryItem.findAll();
 
     const periods = ['2026-Q1', '2026-Q2', '2026-Q3', '2026-Q4 (Proy.)'];
-    const productFamilies = ['Jersey 100% Algodón Crudo', 'Rib Spandex Elástano', 'Piqué Deportivo Dry-Fit', 'Felpa Francesa Fleece'];
+    const productFamilies = ['Línea Industrial Estándar', 'Línea Industrial Especializada', 'Línea Industrial Reforzada', 'Línea Industrial Térmica'];
     const customerSegments = ['Mayoristas Confección', 'Distribuidores Regionales', 'Cadenas Retail / Marcas Propias'];
-    const regions = ['Norte (Monterrey)', 'Bajío (León)', 'Centro (CDMX / Puebla)', 'Exportación (Texas / California)'];
+    const regions = ['Región Norte', 'Bajío (León)', 'Región Centro', 'Exportación (Texas / California)'];
 
     const cubeData = [
-      { period: '2026-Q1', family: 'Jersey 100% Algodón Crudo', segment: 'Mayoristas Confección', region: 'Norte (Monterrey)', revenue: 1450000, cost: 980000, margin: 470000, marginPct: 32.4, volumeKg: 17050 },
-      { period: '2026-Q1', family: 'Rib Spandex Elástano', segment: 'Cadenas Retail / Marcas Propias', region: 'Centro (CDMX / Puebla)', revenue: 890000, cost: 580000, margin: 310000, marginPct: 34.8, volumeKg: 7410 },
-      { period: '2026-Q2', family: 'Piqué Deportivo Dry-Fit', segment: 'Distribuidores Regionales', region: 'Bajío (León)', revenue: 1120000, cost: 720000, margin: 400000, marginPct: 35.7, volumeKg: 9330 },
-      { period: '2026-Q2', family: 'Jersey 100% Algodón Crudo', segment: 'Mayoristas Confección', region: 'Centro (CDMX / Puebla)', revenue: 1680000, cost: 1120000, margin: 560000, marginPct: 33.3, volumeKg: 19760 },
-      { period: '2026-Q3', family: 'Felpa Francesa Fleece', segment: 'Cadenas Retail / Marcas Propias', region: 'Norte (Monterrey)', revenue: 1340000, cost: 850000, margin: 490000, marginPct: 36.5, volumeKg: 10300 },
-      { period: '2026-Q3', family: 'Rib Spandex Elástano', segment: 'Mayoristas Confección', region: 'Exportación (Texas / California)', revenue: 2150000, cost: 1390000, margin: 760000, marginPct: 35.3, volumeKg: 16530 },
-      { period: '2026-Q4 (Proy.)', family: 'Jersey 100% Algodón Crudo', segment: 'Distribuidores Regionales', region: 'Norte (Monterrey)', revenue: 1820000, cost: 1210000, margin: 610000, marginPct: 33.5, volumeKg: 21410 },
-      { period: '2026-Q4 (Proy.)', family: 'Felpa Francesa Fleece', segment: 'Cadenas Retail / Marcas Propias', region: 'Centro (CDMX / Puebla)', revenue: 1490000, cost: 940000, margin: 550000, marginPct: 36.9, volumeKg: 11460 }
+      { period: '2026-Q1', family: 'Línea Industrial Estándar', segment: 'Mayoristas Confección', region: 'Región Norte', revenue: 1450000, cost: 980000, margin: 470000, marginPct: 32.4, volumeKg: 17050 },
+      { period: '2026-Q1', family: 'Línea Industrial Especializada', segment: 'Cadenas Retail / Marcas Propias', region: 'Región Centro', revenue: 890000, cost: 580000, margin: 310000, marginPct: 34.8, volumeKg: 7410 },
+      { period: '2026-Q2', family: 'Línea Industrial Reforzada', segment: 'Distribuidores Regionales', region: 'Bajío (León)', revenue: 1120000, cost: 720000, margin: 400000, marginPct: 35.7, volumeKg: 9330 },
+      { period: '2026-Q2', family: 'Línea Industrial Estándar', segment: 'Mayoristas Confección', region: 'Región Centro', revenue: 1680000, cost: 1120000, margin: 560000, marginPct: 33.3, volumeKg: 19760 },
+      { period: '2026-Q3', family: 'Línea Industrial Térmica', segment: 'Cadenas Retail / Marcas Propias', region: 'Región Norte', revenue: 1340000, cost: 850000, margin: 490000, marginPct: 36.5, volumeKg: 10300 },
+      { period: '2026-Q3', family: 'Línea Industrial Especializada', segment: 'Mayoristas Confección', region: 'Exportación (Texas / California)', revenue: 2150000, cost: 1390000, margin: 760000, marginPct: 35.3, volumeKg: 16530 },
+      { period: '2026-Q4 (Proy.)', family: 'Línea Industrial Estándar', segment: 'Distribuidores Regionales', region: 'Región Norte', revenue: 1820000, cost: 1210000, margin: 610000, marginPct: 33.5, volumeKg: 21410 },
+      { period: '2026-Q4 (Proy.)', family: 'Línea Industrial Térmica', segment: 'Cadenas Retail / Marcas Propias', region: 'Región Centro', revenue: 1490000, cost: 940000, margin: 550000, marginPct: 36.9, volumeKg: 11460 }
     ];
 
     const totalRevenue = cubeData.reduce((acc, c) => acc + c.revenue, 0);
@@ -3793,16 +4109,16 @@ app.get('/api/fase7/reports/list', (req, res) => {
       code: 'REP-FIN-01',
       title: 'Estado de Resultados Integral (P&L Consolidado)',
       category: 'Financiero',
-      format: 'NIF B-3 / IFRS',
+      format: 'IFRS / NIIF',
       description: 'Ingresos netos por ventas, costo de manufactura fabril, margen bruto, gastos de operación (nómina y depreciación) y EBITDA.'
     },
     {
       id: 'trial_balance',
       code: 'REP-FIS-02',
-      title: 'Balanza de Comprobación Fiscal SAT (Anexo 24)',
+      title: 'Balanza de Comprobación Contable y Fiscal',
       category: 'Fiscal / Contable',
-      format: 'SAT XML / NIF A-5',
-      description: 'Catálogo de cuentas agrupador SAT con saldo inicial, movimientos deudores/acreedores y saldo final estrictamente cuadrado.'
+      format: 'IFRS / Normas Internacionales',
+      description: 'Catálogo de cuentas estandarizado con saldo inicial, movimientos deudores/acreedores y saldo final estrictamente cuadrado.'
     },
     {
       id: 'kardex',
@@ -3862,23 +4178,23 @@ app.get('/api/fase7/reports/generate', async (req, res) => {
           { concept: '(-) Gastos de Personal y Nómina', amount: -Math.round(payrollTotal), pct: `${((payrollTotal / (salesTotal || 1)) * 100).toFixed(1)}%` },
           { concept: '(-) Depreciación Acelerada de Maquinaria y Equipo', amount: -Math.round(monthlyDepreciation), pct: `${((monthlyDepreciation / (salesTotal || 1)) * 100).toFixed(1)}%` },
           { concept: '(=) EBITDA Operativo', amount: Math.round(ebitda), pct: `${((ebitda / (salesTotal || 1)) * 100).toFixed(1)}%`, isTotal: true },
-          { concept: '(-) Provisión Impuesto Sobre la Renta (ISR 30%)', amount: -Math.round(taxes), pct: '30.0%' },
+          { concept: '(-) Provisión Impuesto sobre la Renta (30%)', amount: -Math.round(taxes), pct: '30.0%' },
           { concept: '(=) Utilidad Neta del Ejercicio', amount: Math.round(netIncome), pct: `${((netIncome / (salesTotal || 1)) * 100).toFixed(1)}%`, isFinalTotal: true }
         ],
         stamp: {
           auditor: 'C.P. Mariana Garza - Dirección de Auditoría Interna',
-          certNumber: 'SAT-CFDI-40001000000504465028',
+          certNumber: 'CERT-DTE-40001000000504465028',
           verifiedAt: new Date().toISOString()
         }
       };
     } else if (reportType === 'trial_balance') {
       reportData = {
-        title: 'Balanza de Comprobación Fiscal SAT (Anexo 24)',
+        title: 'Balanza de Comprobación Contable y Fiscal',
         code: 'REP-FIS-02',
         period,
-        headers: ['Cuenta SAT', 'Descripción', 'Saldo Inicial', 'Debe (Cargos)', 'Haber (Abonos)', 'Saldo Final'],
+        headers: ['Código de Cuenta', 'Descripción', 'Saldo Inicial', 'Debe (Cargos)', 'Haber (Abonos)', 'Saldo Final'],
         rows: [
-          { code: '101.01', name: 'Bancos e Instituciones Financieras (BBVA/Banorte)', init: 1200000, debit: salesTotal, credit: payrollTotal + purchasesTotal, final: 1200000 + salesTotal - payrollTotal - purchasesTotal },
+          { code: '101.01', name: 'Bancos e Instituciones Financieras (BBVA/Banco Operativo Central)', init: 1200000, debit: salesTotal, credit: payrollTotal + purchasesTotal, final: 1200000 + salesTotal - payrollTotal - purchasesTotal },
           { code: '105.01', name: 'Clientes Nacionales (Cartera CxC)', init: 85000, debit: salesTotal, credit: salesTotal * 0.85, final: 85000 + salesTotal * 0.15 },
           { code: '115.01', name: 'Inventario de Materias Primas e Insumos', init: 140000, debit: purchasesTotal, credit: purchasesTotal * 0.7, final: 140000 + purchasesTotal * 0.3 },
           { code: '152.01', name: 'Maquinaria y Equipo Industrial de Planta', init: 3600000, debit: 0, credit: 0, final: 3600000 },
@@ -3887,7 +4203,7 @@ app.get('/api/fase7/reports/generate', async (req, res) => {
         ],
         stamp: {
           auditor: 'Despacho Ruiz & Asociados S.C. - Dictamen Limpio',
-          certNumber: 'SAT-FIEL-894729104859012',
+          certNumber: 'FIRMA-ELECT-894729104859012',
           verifiedAt: new Date().toISOString()
         }
       };
@@ -3898,8 +4214,8 @@ app.get('/api/fase7/reports/generate', async (req, res) => {
         period,
         headers: ['Equipo / Centro de Trabajo', 'Disponibilidad (%)', 'Rendimiento (%)', 'Calidad (%)', 'OEE Final (%)'],
         rows: [
-          { name: 'Telar Circular Mayer & Cie Relanit #1', disp: '92.4%', rend: '88.5%', cal: '99.1%', oee: '81.0%' },
-          { name: 'Telar Circular Mayer & Cie Relanit #2', disp: '94.1%', rend: '91.2%', cal: '98.7%', oee: '84.7%' },
+          { name: 'Centro de Maquinado Industrial CNC Relanit #1', disp: '92.4%', rend: '88.5%', cal: '99.1%', oee: '81.0%' },
+          { name: 'Centro de Maquinado Industrial CNC Relanit #2', disp: '94.1%', rend: '91.2%', cal: '98.7%', oee: '84.7%' },
           { name: 'Autoclave de Teñido a Presión Thies #1', disp: '89.0%', rend: '93.0%', cal: '97.5%', oee: '80.7%' },
           { name: 'Rama Tensora y Secadora Monforts #1', disp: '95.0%', rend: '87.4%', cal: '99.4%', oee: '82.5%' }
         ],
@@ -3931,11 +4247,11 @@ app.get('/api/fase7/bigdata/telemetry', async (req, res) => {
   try {
     const randomVariation = () => (Math.random() - 0.5) * 0.8;
     const machines = [
-      { id: 'TEL-MC-01', name: 'Telar Mayer & Cie #1 (Single Jersey)', type: 'Tejeduría Circular', rpm: +(31.2 + randomVariation()).toFixed(1), tempC: +(72.4 + randomVariation()).toFixed(1), tensionCn: +(15.8 + randomVariation()).toFixed(1), vibrationMmS: +(2.4 + randomVariation()).toFixed(2), fabricMMin: +(1.4 + randomVariation() * 0.1).toFixed(2), status: 'Normal' },
-      { id: 'TEL-MC-02', name: 'Telar Mayer & Cie #2 (Rib Elástano)', type: 'Tejeduría Circular', rpm: +(29.8 + randomVariation()).toFixed(1), tempC: +(74.1 + randomVariation()).toFixed(1), tensionCn: +(18.2 + randomVariation()).toFixed(1), vibrationMmS: +(2.8 + randomVariation()).toFixed(2), fabricMMin: +(1.2 + randomVariation() * 0.1).toFixed(2), status: 'Normal' },
-      { id: 'TEL-MC-03', name: 'Telar Mayer & Cie #3 (Piqué Deportivo)', type: 'Tejeduría Circular', rpm: +(32.0 + randomVariation()).toFixed(1), tempC: +(76.8 + randomVariation()).toFixed(1), tensionCn: +(16.1 + randomVariation()).toFixed(1), vibrationMmS: +(3.1 + randomVariation()).toFixed(2), fabricMMin: +(1.5 + randomVariation() * 0.1).toFixed(2), status: 'Normal' },
-      { id: 'TEL-MC-04', name: 'Telar Mayer & Cie #4 (Felpa 3 Hilos)', type: 'Tejeduría Circular', rpm: +(27.5 + randomVariation()).toFixed(1), tempC: +(79.2 + randomVariation()).toFixed(1), tensionCn: +(21.4 + randomVariation()).toFixed(1), vibrationMmS: +(4.3 + randomVariation()).toFixed(2), fabricMMin: +(1.1 + randomVariation() * 0.1).toFixed(2), status: 'Advertencia (Tensión Alta)' },
-      { id: 'TEL-MC-05', name: 'Telar Mayer & Cie #5 (Interlock Fino)', type: 'Tejeduría Circular', rpm: +(30.5 + randomVariation()).toFixed(1), tempC: +(71.0 + randomVariation()).toFixed(1), tensionCn: +(14.9 + randomVariation()).toFixed(1), vibrationMmS: +(2.2 + randomVariation()).toFixed(2), fabricMMin: +(1.3 + randomVariation() * 0.1).toFixed(2), status: 'Normal' },
+      { id: 'TEL-MC-01', name: 'Línea Industrial CNC #1 (Single Jersey)', type: 'Tejeduría Circular', rpm: +(31.2 + randomVariation()).toFixed(1), tempC: +(72.4 + randomVariation()).toFixed(1), tensionCn: +(15.8 + randomVariation()).toFixed(1), vibrationMmS: +(2.4 + randomVariation()).toFixed(2), fabricMMin: +(1.4 + randomVariation() * 0.1).toFixed(2), status: 'Normal' },
+      { id: 'TEL-MC-02', name: 'Línea Industrial CNC #2 (Rib Elástano)', type: 'Tejeduría Circular', rpm: +(29.8 + randomVariation()).toFixed(1), tempC: +(74.1 + randomVariation()).toFixed(1), tensionCn: +(18.2 + randomVariation()).toFixed(1), vibrationMmS: +(2.8 + randomVariation()).toFixed(2), fabricMMin: +(1.2 + randomVariation() * 0.1).toFixed(2), status: 'Normal' },
+      { id: 'TEL-MC-03', name: 'Línea Industrial CNC #3 (Piqué Deportivo)', type: 'Tejeduría Circular', rpm: +(32.0 + randomVariation()).toFixed(1), tempC: +(76.8 + randomVariation()).toFixed(1), tensionCn: +(16.1 + randomVariation()).toFixed(1), vibrationMmS: +(3.1 + randomVariation()).toFixed(2), fabricMMin: +(1.5 + randomVariation() * 0.1).toFixed(2), status: 'Normal' },
+      { id: 'TEL-MC-04', name: 'Línea Industrial CNC #4 (Felpa 3 Hilos)', type: 'Tejeduría Circular', rpm: +(27.5 + randomVariation()).toFixed(1), tempC: +(79.2 + randomVariation()).toFixed(1), tensionCn: +(21.4 + randomVariation()).toFixed(1), vibrationMmS: +(4.3 + randomVariation()).toFixed(2), fabricMMin: +(1.1 + randomVariation() * 0.1).toFixed(2), status: 'Advertencia (Tensión Alta)' },
+      { id: 'TEL-MC-05', name: 'Línea Industrial CNC #5 (Interlock Fino)', type: 'Tejeduría Circular', rpm: +(30.5 + randomVariation()).toFixed(1), tempC: +(71.0 + randomVariation()).toFixed(1), tensionCn: +(14.9 + randomVariation()).toFixed(1), vibrationMmS: +(2.2 + randomVariation()).toFixed(2), fabricMMin: +(1.3 + randomVariation() * 0.1).toFixed(2), status: 'Normal' },
       { id: 'AUT-TH-01', name: 'Autoclave Teñido Thies Jet #1', type: 'Tintorería a Presión', rpm: 0, tempC: +(128.5 + randomVariation()).toFixed(1), tensionCn: 0, vibrationMmS: +(1.1 + randomVariation()).toFixed(2), fabricMMin: 0, status: 'Normal', bathPressureBar: +(3.2 + randomVariation() * 0.1).toFixed(2), bathPh: +(5.8 + randomVariation() * 0.1).toFixed(2) }
     ];
 
@@ -3945,7 +4261,7 @@ app.get('/api/fase7/bigdata/telemetry', async (req, res) => {
       machines,
       recentAlerts: [
         { id: 'ALT-991', machine: 'TEL-MC-04', type: 'Tensión de Trama Elevada', severity: 'Warning', value: '21.4 cN (Límite: 20 cN)', timestamp: 'Hace 4 min' },
-        { id: 'ALT-989', machine: 'TEL-MC-02', type: 'Paro Micro-sensor Rotura de Hilo', severity: 'Info', value: 'Alimentador 14 - Auto reanudado', timestamp: 'Hace 38 min' }
+        { id: 'ALT-989', machine: 'TEL-MC-02', type: 'Paro Micro-sensor Alimentador de Insumos', severity: 'Info', value: 'Alimentador 14 - Auto reanudado', timestamp: 'Hace 38 min' }
       ]
     });
   } catch (error) {
@@ -4039,7 +4355,7 @@ app.get('/api/fase7/datamining/clusters', async (req, res) => {
       { name: 'Manufacturas del Valle', recency: 65, frequency: 3, monetary: 48000, cluster: 2 },
       { name: 'Deportivos Puebla', recency: 78, frequency: 2, monetary: 38000, cluster: 2 },
       { name: 'Boutique Diseños Urbanos', recency: 9, frequency: 1, monetary: 34000, cluster: 3 },
-      { name: 'Uniformes Industriales San Luis', recency: 13, frequency: 1, monetary: 29000, cluster: 3 }
+      { name: 'Distribuidora Industrial del Norte', recency: 13, frequency: 1, monetary: 29000, cluster: 3 }
     ];
 
     res.json({
@@ -4064,8 +4380,8 @@ app.get('/api/fase7/datamining/rules', (req, res) => {
     rules: [
       {
         id: 'R-01',
-        antecedent: ['Tela Jersey 100% Algodón Crudo'],
-        consequent: ['Hilo de Algodón Peinado 30/1'],
+        antecedent: ['Producto Terminado Estándar Alfa'],
+        consequent: ['Materia Prima Base MP-01'],
         support: 0.44,
         confidence: 0.89,
         lift: 2.14,
@@ -4073,7 +4389,7 @@ app.get('/api/fase7/datamining/rules', (req, res) => {
       },
       {
         id: 'R-02',
-        antecedent: ['Piqué Deportivo Dry-Fit'],
+        antecedent: ['Línea Industrial Reforzada'],
         consequent: ['Elástano Spandex 40D'],
         support: 0.31,
         confidence: 0.94,
@@ -4091,7 +4407,7 @@ app.get('/api/fase7/datamining/rules', (req, res) => {
       },
       {
         id: 'R-04',
-        antecedent: ['Felpa Francesa Fleece'],
+        antecedent: ['Línea Industrial Térmica'],
         consequent: ['Rib Elástano Spandex (Puños y Cuellos)'],
         support: 0.28,
         confidence: 0.85,
@@ -4203,13 +4519,13 @@ app.get('/api/circuit/gobernanza/summary', async (req, res) => {
       taxAuthority: config ? config.taxAuthority : 'Ministerio de Hacienda (MH)',
       electronicDocType: config ? config.electronicDocType : 'DTE (Facturación Electrónica)',
       rfc: config ? config.rfc : '0614-180612-102-4',
-      taxStatus: 'Cumplimiento Tributario Positivo (MH / SAT / DGT)',
+      taxStatus: 'Cumplimiento Tributario Positivo (Administración Tributaria / DTE / DGT)',
       dataLakeVolume: `${dataLakeStats.dataLakeSizeGb} GB (${dataLakeStats.totalIngestedRecords.toLocaleString()} eventos IoT)`,
       auditTrailEvents: auditCount || 24,
       cubeRevenueUsd: totalSales,
       treasuryLiquidity: totalLiquidity,
       ecosystemIntegrity: '100% (26 de 26 Módulos Enlazados)',
-      governanceStatus: 'Conforme a Normas NIF, Auditoría Fiscal e ISO 9001'
+      governanceStatus: 'Conforme a Normas IFRS / NIIF, Auditoría Fiscal e ISO 9001'
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -4283,7 +4599,7 @@ app.post('/api/fases/fase1/simulate', async (req, res) => {
       clientName: 'Distribuidora Comercial del Norte S.A.',
       clientRfc: 'DTN980312TX1',
       deliveryAddress: 'Parque Industrial Huinalá, Apodaca, N.L.',
-      items: [{ sku: 'TEL-JER-01', name: 'Tela Jersey 100% Algodón Crudo', quantity: 20, unitPrice: 2090.52, total: 41810.34 }],
+      items: [{ sku: 'TEL-JER-01', name: 'Producto Terminado Estándar Alfa', quantity: 20, unitPrice: 2090.52, total: 41810.34 }],
       subtotal,
       tax,
       total: amount,
@@ -4317,7 +4633,7 @@ app.post('/api/fases/fase1/simulate', async (req, res) => {
       originModule: 'Ventas & Bancos',
       originReference: orderCode,
       lines: [
-        { accountCode: '101.01', accountName: 'Bancos - BBVA Bancomer', debit: amount, credit: 0 },
+        { accountCode: '101.01', accountName: 'Bancos - Banco Corporativo Principal', debit: amount, credit: 0 },
         { accountCode: '401.01', accountName: 'Ventas de Tejido Tasa 13%', debit: 0, credit: subtotal },
         { accountCode: '208.01', accountName: 'IVA Trasladado Cobrado (13%)', debit: 0, credit: tax }
       ]
@@ -4387,11 +4703,11 @@ app.post('/api/fases/fase2/simulate', async (req, res) => {
       targetQuantity: 35,
       unit: 'rollos',
       bom: [
-        { sku: 'MAT-HIL-01', name: 'Hilo de Algodón Peinado 30/1', requiredQuantity: 665, unit: 'kg' },
+        { sku: 'MAT-HIL-01', name: 'Materia Prima Base MP-01', requiredQuantity: 665, unit: 'kg' },
         { sku: 'MAT-SPX-02', name: 'Fibra Spandex 40D', requiredQuantity: 35, unit: 'kg' }
       ],
       operator: 'Ing. Supervisor Fabril',
-      workcenter: 'Telar Circular Mayer & Cie #2 - Planta 1',
+      workcenter: 'Centro de Maquinado Industrial CNC #2 - Planta 1',
       startDate: new Date().toISOString().split('T')[0],
       finishDate: new Date(Date.now() + 5 * 86400000).toISOString().split('T')[0],
       scrapsPct: 1.2,
@@ -4415,7 +4731,7 @@ app.post('/api/fases/fase2/simulate', async (req, res) => {
 
     res.json({
       success: true,
-      message: `Ciclo Express ejecutado: Orden Fabril ${opCode} montada en Telar Mayer & Cie #2, asignada a WMS y lista para producción.`,
+      message: `Ciclo Express ejecutado: Orden Fabril ${opCode} montada en Línea Industrial CNC #2, asignada a WMS y lista para producción.`,
       op
     });
   } catch (error) {
@@ -4453,7 +4769,7 @@ app.get('/api/fases/fase3/summary', async (req, res) => {
         olapQuarterlySales: totalSales,
         olapGrossMarginPct: '34.8%',
         mrpSopStatus: 'Capacidad Fabril Equilibrada (78% utilización)',
-        reportsGenerated: 'P&L NIF B-3 y Balanza Fiscal SAT Validados'
+        reportsGenerated: 'P&L y Balanza Financiera Validados'
       }
     });
   } catch (error) {
@@ -4514,7 +4830,7 @@ app.get('/api/fases/fase4/summary', async (req, res) => {
         clusteringModel: 'K-Means RFM (k=4, Silhouette 0.784)',
         associationRulesModel: 'Apriori (Lift máx 3.28x)',
         processMiningStatus: 'Direct-Follows Graph (DFG) con detección de cuellos de botella',
-        fiscalStatus: 'Cumplimiento Fiscal y Trazabilidad Inmutable (DTE / SAT / SAR / DGI)',
+        fiscalStatus: 'Cumplimiento Fiscal y Trazabilidad Inmutable (DTE / Certificación Electrónica)',
         ecosystemCompleteness: '100% (25 de 25 Módulos Enlazados)'
       }
     });
@@ -4531,13 +4847,13 @@ app.post('/api/fases/fase4/simulate', async (req, res) => {
       module: 'IA',
       user: 'copilot-ia@system.nytex.com',
       ipAddress: '10.0.0.1 (AI Node)',
-      details: 'Auditoría cognitiva 360° ejecutada en los 26 módulos: K-Means re-evaluado, proyección ARIMA actualizada y bitácora fiscal inmutable sellada (Cumplimiento DTE / SAT / Regional).',
+      details: 'Auditoría cognitiva 360° ejecutada en los 26 módulos: K-Means re-evaluado, proyección ARIMA actualizada y bitácora fiscal inmutable sellada (Cumplimiento DTE / Ministerio de Hacienda / Dirección General de Impuestos Internos).',
       severity: 'INFO'
     });
 
     res.json({
       success: true,
-      message: 'Auditoría Enterprise 360° completada: La IA Cognitiva inspeccionó las 26 bases de datos, actualizó predicciones ARIMA de ventas y validó el cumplimiento SAT.',
+      message: 'Auditoría Enterprise 360° completada: La IA Cognitiva inspeccionó las 26 bases de datos, actualizó predicciones ARIMA de ventas y validó el cumplimiento tributario y fiscal.',
       timestamp: new Date().toISOString()
     });
   } catch (error) {
@@ -4565,7 +4881,7 @@ async function startServer() {
           updated = true;
         }
         if (!p.bankName) {
-          p.bankName = p.type === 'Proveedor' ? 'BBVA Corporativo' : 'Banorte Corporativo';
+          p.bankName = p.type === 'Proveedor' ? 'BBVA Corporativo' : 'Banco Operativo Central';
           updated = true;
         }
         if (!p.bankAccount) {
@@ -4577,7 +4893,7 @@ async function startServer() {
           updated = true;
         }
         if (!p.bankSwift) {
-          p.bankSwift = 'BBVAMXMM';
+          p.bankSwift = 'CORPUS33';
           updated = true;
         }
         if (!p.paymentTerms) {
@@ -4605,7 +4921,7 @@ async function startServer() {
       for (const b of bills) {
         let changed = false;
         if (!b.uuid) {
-          b.uuid = `SAT-${Math.random().toString(36).substring(2, 6).toUpperCase()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}-${Date.now().toString(36).toUpperCase()}`;
+          b.uuid = `UUID-${Math.random().toString(36).substring(2, 6).toUpperCase()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}-${Date.now().toString(36).toUpperCase()}`;
           changed = true;
         }
         if (!b.invoiceNumber) {
@@ -4621,6 +4937,19 @@ async function startServer() {
       }
     } catch (e) {
       console.log('Error migrando columnas en AccountPayables:', e.message);
+    }
+
+    // Migración segura de columnas en SaleOrders y BusinessPartners (SQLite)
+    try {
+      const soCols = (await sequelize.query("PRAGMA table_info(SaleOrders)"))[0].map(c => c.name);
+      if (!soCols.includes('paymentMethod')) await sequelize.query("ALTER TABLE SaleOrders ADD COLUMN paymentMethod VARCHAR(255) DEFAULT 'Por Definir'");
+      if (!soCols.includes('amountReceived')) await sequelize.query("ALTER TABLE SaleOrders ADD COLUMN amountReceived FLOAT DEFAULT 0");
+      if (!soCols.includes('changeGiven')) await sequelize.query("ALTER TABLE SaleOrders ADD COLUMN changeGiven FLOAT DEFAULT 0");
+
+      const bpCols = (await sequelize.query("PRAGMA table_info(BusinessPartners)"))[0].map(c => c.name);
+      if (!bpCols.includes('taxId')) await sequelize.query("ALTER TABLE BusinessPartners ADD COLUMN taxId VARCHAR(255) DEFAULT 'RFC-GENERICO'");
+    } catch (e) {
+      console.log('Error migrando columnas en SaleOrders/BusinessPartners:', e.message);
     }
     
     // Seed 1: Business Partners
@@ -4640,8 +4969,8 @@ async function startServer() {
     const bankCount = await BankAccount.count();
     if (bankCount === 0) {
       await BankAccount.bulkCreate([
-        { bankCode: 'BCO-BBVA-01', bankName: 'BBVA Bancomer Corporativo', accountNumber: '0129-4820-9912', currency: 'USD', balance: 1450000, type: 'Cheques / Operativa' },
-        { bankCode: 'BCO-BNTE-02', bankName: 'Banorte Tesorería & Nómina', accountNumber: '0729-1029-4411', currency: 'USD', balance: 680000, type: 'Cheques / Operativa' },
+        { bankCode: 'BCO-BBVA-01', bankName: 'Banco Corporativo Principal', accountNumber: '0129-4820-9912', currency: 'USD', balance: 1450000, type: 'Cheques / Operativa' },
+        { bankCode: 'BCO-BNTE-02', bankName: 'Banco Operativo Central', accountNumber: '0729-1029-4411', currency: 'USD', balance: 680000, type: 'Cheques / Operativa' },
         { bankCode: 'BCO-CAJA-03', bankName: 'Caja Chica y Efectivo Operativo', accountNumber: 'CAJA-GEN-001', currency: 'USD', balance: 45000, type: 'Caja' }
       ]);
 
@@ -4663,7 +4992,7 @@ async function startServer() {
     const assetCount = await FixedAsset.count();
     if (assetCount === 0) {
       await FixedAsset.bulkCreate([
-        { assetCode: 'AF-MAQ-01', name: 'Telar Circular Mayer & Cie Relanit 3.2 II', category: 'Maquinaria & Equipo Fabril', acquisitionDate: '2025-01-15', acquisitionCost: 1850000, usefulLifeYears: 10, depreciationRateAnnual: 10, accumulatedDepreciation: 154166.67, bookValue: 1695833.33, assignedTo: 'Planta 1 - Tejeduría', status: 'En Operación' },
+        { assetCode: 'AF-MAQ-01', name: 'Centro de Maquinado y Ensamble Industrial CNC-500', category: 'Maquinaria & Equipo Fabril', acquisitionDate: '2025-01-15', acquisitionCost: 1850000, usefulLifeYears: 10, depreciationRateAnnual: 10, accumulatedDepreciation: 154166.67, bookValue: 1695833.33, assignedTo: 'Planta 1 - Manufactura', status: 'En Operación' },
         { assetCode: 'AF-VEH-02', name: 'Camión Isuzu Forward 800 (Caja Seca)', category: 'Vehículos de Transporte', acquisitionDate: '2025-06-20', acquisitionCost: 950000, usefulLifeYears: 5, depreciationRateAnnual: 20, accumulatedDepreciation: 158333.33, bookValue: 791666.67, assignedTo: 'Logística & Despachos', status: 'En Operación' },
         { assetCode: 'AF-CMP-03', name: 'Servidor Central Dell PowerEdge R750', category: 'Equipo de Cómputo', acquisitionDate: '2025-11-10', acquisitionCost: 220000, usefulLifeYears: 3, depreciationRateAnnual: 33.33, accumulatedDepreciation: 61105.00, bookValue: 158895.00, assignedTo: 'Centro de Datos NyTEX', status: 'En Operación' }
       ]);
@@ -4682,7 +5011,7 @@ async function startServer() {
           originModule: 'Tesorería',
           originReference: 'APOR-CAP-001',
           lines: [
-            { accountCode: '1101-01', accountName: 'Bancos Nacionales (BBVA)', debit: 1450000, credit: 0 },
+            { accountCode: '1101-01', accountName: 'Bancos - Cuenta Operativa Principal', debit: 1450000, credit: 0 },
             { accountCode: '3101-01', accountName: 'Capital Social Fijo', debit: 0, credit: 1450000 }
           ],
           totalDebit: 1450000,
@@ -4719,12 +5048,12 @@ async function startServer() {
           curp: 'MOGR850612HNLRLR09',
           nss: '48028599120',
           department: 'Producción Fabril',
-          jobTitle: 'Supervisor Fabril de Tejeduría',
+          jobTitle: 'Supervisor Fabril de Producción',
           contractType: 'Tiempo Indeterminado',
           dailySalary: 850,
           integratedDailySalary: 892.50,
           monthlySalary: 25500,
-          bankName: 'Banorte',
+          bankName: 'Banco Operativo Central',
           bankAccount: '072910001827361920',
           hireDate: '2023-04-01',
           status: 'Activo',
@@ -4742,7 +5071,7 @@ async function startServer() {
           dailySalary: 520,
           integratedDailySalary: 546.00,
           monthlySalary: 15600,
-          bankName: 'Banorte',
+          bankName: 'Banco Operativo Central',
           bankAccount: '072910004928172635',
           hireDate: '2024-02-15',
           status: 'Activo',
@@ -4755,12 +5084,12 @@ async function startServer() {
           curp: 'MEVL940820MNLNZ002',
           nss: '48149488371',
           department: 'Producción Fabril',
-          jobTitle: 'Operadora Especialista de Telar',
+          jobTitle: 'Operadora Especialista de Maquinaria Industrial',
           contractType: 'Tiempo Indeterminado',
           dailySalary: 460,
           integratedDailySalary: 483.00,
           monthlySalary: 13800,
-          bankName: 'Banorte',
+          bankName: 'Banco Operativo Central',
           bankAccount: '072910003819273645',
           hireDate: '2024-06-01',
           status: 'Activo',
@@ -4796,7 +5125,7 @@ async function startServer() {
           dailySalary: 800,
           integratedDailySalary: 840.00,
           monthlySalary: 24000,
-          bankName: 'Banorte',
+          bankName: 'Banco Operativo Central',
           bankAccount: '072910009827361524',
           hireDate: '2023-02-01',
           status: 'Activo',
@@ -4814,7 +5143,7 @@ async function startServer() {
           dailySalary: 490,
           integratedDailySalary: 514.50,
           monthlySalary: 14700,
-          bankName: 'Banorte',
+          bankName: 'Banco Operativo Central',
           bankAccount: '072910006718293041',
           hireDate: '2024-03-20',
           status: 'Activo',
@@ -4831,7 +5160,7 @@ async function startServer() {
           type: 'Horas Extra Dobles',
           hours: 4,
           multiplier: 2,
-          notes: 'Cobertura de guardia nocturna por alta demanda de tejeduría',
+          notes: 'Cobertura de guardia nocturna por alta demanda de producción industrial',
           status: 'Aprobada',
           periodCode: 'NOM-2026-Q18'
         },
@@ -4917,11 +5246,11 @@ async function startServer() {
           name: 'Liberación de Calidad Fabril & Entrada a Almacén',
           category: 'Producción & Calidad',
           version: 'v3.0',
-          description: 'Protocolo de inspección industrial de rollos producidos en telar Mayer & Cie previo al etiquetado WMS.',
+          description: 'Protocolo de inspección industrial de rollos producidos en maquinaria industrial previo al etiquetado WMS.',
           slaHours: 6,
           activeInstances: 4,
           steps: [
-            { step: 1, name: 'Pesaje e Inspección Visual', role: 'Operador Telar' },
+            { step: 1, name: 'Pesaje e Inspección Visual', role: 'Operador de Planta' },
             { step: 2, name: 'Prueba de Resistencia de Materiales', role: 'Ing. Calidad' },
             { step: 3, name: 'Generación de QR y Ubicación en Racks', role: 'WMS' }
           ],
@@ -4929,7 +5258,7 @@ async function startServer() {
         },
         {
           processCode: 'WF-NOM-04',
-          name: 'Autorización de Nómina & Dispersión SPEI',
+          name: 'Autorización de Nómina & Dispersión Electrónica',
           category: 'Talento & Nómina',
           version: 'v1.4',
           description: 'Aprobación directiva del costo patronal y fondos bancarios para la dispersión quincenal de nómina.',
@@ -4937,8 +5266,8 @@ async function startServer() {
           activeInstances: 1,
           steps: [
             { step: 1, name: 'Cierre de Incidencias RRHH', role: 'Especialista RRHH' },
-            { step: 2, name: 'Auditoría Fiscal SAT/IMSS', role: 'Contador General' },
-            { step: 3, name: 'Liberación de SPEI Bancario', role: 'Director de Tesorería' }
+            { step: 2, name: 'Auditoría Laboral y Fiscal', role: 'Contador General' },
+            { step: 3, name: 'Liberación de Transferencia Bancaria', role: 'Director de Tesorería' }
           ],
           status: 'Desplegado'
         }
@@ -4949,7 +5278,7 @@ async function startServer() {
           taskCode: 'TSK-2026-001',
           processCode: 'WF-COM-01',
           processName: 'Aprobación de Órdenes de Compra Mayores',
-          title: 'Aprobar Orden de Compra Hilados de Algodón #PO-2026-0001',
+          title: 'Aprobar Orden de Compra Materia Prima Base #PO-2026-0001',
           referenceCode: 'PO-2026-0001',
           requester: 'Laura Vega (Compras)',
           assignedRole: 'Director de Finanzas',
@@ -4977,7 +5306,7 @@ async function startServer() {
           taskCode: 'TSK-2026-003',
           processCode: 'WF-PRD-03',
           processName: 'Liberación de Calidad Fabril & Entrada a Almacén',
-          title: 'Inspección Lote Tela Jersey Crudo 100% Algodón (OP-2026-001)',
+          title: 'Inspección Lote de Producto Terminado Estándar (OP-2026-001)',
           referenceCode: 'OP-2026-001',
           requester: 'Ing. Roberto Morales (Planta 1)',
           assignedRole: 'Supervisor de Calidad',
@@ -5053,14 +5382,14 @@ async function startServer() {
     if (cfgCount === 0) {
       await CompanyConfig.create({
         companyName: 'NyTEX Corporation S.A.',
-        rfc: 'NTM180612TX4',
-        taxRegime: '601 - General de Ley Personas Morales',
-        fiscalAddress: 'Av. de las Industrias Globales 450, Parque Industrial Huinalá, Apodaca, N.L. C.P. 66645',
+        rfc: '0614-180612-102-4',
+        taxRegime: 'Régimen General de Personas Jurídicas (Ministerio de Hacienda)',
+        fiscalAddress: 'Boulevard de los Héroes, Centro Corporativo San Salvador, El Salvador',
         baseCurrency: 'USD',
         exchangeRateUsd: 19.85,
         exchangeRateEur: 21.40,
         vatRate: 13.0,
-        fiscalCertificatesStatus: 'Vigente (Expira SAT: Dic 2028)',
+        fiscalCertificatesStatus: 'Vigente (Expira Firma DTE / MH: Dic 2028)',
         auditMode: 'Enforced (Registro Inmutable)',
         activeSecurityPolicy: '2FA Obligatorio + Bloqueo tras 3 intentos'
       });
@@ -5090,11 +5419,11 @@ async function startServer() {
         },
         {
           timestamp: new Date(Date.now() - 3600000 * 2).toISOString(),
-          action: 'SPEI_DISBURSEMENT_AUTHORIZED',
+          action: 'ELECTRONIC_DISBURSEMENT_AUTHORIZED',
           module: 'Tesoreria',
           user: 'admin@consultores-nyt.com',
           ipAddress: '192.168.1.105',
-          details: 'Autorización SPEI cuenta BBVA Bancomer por $109,720.00 USD para dispersión salarial.',
+          details: 'Autorización SPEI cuenta Banco Corporativo Principal por $109,720.00 USD para dispersión salarial.',
           severity: 'WARNING'
         },
         {
