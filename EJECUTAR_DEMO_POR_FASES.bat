@@ -13,11 +13,11 @@ echo   Seleccione el Paquete Comercial que desea demostrar o capacitar:
 echo.
 echo   [1] FASE 1: STARTER ($35 USD/mes)
 echo       Ciclo Operativo Base (7 Modulos: Ventas, CRM, Inventario, Compras,
-echo       Produccion Textil, Portal Partners y WMS Almacenes)
+echo       Produccion y Manufactura, Portal Partners y WMS Almacenes)
 echo.
 echo   [2] FASE 2: EXPRESS ($149 USD/mes)
 echo       Manufactura, Cadena y Finanzas (15 Modulos: Logistica, ROP Dinamico,
-echo       CxC, CxP, Tesoreria 4 Pestanas y 8 Tareas, Activos Fijos NIF C-6,
+echo       CxC, CxP, Tesoreria 4 Pestanas y 8 Tareas, Activos Fijos IFRS / NIC 16,
 echo       Contabilidad IFRS, RRHH, Nomina Quincenal)
 echo.
 echo   [3] FASE 3: ADVANCED ($299 USD/mes)
@@ -27,7 +27,7 @@ echo       Planeacion S&OP / MRP II)
 echo.
 echo   [4] FASE 4: ENTERPRISE ($499 USD/mes)
 echo       Ecosistema Total, Big Data & IA (25 Modulos: BI y Reportes Financieros,
-echo       Big Data IoT en 96 Telares, Data Mining K-Means, Copilot Asistente IA,
+echo       Big Data IoT en Maquinas Industriales, Data Mining K-Means, Copilot Asistente IA,
 echo       Modelos Predictivos Logit/ARIMA, Localizacion Fiscal y Auditoria SHA-256)
 echo.
 echo   [5] RECORRIDO COMPLETO (Las 4 Fases Integradas de punta a punta)
@@ -79,7 +79,7 @@ goto MENU
 echo.
 echo =======================================================================
 echo Iniciando Capacitacion FASE 4: ENTERPRISE (25 Modulos)...
-echo Narracion literal segun Guia de Simulacion v4.0 (BI Reportes NIF, Big Data IoT, Data Mining, Copilot IA, Modelos Predictivos, Localizacion Fiscal y Auditoria SHA-256)
+echo Narracion literal segun Guia de Simulacion v4.0 (BI Reportes IFRS, Big Data IoT, Data Mining, Copilot IA, Modelos Predictivos, Localizacion Fiscal y Auditoria SHA-256)
 echo =======================================================================
 node demo_por_fases.js --fase=4
 pause

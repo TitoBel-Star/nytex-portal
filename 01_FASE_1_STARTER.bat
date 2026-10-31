@@ -13,7 +13,7 @@ echo   - [1] Ventas (Order-to-Cash, Cotizaciones, Confirmacion WMS y Facturas)
 echo   - [2] CRM Comercial (Embudo Kanban, Oportunidades y Pipeline)
 echo   - [3] Inventario y Stock (Alta de SKUs, Kardex y Ajustes Fisicos)
 echo   - [4] Compras (Procure-to-Pay, POs a Proveedores y Recepcion en Almacen)
-echo   - [5] Produccion Textil (Manufactura, BOM, Consumo de Hilo y Telares)
+echo   - [5] Produccion y Manufactura (BOM, Consumo de Materiales y Maquinaria)
 echo   - [6] Business Partners (Directorio Central de Clientes y Proveedores)
 echo   - [17] WMS (Gestion de Almacenes, Picking con Codigo de Barras y Empaque)
 echo.

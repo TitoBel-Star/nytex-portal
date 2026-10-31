@@ -2958,6 +2958,240 @@ app.post('/api/contabilidad/candado-fiscal', async (req, res) => {
   }
 });
 
+// [12.C] PÓLIZA MANUAL DE AJUSTE / RECLASIFICACIÓN
+app.post('/api/contabilidad/manual-entry', async (req, res) => {
+  try {
+    const { date, type, concept, originReference, lines } = req.body;
+    
+    // 1. Verificar si el período está cerrado con Candado Fiscal
+    const periodCode = (date || new Date().toISOString()).substring(0, 7);
+    const existingLock = await InternalClosure.findOne({
+      where: {
+        closeType: 'CONTABLE_MENSUAL',
+        periodOrDate: periodCode,
+        status: 'Cerrado'
+      }
+    });
+
+    if (existingLock) {
+      return res.status(403).json({
+        error: `El período fiscal ${periodCode} se encuentra protegido por Candado Fiscal inmutable (SHA-256). No se admiten modificaciones ni inserciones extemporáneas.`
+      });
+    }
+
+    if (!concept || !lines || !Array.isArray(lines) || lines.length < 2) {
+      return res.status(400).json({ error: 'La póliza debe contener un concepto y al menos 2 asientos contables (partida doble).' });
+    }
+
+    let sumDebit = 0;
+    let sumCredit = 0;
+    const cleanLines = lines.map(l => {
+      const d = parseFloat(l.debit) || 0;
+      const c = parseFloat(l.credit) || 0;
+      sumDebit += d;
+      sumCredit += c;
+      return {
+        accountCode: l.accountCode || '9999-00',
+        accountName: l.accountName || 'Cuenta Contable',
+        debit: Math.round(d * 100) / 100,
+        credit: Math.round(c * 100) / 100
+      };
+    });
+
+    sumDebit = Math.round(sumDebit * 100) / 100;
+    sumCredit = Math.round(sumCredit * 100) / 100;
+
+    if (Math.abs(sumDebit - sumCredit) >= 0.01) {
+      return res.status(400).json({
+        error: `Descuadre de partida doble detectado: Debe ($${sumDebit.toFixed(2)}) ≠ Haber ($${sumCredit.toFixed(2)}). Diferencia: $${Math.abs(sumDebit - sumCredit).toFixed(2)}.`
+      });
+    }
+
+    const count = await JournalEntry.count();
+    const entryCode = `POL-2026-${String(count + 1).padStart(4, '0')}`;
+    const entry = await JournalEntry.create({
+      entryCode,
+      type: type || 'Diario',
+      date: date || new Date().toISOString().split('T')[0],
+      concept: concept.trim(),
+      originModule: 'Ajuste Manual Contabilidad',
+      originReference: originReference || 'AJUSTE-MANUAL',
+      lines: cleanLines,
+      totalDebit: sumDebit,
+      totalCredit: sumCredit,
+      status: 'Cuadrada'
+    });
+
+    res.json({
+      success: true,
+      message: `Póliza manual ${entry.entryCode} registrada exitosamente con cuadre estricto de partida doble.`,
+      entry
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// [12.D] ESTADOS FINANCIEROS CLASIFICADOS NIIF (Balance General & Estado de Resultados)
+app.get('/api/contabilidad/financial-statements', async (req, res) => {
+  try {
+    const entries = await JournalEntry.findAll();
+    const accountsMap = {};
+
+    entries.forEach(entry => {
+      (entry.lines || []).forEach(l => {
+        if (!accountsMap[l.accountCode]) {
+          accountsMap[l.accountCode] = {
+            accountCode: l.accountCode,
+            accountName: l.accountName,
+            debit: 0,
+            credit: 0
+          };
+        }
+        accountsMap[l.accountCode].debit += (l.debit || 0);
+        accountsMap[l.accountCode].credit += (l.credit || 0);
+      });
+    });
+
+    // 1. ESTADO DE RESULTADOS (P&L)
+    let totalIngresos = 0;
+    const ingresosDetalle = [];
+    Object.values(accountsMap).forEach(acc => {
+      if (acc.accountCode.startsWith('4')) {
+        const net = Math.round((acc.credit - acc.debit) * 100) / 100;
+        totalIngresos += net;
+        ingresosDetalle.push({ code: acc.accountCode, name: acc.accountName, amount: net });
+      }
+    });
+
+    let totalCostos = 0;
+    const costosDetalle = [];
+    Object.values(accountsMap).forEach(acc => {
+      if (acc.accountCode.startsWith('5101') || acc.accountCode === '5101-01') {
+        const net = Math.round((acc.debit - acc.credit) * 100) / 100;
+        totalCostos += net;
+        costosDetalle.push({ code: acc.accountCode, name: acc.accountName, amount: net });
+      }
+    });
+
+    const utilidadBruta = Math.round((totalIngresos - totalCostos) * 100) / 100;
+
+    let totalGastosOp = 0;
+    const gastosDetalle = [];
+    Object.values(accountsMap).forEach(acc => {
+      if (acc.accountCode.startsWith('6') || acc.accountCode.startsWith('5102') || acc.accountCode.startsWith('5103') || acc.accountCode.startsWith('52')) {
+        const net = Math.round((acc.debit - acc.credit) * 100) / 100;
+        totalGastosOp += net;
+        gastosDetalle.push({ code: acc.accountCode, name: acc.accountName, amount: net });
+      }
+    });
+
+    const utilidadOperativa = Math.round((utilidadBruta - totalGastosOp) * 100) / 100;
+    const provisionISR = utilidadOperativa > 0 ? Math.round(utilidadOperativa * 0.30 * 100) / 100 : 0;
+    const reservaLegal = utilidadOperativa > 0 ? Math.round(utilidadOperativa * 0.07 * 100) / 100 : 0;
+    const utilidadNetaEjercicio = Math.round((utilidadOperativa - provisionISR - reservaLegal) * 100) / 100;
+
+    // 2. BALANCE GENERAL (CLASIFICADO NIIF)
+    let activoCorriente = 0;
+    const activosCorrientesDetalle = [];
+    Object.values(accountsMap).forEach(acc => {
+      if (acc.accountCode.startsWith('11') || acc.accountCode.startsWith('101')) {
+        const net = Math.round((acc.debit - acc.credit) * 100) / 100;
+        activoCorriente += net;
+        activosCorrientesDetalle.push({ code: acc.accountCode, name: acc.accountName, amount: net });
+      }
+    });
+
+    let activoNoCorriente = 0;
+    const activosNoCorrientesDetalle = [];
+    Object.values(accountsMap).forEach(acc => {
+      if (acc.accountCode.startsWith('12')) {
+        const net = Math.round((acc.debit - acc.credit) * 100) / 100;
+        activoNoCorriente += net;
+        activosNoCorrientesDetalle.push({ code: acc.accountCode, name: acc.accountName, amount: net });
+      }
+    });
+
+    const totalActivo = Math.round((activoCorriente + activoNoCorriente) * 100) / 100;
+
+    let pasivoCorriente = 0;
+    const pasivosCorrientesDetalle = [];
+    Object.values(accountsMap).forEach(acc => {
+      if (acc.accountCode.startsWith('21') || acc.accountCode.startsWith('208')) {
+        const net = Math.round((acc.credit - acc.debit) * 100) / 100;
+        pasivoCorriente += net;
+        pasivosCorrientesDetalle.push({ code: acc.accountCode, name: acc.accountName, amount: net });
+      }
+    });
+
+    let pasivoNoCorriente = 0;
+    const pasivosNoCorrientesDetalle = [];
+    Object.values(accountsMap).forEach(acc => {
+      if (acc.accountCode.startsWith('22')) {
+        const net = Math.round((acc.credit - acc.debit) * 100) / 100;
+        pasivoNoCorriente += net;
+        pasivosNoCorrientesDetalle.push({ code: acc.accountCode, name: acc.accountName, amount: net });
+      }
+    });
+
+    const totalPasivo = Math.round((pasivoCorriente + pasivoNoCorriente) * 100) / 100;
+
+    let patrimonioBase = 0;
+    const patrimonioDetalle = [];
+    Object.values(accountsMap).forEach(acc => {
+      if (acc.accountCode.startsWith('3')) {
+        const net = Math.round((acc.credit - acc.debit) * 100) / 100;
+        patrimonioBase += net;
+        patrimonioDetalle.push({ code: acc.accountCode, name: acc.accountName, amount: net });
+      }
+    });
+
+    patrimonioDetalle.push({ code: '3201-01', name: 'Reserva Legal del Ejercicio (7%)', amount: reservaLegal });
+    patrimonioDetalle.push({ code: '3301-01', name: 'Utilidad Neta del Ejercicio en Curso', amount: utilidadNetaEjercicio });
+
+    const totalPatrimonio = Math.round((patrimonioBase + reservaLegal + utilidadNetaEjercicio) * 100) / 100;
+    const totalPasivoYPatrimonio = Math.round((totalPasivo + totalPatrimonio) * 100) / 100;
+
+    res.json({
+      ejercicio: '2026',
+      periodo: 'Octubre 2026',
+      fechaCorte: new Date().toISOString().split('T')[0],
+      isBalanced: Math.abs(totalActivo - totalPasivoYPatrimonio) < 1.00,
+      diferenciaCuadre: Math.round(Math.abs(totalActivo - totalPasivoYPatrimonio) * 100) / 100,
+      estadoResultados: {
+        totalIngresos,
+        ingresosDetalle,
+        totalCostos,
+        costosDetalle,
+        utilidadBruta,
+        totalGastosOp,
+        gastosDetalle,
+        utilidadOperativa,
+        provisionISR,
+        reservaLegal,
+        utilidadNetaEjercicio
+      },
+      balanceGeneral: {
+        activoCorriente,
+        activosCorrientesDetalle,
+        activoNoCorriente,
+        activosNoCorrientesDetalle,
+        totalActivo,
+        pasivoCorriente,
+        pasivosCorrientesDetalle,
+        pasivoNoCorriente,
+        pasivosNoCorrientesDetalle,
+        totalPasivo,
+        totalPatrimonio,
+        patrimonioDetalle,
+        totalPasivoYPatrimonio
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // =========================================================================
 // --- [13] NYTEX RRHH & [14] NYTEX NÓMINA: ENDPOINTS E INTEGRACIONES ---
 // =========================================================================
@@ -4871,7 +5105,35 @@ async function startServer() {
   try {
     await sequelize.sync();
 
-    // Actualizar partners existentes con datos bancarios y fiscales completos
+    // 1. Migración segura de columnas en BusinessPartners, SaleOrders y AccountPayables (SQLite)
+    try {
+      const bpCols = (await sequelize.query("PRAGMA table_info(BusinessPartners)"))[0].map(c => c.name);
+      if (!bpCols.includes('taxId')) await sequelize.query("ALTER TABLE BusinessPartners ADD COLUMN taxId VARCHAR(255) DEFAULT 'RFC-GENERICO'");
+      if (!bpCols.includes('notes')) await sequelize.query("ALTER TABLE BusinessPartners ADD COLUMN notes TEXT");
+      if (!bpCols.includes('paymentTerms')) await sequelize.query("ALTER TABLE BusinessPartners ADD COLUMN paymentTerms VARCHAR(255) DEFAULT 'Neto 30 días'");
+      if (!bpCols.includes('bankName')) await sequelize.query("ALTER TABLE BusinessPartners ADD COLUMN bankName VARCHAR(255) DEFAULT 'Banco Corporativo Principal'");
+      if (!bpCols.includes('bankAccount')) await sequelize.query("ALTER TABLE BusinessPartners ADD COLUMN bankAccount VARCHAR(255) DEFAULT '0129-4820-9912'");
+      if (!bpCols.includes('bankClabe')) await sequelize.query("ALTER TABLE BusinessPartners ADD COLUMN bankClabe VARCHAR(255) DEFAULT '012180001294820991'");
+      if (!bpCols.includes('bankSwift')) await sequelize.query("ALTER TABLE BusinessPartners ADD COLUMN bankSwift VARCHAR(255) DEFAULT 'CORPUS33'");
+
+      const soCols = (await sequelize.query("PRAGMA table_info(SaleOrders)"))[0].map(c => c.name);
+      if (!soCols.includes('paymentMethod')) await sequelize.query("ALTER TABLE SaleOrders ADD COLUMN paymentMethod VARCHAR(255) DEFAULT 'Por Definir'");
+      if (!soCols.includes('amountReceived')) await sequelize.query("ALTER TABLE SaleOrders ADD COLUMN amountReceived FLOAT DEFAULT 0");
+      if (!soCols.includes('changeGiven')) await sequelize.query("ALTER TABLE SaleOrders ADD COLUMN changeGiven FLOAT DEFAULT 0");
+
+      const cols = (await sequelize.query("PRAGMA table_info(AccountPayables)"))[0].map(c => c.name);
+      if (!cols.includes('invoiceNumber')) await sequelize.query("ALTER TABLE AccountPayables ADD COLUMN invoiceNumber VARCHAR(255)");
+      if (!cols.includes('uuid')) await sequelize.query("ALTER TABLE AccountPayables ADD COLUMN uuid VARCHAR(255)");
+      if (!cols.includes('subtotal')) await sequelize.query("ALTER TABLE AccountPayables ADD COLUMN subtotal FLOAT DEFAULT 0");
+      if (!cols.includes('tax')) await sequelize.query("ALTER TABLE AccountPayables ADD COLUMN tax FLOAT DEFAULT 0");
+      if (!cols.includes('retentionType')) await sequelize.query("ALTER TABLE AccountPayables ADD COLUMN retentionType VARCHAR(255) DEFAULT 'Ninguna'");
+      if (!cols.includes('retentionAmount')) await sequelize.query("ALTER TABLE AccountPayables ADD COLUMN retentionAmount FLOAT DEFAULT 0");
+      if (!cols.includes('creditDays')) await sequelize.query("ALTER TABLE AccountPayables ADD COLUMN creditDays INTEGER DEFAULT 30");
+    } catch (e) {
+      console.log('Error en migración inicial de columnas SQLite:', e.message);
+    }
+
+    // 2. Actualizar partners existentes con datos bancarios y fiscales completos
     try {
       const existingPartners = await BusinessPartner.findAll();
       for (const p of existingPartners) {

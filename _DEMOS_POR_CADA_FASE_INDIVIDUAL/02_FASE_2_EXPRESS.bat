@@ -15,10 +15,10 @@ echo   - [8] Cuentas por Cobrar - CxC (Facturas a Credito y Cobranza Bancaria)
 echo   - [9] Cuentas por Pagar - CxP (Facturas Proveedor y Dispersion Bancaria)
 echo   - [10] Tesoreria, Controles Internos y Finanzas (Bancos, Cajas, Arqueos,
 echo          Cierre Diario de Cobros, Pagos y Compras, Conciliacion SHA-256)
-echo   - [11] Activos Fijos (Alta de Telar Mayer & Cie y Depreciacion NIF C-6)
+echo   - [11] Activos Fijos (Alta de Maquinaria y Depreciacion IFRS / NIC 16)
 echo   - [12] Contabilidad Central (Polizas Automaticas y Balanza Cuadrada)
 echo   - [13] Recursos Humanos - RRHH (Alta de Operarios e Incidencias)
-echo   - [14] Nomina & Fiscal (Calculo Quincenal, ISR, IMSS y Timbrado CFDI)
+echo   - [14] Nomina & Fiscal (Calculo Salarial, Retenciones de Ley y Recibos Digitales)
 echo.
 echo  * La locutora explicara cada ventana, boton y campo a capturar.
 echo  * FFmpeg integrara automaticamente el video y la voz en MP4.

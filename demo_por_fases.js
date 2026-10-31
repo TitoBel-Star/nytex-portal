@@ -348,7 +348,7 @@ async function runFase1(page, narrator) {
   await goToPage(page, 'http://localhost:5173/app/workspace?phase=1');
   await updateHUD(page, 'FASE 1 • STARTER ($35 USD/mes)', 'Espacio de Trabajo y Simulador de Roles', 'Comprende los 7 módulos medulares: Ventas, CRM, Inventario, Compras, Producción, Directorio de Business Partners y WMS Almacenes.', 'Observe el selector superior de roles: Administrador, Partner y Cliente Final.');
   
-  const vIntro = narrator.narrate('Bienvenido a la capacitación oficial de la Fase Uno: NyTEX Starter, correspondiente a la Guía de Simulación Operativa Versión 4.0. Este paquete integra los siete módulos medulares: Ventas, CRM, Inventario, Compras, Producción Textil, Directorio de Business Partners y Gestión de Almacenes WMS.');
+  const vIntro = narrator.narrate('Bienvenido a la capacitación oficial de la Fase Uno: NyTEX Starter, correspondiente a la Guía de Simulación Operativa Versión 4.0. Este paquete integra los siete módulos medulares: Ventas, CRM, Inventario, Compras, Producción y Manufactura, Directorio de Business Partners y Gestión de Almacenes WMS.');
   await sleep(500);
   await humanMoveTo(page, 'div:has-text("Simulador de Roles"), nav');
   await sleep(800);
@@ -378,7 +378,7 @@ async function runFase1(page, narrator) {
   await vV1;
 
   // Tarea 1.2: Confirmar a WMS y Tarea 1.3: Facturar a CxC
-  await updateHUD(page, '[1] VENTAS', 'Tarea 1.2 y 1.3: Confirmar a WMS y Facturar a CxC', 'Confirmación de surtido en almacén y emisión de Factura CFDI.', 'Impacto automático: Descuenta stock en Almacén, crea cartera en CxC y genera Póliza de Diario.');
+  await updateHUD(page, '[1] VENTAS', 'Tarea 1.2 y 1.3: Confirmar a WMS y Facturar a CxC', 'Confirmación de surtido en almacén y emisión de Factura Electrónica Certificada.', 'Impacto automático: Descuenta stock en Almacén, crea cartera en CxC y genera Póliza de Diario.');
   const vV2 = narrator.narrate('Tarea 1.2: Confirmar Pedido en Firme y Disparar Surtido a Almacén WMS. Al confirmar, el estatus pasa a En Proceso y genera la tarea de picking. Tarea 1.3: Emitir Factura Electrónica. Descuenta el inventario, crea la cuenta por cobrar en el módulo ocho y genera la póliza contable de diario en contabilidad.');
   await sleep(400);
   const saveBtn = await page.$('button:has-text("Crear Orden"), button:has-text("Guardar Orden"), button:has-text("Cancelar")');
@@ -392,7 +392,7 @@ async function runFase1(page, narrator) {
   // [2] MÓDULO DE CRM
   await goToPage(page, 'http://localhost:5173/app/crm');
   await updateHUD(page, '[2] CRM', 'Tarea 2.1 y 2.2: Oportunidad Comercial y Embudo Kanban', 'Registro de Suministro Anual de Popelina por $45,000 USD y avance por el embudo de ventas.', 'Avance por etapas: Nuevo ➔ Contactado ➔ Calificado ➔ Cotizado ➔ Ganado.');
-  const vCrm = narrator.narrate('Módulo dos: CRM Comercial. Tarea 2.1: Registrar Nueva Oportunidad. Se captura el prospecto Industrias Textiles del Bajío por cuarenta y cinco mil dólares. Tarea 2.2: Avanzar Oportunidad por el Embudo Kanban. Arrastramos la tarjeta hasta la columna Ganado, recalculando en tiempo real el valor del pipeline y la tasa de conversión.');
+  const vCrm = narrator.narrate('Módulo dos: CRM Comercial. Tarea 2.1: Registrar Nueva Oportunidad. Se captura el prospecto Corporación Industrial del Bajío por cuarenta y cinco mil dólares. Tarea 2.2: Avanzar Oportunidad por el Embudo Kanban. Arrastramos la tarjeta hasta la columna Ganado, recalculando en tiempo real el valor del pipeline y la tasa de conversión.');
   await sleep(400);
   await humanClick(page, 'button:has-text("+ NUEVA OPORTUNIDAD"), button:has-text("NUEVA OPORTUNIDAD")');
   await sleep(900);
@@ -419,8 +419,8 @@ async function runFase1(page, narrator) {
 
   // [4] MÓDULO DE COMPRAS (Procure-to-Pay)
   await goToPage(page, 'http://localhost:5173/app/compras');
-  await updateHUD(page, '[4] COMPRAS', 'Tarea 4.1 y 4.2: Orden de Compra y Recepción Física', 'PO a Hilaturas del Norte por $101,813.00 USD y recepción en almacén de materias primas.', 'Efecto cruzado: Aumenta stock físico, genera cuenta por pagar en CxP y póliza de provisión.');
-  const vComp = narrator.narrate('Módulo cuatro: Compras. Tarea 4.1: Crear Orden de Compra a Proveedor. Emitimos la orden a Hilaturas del Norte por quinientos kilos de algodón peinado y doscientos de poliéster por un total de ciento un mil ochocientos trece dólares. Tarea 4.2: Recepción Física de Mercancía. Aumenta el stock en almacén, crea el pasivo en Cuentas por Pagar y genera la póliza contable.');
+  await updateHUD(page, '[4] COMPRAS', 'Tarea 4.1 y 4.2: Orden de Compra y Recepción Física', 'PO a Suministros Industriales del Norte por $101,813.00 USD y recepción en almacén de materias primas.', 'Efecto cruzado: Aumenta stock físico, genera cuenta por pagar en CxP y póliza de provisión.');
+  const vComp = narrator.narrate('Módulo cuatro: Compras. Tarea 4.1: Crear Orden de Compra a Proveedor. Emitimos la orden a Suministros Industriales del Norte por lotes de materia prima industrial y componentes por un total de ciento un mil ochocientos trece dólares. Tarea 4.2: Recepción Física de Mercancía. Aumenta el stock en almacén, crea el pasivo en Cuentas por Pagar y genera la póliza contable.');
   await sleep(400);
   await humanClick(page, 'button:has-text("+ NUEVA ORDEN DE COMPRA"), button:has-text("NUEVA ORDEN")');
   await sleep(900);
@@ -433,8 +433,8 @@ async function runFase1(page, narrator) {
 
   // [5] MÓDULO DE PRODUCCIÓN (Manufactura Textil)
   await goToPage(page, 'http://localhost:5173/app/produccion');
-  await updateHUD(page, '[5] PRODUCCIÓN', 'Tarea 5.1 a 5.3: OP, Consumo de Insumos y Liquidación', 'Programación de 30 rollos de Gabardina en Telar Mayer & Cie con lista de materiales BOM.', 'Descuento de 90 kg de algodón y 45 kg de poliéster, y pase a Producto Terminado.');
-  const vProd = narrator.narrate('Módulo cinco: Producción Textil. Tarea 5.1: Programar Orden de Fabricación para treinta rollos en el Telar Mayer y Cie. Tarea 5.2: Iniciar Fabricación. Descuenta noventa kilos de algodón y cuarenta y cinco de poliéster del almacén de materias primas. Tarea 5.3: Liquidar Orden. Ingresa los treinta rollos terminados al almacén con su póliza de liquidación.');
+  await updateHUD(page, '[5] PRODUCCIÓN', 'Tarea 5.1 a 5.3: OP, Consumo de Insumos y Liquidación', 'Programación de 30 rollos de Gabardina en Línea de Producción Automatizada con lista de materiales BOM.', 'Descuento de insumos y materias primas, y pase a Producto Terminado.');
+  const vProd = narrator.narrate('Módulo cinco: Producción y Manufactura. Tarea 5.1: Programar Orden de Fabricación para treinta unidades en el Línea de Producción Automatizada. Tarea 5.2: Iniciar Fabricación. Descuenta los insumos requeridos del almacén de materias primas. Tarea 5.3: Liquidar Orden. Ingresa los treinta unidades terminados al almacén con su póliza de liquidación.');
   await sleep(400);
   await humanClick(page, 'button:has-text("+ Nueva Orden de Fabricación"), button:has-text("Nueva Orden de Producción")');
   await sleep(900);
@@ -447,8 +447,8 @@ async function runFase1(page, narrator) {
 
   // [6] MÓDULO DE BUSINESS PARTNERS
   await goToPage(page, 'http://localhost:5173/app/partners');
-  await updateHUD(page, '[6] BUSINESS PARTNERS', 'Tarea 6.1: Registro de Socio de Negocio Centralizado', 'Alta de Distribuidora Textil de Guadalajara (RFC: DTG980421KM8, Límite: $250,000 USD).', 'Queda disponible al instante para facturación en Ventas y cobranza en CxC.');
-  const vPart = narrator.narrate('Módulo seis: Directorio Central de Business Partners. Tarea 6.1: Registrar Nuevo Socio de Negocios. Damos de alta a Distribuidora Textil de Guadalajara con línea de crédito de doscientos cincuenta mil dólares, quedando disponible de inmediato en Ventas y Cobranza.');
+  await updateHUD(page, '[6] BUSINESS PARTNERS', 'Tarea 6.1: Registro de Socio de Negocio Centralizado', 'Alta de Distribuidora Comercial Panamericana (Tax ID: PAN-980421-KM8, Límite: $250,000 USD).', 'Queda disponible al instante para facturación en Ventas y cobranza en CxC.');
+  const vPart = narrator.narrate('Módulo seis: Directorio Central de Business Partners. Tarea 6.1: Registrar Nuevo Socio de Negocios. Damos de alta a Distribuidora Comercial Panamericana con línea de crédito de doscientos cincuenta mil dólares, quedando disponible de inmediato en Ventas y Cobranza.');
   await sleep(400);
   await humanClick(page, 'button:has-text("+ NUEVO SOCIO DE NEGOCIO"), button:has-text("NUEVO SOCIO")');
   await sleep(900);
@@ -508,7 +508,7 @@ async function runFase2(page, narrator) {
 
   // [8] CUENTAS POR COBRAR (CxC)
   await goToPage(page, 'http://localhost:5173/app/cxc');
-  await updateHUD(page, '[8] CxC', 'Tarea 8.1 y 8.2: Factura a Crédito y Aplicación de Cobro', 'Emisión de Factura FAC-001 por $20,905.00 USD y cobro por transferencia SPEI.', 'Ingreso bancario reflejado en Tesorería y Póliza de Ingreso en Contabilidad.');
+  await updateHUD(page, '[8] CxC', 'Tarea 8.1 y 8.2: Factura a Crédito y Aplicación de Cobro', 'Emisión de Factura FAC-001 por $20,905.00 USD y cobro por transferencia bancaria electrónica.', 'Ingreso bancario reflejado en Tesorería y Póliza de Ingreso en Contabilidad.');
   const vCxc = narrator.narrate('Módulo ocho: Cuentas por Cobrar. Tarea 8.1: Emisión Directa de Factura a Crédito por veinte mil novecientos cinco dólares. Tarea 8.2: Aplicar Cobranza Bancaria. Se registra la transferencia electrónica, el saldo de la factura pasa a cero, ingresa el dinero a Tesorería y genera la póliza contable de ingreso.');
   await sleep(400);
   await humanMoveTo(page, 'button:has-text("Aplicar Cobro"), button:has-text("NUEVA FACTURA")');
@@ -547,8 +547,8 @@ async function runFase2(page, narrator) {
 
   // [11] ACTIVOS FIJOS Y DEPRECIACIONES
   await goToPage(page, 'http://localhost:5173/app/activosfijos');
-  await updateHUD(page, '[11] ACTIVOS FIJOS', 'Tarea 11.1 y 11.2: Alta de Telar Mayer & Cie y Depreciación NIF C-6', 'Alta de maquinaria por $385,000 USD y corrida automática de depreciación mensual.', 'Genera Póliza de Diario de Depreciación afectando gasto y depreciación acumulada.');
-  const vAct = narrator.narrate('Módulo once: Activos Fijos. Tarea 11.1: Registrar Activo de Planta. Damos de alta el Telar Circular Mayer y Cie con valor de trescientos ochenta y cinco mil dólares y vida útil de diez años. Tarea 11.2: Ejecutar Depreciación Mensual Automática conforme a la norma NIF C seis, emitiendo la póliza contable respectiva.');
+  await updateHUD(page, '[11] ACTIVOS FIJOS', 'Tarea 11.1 y 11.2: Alta de Línea de Producción Automatizada y Depreciación IFRS / NIC 16', 'Alta de maquinaria por $385,000 USD y corrida automática de depreciación mensual.', 'Genera Póliza de Diario de Depreciación afectando gasto y depreciación acumulada.');
+  const vAct = narrator.narrate('Módulo once: Activos Fijos. Tarea 11.1: Registrar Activo de Planta. Damos de alta el Telar Circular Mayer y Cie con valor de trescientos ochenta y cinco mil dólares y vida útil de diez años. Tarea 11.2: Ejecutar Depreciación Mensual Automática conforme a normas internacionales IFRS, emitiendo la póliza contable respectiva.');
   await sleep(400);
   await humanClick(page, 'button:has-text("EJECUTAR DEPRECIACIÓN"), button:has-text("Depreciación Mensual")');
   await sleep(800);
@@ -565,7 +565,7 @@ async function runFase2(page, narrator) {
 
   // [13] RRHH Y [14] NÓMINA
   await goToPage(page, 'http://localhost:5173/app/rrhh');
-  await updateHUD(page, '[13] RRHH & [14] NÓMINA', 'Tarea 13 y 14: Colaborador, Horas Extra y Timbrado CFDI', 'Alta de Operador de Telar, captura de horas extras y dispersión bancaria.', 'Cálculo de retenciones fiscales de ley y póliza contable de nómina.');
+  await updateHUD(page, '[13] RRHH & [14] NÓMINA', 'Tarea 13 y 14: Colaborador, Horas Extra y Certificación Electrónica', 'Alta de Operador de Planta, captura de horas extras y dispersión bancaria.', 'Cálculo de retenciones fiscales de ley y póliza contable de nómina.');
   const vRrhhNom = narrator.narrate('Módulos trece y catorce: Recursos Humanos y Nómina. Tarea 13.1: Alta de colaborador y captura de horas extra dobles. Tarea 14.1 y 14.2: Corrida de nómina quincenal, cálculo de retenciones de ley, dispersión a bancos y timbrado fiscal.');
   await sleep(400);
   await goToPage(page, 'http://localhost:5173/app/nomina');
@@ -642,7 +642,7 @@ async function runFase4(page, narrator) {
   console.log('\n--- EJECUTANDO FASE 4: ENTERPRISE (25 MÓDULOS TOTALES) ---');
 
   await goToPage(page, 'http://localhost:5173/app/workspace?phase=4');
-  await updateHUD(page, 'FASE 4 • ENTERPRISE ($499 USD/mes)', 'Ecosistema Total: Big Data, IA y Gobernanza Corporativa', 'Solución Corporativa Definitiva (25 Módulos): BI y Reportes Financieros NIF/IFRS, Big Data IoT en telares, Minería de Datos K-Means, Asistente IA Copilot, Modelos Predictivos y Localización Fiscal Regional.', 'La plataforma integral para liderar la industria textil.');
+  await updateHUD(page, 'FASE 4 • ENTERPRISE ($499 USD/mes)', 'Ecosistema Total: Big Data, IA y Gobernanza Corporativa', 'Solución Corporativa Definitiva (25 Módulos): BI y Reportes Financieros IFRS / NIIF, Big Data IoT en maquinaria, Minería de Datos K-Means, Asistente IA Copilot, Modelos Predictivos y Localización Fiscal Regional.', 'La plataforma integral para liderar la industria y la competitividad empresarial.');
   
   const vFase4Intro = narrator.narrate('Culminamos con la capacitación de la Fase Cuatro: NyTEX Enterprise. Representa la cúspide del ecosistema con veinticinco módulos operativos. Incorpora reportes financieros auditados bajo normas NIF, telemetría masiva Big Data e IoT industrial, algoritmos de minería de datos K-Means, Asistente Cognitivo de Inteligencia Artificial para consultas ejecutivas, modelos econométricos predictivos y gobernanza fiscal multi-país.');
   await sleep(500);
@@ -654,7 +654,7 @@ async function runFase4(page, narrator) {
   // [18] BI Y REPORTES FINANCIEROS (NIF / IFRS)
   await goToPage(page, 'http://localhost:5173/app/reportes');
   await updateHUD(page, '[18] REPORTES FINANCIEROS', 'Tarea 18.1: Estados Financieros Básicos Auditados', 'Generación de Estado de Resultados (P&L), Balance General y Flujo de Efectivo.', 'Emisión de reportes ejecutivos listos para bancos y juntas directivas.');
-  const vRep = narrator.narrate('Módulo dieciocho: BI y Reportes Financieros. Tarea 18.1: Generar Estado de Resultados y Balance General. Con un solo clic, se emite el estado de pérdidas y ganancias integral y la situación patrimonial bajo normas NIF internacionales.');
+  const vRep = narrator.narrate('Módulo dieciocho: BI y Reportes Financieros. Tarea 18.1: Generar Estado de Resultados y Balance General. Con un solo clic, se emite el estado de pérdidas y ganancias integral y la situación patrimonial bajo normas internacionales IFRS / NIIF.');
   await sleep(400);
   await humanClick(page, 'button:has-text("Estado de Resultados"), button:has-text("Balance General")');
   await sleep(900);
@@ -662,8 +662,8 @@ async function runFase4(page, narrator) {
 
   // [21] BIG DATA & TELEMETRÍA IOT INDUSTRIAL
   await goToPage(page, 'http://localhost:5173/app/bigdata');
-  await updateHUD(page, '[21] BIG DATA & IOT', 'Tarea 21.1: Monitor de Telemetría IoT en Vivo', 'Lectura de sensores en Telar Mayer & Cie: 28.4 RPM, Temperatura 48.2 °C, Tensión 14.2 cN.', 'Prevención de fallas mecánicas y cálculo automático de metros tejidos.');
-  const vIot = narrator.narrate('Módulo veintiuno: Big Data y Telemetría IoT Industrial. Tarea 21.1: Monitor de Telemetría en Vivo. Monitorea en tiempo real las revoluciones por minuto, temperatura de rodamientos y tensión del hilo en noventa y seis telares, emitiendo alertas predictivas.');
+  await updateHUD(page, '[21] BIG DATA & IOT', 'Tarea 21.1: Monitor de Telemetría IoT en Vivo', 'Lectura de sensores en Línea de Producción Automatizada: 28.4 RPM, Temperatura 48.2 °C, Tensión 14.2 cN.', 'Prevención de fallas mecánicas y cálculo automático de metros tejidos.');
+  const vIot = narrator.narrate('Módulo veintiuno: Big Data y Telemetría IoT Industrial. Tarea 21.1: Monitor de Telemetría en Vivo. Monitorea en tiempo real las revoluciones por minuto, temperatura de rodamientos y tensión operativa en noventa y seis centros de trabajo, emitiendo alertas predictivas.');
   await sleep(400);
   await humanMoveTo(page, 'div:has-text("RPM"), div:has-text("Telar"), svg');
   await sleep(900);
@@ -702,8 +702,8 @@ async function runFase4(page, narrator) {
 
   // [26] CONFIGURACIÓN FISCAL MULTI-PAÍS & AUDITORÍA INMUTABLE
   await goToPage(page, 'http://localhost:5173/app/configuracion');
-  await updateHUD(page, '[26] CONFIGURACIÓN & AUDITORÍA', 'Tarea 26.1 y 26.2: Localización Fiscal y Audit Trail Inmutable', 'Drivers regionales: El Salvador (DTE/MH 13%), Guatemala (FEL/SAT 12%), Honduras (SAR 15%).', 'Bitácora inmutable con sellos criptográficos para blindaje fiscal absoluto.');
-  const vConf = narrator.narrate('Módulo veintiséis: Configuración del Sistema y Auditoría Inmutable. Tarea 26.1: Configuración de Localización Fiscal Multi-País, adaptándose a El Salvador, Guatemala, Honduras, Costa Rica, Panamá y México. Tarea 26.2: Bitácora Inmutable de Auditoría, garantizando blindaje tributario y trazabilidad absoluta de cada transacción.');
+  await updateHUD(page, '[26] CONFIGURACIÓN & AUDITORÍA', 'Tarea 26.1 y 26.2: Localización Fiscal y Audit Trail Inmutable', 'Facturación Electrónica: Ministerio de Hacienda / Dirección General de Impuestos Internos (DTE 13%), con firma y sellos digitales.', 'Bitácora inmutable con sellos criptográficos para blindaje fiscal absoluto.');
+  const vConf = narrator.narrate('Módulo veintiséis: Configuración del Sistema y Auditoría Inmutable. Tarea 26.1: Configuración de Localización Fiscal Multi-País, integrado al Ministerio de Hacienda / Dirección General de Impuestos Internos con DTE (Documentos Tributarios Electrónicos). Tarea 26.2: Bitácora Inmutable de Auditoría, garantizando blindaje tributario y trazabilidad absoluta de cada transacción.');
   await sleep(400);
   await humanClick(page, 'button:has-text("Bitácora"), div:has-text("Auditoría")');
   await sleep(900);

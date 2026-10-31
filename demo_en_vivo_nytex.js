@@ -208,7 +208,7 @@ async function runDemo() {
     // -------------------------------------------------------------
     console.log('4. Módulo de Ventas...');
     await page.goto('http://localhost:5173/app/ventas', { waitUntil: 'domcontentloaded' });
-    await updateHUD(page, '04', 'Ventas & Cotizaciones Textiles', 'Generación de pedidos con SKUs textiles (rollos, gabardina, piqué). Disparo automático al almacén WMS.', '🧾');
+    await updateHUD(page, '04', 'Ventas & Cotizaciones Industriales', 'Generación de pedidos con SKUs de productos terminados e insumos. Disparo automático al almacén WMS.', '🧾');
     const voice4 = narrate('Módulo tres. Ventas y Cotizaciones. Permite generar pedidos con catálogo por rollos y metraje. Al confirmar una orden, el sistema envía automáticamente el surtido al almacén.');
     await sleep(1000);
     await smoothScrollDown(page, 450);
@@ -250,7 +250,7 @@ async function runDemo() {
     // -------------------------------------------------------------
     console.log('7. Módulo de CxC & Facturación...');
     await page.goto('http://localhost:5173/app/cxc', { waitUntil: 'domcontentloaded' });
-    await updateHUD(page, '07', 'Facturación CFDI 4.0 & CxC', 'Emisión fiscal inmediata, antigüedad de saldos y aplicación automática de pagos bancarios.', '💳');
+    await updateHUD(page, '07', 'Facturación Electrónica Digital & CxC', 'Emisión fiscal inmediata, antigüedad de saldos y aplicación automática de pagos bancarios.', '💳');
     const voice7 = narrate('Módulo seis. Facturación y Cuentas por Cobrar. Emisión fiscal electrónica en segundos, control de antigüedad de saldos de clientes y conciliación automática de cobros.');
     await sleep(1000);
     await smoothScrollDown(page, 450);
@@ -288,12 +288,12 @@ async function runDemo() {
     await sleep(1000);
 
     // -------------------------------------------------------------
-    // FASE 10: PRODUCCIÓN & MANUFACTURA TEXTIL
+    // FASE 10: PRODUCCIÓN & MANUFACTURA INDUSTRIAL
     // -------------------------------------------------------------
     console.log('10. Módulo de Producción...');
     await page.goto('http://localhost:5173/app/produccion', { waitUntil: 'domcontentloaded' });
-    await updateHUD(page, '10', 'Producción & Planta Fabril', 'Plan Maestro de Tejido, estado de telares circulares en vivo, explosión de materiales (BOM) y avance.', '⚙️');
-    const voice10 = narrate('Módulo nueve. Producción Textil. Plan Maestro de Tejido y monitoreo en línea de la maquinaria y telares circulares, controlando mermas, tiempos y avance de órdenes.');
+    await updateHUD(page, '10', 'Producción & Planta Fabril', 'Plan Maestro de Producción, estado de maquinaria en vivo, explosión de materiales (BOM) y avance.', '⚙️');
+    const voice10 = narrate('Módulo nueve. Producción y Manufactura. Plan Maestro de Producción y monitoreo en línea de la maquinaria industrial, controlando mermas, tiempos y avance de órdenes.');
     await sleep(1000);
     await smoothScrollDown(page, 450);
     await sleep(1500);
@@ -320,7 +320,7 @@ async function runDemo() {
     // -------------------------------------------------------------
     console.log('12. Módulo de Tesorería...');
     await page.goto('http://localhost:5173/app/tesoreria', { waitUntil: 'domcontentloaded' });
-    await updateHUD(page, '12', 'Tesorería & Cuentas Bancarias', 'Posición financiera en tiempo real (BBVA, Banamex, Efectivo), transferencias SPEI y conciliación.', '🏦');
+    await updateHUD(page, '12', 'Tesorería & Cuentas Bancarias', 'Posición financiera en tiempo real (Bancos Operativos y Efectivo), transferencias electrónicas y conciliación.', '🏦');
     const voice12 = narrate('Módulo once. Tesorería y Bancos. Posición financiera en tiempo real en todas sus cuentas bancarias, con conciliación de transferencias y control de flujo de efectivo.');
     await sleep(1000);
     await smoothScrollDown(page, 400);
@@ -348,7 +348,7 @@ async function runDemo() {
     // -------------------------------------------------------------
     console.log('14. Módulo de RRHH...');
     await page.goto('http://localhost:5173/app/rrhh', { waitUntil: 'domcontentloaded' });
-    await updateHUD(page, '14', 'Recursos Humanos & Estructura Fabril', 'Padrón de operarios textiles, expedientes digitales y supervisión de turnos de manufactura.', '👥');
+    await updateHUD(page, '14', 'Recursos Humanos & Estructura Fabril', 'Padrón de operarios y colaboradores, expedientes digitales y supervisión de turnos de manufactura.', '👥');
     const voice14 = narrate('Módulo trece. Recursos Humanos. Gestión de expedientes de operarios, turnos de planta fabril y control de asistencias del personal.');
     await sleep(1000);
     await smoothScrollDown(page, 400);
@@ -358,7 +358,7 @@ async function runDemo() {
     await sleep(1000);
 
     // -------------------------------------------------------------
-    // FASE 15: NÓMINA TEXTIL
+    // FASE 15: NÓMINA CORPORATIVA
     // -------------------------------------------------------------
     console.log('15. Módulo de Nómina...');
     await page.goto('http://localhost:5173/app/nomina', { waitUntil: 'domcontentloaded' });
@@ -376,8 +376,8 @@ async function runDemo() {
     // -------------------------------------------------------------
     console.log('16. Módulo de Activos Fijos...');
     await page.goto('http://localhost:5173/app/activosfijos', { waitUntil: 'domcontentloaded' });
-    await updateHUD(page, '16', 'Activos Fijos & Depreciación NIF C-6', 'Control patrimonial de telares industriales, montacargas y depreciación automática por horas de uso.', '🏗️');
-    const voice16 = narrate('Módulo quince. Activos Fijos. Control del patrimonio en maquinaria textil y cálculo mensual de depreciación contable según las normas financieras.');
+    await updateHUD(page, '16', 'Activos Fijos & Depreciación IFRS / NIC 16', 'Control patrimonial de equipos y líneas industriales, montacargas y depreciación automática por horas de uso.', '🏗️');
+    const voice16 = narrate('Módulo quince. Activos Fijos. Control del patrimonio en maquinaria industrial y cálculo mensual de depreciación contable según las normas internacionales.');
     await sleep(1000);
     await smoothScrollDown(page, 400);
     await sleep(1500);
@@ -433,7 +433,7 @@ async function runDemo() {
     console.log('20. Espacio de Trabajo Unificado...');
     await page.goto('http://localhost:5173/app/workspace', { waitUntil: 'domcontentloaded' });
     await updateHUD(page, '20', 'NyTEX ERP: Su Empresa 100% Conectada', 'Solución llave en mano para transformar digitalmente su operación de punta a punta.', '⭐');
-    const voice20 = narrate('NyTEX ERP es la solución integral definitiva para transformar digitalmente su empresa textil y manufacturera. Gracias por su atención.');
+    const voice20 = narrate('NyTEX ERP es la solución integral definitiva para transformar digitalmente su empresa y operaciones industriales. Gracias por su atención.');
     await sleep(1000);
     await smoothScrollDown(page, 400);
     await sleep(1500);

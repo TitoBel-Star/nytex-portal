@@ -26,7 +26,7 @@ const mdContent = `# 📘 GUÍA DE SIMULACIÓN OPERATIVA TAREA POR TAREA — ERP
 Esta guía describe **módulo por módulo** y **tarea por tarea** el procedimiento exacto de captura, digitación y operación en las pantallas de la aplicación NyTEX ERP. Contiene:
 1. **Pantalla y Ruta de Acceso.**
 2. **Botón o Disparador de la Tarea.**
-3. **Formulario y Campos a Digitar** (con datos de ejemplo realistas de simulación textil e industrial).
+3. **Formulario y Campos a Digitar** (con datos de ejemplo realistas de simulación empresarial e industrial).
 4. **Acción de Confirmación / Guardado.**
 5. **Resultado Visible en Pantalla** (cambios de estado, badges, alertas).
 6. **Efecto de Integración Automatizada** (impacto cruzado e inmediato en contabilidad, inventarios, tesorería, etc.).
@@ -48,7 +48,7 @@ El Workspace unificado permite filtrar y visualizar los módulos correspondiente
 - **Fase 1: Starter (7 Módulos):** [1] Ventas, [2] CRM, [3] Inventario, [4] Compras, [5] Producción, [6] Directorio de Business Partners, [17] WMS.
 - **Fase 2: Express (+8 = 15 Módulos):** Starter + [7] Logística y Distribución, [8] CxC, [9] CxP, [10] Tesorería, Cajas y Controles Internos, [11] Activos Fijos, [12] Contabilidad Central, [13] RRHH, [14] Nómina.
 - **Fase 3: Advanced (+5 = 20 Módulos):** Express + [15] NyTEX Process Suite (BPMN), [16] NyTEX Process Mining, [19] NyTEX Dashboards Ejecutivos, [20] BI Cubo OLAP HyperCube, [25] Planeación S&OP / MRP II.
-- **Fase 4: Enterprise (+5 = 25 Módulos):** Advanced + [18] NyTEX BI y Reportes Financieros NIF/IFRS, [21] NyTEX Big Data e IoT Industrial, [22] Minería de Datos y Machine Learning, [23] Asistente Cognitivo IA Copilot, [24] Modelos Predictivos y Riesgo Crediticio (Logit/ARIMA).
+- **Fase 4: Enterprise (+5 = 25 Módulos):** Advanced + [18] NyTEX BI y Reportes Financieros (IFRS / NIIF), [21] NyTEX Big Data e IoT Industrial, [22] Minería de Datos y Machine Learning, [23] Asistente Cognitivo IA Copilot, [24] Modelos Predictivos y Riesgo Crediticio (Logit/ARIMA).
 
 ### 0.3 Flujo de Contratación y Activación Instantánea en la Nube
 1. El cliente ingresa a la Landing Page oficial: \`https://consultores-nyt.onrender.com/\`.
@@ -61,7 +61,7 @@ El Workspace unificado permite filtrar y visualizar los módulos correspondiente
 ### 0.4 Centro de Inducción Multimedia
 En el panel del Workspace y en el Portal se integran accesos a:
 - **Recorrido General en 3 Minutos:** Video introductorio de navegación por el ecosistema.
-- **Capacitación Operativa de Fase 1 Starter:** Video intensivo de operación de compras, inventarios, manufactura textil y ventas.
+- **Capacitación Operativa de Fase 1 Starter:** Video intensivo de operación de compras, inventarios, manufactura industrial y ventas.
 
 ---
 
@@ -71,7 +71,7 @@ En el panel del Workspace y en el Portal se integran accesos a:
 
 ### [1] MÓDULO DE VENTAS (Order-to-Cash)
 - **Ruta de Acceso:** \`/app/ventas\` o Pestaña **[1] Ventas** en el Workspace.
-- **Propósito:** Captura de cotizaciones, confirmación de pedidos, orden de surtido y facturación electrónica CFDI/DTE.
+- **Propósito:** Captura de cotizaciones, confirmación de pedidos, orden de surtido y facturación electrónica certificada (DTE).
 
 #### Tarea 1.1: Captura de Nueva Cotización / Pedido de Venta
 1. **Acción inicial:** Hacer clic en el botón superior derecho **\`+ NUEVA ORDEN / COTIZACIÓN\`**.
@@ -81,10 +81,10 @@ En el panel del Workspace y en el Portal se integran accesos a:
    - **Términos de Pago:** Seleccionar \`Crédito 30 días\`.
    - **Buscador Rápido de Catálogo / Partidas:**
      - En el buscador digitar \`Gabardina\` o seleccionar la categoría \`Producto Terminado\`.
-     - Presionar **\`+ Agregar a la orden\`** en el artículo \`PT-TEL-101 | Rollo Tela Gabardina Algodón Peinado (Azul)\`.
+     - Presionar **\`+ Agregar a la orden\`** en el artículo \`PT-IND-101 | Lote de Producto Terminado Estándar (Modelo Alfa)\`.
      - Alternativamente, en la tabla de partidas escribir directamente:
        - **SKU:** \`PT-TEL-101\`
-       - **Descripción:** \`Rollo Tela Gabardina Algodón Peinado (Azul)\`
+       - **Descripción:** \`Lote Producto Terminado Modelo Alfa (PT-101)\`
        - **Cantidad:** Digitar \`10\`
        - **Precio Unitario ($):** Verificar \`1,850.00\`
    - Si se requiere una segunda partida, hacer clic en **\`+ Agregar Partida\`** y capturar:
@@ -129,7 +129,7 @@ En el panel del Workspace y en el Portal se integran accesos a:
 1. **Acción inicial:** Hacer clic en el botón superior derecho **\`+ NUEVA OPORTUNIDAD\`**.
 2. **Campos a registrar en el modal:**
    - **Título del Trato / Negocio:** Digitar \`Suministro Anual de Popelina y Gabardina\`.
-   - **Empresa / Prospecto:** Digitar \`Industrias Textiles del Bajío S.A.\`.
+   - **Empresa / Prospecto:** Digitar \`Corporación Industrial del Bajío S.A.\`.
    - **Valor Estimado ($):** Digitar \`45,000\`.
    - **Etapa Inicial:** Seleccionar \`Nuevo\` o \`Contactado\`.
    - **Prioridad:** Seleccionar \`Alta\`.
@@ -155,7 +155,7 @@ En el panel del Workspace y en el Portal se integran accesos a:
 1. **Acción inicial:** Hacer clic en el botón superior derecho **\`+ NUEVO PRODUCTO / ARTÍCULO\`**.
 2. **Campos a registrar en el modal:**
    - **Código SKU:** Digitar \`MP-HIL-501\`.
-   - **Nombre / Descripción:** Digitar \`Hilo de Poliéster Texturizado 150D/48F (Blanco Óptico)\`.
+   - **Nombre / Descripción:** Digitar \`Materia Prima Sintética Grado Industrial MP-02\`.
    - **Categoría:** Seleccionar \`Materia Prima\` (opciones: *Materia Prima, Producto en Proceso, Producto Terminado, Insumos / Químicos*).
    - **Almacén Principal:** Seleccionar \`Almacén Central Materias Primas\` (o \`Bodega Planta 1\`).
    - **Unidad de Medida:** Seleccionar \`kg\` (o \`metros\`, \`piezas\`, \`rollos\`).
@@ -187,15 +187,15 @@ En el panel del Workspace y en el Portal se integran accesos a:
 #### Tarea 4.1: Crear Orden de Compra (PO) a Proveedor
 1. **Acción inicial:** Hacer clic en el botón **\`+ NUEVA ORDEN DE COMPRA\`**.
 2. **Campos a registrar en el modal:**
-   - **Proveedor:** Seleccionar \`PRV-001 | Hilaturas del Norte S.A. de C.V.\`.
+   - **Proveedor:** Seleccionar \`PRV-001 | Suministros Industriales del Norte S.A.\`.
    - **Almacén de Destino:** Seleccionar \`Almacén Central Materias Primas\`.
    - **Condiciones de Pago:** Seleccionar \`Crédito 45 días\`.
    - **Partida 1:**
-     - **SKU:** Seleccionar \`MP-HIL-101 | Hilo de Algodón Peinado 30/1\`
+     - **SKU:** Seleccionar \`MP-MAT-101 | Materia Prima Base A\`
      - **Cantidad:** Digitar \`500\` kg
      - **Precio Unitario ($):** Verificar \`125.00\` (Subtotal: $62,500.00)
    - **Partida 2 (clic en \`+ Agregar Partida\`):**
-     - **SKU:** Seleccionar \`MP-HIL-202 | Hilo Poliéster 150D\`
+     - **SKU:** Seleccionar \`MP-MAT-202 | Componente Industrial B\`
      - **Cantidad:** Digitar \`200\` kg
      - **Precio Unitario ($):** Verificar \`138.00\` (Subtotal: $27,600.00)
    - **Resumen:** Subtotal \`$90,100.00\` + IVA (13%) \`$11,713.00\` = Total \`$101,813.00\`.
@@ -209,12 +209,12 @@ En el panel del Workspace y en el Portal se integran accesos a:
    - Aparece el mensaje de éxito integral detallando los módulos sincronizados.
 3. **Efecto de Integración Automatizada:**
    - **[3] Inventario:** Aumenta las existencias físicas de hilo en 500 kg y 200 kg respectivamente.
-   - **[9] CxP:** Genera automáticamente la cuenta por pagar a favor de Hilaturas del Norte por \`$101,813.00\`.
+   - **[9] CxP:** Genera automáticamente la cuenta por pagar a favor de Suministros Industriales del Norte por \`$101,813.00\`.
    - **[12] Contabilidad:** Genera la **Póliza de Provisión de Compra** (Cargo a Inventario de Materias Primas e IVA Acreditable por Pagar, Abono a Proveedores CxP).
 
 ---
 
-### [5] MÓDULO DE PRODUCCIÓN (Manufactura Textil)
+### [5] MÓDULO DE PRODUCCIÓN (Manufactura Industrial)
 - **Ruta de Acceso:** \`/app/produccion\` o Pestaña **[5] Producción** en el Workspace.
 - **Propósito:** Plan Maestro de Manufactura, órdenes de tejeduría (OP), consumo de lista de materiales (BOM) y liquidación de producto terminado.
 
@@ -222,10 +222,10 @@ En el panel del Workspace y en el Portal se integran accesos a:
 1. **Acción inicial:** Hacer clic en el botón **\`+ Nueva Orden de Fabricación (OP)\`**.
 2. **Campos a registrar en el modal:**
    - **SKU a Producir:** Digitar o seleccionar \`PT-TEL-101\`.
-   - **Descripción del Producto:** \`Rollo Tela Gabardina Algodón Peinado (Azul)\`.
+   - **Descripción del Producto:** \`Lote Producto Terminado Modelo Alfa (PT-101)\`.
    - **Cantidad Objetivo:** Digitar \`30\` (rollos).
    - **Unidad de Medida:** \`rollos\`.
-   - **Centro de Trabajo / Maquinaria:** Seleccionar \`Telar Circular #3 - Planta 1 (Mayer & Cie)\`.
+   - **Centro de Trabajo / Maquinaria:** Seleccionar \`Línea de Producción Automatizada #3 - Planta 1\`.
    - **Operador Responsable:** Digitar \`Ing. Miguel Tejeduría\`.
    - **Lista de Materiales Estándar (BOM):** Verificar consumos unitarios:
      - Hilo de Algodón 30/1: \`3.0 kg/rollo\` (Total lote: 90 kg).
@@ -240,7 +240,7 @@ En el panel del Workspace y en el Portal se integran accesos a:
    - El estado de la OP cambia a badge azul **\`En Proceso\`**.
    - Aparece la notificación: \`Producción iniciada. Materias primas reservadas y descontadas del almacén.\`
 3. **Efecto de Integración:**
-   - Descuenta en **[3] Inventario** los 90 kg de algodón y 45 kg de poliéster.
+   - Descuenta en **[3] Inventario** los insumos y materias primas del lote.
    - Genera en **[12] Contabilidad** la **Póliza de Traspaso a Producción en Proceso** (WIP).
 
 #### Tarea 5.3: Liquidar Orden de Producción e Ingresar Producto Terminado
@@ -262,11 +262,11 @@ En el panel del Workspace y en el Portal se integran accesos a:
 1. **Acción inicial:** Hacer clic en el botón **\`+ NUEVO SOCIO DE NEGOCIO\`**.
 2. **Campos a registrar en el modal:**
    - **Tipo de Socio:** Seleccionar \`Cliente\` (opciones: *Cliente, Proveedor, Fletero, Prospecto*).
-   - **Nombre / Razón Social:** Digitar \`Distribuidora Textil de Guadalajara S.A. de C.V.\`.
+   - **Nombre / Razón Social:** Digitar \`Distribuidora Comercial Panamericana S.A.\`.
    - **Identificación Fiscal (RFC / Tax ID):** Digitar \`DTG980421KM8\`.
    - **Términos de Pago Habituales:** Seleccionar \`Neto 30 días\`.
    - **Contacto Principal:** Digitar \`Lic. Fernando Morales\`.
-   - **Correo Electrónico:** Digitar \`fmorales@distribuidoratextil.com\`.
+   - **Correo Electrónico:** Digitar \`fmorales@distribuidorapanamericana.com\`.
    - **Dirección Completa:** Digitar \`Calzada del Federalismo #850, Guadalajara, Jal.\`.
    - **Límite de Crédito ($):** Digitar \`250,000\`.
 3. **Acción de confirmación:** Hacer clic en **\`Guardar Socio de Negocio\`**.
@@ -354,7 +354,7 @@ En el panel del Workspace y en el Portal se integran accesos a:
 2. **Campos a registrar en el modal:**
    - **Cliente:** Seleccionar \`BP-002 | Hilados & Diseños Industriales\`.
    - **Días de Crédito:** Digitar \`30\`.
-   - **Concepto / Descripción:** Digitar \`Venta de Tela Drill Algodón Calidad Exportación\`.
+   - **Concepto / Descripción:** Digitar \`Venta de Lote de Producto Terminado Calidad Exportación\`.
    - **Monto Subtotal ($):** Digitar \`18,500.00\`.
    - **IVA Calculado (13%):** Verificar que el sistema calcula automáticamente \`$2,405.00\`.
    - **Total Factura ($):** \`20,905.00\`.
@@ -365,10 +365,10 @@ En el panel del Workspace y en el Portal se integran accesos a:
 #### Tarea 8.2: Aplicar Pago de Cliente (Cobranza Bancaria)
 1. **Acción inicial:** En la tabla de facturas, ubicar la factura emitida y hacer clic en el botón verde **\`💵 Aplicar Cobro\`**.
 2. **Campos a registrar en el modal:**
-   - **Cuenta de Depósito:** Seleccionar \`BBVA Bancomer - Cta Maestra Pesos\`.
-   - **Método de Pago:** Seleccionar \`Transferencia SPEI\`.
+   - **Cuenta de Depósito:** Seleccionar \`Banco Corporativo Principal - Cuenta Operativa USD\`.
+   - **Método de Pago:** Seleccionar \`Transferencia Bancaria Electrónica\`.
    - **Monto a Cobrar ($):** Digitar el pago total \`20,905.00\` (o parcial).
-   - **Referencia Bancaria:** Digitar \`SPEI-9928172\`.
+   - **Referencia Bancaria:** Digitar \`TRANSF-9928172\`.
 3. **Acción de confirmación:** Hacer clic en **\`Confirmar Cobro y Timbrar Recibo\`**.
 4. **Resultado en pantalla:** El saldo de la factura pasa a \`$0.00\` y su estatus cambia a badge verde **\`Pagada\`**.
 5. **Efecto de Integración:**
@@ -395,7 +395,7 @@ En el panel del Workspace y en el Portal se integran accesos a:
 #### Tarea 9.2: Dispersión Bancaria y Liquidación de Pasivo
 1. **Acción inicial:** En la tabla de cuentas por pagar, ubicar la factura a liquidar y presionar el botón morado **\`💳 Pagar Factura\`**.
 2. **Campos a registrar:**
-   - **Cuenta Bancaria Origen:** Seleccionar \`BBVA Bancomer - Cta Maestra Pesos\`.
+   - **Cuenta Bancaria Origen:** Seleccionar \`Banco Corporativo Principal - Cuenta Operativa USD\`.
    - **Método de Dispersión:** Seleccionar \`Transferencia Bancaria Electrónica\`.
    - **Monto a Liquidar ($):** Verificar \`28,250.00\`.
    - **Folio de Autorización / Referencia:** Digitar \`TRANS-PAGO-00412\`.
@@ -419,11 +419,11 @@ En el panel del Workspace y en el Portal se integran accesos a:
 #### Tarea 10.1: Registrar Movimiento Bancario Manual (Ingresos / Egresos / Traspasos)
 1. **Acción inicial:** En la pestaña *Cuentas Bancarias*, hacer clic en el botón superior derecho **\`+ REGISTRAR MOVIMIENTO BANCARIO\`**.
 2. **Campos a registrar en el modal:**
-   - **Institución Bancaria:** Seleccionar \`BBVA Bancomer - Cta Maestra Pesos\` (o \`Banorte Operativa\`).
+   - **Institución Bancaria:** Seleccionar \`Banco Corporativo Principal - Cuenta Operativa USD\` (o \`Banorte Operativa\`).
    - **Tipo de Movimiento:** Seleccionar \`Ingreso\` o \`Egreso\`.
    - **Categoría:** Seleccionar \`Inversión de Capital\` (opciones: *Operación Comercial, Anticipo de Cliente, Pago a Proveedores, Gastos Administrativos, Traspaso entre Cuentas*).
    - **Monto ($):** Digitar \`50,000.00\`.
-   - **Concepto:** Digitar \`Aportación de Capital de Trabajo para Expansión de Telares\`.
+   - **Concepto:** Digitar \`Aportación de Capital de Trabajo para Expansión Operativa\`.
    - **Referencia Bancaria:** Digitar \`DEP-CAP-88192\`.
 3. **Acción de confirmación:** Hacer clic en **\`Guardar y Aplicar en Bancos\`**.
 4. **Resultado en pantalla:**
@@ -464,7 +464,7 @@ En el panel del Workspace y en el Portal se integran accesos a:
 3. **Campos en el modal:**
    - **Título del Cierre:** \`Corte Diario de Cobranza - [Fecha Actual]\`.
    - **Monto Total Recaudado:** Verificar el importe acumulado del día (ej. \`$24,500.00 USD\`).
-   - **Notas del Supervisor:** Digitar \`Cobranza recibida vía transferencias SPEI y depósitos bancarios verificados con comprobante.\`.
+   - **Notas del Supervisor:** Digitar \`Cobranza recibida vía transferencias bancarias electrónicas y depósitos verificados.\`.
 4. **Acción de confirmación:** Hacer clic en **\`Aplicar Cierre Definitivo\`**.
 5. **Resultado en pantalla:**
    - Se bloquea la edición de cobranzas con fecha del día cerrado.
@@ -485,14 +485,14 @@ En el panel del Workspace y en el Portal se integran accesos a:
 2. **Campos en el modal:**
    - **Título del Cierre:** \`Corte Diario de Recepción y Facturación de Compras\`.
    - **Monto Comprometido:** Verificar volumen diario de compras (ej. \`$32,400.00 USD\`).
-   - **Notas:** Digitar \`Validación 3-Way Match completada: Órdenes de compra aprobadas coinciden con entradas físicas a almacén y CFDI de proveedores.\`.
+   - **Notas:** Digitar \`Validación 3-Way Match completada: Órdenes de compra aprobadas coinciden con entradas físicas a almacén y facturas electrónicas de proveedores.\`.
 3. **Acción de confirmación:** Hacer clic en **\`Aplicar Cierre Definitivo\`**.
 4. **Resultado en pantalla:** Se cierra el período diario de compras, impidiendo la alteración de precios de compra o inventarios recepcionados durante esa jornada.
 
 #### Tarea 10.7: Conciliación Bancaria Automática y Sello Criptográfico
 1. **Acción inicial:** Cambiar a la pestaña **\`Conciliación Bancaria Automática\`**.
 2. **Parámetros de consulta:**
-   - **Cuenta Bancaria:** Seleccionar \`BBVA Bancomer - Cta Maestra Pesos (BCO-BBVA-01)\`.
+   - **Cuenta Bancaria:** Seleccionar \`Banco Corporativo Principal - Cuenta Operativa USD (BCO-BBVA-01)\`.
    - **Período:** Seleccionar \`2026-10\` (Octubre 2026).
 3. **Mecanismo de conciliación interactivo:**
    - En la tabla de partidas conciliatorias, revisar las filas que cruzan los movimientos del **Libro Mayor de Bancos (ERP)** contra el **Extracto Bancario Oficial**.
@@ -514,12 +514,12 @@ En el panel del Workspace y en el Portal se integran accesos a:
 
 ### [11] MÓDULO DE ACTIVOS FIJOS Y DEPRECIACIONES
 - **Ruta de Acceso:** \`/app/activosfijos\` o Pestaña **[11] Activos Fijos** en el Workspace.
-- **Propósito:** Padrón de bienes de capital, maquinaria industrial y corrida de depreciación según NIF C-6.
+- **Propósito:** Padrón de bienes de capital, maquinaria industrial y corrida de depreciación según normas internacionales IFRS / NIC 16.
 
 #### Tarea 11.1: Registrar Nuevo Activo de Planta
 1. **Acción inicial:** Hacer clic en el botón **\`+ ALTA DE ACTIVO FIJO\`**.
 2. **Campos a registrar en el modal:**
-   - **Nombre / Descripción del Activo:** Digitar \`Telar Circular Mayer & Cie Relanit 3.2 II (30 Pulgadas)\`.
+   - **Nombre / Descripción del Activo:** Digitar \`Centro de Maquinado y Ensamble Industrial CNC-500\`.
    - **Categoría:** Seleccionar \`Maquinaria & Equipo Fabril\` (opciones: *Equipo de Transporte, Mobiliario de Oficina, Equipo de Cómputo*).
    - **Costo de Adquisición ($):** Digitar \`385,000.00\`.
    - **Vida Útil Estimada:** Digitar \`10\` (años).
@@ -570,10 +570,10 @@ En el panel del Workspace y en el Portal se integran accesos a:
 1. **Acción inicial:** En la pestaña *Directorio*, hacer clic en el botón **\`+ Registrar Colaborador\`**.
 2. **Campos a registrar en el modal:**
    - **Nombre Completo:** Digitar \`Carlos Alberto Ramos Solís\`.
-   - **Departamento:** Seleccionar \`Producción Fabril\` (opciones: *Calidad Textil, Almacén & Logística, Ventas & Marketing, Finanzas & Administración*).
-   - **Puesto / Cargo:** Digitar \`Operador Maestro de Telar Mayer & Cie\`.
+   - **Departamento:** Seleccionar \`Producción Fabril\` (opciones: *Control de Calidad, Almacén & Logística, Ventas & Marketing, Finanzas & Administración*).
+   - **Puesto / Cargo:** Digitar \`Operador Maestro de Centro de Producción CNC\`.
    - **RFC:** Digitar \`RASC880315HJ2\`.
-   - **NSS (Seguridad Social IMSS):** Digitar \`45088891234\`.
+   - **Registro Laboral (Seguridad Social):** Digitar \`45088891234\`.
    - **Salario Diario ($):** Digitar \`650.00\`.
    - **Banco para Dispersión:** Seleccionar \`BBVA\` o \`Banorte\`.
    - **Cuenta / CLABE Interbancaria:** Digitar \`012180001234567890\`.
@@ -584,7 +584,7 @@ En el panel del Workspace y en el Portal se integran accesos a:
 1. **Acción inicial:** Cambiar a la pestaña *Incidencias* y hacer clic en **\`+ Capturar Incidencia\`**.
 2. **Campos a registrar:**
    - **Colaborador:** Seleccionar a \`Carlos Alberto Ramos Solís\`.
-   - **Tipo de Incidencia:** Seleccionar \`Horas Extra Dobles\` (opciones: *Horas Extra Triples, Bono de Productividad, Falta Injustificada, Incapacidad IMSS*).
+   - **Tipo de Incidencia:** Seleccionar \`Horas Extra Dobles\` (opciones: *Horas Extra Triples, Bono de Productividad, Falta Injustificada, Incapacidad Médica / Laboral*).
    - **Horas / Cantidad:** Digitar \`4\`.
    - **Fecha de Aplicación:** Seleccionar fecha del turno.
 3. **Acción de confirmación:** Hacer clic en **\`Aplicar a Nómina\`**.
@@ -594,17 +594,17 @@ En el panel del Workspace y en el Portal se integran accesos a:
 
 ### [14] MÓDULO DE NÓMINA & FISCAL
 - **Ruta de Acceso:** \`/app/nomina\` o Pestaña **[14] Nómina** en el Workspace.
-- **Propósito:** Pre-nómina, retenciones fiscales de ley (ISR / IMSS / AFP), cálculo de percepciones y dispersión bancaria.
+- **Propósito:** Pre-nómina, retenciones fiscales de ley (Impuesto a la Renta, Seguridad Social y Fondos), cálculo de percepciones y dispersión bancaria.
 
 #### Tarea 14.1: Calcular Corrida Periódica de Nómina
 1. **Acción inicial:** Hacer clic en el botón morado **\`⚡ Calcular Nómina del Período\`**.
 2. **Parámetros:** Seleccionar período \`Quincena 1 - Octubre 2026\`.
 3. **Resultado en pantalla:**
-   - El sistema calcula percepciones brutas, horas extras registradas, retenciones obligatorias de ISR e IMSS/AFP y sueldos netos a pagar.
+   - El sistema calcula percepciones brutas, horas extras registradas, retenciones de ley y aportes de seguridad social y sueldos netos a pagar.
    - La tabla muestra el estatus amarillo **\`Calculada / En Revisión\`**.
 
 #### Tarea 14.2: Dispersión Bancaria y Timbrado Fiscal de Recibos
-1. **Acción inicial:** Una vez validada la nómina por el Gerente de RRHH, presionar el botón verde **\`🏦 Dispersar Nómina y Timbrar CFDI\`**.
+1. **Acción inicial:** Una vez validada la nómina por el Gerente de RRHH, presionar el botón verde **\`🏦 Dispersar Nómina y Certificar Recibos\`**.
 2. **Resultado en pantalla:**
    - Los recibos se marcan con badge verde **\`Dispersada & Timbrada\`**.
    - Se muestra la alerta: \`Dispersión completada exitosamente vía layout bancario BBVA y recibos timbrados ante la autoridad tributaria.\`
@@ -638,7 +638,7 @@ En el panel del Workspace y en el Portal se integran accesos a:
 1. **Acción inicial:** Hacer clic en la pestaña **\`Lanzar Flujo / Instancia\`**.
 2. **Campos a registrar:**
    - **Proceso:** Seleccionar \`WF-COM-01 | Aprobación de Órdenes de Compra Mayores\`.
-   - **Título de la Tarea:** Digitar \`Autorización de Compra de Hilo de Algodón Lote Especial\`.
+   - **Título de la Tarea:** Digitar \`Autorización de Compra de Materias Primas Lote Especial\`.
    - **Documento de Referencia:** Digitar \`PO-2026-088\`.
    - **Solicitante:** Digitar \`Ing. Juan Pérez (Compras)\`.
    - **Rol Aprobador Asignado:** Seleccionar \`Director de Finanzas\` (opciones: *Gerente de Planta, Director General, Jefe de Almacén*).
@@ -676,17 +676,17 @@ En el panel del Workspace y en el Portal se integran accesos a:
 
 ### [26] CONFIGURACIÓN DEL SISTEMA, LOCALIZACIÓN FISCAL MULTI-PAÍS & AUDITORÍA INMUTABLE
 - **Ruta de Acceso:** \`/app/configuracion\` o Pestaña **[26] Configuración** en el Workspace.
-- **Propósito:** Parámetros de la empresa, selección de país y autoridad tributaria (El Salvador MH DTE, Guatemala SAT FEL, Honduras SAR, Costa Rica DGT, Panamá DGI, México SAT), catálogo de divisas y bitácora de auditoría inmutable con sellos criptográficos.
+- **Propósito:** Parámetros de la empresa, autoridad tributaria: Ministerio de Hacienda / Dirección General de Impuestos Internos (MH / DGII), sistema de facturación electrónica DTE (Documentos Tributarios Electrónicos), moneda de curso legal (USD), tasa IVA 13% y bitácora de auditoría inmutable con sellos criptográficos.
 
 #### Tarea 26.1: Configurar Localización Fiscal y Cambiaria Regional
 1. **Acción inicial:** En la pestaña **Localización Fiscal & Divisas**:
-   - **País de Operación:** Seleccionar el país objetivo (ej. \`🇸🇻 El Salvador\` o \`🇬🇹 Guatemala\`).
-   - El sistema carga automáticamente el driver de facturación electrónica (\`DTE\` para El Salvador, \`FEL\` para Guatemala, \`CAI\` para Honduras, \`SFEP\` para Panamá) y la tasa de IVA correspondiente (ej. 13% en El Salvador, 12% en Guatemala, 15% en Honduras).
-   - **Razón Social:** \`NyTEX Textil de Centroamérica S.A. de C.V.\`
-   - **Identificación Fiscal:** Digitar NIT/NRC para El Salvador (ej. \`0614-180612-102-4\`) o el formato respectivo del país seleccionado.
-   - **Autoridad Tributaria:** \`Ministerio de Hacienda (MH)\` o la entidad local correspondiente.
+   - **País de Operación:** Seleccionar \`🇸🇻 El Salvador\`.
+   - El sistema carga automáticamente el driver oficial de facturación electrónica \`DTE (Documentos Tributarios Electrónicos)\` del Ministerio de Hacienda / Dirección General de Impuestos Internos (MH / DGII) y la tasa legal del 13% de IVA.
+   - **Razón Social:** \`NyTEX Corporation Global S.A.\`
+   - **Identificación Fiscal:** Digitar \`NIT: 0614-180612-102-4\` • \`NRC: 298412-3\`.
+   - **Autoridad Tributaria:** \`Ministerio de Hacienda / Dirección General de Impuestos Internos (MH / DGII)\`.
    - **Régimen Fiscal:** \`Régimen General / Mediano Contribuyente\`
-   - **Tipo de Cambio:** Ajustar paridades cambiarias (USD base).
+   - **Tipo de Cambio:** Moneda de curso legal USD ($) con tasa de cambio 1.00.
 2. **Acción de confirmación:** Hacer clic en el botón negro **\`Guardar y Auditar Cambios\`**.
 3. **Resultado en pantalla:** Aparece el mensaje de confirmación: \`✓ Parámetros de [País] y configuración fiscal actualizados con éxito. Evento auditado en bitácora inmutable.\`
 
@@ -702,9 +702,9 @@ En el panel del Workspace y en el Portal se integran accesos a:
 
 ---
 
-### [18] BI Y REPORTES FINANCIEROS (NIF / IFRS)
+### [18] BI Y REPORTES FINANCIEROS (IFRS / NIIF)
 - **Ruta de Acceso:** \`/app/reportes\` o Pestaña **[18] Reportes** en el Workspace.
-- **Propósito:** Emisión ejecutiva de los 4 estados financieros básicos reglamentarios bajo normas NIF/IFRS.
+- **Propósito:** Emisión ejecutiva de los 4 estados financieros básicos reglamentarios bajo normas internacionales IFRS / NIIF.
 
 #### Tarea 18.1: Generar Estado de Resultados y Balance General
 1. **Acción inicial:** Seleccionar el reporte deseado en los botones superiores:
@@ -723,7 +723,7 @@ En el panel del Workspace y en el Portal se integran accesos a:
 1. **Acción inicial:** En el selector de rango temporal, elegir \`Mes Actual\` o \`Último Trimestre\`.
 2. **Revisión de cuadrantes:**
    - **Card de Ventas Totales:** Comparativa de ventas reales vs presupuesto comercial.
-   - **Card de Eficiencia OEE de Planta:** Porcentaje de disponibilidad, rendimiento y calidad de los telares Mayer & Cie.
+   - **Card de Eficiencia OEE de Planta:** Porcentaje de disponibilidad, rendimiento y calidad de los maquinaria y líneas de producción.
    - **Card de Días de Cartera (DSO):** Plazo promedio de cobro a clientes.
    - **Card de Rotación de Inventarios:** Días de permanencia de materias primas y producto terminado en almacén.
 
@@ -745,10 +745,10 @@ En el panel del Workspace y en el Portal se integran accesos a:
 
 ### [21] BIG DATA & TELEMETRÍA IOT INDUSTRIAL
 - **Ruta de Acceso:** \`/app/bigdata\` o Pestaña **[21] Big Data** en el Workspace.
-- **Propósito:** Ingestión de señales de sensores industriales en tiempo real instalados en telares circulares, urdidoras y ramas tensoras.
+- **Propósito:** Ingestión de señales de sensores industriales en tiempo real instalados en maquinaria industrial y líneas de producción.
 
 #### Tarea 21.1: Monitor de Telemetría IoT en Vivo
-1. **Acción inicial:** En el monitor de telemetría, seleccionar la máquina \`Telar Circular #3 (Mayer & Cie)\`.
+1. **Acción inicial:** En el monitor de telemetría, seleccionar la máquina \`Línea de Producción Industrial #3\`.
 2. **Lectura de parámetros en pantalla:**
    - **Velocidad de RPM:** \`28.4 RPM\` (Rango operativo normal: 25 - 30 RPM).
    - **Temperatura de Rodamientos:** \`48.2 °C\` (Umbral de alarma: > 65 °C).
@@ -782,7 +782,7 @@ En el panel del Workspace y en el Portal se integran accesos a:
    \`"¿Cuál es el margen promedio de la gabardina este mes y cuántos rollos tenemos disponibles en Almacén Central?"\`
 2. **Presionar:** \`Enter\` o el botón azul de envío.
 3. **Resultado en pantalla:** El Asistente IA responde en 1.5 segundos con datos verídicos cruzados del ERP:
-   - *Margen promedio de Gabardina Algodón Peinado:* \`42.8%\`
+   - *Margen promedio de Producto Industrial Alfa:* \`42.8%\`
    - *Existencias actuales en Almacén Central:* \`180 rollos\`
    - *Sugerencia proactiva:* Hay 3 pedidos de entrega programada para la próxima semana por 45 rollos; se recomienda mantener el plan de manufactura activo.
 
@@ -816,7 +816,7 @@ En el panel del Workspace y en el Portal se integran accesos a:
    - El sistema calcula:
      - Demanda comercial total comprometida (ej. \`50 rollos\`).
      - Déficit neto de materia prima a adquirir (ej. \`600 kg de hilo\`).
-     - Carga de trabajo en horas de telares Mayer & Cie.
+     - Carga de trabajo en horas de maquinaria y líneas de producción.
    - Aparece la confirmación: \`✓ Sincronización completada. Se han enviado las solicitudes de abastecimiento a Compras y las órdenes sugeridas a Producción.\`
 3. **Efecto de Integración:** Genera las solicitudes correspondientes en los módulos [4] Compras y [5] Producción.
 
@@ -1191,7 +1191,7 @@ const fullHtml = `<!DOCTYPE html>
   <div class="header-banner">
     <div class="badge">MANUAL Y GUÍA DE SIMULACIÓN OPERATIVA</div>
     <h1>NyTEX ERP • Guía de Simulación Tarea por Tarea</h1>
-    <p><strong>Plataforma:</strong> NyTEX Business Cloud & ERP Textil • <strong>Versión:</strong> 4.0 Integral Actualizada (Octubre 2026)</p>
+    <p><strong>Plataforma:</strong> NyTEX Business Cloud & Enterprise ERP • <strong>Versión:</strong> 4.0 Integral Actualizada (Octubre 2026)</p>
     <p><strong>Espacio Unificado:</strong> https://nytex-erp-portal.onrender.com/app/workspace • <strong>Cobertura:</strong> 25 Módulos, Controles Internos & 4 Circuitos</p>
   </div>
 

@@ -521,7 +521,7 @@ flowchart TD
         <strong>Nota de Crédito Electrónica (Devoluciones y Rebajas)</strong>
         <span>Impacto: Regularización de IVA y CxC</span>
       </div>
-      <p><strong>Propósito:</strong> Ajustar a la baja el valor de un Crédito Fiscal previamente timbrado por concepto de devolución física de bienes, errores en cobro o bonificaciones concedidas.</p>
+      <p><strong>Propósito:</strong> Ajustar a la baja el valor de un Crédito Fiscal previamente certificado por concepto de devolución física de bienes, errores en cobro o bonificaciones concedidas.</p>
       
       <div class="asiento-box">
         <div class="asiento-header">Póliza de Rebaja y Reintegro de Débito Fiscal</div>
@@ -643,7 +643,7 @@ flowchart TD
       <div class="asiento-box">
         <div class="asiento-header">Póliza con Retención de Renta del 10% (Art. 156)</div>
         <div class="asiento-row asiento-cargo"><span>(+) 5202-01 Gastos por Servicios Profesionales</span><span>$500.00</span></div>
-        <div class="asiento-row asiento-abono"><span>(-) 2106-08 Retención de ISR 10% por Pagar (F-14)</span><span>$50.00</span></div>
+        <div class="asiento-row asiento-abono"><span>(-) 2106-08 Retención de Impuesto sobre la Renta 10% por Pagar</span><span>$50.00</span></div>
         <div class="asiento-row asiento-abono"><span>(-) 1101-02 Bancos (Importe Líquido Pagado)</span><span>$450.00</span></div>
       </div>
 
@@ -667,7 +667,7 @@ flowchart TD
       <div class="control-box">
         <div class="control-title">🛡️ Controles Automáticos y Bloqueos</div>
         <ul>
-          <li><strong>Verificación de Calificación de Entidad Donataria:</strong> Valida que la institución cuente con resolución ejecutiva vigente del Ministerio de Hacienda para expedir recibos deducibles de ISR.</li>
+          <li><strong>Verificación de Calificación de Entidad Donataria:</strong> Valida que la institución cuente con resolución ejecutiva vigente del Ministerio de Hacienda para expedir recibos deducibles de impuestos sobre la renta.</li>
         </ul>
       </div>
     </div>
@@ -694,7 +694,7 @@ sequenceDiagram
     Almacen->>ERP: 3. Entrada de Almacén (GRN - Conteo Ciego)
     Proveedor->>ERP: 4. Factura Electrónica (DTE-03 en JSON)
     ERP->>ERP: 5. EJECUCIÓN AUTOMÁTICA THREE-WAY MATCHING
-    alt Coinciden: Cantidades, Precios y RFC/NRC
+    alt Coinciden: Cantidades, Precios y Tax ID / Identificación Tributaria
         ERP->>ERP: Reconoce Pasivo Oficial (CxP) y Programa Fecha de Pago
     else Discrepancia > Tolerancia (0%)
         ERP->>ERP: BLOQUEO AUTOMÁTICO EN 'HOLD' (Alerta a Auditoría)
@@ -734,7 +734,7 @@ sequenceDiagram
 
     <div class="doc-box">
       <h3 class="doc-title">Salida de Almacén, Consumos de Producción y Mermas</h3>
-      <p>Descargo de materiales para alimentar las órdenes de producción textil/manufactura o bajas por merma técnica.</p>
+      <p>Descargo de materiales para alimentar las órdenes de producción industrial / manufactura o bajas por merma técnica.</p>
       <div class="asiento-box">
         <div class="asiento-header">Póliza de Consumo en Línea de Producción</div>
         <div class="asiento-row asiento-cargo"><span>(+) 1105-04 Producción en Proceso (Materia Prima Directa)</span><span>$4,200.00</span></div>
@@ -881,7 +881,7 @@ flowchart LR
       <p>Reconoce el desgaste económico de la maquinaria industrial, mobiliario y vehículos de transporte.</p>
       <div class="asiento-box">
         <div class="asiento-header">Póliza Mensual de Depreciación</div>
-        <div class="asiento-row asiento-cargo"><span>(+) 5301-01 Gasto por Depreciación de Maquinaria Textil</span><span>$2,500.00</span></div>
+        <div class="asiento-row asiento-cargo"><span>(+) 5301-01 Gasto por Depreciación de Maquinaria Fabril</span><span>$2,500.00</span></div>
         <div class="asiento-row asiento-abono"><span>(-) 1205-01 Depreciación Acumulada de Maquinaria</span><span>$2,500.00</span></div>
       </div>
       <div class="control-box">
@@ -995,7 +995,7 @@ flowchart LR
           <td><span class="badge badge-primary">DTE-14</span></td>
           <td>Compra a no contribuyente</td>
           <td>Gasto (+) / Retención Renta 10% (-) / Bancos (-)</td>
-          <td>Verifica que el proveedor NO tenga NRC. Retiene 10% renta ISR.</td>
+          <td>Verifica que el proveedor NO tenga NRC. Retiene 10% de Impuesto a la Renta.</td>
         </tr>
         <tr>
           <td><strong>Orden de Compra</strong></td>
@@ -1014,7 +1014,7 @@ flowchart LR
         <tr>
           <td><strong>Recibo de Cobro</strong></td>
           <td><span class="badge badge-success">Ingreso</span></td>
-          <td>Cobro SPEI / Depósito</td>
+          <td>Cobro Transferencia Electrónica / Depósito</td>
           <td>Bancos (+) / CxC Clientes (-)</td>
           <td>Asocia a facturas específicas. Prohíbe sobrepagos erróneos.</td>
         </tr>
