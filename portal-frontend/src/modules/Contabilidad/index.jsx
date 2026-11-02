@@ -467,11 +467,11 @@ export default function Contabilidad() {
 
         {/* Pestañas de Vista */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden flex flex-col">
-          <div className="flex border-b border-gray-100 px-6 py-3 bg-gray-50/50 justify-between items-center overflow-x-auto gap-2">
-            <div className="flex space-x-2 shrink-0">
+          <div className="flex flex-wrap border-b border-gray-100 px-6 py-3 bg-gray-50/50 justify-between items-center gap-2">
+            <div className="flex flex-wrap gap-2 items-center">
               <button
                 onClick={() => setActiveTab('Pólizas')}
-                className={`px-3.5 py-2 text-xs font-bold rounded-lg transition shrink-0 ${
+                className={`px-3.5 py-2 text-xs font-bold rounded-lg transition ${
                   activeTab === 'Pólizas' 
                     ? 'bg-purple-700 text-white shadow-sm' 
                     : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-100'
@@ -481,7 +481,7 @@ export default function Contabilidad() {
               </button>
               <button
                 onClick={() => setActiveTab('Balanza')}
-                className={`px-3.5 py-2 text-xs font-bold rounded-lg transition shrink-0 ${
+                className={`px-3.5 py-2 text-xs font-bold rounded-lg transition ${
                   activeTab === 'Balanza' 
                     ? 'bg-purple-700 text-white shadow-sm' 
                     : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-100'
@@ -491,17 +491,17 @@ export default function Contabilidad() {
               </button>
               <button
                 onClick={() => setActiveTab('Catalogo')}
-                className={`px-3.5 py-2 text-xs font-bold rounded-lg transition shrink-0 ${
+                className={`px-3.5 py-2 text-xs font-bold rounded-lg transition flex items-center gap-1.5 ${
                   activeTab === 'Catalogo' 
-                    ? 'bg-purple-700 text-white shadow-sm' 
-                    : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-100'
+                    ? 'bg-indigo-700 text-white shadow-sm' 
+                    : 'bg-indigo-50 text-indigo-900 border border-indigo-200 hover:bg-indigo-100'
                 }`}
               >
-                📖 Catálogo de Cuentas ({accountCatalog.length})
+                <span>📖</span> Cuentas & Auxiliares ({accountCatalog.length})
               </button>
               <button
                 onClick={() => setActiveTab('EstadosFinancieros')}
-                className={`px-3.5 py-2 text-xs font-bold rounded-lg transition shrink-0 ${
+                className={`px-3.5 py-2 text-xs font-bold rounded-lg transition ${
                   activeTab === 'EstadosFinancieros' 
                     ? 'bg-purple-700 text-white shadow-sm' 
                     : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-100'
@@ -511,7 +511,7 @@ export default function Contabilidad() {
               </button>
               <button
                 onClick={() => setActiveTab('Declaraciones')}
-                className={`px-3.5 py-2 text-xs font-bold rounded-lg transition shrink-0 ${
+                className={`px-3.5 py-2 text-xs font-bold rounded-lg transition ${
                   activeTab === 'Declaraciones' 
                     ? 'bg-purple-700 text-white shadow-sm' 
                     : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-100'
@@ -521,7 +521,7 @@ export default function Contabilidad() {
               </button>
               <button
                 onClick={() => setActiveTab('LibrosIVA')}
-                className={`px-3.5 py-2 text-xs font-bold rounded-lg transition shrink-0 ${
+                className={`px-3.5 py-2 text-xs font-bold rounded-lg transition ${
                   activeTab === 'LibrosIVA' 
                     ? 'bg-purple-700 text-white shadow-sm' 
                     : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-100'
@@ -531,7 +531,7 @@ export default function Contabilidad() {
               </button>
               <button
                 onClick={() => setActiveTab('Retenciones')}
-                className={`px-3.5 py-2 text-xs font-bold rounded-lg transition shrink-0 ${
+                className={`px-3.5 py-2 text-xs font-bold rounded-lg transition ${
                   activeTab === 'Retenciones' 
                     ? 'bg-purple-700 text-white shadow-sm' 
                     : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-100'
@@ -541,7 +541,7 @@ export default function Contabilidad() {
               </button>
               <button
                 onClick={() => setActiveTab('CandadoFiscal')}
-                className={`px-3.5 py-2 text-xs font-bold rounded-lg transition shrink-0 ${
+                className={`px-3.5 py-2 text-xs font-bold rounded-lg transition ${
                   activeTab === 'CandadoFiscal' 
                     ? 'bg-purple-700 text-white shadow-sm' 
                     : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-100'
@@ -552,7 +552,7 @@ export default function Contabilidad() {
             </div>
 
             {activeTab === 'Pólizas' && (
-              <div className="flex items-center gap-1.5 text-xs shrink-0">
+              <div className="flex items-center gap-1.5 text-xs">
                 <button
                   onClick={() => setShowManualModal(true)}
                   className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded font-bold mr-2 shadow-sm transition"
@@ -650,8 +650,22 @@ export default function Contabilidad() {
           {/* VISTA 2: BALANZA DE COMPROBACIÓN */}
           {activeTab === 'Balanza' && (
             <div className="overflow-x-auto p-4 space-y-4">
-              <div className="flex justify-between items-center p-3 bg-purple-50 rounded-lg text-xs font-semibold text-purple-900">
-                <span>Catálogo de Cuentas Contables y Movimientos Acumulados</span>
+              <div className="flex flex-wrap justify-between items-center p-3 bg-purple-50 rounded-lg text-xs font-semibold text-purple-900 gap-2">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span>Catálogo de Cuentas Contables y Movimientos Acumulados</span>
+                  <button
+                    onClick={() => setShowNewAccountModal(true)}
+                    className="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-700 text-white rounded font-bold transition shadow-sm flex items-center gap-1"
+                  >
+                    <span>📖</span> + Nueva Cuenta Auxiliar
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('Catalogo')}
+                    className="px-2.5 py-1 bg-white border border-purple-300 text-purple-900 hover:bg-purple-100 rounded font-semibold transition"
+                  >
+                    Ver Catálogo Completo ({accountCatalog.length}) ➔
+                  </button>
+                </div>
                 <span className="font-mono text-emerald-700 font-bold">
                   Suma Debe: ${trialBalance?.totalDebit?.toLocaleString()} | Suma Haber: ${trialBalance?.totalCredit?.toLocaleString()} (Diferencia: $0.00)
                 </span>
