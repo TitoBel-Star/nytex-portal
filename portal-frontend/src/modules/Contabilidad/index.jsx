@@ -1,37 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const COMMON_ACCOUNTS = [
-  { code: '1101-01', name: 'Bancos - Cuenta Operativa Principal' },
-  { code: '1101-02', name: 'Bancos Nacionales (Banco Operativo Central)' },
-  { code: '1105-01', name: 'Clientes Nacionales (CxC)' },
-  { code: '1106-01', name: 'Almacén de Materias Primas' },
-  { code: '1106-02', name: 'Inventario de Producción en Proceso' },
-  { code: '1106-03', name: 'Almacén de Productos Terminados' },
-  { code: '1107-01', name: 'Anticipo Pago a Cuenta de Renta 1.75%' },
-  { code: '1108-01', name: 'IVA Acreditable Pendiente de Pago' },
-  { code: '1201-01', name: 'Maquinaria y Equipo Industrial' },
-  { code: '1209-01', name: 'Depreciación Acumulada de Activos Fijos' },
-  { code: '2101-01', name: 'Proveedores Nacionales (CxP)' },
-  { code: '2105-01', name: 'Sueldos y Salarios por Pagar' },
-  { code: '2106-01', name: 'Débito Fiscal IVA' },
-  { code: '2106-05', name: 'IVA Retenido 1% por Enterar (DTE-07)' },
-  { code: '2106-07', name: 'Retenciones Renta por Salarios (Nómina)' },
-  { code: '2106-08', name: 'Retenciones Renta 10% Servicios (DTE-14)' },
-  { code: '2106-10', name: 'Impuesto IVA por Pagar Líquido al MH' },
-  { code: '2106-12', name: 'Pasivo Fiscal F-14 por Enterar al MH' },
-  { code: '3101-01', name: 'Capital Social Fijo' },
-  { code: '3201-01', name: 'Reserva Legal' },
-  { code: '4101-01', name: 'Ventas de Productos Terminados' },
-  { code: '4102-01', name: 'Otros Ingresos Financieros' },
-  { code: '5101-01', name: 'Costo de Ventas y Materias Primas' },
-  { code: '5101-02', name: 'Gastos de Personal - Horas Extraordinarias' },
-  { code: '5102-01', name: 'Cargas Sociales Patronales' },
-  { code: '6102-01', name: 'Gastos Administrativos / Operativos' },
-  { code: '6102-05', name: 'Gastos Menores de Operación' },
-  { code: '6103-01', name: 'Gasto por Depreciación de Maquinaria y Equipo' }
-];
-
 export default function Contabilidad() {
   const navigate = useNavigate();
   const [entries, setEntries] = useState([]);
@@ -40,6 +9,7 @@ export default function Contabilidad() {
   const [librosIva, setLibrosIva] = useState(null);
   const [retencionesF910, setRetencionesF910] = useState(null);
   const [financialStatements, setFinancialStatements] = useState(null);
+  const [accountCatalog, setAccountCatalog] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('Pólizas');
   const [finReportType, setFinReportType] = useState('Balance'); // 'Balance' | 'Resultados'
@@ -49,7 +19,20 @@ export default function Contabilidad() {
   const [notif, setNotif] = useState(null);
   const [lockStatus, setLockStatus] = useState(null);
 
-  // Estados de las 4 Adiciones
+  // Estados de Búsqueda y Filtro de Catálogo
+  const [searchAccountText, setSearchAccountText] = useState('');
+  const [filterAccountType, setFilterAccountType] = useState('Todas');
+
+  // Modal Alta de Nueva Cuenta Auxiliar
+  const [showNewAccountModal, setShowNewAccountModal] = useState(false);
+  const [newAccCode, setNewAccCode] = useState('');
+  const [newAccName, setNewAccName] = useState('');
+  const [newAccLevel, setNewAccLevel] = useState('Auxiliar');
+  const [newAccType, setNewAccType] = useState('Activo');
+  const [newAccNature, setNewAccNature] = useState('Deudora');
+  const [newAccParent, setNewAccParent] = useState('');
+  const [newAccDesc, setNewAccDesc] = useState('');
+
   // Adición 1: Póliza Manual
   const [showManualModal, setShowManualModal] = useState(false);
   const [manualEntryDate, setManualEntryDate] = useState(new Date().toISOString().split('T')[0]);
@@ -57,7 +40,7 @@ export default function Contabilidad() {
   const [manualEntryConcept, setManualEntryConcept] = useState('');
   const [manualEntryRef, setManualEntryRef] = useState('');
   const [manualLines, setManualLines] = useState([
-    { accountCode: '6102-01', accountName: 'Gastos Administrativos / Operativos', debit: 0, credit: 0 },
+    { accountCode: '6102-01', accountName: 'Gastos Administrativos / Financieros Generales', debit: 0, credit: 0 },
     { accountCode: '1101-01', accountName: 'Bancos - Cuenta Operativa Principal', debit: 0, credit: 0 }
   ]);
 
@@ -70,13 +53,14 @@ export default function Contabilidad() {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const [resEntries, resTB, resDecl, resLibros, resRet, resFin] = await Promise.all([
+      const [resEntries, resTB, resDecl, resLibros, resRet, resFin, resAccounts] = await Promise.all([
         fetch('/api/contabilidad/entries'),
         fetch('/api/contabilidad/trial-balance'),
         fetch('/api/contabilidad/declaraciones'),
         fetch('/api/contabilidad/libros-iva'),
         fetch('/api/contabilidad/retenciones-f910'),
-        fetch('/api/contabilidad/financial-statements')
+        fetch('/api/contabilidad/financial-statements'),
+        fetch('/api/contabilidad/accounts')
       ]);
       if (resEntries.ok) setEntries(await resEntries.json());
       if (resTB.ok) setTrialBalance(await resTB.json());
@@ -84,6 +68,7 @@ export default function Contabilidad() {
       if (resLibros.ok) setLibrosIva(await resLibros.json());
       if (resRet.ok) setRetencionesF910(await resRet.json());
       if (resFin.ok) setFinancialStatements(await resFin.json());
+      if (resAccounts.ok) setAccountCatalog(await resAccounts.json());
     } catch (err) {
       console.error('Error fetching Contabilidad data:', err);
     } finally {
@@ -166,7 +151,46 @@ export default function Contabilidad() {
     }
   };
 
-  // --- ADICIÓN 1: MANEJADORES DE PÓLIZA MANUAL ---
+  // --- MANEJADOR DE ALTA DE CUENTA AUXILIAR ---
+  const handleCreateAccount = async (e) => {
+    e.preventDefault();
+    if (!newAccCode.trim() || !newAccName.trim()) {
+      alert('Por favor ingrese el código y el nombre de la cuenta auxiliar.');
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/contabilidad/accounts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          code: newAccCode,
+          name: newAccName,
+          level: newAccLevel,
+          accountType: newAccType,
+          nature: newAccNature,
+          parentCode: newAccParent,
+          description: newAccDesc
+        })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setNotif({ type: 'success', msg: data.message });
+        setShowNewAccountModal(false);
+        setNewAccCode('');
+        setNewAccName('');
+        setNewAccDesc('');
+        setNewAccParent('');
+        fetchData();
+      } else {
+        alert(data.error || 'Error al crear la cuenta auxiliar');
+      }
+    } catch (err) {
+      alert('Error de conexión: ' + err.message);
+    }
+  };
+
+  // --- MANEJADORES DE PÓLIZA MANUAL ---
   const handleAddManualLine = () => {
     setManualLines([
       ...manualLines,
@@ -185,15 +209,17 @@ export default function Contabilidad() {
   const handleManualLineChange = (index, field, value) => {
     const updated = [...manualLines];
     if (field === 'accountSelect') {
-      const found = COMMON_ACCOUNTS.find(a => a.code === value);
+      const found = accountCatalog.find(a => a.code === value);
       if (found) {
         updated[index].accountCode = found.code;
         updated[index].accountName = found.name;
+      } else if (value === '__custom__') {
+        updated[index].accountCode = '';
+        updated[index].accountName = '';
       }
     } else if (field === 'debit' || field === 'credit') {
       const num = parseFloat(value) || 0;
       updated[index][field] = num;
-      // Si ingresa débito, limpia crédito y viceversa
       if (field === 'debit' && num > 0) updated[index].credit = 0;
       if (field === 'credit' && num > 0) updated[index].debit = 0;
     } else {
@@ -237,7 +263,7 @@ export default function Contabilidad() {
         setManualEntryConcept('');
         setManualEntryRef('');
         setManualLines([
-          { accountCode: '6102-01', accountName: 'Gastos Administrativos / Operativos', debit: 0, credit: 0 },
+          { accountCode: '6102-01', accountName: 'Gastos Administrativos / Financieros Generales', debit: 0, credit: 0 },
           { accountCode: '1101-01', accountName: 'Bancos - Cuenta Operativa Principal', debit: 0, credit: 0 }
         ]);
         fetchData();
@@ -249,7 +275,7 @@ export default function Contabilidad() {
     }
   };
 
-  // --- ADICIÓN 3: EXPORTADOR DE LIBROS DE IVA A CSV (EXCEL) ---
+  // --- EXPORTADOR DE LIBROS DE IVA A CSV (EXCEL) ---
   const handleExportLibroCsv = (tipo) => {
     let rows = [];
     let filename = `Libro_IVA_${tipo}_Octubre_2026.csv`;
@@ -307,12 +333,28 @@ export default function Contabilidad() {
     return e.type === filterType;
   });
 
+  const filteredCatalogAccounts = accountCatalog.filter(acc => {
+    const matchesType = filterAccountType === 'Todas' || acc.accountType === filterAccountType;
+    const q = searchAccountText.toLowerCase();
+    const matchesSearch = !q || acc.code.toLowerCase().includes(q) || acc.name.toLowerCase().includes(q);
+    return matchesType && matchesSearch;
+  });
+
   const getPillColor = (type) => {
     switch (type) {
       case 'Ingreso': return 'bg-emerald-100 text-emerald-800 border-emerald-300';
       case 'Egreso': return 'bg-red-100 text-red-800 border-red-300';
       case 'Diario': return 'bg-blue-100 text-blue-800 border-blue-300';
       default: return 'bg-gray-100 text-gray-800 border-gray-300';
+    }
+  };
+
+  const getLevelBadge = (level) => {
+    switch (level) {
+      case 'Mayor': return 'bg-blue-100 text-blue-800 border-blue-200';
+      case 'Subcuenta': return 'bg-indigo-100 text-indigo-800 border-indigo-200';
+      case 'Auxiliar': return 'bg-emerald-100 text-emerald-800 border-emerald-200';
+      default: return 'bg-gray-100 text-gray-700';
     }
   };
 
@@ -330,6 +372,12 @@ export default function Contabilidad() {
             </span>
           </div>
           <div className="flex items-center flex-wrap gap-2">
+            <button 
+              onClick={() => setShowNewAccountModal(true)}
+              className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-md text-xs font-bold shadow-sm transition flex items-center gap-1.5"
+            >
+              <span>📖</span> + Nueva Cuenta Auxiliar
+            </button>
             <button 
               onClick={() => setShowManualModal(true)}
               className="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-md text-xs font-bold shadow-sm transition flex items-center gap-1.5"
@@ -381,24 +429,24 @@ export default function Contabilidad() {
             <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-white/20 text-white uppercase tracking-wider">
               Contabilidad Central, Pólizas Automáticas & Cumplimiento Fiscal DTE (El Salvador)
             </span>
-            <h2 className="text-2xl font-black">Libro Mayor, Motor Contable & Declaraciones Oficiales</h2>
+            <h2 className="text-2xl font-black">Libro Mayor, Catálogo de Cuentas & Declaraciones Oficiales</h2>
             <p className="text-sm text-purple-100 leading-relaxed">
-              Consolidación en tiempo real de partida doble orientada a eventos. Liquidación automática de formularios fiscales del Ministerio de Hacienda (F-07 IVA, F-14 Renta, F-11 Anual, F-910 Retenciones), generación de Libros de IVA Digitales y Estados Financieros NIIF.
+              Consolidación en tiempo real de partida doble orientada a eventos. Catálogo maestro de cuentas con creación dinámica de auxiliares, liquidación automática de formularios fiscales (F-07, F-14, F-11), Libros de IVA Digitales y Estados Financieros NIIF.
             </p>
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6 pt-4 border-t border-white/20">
             <div>
-              <span className="text-xs text-purple-200 font-bold uppercase">Pólizas Generadas</span>
-              <div className="text-xl font-bold">{entries.length} Pólizas</div>
-              <div className="text-xs text-purple-200">100% Cuadradas</div>
+              <span className="text-xs text-purple-200 font-bold uppercase">Cuentas en Catálogo</span>
+              <div className="text-xl font-bold">{accountCatalog.length} Cuentas</div>
+              <div className="text-xs text-purple-200">{accountCatalog.filter(a => a.level === 'Auxiliar').length} Cuentas Auxiliares</div>
             </div>
             <div>
               <span className="text-xs text-purple-200 font-bold uppercase">Total Cargos (Debe)</span>
               <div className="text-xl font-bold font-mono">
                 ${(trialBalance?.totalDebit || 0).toLocaleString()}
               </div>
-              <div className="text-xs text-purple-200">Movimientos deudores</div>
+              <div className="text-xs text-purple-200">Balanza 100% Cuadrada</div>
             </div>
             <div>
               <span className="text-xs text-purple-200 font-bold uppercase">F-07 IVA Estimado</span>
@@ -440,6 +488,16 @@ export default function Contabilidad() {
                 }`}
               >
                 ⚖️ Balanza de Comprobación
+              </button>
+              <button
+                onClick={() => setActiveTab('Catalogo')}
+                className={`px-3.5 py-2 text-xs font-bold rounded-lg transition shrink-0 ${
+                  activeTab === 'Catalogo' 
+                    ? 'bg-purple-700 text-white shadow-sm' 
+                    : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-100'
+                }`}
+              >
+                📖 Catálogo de Cuentas ({accountCatalog.length})
               </button>
               <button
                 onClick={() => setActiveTab('EstadosFinancieros')}
@@ -627,6 +685,116 @@ export default function Contabilidad() {
                   ))}
                 </tbody>
               </table>
+            </div>
+          )}
+
+          {/* VISTA NUEVA: CATÁLOGO MAESTRO DE CUENTAS & CUENTAS AUXILIARES */}
+          {activeTab === 'Catalogo' && (
+            <div className="p-6 space-y-4">
+              <div className="flex flex-wrap justify-between items-center gap-3 bg-gray-50 p-4 rounded-xl border border-gray-200">
+                <div className="space-y-1">
+                  <h3 className="text-base font-bold text-gray-900 flex items-center gap-2">
+                    <span>📖</span> Catálogo Maestro de Cuentas Contables y Cuentas Auxiliares
+                  </h3>
+                  <p className="text-xs text-gray-500">
+                    Estructura contable formal clasificada por Mayor, Subcuentas y Auxiliares operativas de imputación directa.
+                  </p>
+                </div>
+                <button
+                  onClick={() => setShowNewAccountModal(true)}
+                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-lg shadow transition flex items-center gap-1.5"
+                >
+                  <span>+</span> Nueva Cuenta Auxiliar
+                </button>
+              </div>
+
+              {/* Barra de Filtros y Búsqueda */}
+              <div className="flex flex-wrap justify-between items-center gap-3">
+                <div className="flex flex-wrap gap-1.5 text-xs">
+                  <span className="text-gray-500 font-bold mr-1 self-center">Tipo:</span>
+                  {['Todas', 'Activo', 'Pasivo', 'Patrimonio', 'Ingresos', 'Costos', 'Gastos'].map(tipo => (
+                    <button
+                      key={tipo}
+                      onClick={() => setFilterAccountType(tipo)}
+                      className={`px-3 py-1 rounded-md font-semibold transition ${
+                        filterAccountType === tipo
+                          ? 'bg-purple-800 text-white font-bold shadow-sm'
+                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      }`}
+                    >
+                      {tipo}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="w-full md:w-72">
+                  <input
+                    type="text"
+                    placeholder="🔍 Buscar por código o nombre..."
+                    value={searchAccountText}
+                    onChange={(e) => setSearchAccountText(e.target.value)}
+                    className="w-full text-xs p-2 border rounded-lg focus:ring-2 focus:ring-purple-600"
+                  />
+                </div>
+              </div>
+
+              {/* Tabla de Cuentas del Catálogo */}
+              <div className="overflow-x-auto border border-gray-200 rounded-xl">
+                <table className="w-full text-left text-xs">
+                  <thead className="bg-gray-100 text-gray-600 uppercase font-bold border-b">
+                    <tr>
+                      <th className="p-3">Código Cuenta</th>
+                      <th className="p-3">Nombre de la Cuenta</th>
+                      <th className="p-3 text-center">Nivel</th>
+                      <th className="p-3 text-center">Clasificación</th>
+                      <th className="p-3 text-center">Naturaleza</th>
+                      <th className="p-3 text-right">Saldo en Balanza</th>
+                      <th className="p-3 text-center">Estado</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100 font-mono">
+                    {filteredCatalogAccounts.length === 0 ? (
+                      <tr>
+                        <td colSpan="7" className="p-6 text-center text-gray-400 font-sans">
+                          No se encontraron cuentas con los criterios de búsqueda seleccionados.
+                        </td>
+                      </tr>
+                    ) : (
+                      filteredCatalogAccounts.map((acc, idx) => (
+                        <tr key={idx} className="hover:bg-purple-50/20 transition">
+                          <td className="p-3 font-bold text-purple-900">{acc.code}</td>
+                          <td className="p-3 font-sans text-gray-900 font-medium">
+                            <span className={acc.level === 'Auxiliar' ? 'pl-4 text-emerald-950 font-semibold' : acc.level === 'Subcuenta' ? 'pl-2 text-indigo-950 font-bold' : 'font-extrabold text-[#0A2540]'}>
+                              {acc.level === 'Auxiliar' ? '↳ ' : acc.level === 'Subcuenta' ? '• ' : ''}{acc.name}
+                            </span>
+                          </td>
+                          <td className="p-3 text-center">
+                            <span className={`px-2 py-0.5 rounded text-[11px] font-bold border ${getLevelBadge(acc.level)}`}>
+                              {acc.level}
+                            </span>
+                          </td>
+                          <td className="p-3 text-center font-sans font-semibold text-gray-700">
+                            {acc.accountType}
+                          </td>
+                          <td className="p-3 text-center">
+                            <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${acc.nature === 'Deudora' ? 'bg-blue-50 text-blue-800' : 'bg-amber-50 text-amber-800'}`}>
+                              {acc.nature}
+                            </span>
+                          </td>
+                          <td className="p-3 text-right font-bold text-gray-900">
+                            ${(acc.netBalance || 0).toLocaleString('es-MX', { minimumFractionDigits: 2 })}
+                          </td>
+                          <td className="p-3 text-center">
+                            <span className="px-2 py-0.5 rounded text-[10px] bg-emerald-100 text-emerald-800 font-bold">
+                              ✓ Activa
+                            </span>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
             </div>
           )}
 
@@ -1028,7 +1196,6 @@ export default function Contabilidad() {
                   ))}
                 </div>
 
-                {/* Acciones de Exportación Formal de la Adición 3 */}
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => handleExportLibroCsv(libroSubTab)}
@@ -1372,7 +1539,155 @@ export default function Contabilidad() {
         )}
 
         {/* ========================================================================= */}
-        {/* MODAL 2 (ADICIÓN 1): NUEVA PÓLIZA MANUAL DE AJUSTE / RECLASIFICACIÓN */}
+        {/* MODAL 2 (NUEVO): ALTA DE NUEVA CUENTA AUXILIAR DEL LIBRO MAYOR */}
+        {/* ========================================================================= */}
+        {showNewAccountModal && (
+          <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+            <div className="bg-white rounded-2xl max-w-xl w-full p-6 shadow-2xl space-y-4 max-h-[90vh] flex flex-col">
+              <div className="flex justify-between items-center border-b pb-3">
+                <div className="flex items-center gap-2">
+                  <span className="text-2xl">📖</span>
+                  <div>
+                    <h3 className="text-lg font-bold text-gray-900">Alta de Nueva Cuenta Contable / Auxiliar</h3>
+                    <p className="text-xs text-gray-500">Módulo [12] • Registro oficial en el Catálogo Maestro de Cuentas</p>
+                  </div>
+                </div>
+                <button onClick={() => setShowNewAccountModal(false)} className="text-gray-400 hover:text-gray-600 text-xl font-bold">✕</button>
+              </div>
+
+              <form onSubmit={handleCreateAccount} className="space-y-4 flex-1 overflow-y-auto">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-bold text-gray-700 mb-1">Código de Cuenta:</label>
+                    <input
+                      type="text"
+                      placeholder="Ej. 1101-01-02 o 6102-01-10"
+                      value={newAccCode}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setNewAccCode(val);
+                        // Deducir automáticamente nivel, tipo y naturaleza
+                        const first = val.charAt(0);
+                        if (first === '1') { setNewAccType('Activo'); setNewAccNature('Deudora'); }
+                        else if (first === '2') { setNewAccType('Pasivo'); setNewAccNature('Acreedora'); }
+                        else if (first === '3') { setNewAccType('Patrimonio'); setNewAccNature('Acreedora'); }
+                        else if (first === '4') { setNewAccType('Ingresos'); setNewAccNature('Acreedora'); }
+                        else if (first === '5') { setNewAccType('Costos'); setNewAccNature('Deudora'); }
+                        else if (first === '6') { setNewAccType('Gastos'); setNewAccNature('Deudora'); }
+
+                        if (val.split('-').length >= 3) setNewAccLevel('Auxiliar');
+                        else if (val.split('-').length === 2) setNewAccLevel('Subcuenta');
+                        else setNewAccLevel('Mayor');
+                      }}
+                      className="w-full text-xs p-2 border rounded-lg font-mono font-bold focus:ring-2 focus:ring-purple-600"
+                      required
+                    />
+                    <span className="text-[10px] text-gray-400">Formato jerárquico estándar (ej. 1101-01-01)</span>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-gray-700 mb-1">Nivel de la Cuenta:</label>
+                    <select
+                      value={newAccLevel}
+                      onChange={(e) => setNewAccLevel(e.target.value)}
+                      className="w-full text-xs p-2 border rounded-lg font-semibold focus:ring-2 focus:ring-purple-600"
+                    >
+                      <option value="Auxiliar">Cuenta Auxiliar (Imputación directa de pólizas)</option>
+                      <option value="Subcuenta">Subcuenta (Agrupador de auxiliares)</option>
+                      <option value="Mayor">Cuenta de Mayor (Rubro principal)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-gray-700 mb-1">Nombre Oficial de la Cuenta:</label>
+                  <input
+                    type="text"
+                    placeholder="Ej. Banco Cuscatlán - Cuenta de Nómina Operativa"
+                    value={newAccName}
+                    onChange={(e) => setNewAccName(e.target.value)}
+                    className="w-full text-xs p-2 border rounded-lg focus:ring-2 focus:ring-purple-600 font-medium"
+                    required
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-bold text-gray-700 mb-1">Clasificación / Rubro:</label>
+                    <select
+                      value={newAccType}
+                      onChange={(e) => setNewAccType(e.target.value)}
+                      className="w-full text-xs p-2 border rounded-lg font-semibold focus:ring-2 focus:ring-purple-600"
+                    >
+                      <option value="Activo">1. Activo</option>
+                      <option value="Pasivo">2. Pasivo</option>
+                      <option value="Patrimonio">3. Patrimonio Neto</option>
+                      <option value="Ingresos">4. Ingresos</option>
+                      <option value="Costos">5. Costos de Venta / Producción</option>
+                      <option value="Gastos">6. Gastos Operativos y Administrativos</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-gray-700 mb-1">Naturaleza Contable:</label>
+                    <select
+                      value={newAccNature}
+                      onChange={(e) => setNewAccNature(e.target.value)}
+                      className="w-full text-xs p-2 border rounded-lg font-semibold focus:ring-2 focus:ring-purple-600"
+                    >
+                      <option value="Deudora">Deudora (Aumenta al Debe, disminuye al Haber)</option>
+                      <option value="Acreedora">Acreedora (Aumenta al Haber, disminuye al Debe)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-gray-700 mb-1">Cuenta de Mayor / Padre Asociada (Opcional):</label>
+                  <select
+                    value={newAccParent}
+                    onChange={(e) => setNewAccParent(e.target.value)}
+                    className="w-full text-xs p-2 border rounded-lg text-gray-700 focus:ring-2 focus:ring-purple-600 font-mono"
+                  >
+                    <option value="">-- Sin cuenta padre directa / Raíz --</option>
+                    {accountCatalog.filter(a => a.level !== 'Auxiliar').map(acc => (
+                      <option key={acc.code} value={acc.code}>
+                        {acc.code} - {acc.name} ({acc.level})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-gray-700 mb-1">Descripción y Uso Contable:</label>
+                  <textarea
+                    rows="2"
+                    placeholder="Especifique el objetivo y documentos que respaldan los movimientos de esta cuenta..."
+                    value={newAccDesc}
+                    onChange={(e) => setNewAccDesc(e.target.value)}
+                    className="w-full text-xs p-2 border rounded-lg focus:ring-2 focus:ring-purple-600"
+                  />
+                </div>
+
+                <div className="flex justify-between items-center pt-3 border-t">
+                  <button
+                    type="button"
+                    onClick={() => setShowNewAccountModal(false)}
+                    className="px-4 py-2 text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-lg"
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-5 py-2 text-xs bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg shadow transition flex items-center gap-1.5"
+                  >
+                    <span>💾</span> Guardar Cuenta en Catálogo
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* ========================================================================= */}
+        {/* MODAL 3 (ADICIÓN 1): NUEVA PÓLIZA MANUAL DE AJUSTE / RECLASIFICACIÓN */}
         {/* ========================================================================= */}
         {showManualModal && (
           <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
@@ -1459,13 +1774,33 @@ export default function Contabilidad() {
                             onChange={(e) => handleManualLineChange(idx, 'accountSelect', e.target.value)}
                             className="w-full p-1.5 border rounded text-xs font-semibold focus:ring-1 focus:ring-purple-500"
                           >
-                            <option value="">-- Seleccionar Cuenta del Catálogo --</option>
-                            {COMMON_ACCOUNTS.map(acc => (
+                            <option value="">-- Seleccionar Cuenta del Catálogo ({accountCatalog.length} disponibles) --</option>
+                            {accountCatalog.map(acc => (
                               <option key={acc.code} value={acc.code}>
-                                {acc.code} - {acc.name}
+                                {acc.code} - {acc.name} ({acc.level})
                               </option>
                             ))}
+                            <option value="__custom__">✍️ + Escribir otra cuenta manual...</option>
                           </select>
+                          {/* Campo manual si no usa selector */}
+                          {!accountCatalog.some(a => a.code === line.accountCode) && (
+                            <div className="flex gap-1 mt-1">
+                              <input
+                                type="text"
+                                placeholder="Código (ej. 1101-99)"
+                                value={line.accountCode}
+                                onChange={(e) => handleManualLineChange(idx, 'accountCode', e.target.value)}
+                                className="w-28 p-1 border rounded text-[11px] font-mono"
+                              />
+                              <input
+                                type="text"
+                                placeholder="Nombre de la cuenta"
+                                value={line.accountName}
+                                onChange={(e) => handleManualLineChange(idx, 'accountName', e.target.value)}
+                                className="flex-1 p-1 border rounded text-[11px]"
+                              />
+                            </div>
+                          )}
                         </div>
                         <div className="w-28">
                           <input
@@ -1545,7 +1880,7 @@ export default function Contabilidad() {
         )}
 
         {/* ========================================================================= */}
-        {/* MODAL 3 (ADICIÓN 3): VISTA DE IMPRESIÓN DE LIBRO FOLIADO OFICIAL */}
+        {/* MODAL 4 (ADICIÓN 3): VISTA DE IMPRESIÓN DE LIBRO FOLIADO OFICIAL */}
         {/* ========================================================================= */}
         {showFoliadoModal && (
           <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
@@ -1668,7 +2003,7 @@ export default function Contabilidad() {
         )}
 
         {/* ========================================================================= */}
-        {/* MODAL 4 (ADICIÓN 4): MANDAMIENTO DE PAGO ELECTRÓNICO (NPE) BANCARIO */}
+        {/* MODAL 5 (ADICIÓN 4): MANDAMIENTO DE PAGO ELECTRÓNICO (NPE) BANCARIO */}
         {/* ========================================================================= */}
         {npeModalData && (
           <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">

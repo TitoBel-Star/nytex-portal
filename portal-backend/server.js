@@ -361,6 +361,18 @@ async function createAutoJournalEntry({ type, concept, originModule, originRefer
   return entry;
 }
 
+// [12.E] Catálogo Maestro de Cuentas Contables y Cuentas Auxiliares
+const AccountCatalog = sequelize.define('AccountCatalog', {
+  code: { type: DataTypes.STRING, unique: true, allowNull: false },
+  name: { type: DataTypes.STRING, allowNull: false },
+  level: { type: DataTypes.STRING, defaultValue: 'Auxiliar' }, // 'Mayor', 'Subcuenta', 'Auxiliar'
+  accountType: { type: DataTypes.STRING, allowNull: false }, // 'Activo', 'Pasivo', 'Patrimonio', 'Ingresos', 'Costos', 'Gastos'
+  nature: { type: DataTypes.STRING, defaultValue: 'Deudora' }, // 'Deudora', 'Acreedora'
+  parentCode: { type: DataTypes.STRING, allowNull: true },
+  description: { type: DataTypes.STRING, allowNull: true },
+  status: { type: DataTypes.STRING, defaultValue: 'Activa' }
+});
+
 // =========================================================================
 // --- MODELOS DEL CIRCUITO DE TALENTO HUMANO Y NÓMINA ([13] RRHH & [14] NÓMINA) ---
 // =========================================================================
@@ -3192,6 +3204,92 @@ app.get('/api/contabilidad/financial-statements', async (req, res) => {
   }
 });
 
+// [12.E] CATÁLOGO MAESTRO DE CUENTAS Y CUENTAS AUXILIARES
+app.get('/api/contabilidad/accounts', async (req, res) => {
+  try {
+    const catalogAccounts = await AccountCatalog.findAll({ order: [['code', 'ASC']] });
+    
+    // Calcular saldos acumulados de la balanza para cada cuenta
+    const entries = await JournalEntry.findAll();
+    const balanceMap = {};
+    entries.forEach(entry => {
+      (entry.lines || []).forEach(l => {
+        if (!balanceMap[l.accountCode]) balanceMap[l.accountCode] = { debit: 0, credit: 0 };
+        balanceMap[l.accountCode].debit += (l.debit || 0);
+        balanceMap[l.accountCode].credit += (l.credit || 0);
+      });
+    });
+
+    const accountsWithBalance = catalogAccounts.map(acc => {
+      const bal = balanceMap[acc.code] || { debit: 0, credit: 0 };
+      const net = acc.nature === 'Deudora' 
+        ? (bal.debit - bal.credit) 
+        : (bal.credit - bal.debit);
+      return {
+        ...acc.toJSON(),
+        debit: Math.round(bal.debit * 100) / 100,
+        credit: Math.round(bal.credit * 100) / 100,
+        netBalance: Math.round(net * 100) / 100
+      };
+    });
+
+    res.json(accountsWithBalance);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/api/contabilidad/accounts', async (req, res) => {
+  try {
+    const { code, name, level, accountType, nature, parentCode, description } = req.body;
+
+    if (!code || !name) {
+      return res.status(400).json({ error: 'El código y el nombre de la cuenta auxiliar son obligatorios.' });
+    }
+
+    const trimmedCode = code.trim();
+    const existing = await AccountCatalog.findOne({ where: { code: trimmedCode } });
+    if (existing) {
+      return res.status(400).json({ error: `La cuenta con código '${trimmedCode}' ya existe en el catálogo maestro (${existing.name}).` });
+    }
+
+    let inferredType = accountType;
+    let inferredNature = nature;
+    const firstDigit = trimmedCode.charAt(0);
+    if (!inferredType) {
+      if (firstDigit === '1') inferredType = 'Activo';
+      else if (firstDigit === '2') inferredType = 'Pasivo';
+      else if (firstDigit === '3') inferredType = 'Patrimonio';
+      else if (firstDigit === '4') inferredType = 'Ingresos';
+      else if (firstDigit === '5') inferredType = 'Costos';
+      else if (firstDigit === '6') inferredType = 'Gastos';
+      else inferredType = 'Activo';
+    }
+    if (!inferredNature) {
+      inferredNature = (firstDigit === '1' || firstDigit === '5' || firstDigit === '6') ? 'Deudora' : 'Acreedora';
+    }
+
+    const newAccount = await AccountCatalog.create({
+      code: trimmedCode,
+      name: name.trim(),
+      level: level || (trimmedCode.split('-').length >= 3 ? 'Auxiliar' : trimmedCode.split('-').length === 2 ? 'Subcuenta' : 'Mayor'),
+      accountType: inferredType,
+      nature: inferredNature,
+      parentCode: parentCode || (trimmedCode.includes('-') ? trimmedCode.substring(0, trimmedCode.lastIndexOf('-')) : null),
+      description: description || 'Cuenta auxiliar operativa registrada por el usuario.',
+      status: 'Activa'
+    });
+
+    res.json({
+      success: true,
+      message: `Cuenta auxiliar ${newAccount.code} - ${newAccount.name} incorporada exitosamente al catálogo contable.`,
+      account: newAccount
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // =========================================================================
 // --- [13] NYTEX RRHH & [14] NYTEX NÓMINA: ENDPOINTS E INTEGRACIONES ---
 // =========================================================================
@@ -5131,6 +5229,68 @@ async function startServer() {
       if (!cols.includes('creditDays')) await sequelize.query("ALTER TABLE AccountPayables ADD COLUMN creditDays INTEGER DEFAULT 30");
     } catch (e) {
       console.log('Error en migración inicial de columnas SQLite:', e.message);
+    }
+
+    // 1.B. Inicializar Catálogo Maestro de Cuentas Contables si está vacío
+    try {
+      const accCount = await AccountCatalog.count();
+      if (accCount === 0) {
+        const initialAccounts = [
+          { code: '1101', name: 'Efectivo y Equivalentes de Efectivo', level: 'Mayor', accountType: 'Activo', nature: 'Deudora' },
+          { code: '1101-01', name: 'Bancos - Cuenta Operativa Principal', level: 'Subcuenta', accountType: 'Activo', nature: 'Deudora', parentCode: '1101' },
+          { code: '1101-02', name: 'Bancos Nacionales (Banco Operativo Central)', level: 'Subcuenta', accountType: 'Activo', nature: 'Deudora', parentCode: '1101' },
+          { code: '1105', name: 'Cuentas y Documentos por Cobrar', level: 'Mayor', accountType: 'Activo', nature: 'Deudora' },
+          { code: '1105-01', name: 'Clientes Nacionales (CxC)', level: 'Subcuenta', accountType: 'Activo', nature: 'Deudora', parentCode: '1105' },
+          { code: '1106', name: 'Inventarios y Almacenes', level: 'Mayor', accountType: 'Activo', nature: 'Deudora' },
+          { code: '1106-01', name: 'Almacén de Materias Primas', level: 'Subcuenta', accountType: 'Activo', nature: 'Deudora', parentCode: '1106' },
+          { code: '1106-02', name: 'Inventario de Producción en Proceso', level: 'Subcuenta', accountType: 'Activo', nature: 'Deudora', parentCode: '1106' },
+          { code: '1106-03', name: 'Almacén de Productos Terminados', level: 'Subcuenta', accountType: 'Activo', nature: 'Deudora', parentCode: '1106' },
+          { code: '1107', name: 'Anticipos de Impuestos y Pagos a Cuenta', level: 'Mayor', accountType: 'Activo', nature: 'Deudora' },
+          { code: '1107-01', name: 'Anticipo Pago a Cuenta de Renta 1.75%', level: 'Subcuenta', accountType: 'Activo', nature: 'Deudora', parentCode: '1107' },
+          { code: '1108', name: 'Impuesto al Valor Agregado Pagado / Acreditable', level: 'Mayor', accountType: 'Activo', nature: 'Deudora' },
+          { code: '1108-01', name: 'IVA Acreditable / Crédito Fiscal (13%)', level: 'Subcuenta', accountType: 'Activo', nature: 'Deudora', parentCode: '1108' },
+          { code: '1201', name: 'Propiedad, Planta y Equipo (Activos Fijos)', level: 'Mayor', accountType: 'Activo', nature: 'Deudora' },
+          { code: '1201-01', name: 'Maquinaria y Equipo Industrial', level: 'Subcuenta', accountType: 'Activo', nature: 'Deudora', parentCode: '1201' },
+          { code: '1209', name: 'Depreciación Acumulada', level: 'Mayor', accountType: 'Activo', nature: 'Acreedora' },
+          { code: '1209-01', name: 'Depreciación Acumulada de Activos Fijos', level: 'Subcuenta', accountType: 'Activo', nature: 'Acreedora', parentCode: '1209' },
+          { code: '2101', name: 'Cuentas y Documentos por Pagar Comerciales', level: 'Mayor', accountType: 'Pasivo', nature: 'Acreedora' },
+          { code: '2101-01', name: 'Proveedores Nacionales (CxP)', level: 'Subcuenta', accountType: 'Pasivo', nature: 'Acreedora', parentCode: '2101' },
+          { code: '2105', name: 'Remuneraciones y Prestaciones por Pagar', level: 'Mayor', accountType: 'Pasivo', nature: 'Acreedora' },
+          { code: '2105-01', name: 'Sueldos y Salarios por Pagar', level: 'Subcuenta', accountType: 'Pasivo', nature: 'Acreedora', parentCode: '2105' },
+          { code: '2106', name: 'Obligaciones Fiscales y Retenciones por Enterar', level: 'Mayor', accountType: 'Pasivo', nature: 'Acreedora' },
+          { code: '2106-01', name: 'Débito Fiscal IVA (Cancelación mensual)', level: 'Subcuenta', accountType: 'Pasivo', nature: 'Acreedora', parentCode: '2106' },
+          { code: '2106-05', name: 'IVA Retenido 1% por Enterar (DTE-07)', level: 'Subcuenta', accountType: 'Pasivo', nature: 'Acreedora', parentCode: '2106' },
+          { code: '2106-07', name: 'Retenciones Renta por Salarios (Nómina)', level: 'Subcuenta', accountType: 'Pasivo', nature: 'Acreedora', parentCode: '2106' },
+          { code: '2106-08', name: 'Retenciones Renta 10% Servicios (DTE-14)', level: 'Subcuenta', accountType: 'Pasivo', nature: 'Acreedora', parentCode: '2106' },
+          { code: '2106-10', name: 'Impuesto IVA por Pagar Líquido al MH', level: 'Subcuenta', accountType: 'Pasivo', nature: 'Acreedora', parentCode: '2106' },
+          { code: '2106-12', name: 'Pasivo Fiscal F-14 por Enterar al MH', level: 'Subcuenta', accountType: 'Pasivo', nature: 'Acreedora', parentCode: '2106' },
+          { code: '2108-01', name: 'IVA Trasladado por Cobrar (13%)', level: 'Subcuenta', accountType: 'Pasivo', nature: 'Acreedora', parentCode: '2106' },
+          { code: '3101', name: 'Capital Social Contable', level: 'Mayor', accountType: 'Patrimonio', nature: 'Acreedora' },
+          { code: '3101-01', name: 'Capital Social Fijo', level: 'Subcuenta', accountType: 'Patrimonio', nature: 'Acreedora', parentCode: '3101' },
+          { code: '3201', name: 'Reservas de Capital', level: 'Mayor', accountType: 'Patrimonio', nature: 'Acreedora' },
+          { code: '3201-01', name: 'Reserva Legal del Ejercicio (7%)', level: 'Subcuenta', accountType: 'Patrimonio', nature: 'Acreedora', parentCode: '3201' },
+          { code: '3301', name: 'Resultados Acumulados', level: 'Mayor', accountType: 'Patrimonio', nature: 'Acreedora' },
+          { code: '3301-01', name: 'Utilidad Neta del Ejercicio en Curso', level: 'Subcuenta', accountType: 'Patrimonio', nature: 'Acreedora', parentCode: '3301' },
+          { code: '4101', name: 'Ingresos Operacionales de Actividades Ordinarias', level: 'Mayor', accountType: 'Ingresos', nature: 'Acreedora' },
+          { code: '4101-01', name: 'Ventas de Productos Terminados Gravadas (13%)', level: 'Subcuenta', accountType: 'Ingresos', nature: 'Acreedora', parentCode: '4101' },
+          { code: '4102', name: 'Otros Ingresos y Productos Financieros', level: 'Mayor', accountType: 'Ingresos', nature: 'Acreedora' },
+          { code: '4102-01', name: 'Otros Ingresos Financieros y Cambiarios', level: 'Subcuenta', accountType: 'Ingresos', nature: 'Acreedora', parentCode: '4102' },
+          { code: '5101', name: 'Costo de Ventas y Producción', level: 'Mayor', accountType: 'Costos', nature: 'Deudora' },
+          { code: '5101-01', name: 'Compras y Consumo de Materias Primas', level: 'Subcuenta', accountType: 'Costos', nature: 'Deudora', parentCode: '5101' },
+          { code: '5101-02', name: 'Mano de Obra Directa / Horas Extraordinarias', level: 'Subcuenta', accountType: 'Costos', nature: 'Deudora', parentCode: '5101' },
+          { code: '5102', name: 'Cargas Sociales y Prestaciones Fabriles', level: 'Mayor', accountType: 'Costos', nature: 'Deudora' },
+          { code: '5102-01', name: 'Cargas Sociales Patronales (Seguridad Social)', level: 'Subcuenta', accountType: 'Costos', nature: 'Deudora', parentCode: '5102' },
+          { code: '6102', name: 'Gastos de Administración y Operación', level: 'Mayor', accountType: 'Gastos', nature: 'Deudora' },
+          { code: '6102-01', name: 'Gastos Administrativos / Financieros Generales', level: 'Subcuenta', accountType: 'Gastos', nature: 'Deudora', parentCode: '6102' },
+          { code: '6102-05', name: 'Gastos Menores Comprobados de Operación', level: 'Subcuenta', accountType: 'Gastos', nature: 'Deudora', parentCode: '6102' },
+          { code: '6103', name: 'Gastos por Depreciación de Activos', level: 'Mayor', accountType: 'Gastos', nature: 'Deudora' },
+          { code: '6103-01', name: 'Gasto por Depreciación de Maquinaria y Equipo', level: 'Subcuenta', accountType: 'Gastos', nature: 'Deudora', parentCode: '6103' }
+        ];
+        await AccountCatalog.bulkCreate(initialAccounts);
+        console.log('✅ Catálogo Maestro de Cuentas inicializado.');
+      }
+    } catch (e) {
+      console.log('Error inicializando Catálogo de Cuentas:', e.message);
     }
 
     // 2. Actualizar partners existentes con datos bancarios y fiscales completos
