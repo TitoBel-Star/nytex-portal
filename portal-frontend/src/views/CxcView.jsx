@@ -3,16 +3,16 @@ import { useNavigate } from 'react-router-dom';
 
 const DEFAULT_CATALOG = [
   { sku: 'PT-TEL-101', name: 'Lote Producto Terminado Estándar Alfa', price: 1850, stock: 35, unit: 'rollos', category: 'Producto Terminado' },
-  { sku: 'PT-POP-102', name: 'Rollo Popelina Estampada Premium', price: 2150, stock: 15, unit: 'rollos', category: 'Producto Terminado' },
-  { sku: 'PT-RIB-103', name: 'Rollo Rib 1x1 con Spandex Elastomérico', price: 1950, stock: 22, unit: 'rollos', category: 'Producto Terminado' },
-  { sku: 'PT-FLE-104', name: 'Rollo Felpa Francesa Fleece 280g Térmico', price: 2800, stock: 18, unit: 'rollos', category: 'Producto Terminado' },
-  { sku: 'PT-PIQ-105', name: 'Lote Producto Terminado Modelo Plus', price: 2100, stock: 26, unit: 'rollos', category: 'Producto Terminado' },
-  { sku: 'SKU-TEL-01', name: 'Lote Producto Terminado Serie 100', price: 1850, stock: 45, unit: 'rollos', category: 'Producto Terminado' },
-  { sku: 'SKU-TEL-02', name: 'Lote Producto Terminado Serie 200', price: 1850, stock: 32, unit: 'rollos', category: 'Producto Terminado' },
-  { sku: 'SKU-TEL-03', name: 'Lote Producto Terminado Serie 300', price: 1780, stock: 60, unit: 'rollos', category: 'Producto Terminado' },
-  { sku: 'SKU-MEZ-01', name: 'Rollo Mezclilla Denim 12oz Índigo Strech', price: 2400, stock: 28, unit: 'rollos', category: 'Producto Terminado' },
-  { sku: 'SKU-MEZ-02', name: 'Rollo Mezclilla Denim 14oz Rígida Pesada', price: 2650, stock: 19, unit: 'rollos', category: 'Producto Terminado' },
-  { sku: 'SKU-POL-01', name: 'Lote Producto Terminado Compuesto', price: 1450, stock: 55, unit: 'rollos', category: 'Producto Terminado' },
+  { sku: 'PT-POP-102', name: 'Lote Producto Terminado Modelo Estándar', price: 2150, stock: 15, unit: 'unidades', category: 'Producto Terminado' },
+  { sku: 'PT-RIB-103', name: 'Lote Producto Terminado Modelo Reforzado', price: 1950, stock: 22, unit: 'unidades', category: 'Producto Terminado' },
+  { sku: 'PT-FLE-104', name: 'Lote Producto Terminado Modelo Industrial', price: 2800, stock: 18, unit: 'unidades', category: 'Producto Terminado' },
+  { sku: 'PT-PIQ-105', name: 'Lote Producto Terminado Modelo Plus', price: 2100, stock: 26, unit: 'unidades', category: 'Producto Terminado' },
+  { sku: 'SKU-TEL-01', name: 'Lote Producto Terminado Serie 100', price: 1850, stock: 45, unit: 'unidades', category: 'Producto Terminado' },
+  { sku: 'SKU-TEL-02', name: 'Lote Producto Terminado Serie 200', price: 1850, stock: 32, unit: 'unidades', category: 'Producto Terminado' },
+  { sku: 'SKU-TEL-03', name: 'Lote Producto Terminado Serie 300', price: 1780, stock: 60, unit: 'unidades', category: 'Producto Terminado' },
+  { sku: 'SKU-MEZ-01', name: 'Lote Producto Terminado Serie 400', price: 2400, stock: 28, unit: 'unidades', category: 'Producto Terminado' },
+  { sku: 'SKU-MEZ-02', name: 'Lote Producto Terminado Serie 500', price: 2650, stock: 19, unit: 'unidades', category: 'Producto Terminado' },
+  { sku: 'SKU-POL-01', name: 'Lote Producto Terminado Compuesto', price: 1450, stock: 55, unit: 'unidades', category: 'Producto Terminado' },
   { sku: 'MP-HIL-01', name: 'Materia Prima Base MP-01', price: 380, stock: 120, unit: 'kg', category: 'Materia Prima' },
   { sku: 'MP-POL-02', name: 'Materia Prima Sintética MP-02', price: 240, stock: 450, unit: 'kg', category: 'Materia Prima' },
   { sku: 'MP-TIN-03', name: 'Compuesto Reactivo Azul Marino', price: 490, stock: 18, unit: 'litros', category: 'Insumo Químico' }
@@ -575,7 +575,7 @@ export default function CxcView() {
                             skuCategory === cat ? 'bg-blue-600 text-white' : 'bg-white text-gray-600 border'
                           }`}
                         >
-                          {cat === 'Producto Terminado' ? 'Telas PT' : cat === 'Inventario para Vender' ? 'Para Vender' : cat === 'Materia Prima' ? 'Hilos MP' : 'Todos'}
+                          {cat === 'Producto Terminado' ? 'Productos PT' : cat === 'Inventario para Vender' ? 'Para Vender' : cat === 'Materia Prima' ? 'Insumos MP' : 'Todos'}
                         </button>
                       ))}
                     </div>
@@ -585,7 +585,7 @@ export default function CxcView() {
                     type="text"
                     value={skuSearch}
                     onChange={(e) => setSkuSearch(e.target.value)}
-                    placeholder="🔍 Escriba una letra o número (ej: T, 1, 01, TEL, Algodón, PT, Gabardina)..."
+                    placeholder="🔍 Escriba una letra o número (ej: P, 1, 01, PROD, Insumo, PT)..."
                     className="w-full px-3 py-1.5 bg-white border border-blue-300 focus:border-blue-600 rounded-lg text-xs font-semibold text-gray-800 placeholder-gray-400 focus:outline-none"
                   />
 
@@ -630,7 +630,7 @@ export default function CxcView() {
                     type="text"
                     value={concept}
                     onChange={(e) => setConcept(e.target.value)}
-                    placeholder="Ej. Venta de 20 Rollos de Tela Algodón Peinado"
+                    placeholder="Ej. Venta de 20 Lotes de Producto Terminado Tipo A"
                     className="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
                     required
                   />

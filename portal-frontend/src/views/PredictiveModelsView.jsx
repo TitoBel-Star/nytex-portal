@@ -195,7 +195,7 @@ export default function PredictiveModelsView() {
                   className="bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 text-sm font-semibold text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#006EAD]"
                 >
                   <option value="cxc_default">Créditos y Cobranza (CxC) - Riesgo de Impago</option>
-                  <option value="prod_defect">Planta y Producción - Riesgo de Falla en Tela</option>
+                  <option value="prod_defect">Planta y Producción - Riesgo de Defectos en Producto</option>
                   <option value="sales_churn">Ventas y CRM - Riesgo de Abandono de Clientes</option>
                 </select>
               </div>
@@ -404,7 +404,7 @@ export default function PredictiveModelsView() {
             <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
               <div>
                 <h2 className="text-lg font-bold text-[#0A2540]">Pronóstico Continuo de Demanda & Materiales (Series de Tiempo)</h2>
-                <p className="text-xs text-gray-500 mt-0.5">Modelos ARIMA / Prophet para estimación de metros de tela y facturación proyectada</p>
+                <p className="text-xs text-gray-500 mt-0.5">Modelos ARIMA / Prophet para estimación de unidades producidas y facturación proyectada</p>
               </div>
               <div className="flex items-center space-x-2">
                 <span className="text-xs text-gray-500 font-semibold">Horizonte:</span>

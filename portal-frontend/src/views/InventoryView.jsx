@@ -119,7 +119,7 @@ export default function InventoryView() {
     const csvContent = "data:text/csv;charset=utf-8," + 
       "SKU,Nombre,Categoría,Stock,StockMínimo,Unidad,CostoUSD,Almacén,Ubicación\n" +
       "MP-MAT-05,Materia Prima Industrial Base 24/1,Materia Prima,300,50,kg,4.25,Almacén de Materias Primas,Rack MP-03\n" +
-      "MP-ELA-06,Filamento Elastano Spandex 70D,Materia Prima,150,30,kg,7.80,Almacén de Materias Primas,Rack MP-04\n" +
+      "MP-POL-06,Polímero Industrial Reforzado Grado A,Materia Prima,150,30,kg,7.80,Almacén de Materias Primas,Rack MP-04\n" +
       "QUIM-BLAN-01,Compuesto Químico Especializado,Insumo Químico,80,20,litros,12.50,Almacén de Químicos,Estante Q-01\n" +
       "PT-MOD-201,Lote de Producto Terminado Estándar,Producto Terminado,25,10,rollos,45.00,Almacén de Producto Terminado,Rack PT-08\n";
     const encodedUri = encodeURI(csvContent);
@@ -808,7 +808,7 @@ export default function InventoryView() {
                   <input
                     type="text"
                     required
-                    placeholder="ej. Hilo de Lycra Elastano 40D"
+                    placeholder="ej. Componente Industrial Grado A"
                     value={newName}
                     onChange={(e) => setNewName(e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-800 text-sm focus:outline-none focus:border-blue-600"

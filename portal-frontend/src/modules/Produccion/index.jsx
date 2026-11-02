@@ -299,7 +299,7 @@ export default function Produccion() {
                             <button
                               onClick={() => handleCompleteOP(op.opCode)}
                               className="px-3 py-1 text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded shadow-sm transition"
-                              title="Concluye la producción e ingresa las telas al inventario PT"
+                              title="Concluye la producción e ingresa las unidades al inventario PT"
                             >
                               🏁 Concluir Lote ➔ Ingresar a Almacén PT
                             </button>

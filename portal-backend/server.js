@@ -2283,7 +2283,7 @@ app.get('/api/tesoreria/conciliacion', async (req, res) => {
           bankCode,
           period,
           date: '2026-10-04',
-          concept: 'Cheque #4820 a Proveedor Hilos & Hilazas S.A. (No presentado al cobro)',
+          concept: 'Cheque #4820 a Proveedor Suministros Industriales S.A. (No presentado al cobro)',
           reference: 'CHQ-4820',
           type: 'Cheque Flotante',
           amount: 8750.00,
@@ -4282,16 +4282,16 @@ app.post('/api/fase6/ia/chat', async (req, res) => {
 
     if (lower.includes('inventario') || lower.includes('stock') || lower.includes('compras') || lower.includes('materia')) {
       category = 'Inventario & Cadena de Suministro';
-      reply = `He auditado el inventario central de insumos. Actualmente contamos con **${inventory.length} SKUs activos** con una valoración de inventario en almacén. Se detectaron **${lowStockItems.length} insumos en nivel crítico** por debajo del stock mínimo de seguridad. La demanda de tejeduría proyectada requiere asegurar compras inmediatas de hilatura de algodón con el proveedor *Materiales y Fibras Sintéticas (BP-003)* para evitar paros de línea.`;
+      reply = `He auditado el inventario central de insumos. Actualmente contamos con **${inventory.length} SKUs activos** con una valoración de inventario en almacén. Se detectaron **${lowStockItems.length} insumos en nivel crítico** por debajo del stock mínimo de seguridad. La demanda de manufactura proyectada requiere asegurar compras inmediatas de materia prima base con el proveedor *Distribuidora Global de Insumos Industriales S.A. (BP-003)* para evitar paros de línea.`;
       recommendations = [
-        'Emitir Orden de Compra urgente por hilatura de algodón peinado 30/1.',
+        'Emitir Orden de Compra urgente por materia prima industrial grado A.',
         'Revisar el punto de reorden en WMS para programar recepción en Pasillo A - Racks 01.',
         'Verificar condiciones de pago a 30 días para no comprometer flujo de tesorería.'
       ];
       keyMetrics = [
         { label: 'SKUs Críticos', value: `${lowStockItems.length} insumos` },
-        { label: 'Stock Hilatura', value: '450 kg disponibles' },
-        { label: 'Déficit Proyectado', value: '600 kg requeridos' }
+        { label: 'Stock Materia Prima', value: '450 unidades disponibles' },
+        { label: 'Déficit Proyectado', value: '600 unidades requeridas' }
       ];
     } else if (lower.includes('cxc') || lower.includes('mora') || lower.includes('cobranza') || lower.includes('crédito') || lower.includes('riesgo')) {
       category = 'Riesgo Crediticio & CxC';
@@ -4391,18 +4391,18 @@ app.get('/api/fase7/bi/cube', async (req, res) => {
 
     const periods = ['2026-Q1', '2026-Q2', '2026-Q3', '2026-Q4 (Proy.)'];
     const productFamilies = ['Línea Industrial Estándar', 'Línea Industrial Especializada', 'Línea Industrial Reforzada', 'Línea Industrial Térmica'];
-    const customerSegments = ['Mayoristas Confección', 'Distribuidores Regionales', 'Cadenas Retail / Marcas Propias'];
+    const customerSegments = ['Clientes Corporativos B2B', 'Distribuidores Regionales', 'Cadenas Mayoristas / Clientes Clave'];
     const regions = ['Región Norte', 'Bajío (León)', 'Región Centro', 'Exportación (Texas / California)'];
 
     const cubeData = [
-      { period: '2026-Q1', family: 'Línea Industrial Estándar', segment: 'Mayoristas Confección', region: 'Región Norte', revenue: 1450000, cost: 980000, margin: 470000, marginPct: 32.4, volumeKg: 17050 },
-      { period: '2026-Q1', family: 'Línea Industrial Especializada', segment: 'Cadenas Retail / Marcas Propias', region: 'Región Centro', revenue: 890000, cost: 580000, margin: 310000, marginPct: 34.8, volumeKg: 7410 },
+      { period: '2026-Q1', family: 'Línea Industrial Estándar', segment: 'Clientes Corporativos B2B', region: 'Región Norte', revenue: 1450000, cost: 980000, margin: 470000, marginPct: 32.4, volumeKg: 17050 },
+      { period: '2026-Q1', family: 'Línea Industrial Especializada', segment: 'Cadenas Mayoristas / Clientes Clave', region: 'Región Centro', revenue: 890000, cost: 580000, margin: 310000, marginPct: 34.8, volumeKg: 7410 },
       { period: '2026-Q2', family: 'Línea Industrial Reforzada', segment: 'Distribuidores Regionales', region: 'Bajío (León)', revenue: 1120000, cost: 720000, margin: 400000, marginPct: 35.7, volumeKg: 9330 },
-      { period: '2026-Q2', family: 'Línea Industrial Estándar', segment: 'Mayoristas Confección', region: 'Región Centro', revenue: 1680000, cost: 1120000, margin: 560000, marginPct: 33.3, volumeKg: 19760 },
-      { period: '2026-Q3', family: 'Línea Industrial Térmica', segment: 'Cadenas Retail / Marcas Propias', region: 'Región Norte', revenue: 1340000, cost: 850000, margin: 490000, marginPct: 36.5, volumeKg: 10300 },
-      { period: '2026-Q3', family: 'Línea Industrial Especializada', segment: 'Mayoristas Confección', region: 'Exportación (Texas / California)', revenue: 2150000, cost: 1390000, margin: 760000, marginPct: 35.3, volumeKg: 16530 },
+      { period: '2026-Q2', family: 'Línea Industrial Estándar', segment: 'Clientes Corporativos B2B', region: 'Región Centro', revenue: 1680000, cost: 1120000, margin: 560000, marginPct: 33.3, volumeKg: 19760 },
+      { period: '2026-Q3', family: 'Línea Industrial Térmica', segment: 'Cadenas Mayoristas / Clientes Clave', region: 'Región Norte', revenue: 1340000, cost: 850000, margin: 490000, marginPct: 36.5, volumeKg: 10300 },
+      { period: '2026-Q3', family: 'Línea Industrial Especializada', segment: 'Clientes Corporativos B2B', region: 'Exportación (Texas / California)', revenue: 2150000, cost: 1390000, margin: 760000, marginPct: 35.3, volumeKg: 16530 },
       { period: '2026-Q4 (Proy.)', family: 'Línea Industrial Estándar', segment: 'Distribuidores Regionales', region: 'Región Norte', revenue: 1820000, cost: 1210000, margin: 610000, marginPct: 33.5, volumeKg: 21410 },
-      { period: '2026-Q4 (Proy.)', family: 'Línea Industrial Térmica', segment: 'Cadenas Retail / Marcas Propias', region: 'Región Centro', revenue: 1490000, cost: 940000, margin: 550000, marginPct: 36.9, volumeKg: 11460 }
+      { period: '2026-Q4 (Proy.)', family: 'Línea Industrial Térmica', segment: 'Cadenas Mayoristas / Clientes Clave', region: 'Región Centro', revenue: 1490000, cost: 940000, margin: 550000, marginPct: 36.9, volumeKg: 11460 }
     ];
 
     const totalRevenue = cubeData.reduce((acc, c) => acc + c.revenue, 0);
@@ -4548,8 +4548,8 @@ app.get('/api/fase7/reports/generate', async (req, res) => {
         rows: [
           { name: 'Centro de Maquinado Industrial CNC Relanit #1', disp: '92.4%', rend: '88.5%', cal: '99.1%', oee: '81.0%' },
           { name: 'Centro de Maquinado Industrial CNC Relanit #2', disp: '94.1%', rend: '91.2%', cal: '98.7%', oee: '84.7%' },
-          { name: 'Autoclave de Teñido a Presión Thies #1', disp: '89.0%', rend: '93.0%', cal: '97.5%', oee: '80.7%' },
-          { name: 'Rama Tensora y Secadora Monforts #1', disp: '95.0%', rend: '87.4%', cal: '99.4%', oee: '82.5%' }
+          { name: 'Línea de Tratamiento Térmico y Acabado #1', disp: '89.0%', rend: '93.0%', cal: '97.5%', oee: '80.7%' },
+          { name: 'Túnel de Secado y Termofijado Industrial #1', disp: '95.0%', rend: '87.4%', cal: '99.4%', oee: '82.5%' }
         ],
         stamp: {
           auditor: 'Ing. Supervisor Fabril de Calidad ISO 9001',
@@ -4579,12 +4579,12 @@ app.get('/api/fase7/bigdata/telemetry', async (req, res) => {
   try {
     const randomVariation = () => (Math.random() - 0.5) * 0.8;
     const machines = [
-      { id: 'TEL-MC-01', name: 'Línea Industrial CNC #1 (Single Jersey)', type: 'Tejeduría Circular', rpm: +(31.2 + randomVariation()).toFixed(1), tempC: +(72.4 + randomVariation()).toFixed(1), tensionCn: +(15.8 + randomVariation()).toFixed(1), vibrationMmS: +(2.4 + randomVariation()).toFixed(2), fabricMMin: +(1.4 + randomVariation() * 0.1).toFixed(2), status: 'Normal' },
-      { id: 'TEL-MC-02', name: 'Línea Industrial CNC #2 (Rib Elástano)', type: 'Tejeduría Circular', rpm: +(29.8 + randomVariation()).toFixed(1), tempC: +(74.1 + randomVariation()).toFixed(1), tensionCn: +(18.2 + randomVariation()).toFixed(1), vibrationMmS: +(2.8 + randomVariation()).toFixed(2), fabricMMin: +(1.2 + randomVariation() * 0.1).toFixed(2), status: 'Normal' },
-      { id: 'TEL-MC-03', name: 'Línea Industrial CNC #3 (Piqué Deportivo)', type: 'Tejeduría Circular', rpm: +(32.0 + randomVariation()).toFixed(1), tempC: +(76.8 + randomVariation()).toFixed(1), tensionCn: +(16.1 + randomVariation()).toFixed(1), vibrationMmS: +(3.1 + randomVariation()).toFixed(2), fabricMMin: +(1.5 + randomVariation() * 0.1).toFixed(2), status: 'Normal' },
-      { id: 'TEL-MC-04', name: 'Línea Industrial CNC #4 (Felpa 3 Hilos)', type: 'Tejeduría Circular', rpm: +(27.5 + randomVariation()).toFixed(1), tempC: +(79.2 + randomVariation()).toFixed(1), tensionCn: +(21.4 + randomVariation()).toFixed(1), vibrationMmS: +(4.3 + randomVariation()).toFixed(2), fabricMMin: +(1.1 + randomVariation() * 0.1).toFixed(2), status: 'Advertencia (Tensión Alta)' },
-      { id: 'TEL-MC-05', name: 'Línea Industrial CNC #5 (Interlock Fino)', type: 'Tejeduría Circular', rpm: +(30.5 + randomVariation()).toFixed(1), tempC: +(71.0 + randomVariation()).toFixed(1), tensionCn: +(14.9 + randomVariation()).toFixed(1), vibrationMmS: +(2.2 + randomVariation()).toFixed(2), fabricMMin: +(1.3 + randomVariation() * 0.1).toFixed(2), status: 'Normal' },
-      { id: 'AUT-TH-01', name: 'Autoclave Teñido Thies Jet #1', type: 'Tintorería a Presión', rpm: 0, tempC: +(128.5 + randomVariation()).toFixed(1), tensionCn: 0, vibrationMmS: +(1.1 + randomVariation()).toFixed(2), fabricMMin: 0, status: 'Normal', bathPressureBar: +(3.2 + randomVariation() * 0.1).toFixed(2), bathPh: +(5.8 + randomVariation() * 0.1).toFixed(2) }
+      { id: 'MAQ-IND-01', name: 'Línea Industrial CNC #1 (Ensamble Automático)', type: 'Manufactura CNC', rpm: +(31.2 + randomVariation()).toFixed(1), tempC: +(72.4 + randomVariation()).toFixed(1), tensionCn: +(15.8 + randomVariation()).toFixed(1), vibrationMmS: +(2.4 + randomVariation()).toFixed(2), fabricMMin: +(1.4 + randomVariation() * 0.1).toFixed(2), status: 'Normal' },
+      { id: 'MAQ-IND-02', name: 'Línea Industrial CNC #2 (Corte y Perfilado)', type: 'Manufactura CNC', rpm: +(29.8 + randomVariation()).toFixed(1), tempC: +(74.1 + randomVariation()).toFixed(1), tensionCn: +(18.2 + randomVariation()).toFixed(1), vibrationMmS: +(2.8 + randomVariation()).toFixed(2), fabricMMin: +(1.2 + randomVariation() * 0.1).toFixed(2), status: 'Normal' },
+      { id: 'MAQ-IND-03', name: 'Línea Industrial CNC #3 (Estampado y Conformado)', type: 'Manufactura CNC', rpm: +(32.0 + randomVariation()).toFixed(1), tempC: +(76.8 + randomVariation()).toFixed(1), tensionCn: +(16.1 + randomVariation()).toFixed(1), vibrationMmS: +(3.1 + randomVariation()).toFixed(2), fabricMMin: +(1.5 + randomVariation() * 0.1).toFixed(2), status: 'Normal' },
+      { id: 'MAQ-IND-04', name: 'Línea Industrial CNC #4 (Prensado Hidráulico)', type: 'Manufactura CNC', rpm: +(27.5 + randomVariation()).toFixed(1), tempC: +(79.2 + randomVariation()).toFixed(1), tensionCn: +(21.4 + randomVariation()).toFixed(1), vibrationMmS: +(4.3 + randomVariation()).toFixed(2), fabricMMin: +(1.1 + randomVariation() * 0.1).toFixed(2), status: 'Advertencia (Tensión Alta)' },
+      { id: 'MAQ-IND-05', name: 'Línea Industrial CNC #5 (Acabado y Pulido)', type: 'Manufactura CNC', rpm: +(30.5 + randomVariation()).toFixed(1), tempC: +(71.0 + randomVariation()).toFixed(1), tensionCn: +(14.9 + randomVariation()).toFixed(1), vibrationMmS: +(2.2 + randomVariation()).toFixed(2), fabricMMin: +(1.3 + randomVariation() * 0.1).toFixed(2), status: 'Normal' },
+      { id: 'MAQ-IND-06', name: 'Horno de Tratamiento Térmico Industrial #1', type: 'Tratamiento Térmico', rpm: 0, tempC: +(128.5 + randomVariation()).toFixed(1), tensionCn: 0, vibrationMmS: +(1.1 + randomVariation()).toFixed(2), fabricMMin: 0, status: 'Normal', bathPressureBar: +(3.2 + randomVariation() * 0.1).toFixed(2), bathPh: +(5.8 + randomVariation() * 0.1).toFixed(2) }
     ];
 
     res.json({
@@ -4651,8 +4651,8 @@ app.get('/api/fase7/datamining/clusters', async (req, res) => {
         avgRecencyDays: 14,
         avgFrequencyOrders: 9,
         avgMonetaryAmount: 142000,
-        strategy: 'Venta cruzada con muestras de nuevas telas deportivas y descuentos por volumen.',
-        representative: 'Confecciones del Bajío S.A.'
+        strategy: 'Venta cruzada con catálogo de nuevos productos industriales y descuentos por volumen.',
+        representative: 'Distribuciones Industriales del Centro S.A.'
       },
       {
         id: 2,
@@ -4680,8 +4680,8 @@ app.get('/api/fase7/datamining/clusters', async (req, res) => {
 
     const scatterPoints = [
       { name: 'Distribuidora Comercial del Norte', recency: 4, frequency: 24, monetary: 540000, cluster: 0 },
-      { name: 'Modas y Confecciones El Águila', recency: 7, frequency: 19, monetary: 430000, cluster: 0 },
-      { name: 'Confecciones del Bajío', recency: 12, frequency: 11, monetary: 165000, cluster: 1 },
+      { name: 'Comercializadora y Distribuidora El Águila', recency: 7, frequency: 19, monetary: 430000, cluster: 0 },
+      { name: 'Distribuciones Industriales del Centro', recency: 12, frequency: 11, monetary: 165000, cluster: 1 },
       { name: 'Manufacturas Globales', recency: 16, frequency: 8, monetary: 120000, cluster: 1 },
       { name: 'Suministros Comerciales San Salvador', recency: 18, frequency: 7, monetary: 98000, cluster: 1 },
       { name: 'Manufacturas del Valle', recency: 65, frequency: 3, monetary: 48000, cluster: 2 },
@@ -5380,7 +5380,7 @@ async function startServer() {
     if (bpCount === 0) {
       await BusinessPartner.bulkCreate([
         { code: 'BP-001', name: 'Distribuidora Comercial del Norte S.A.', type: 'Cliente', contactName: 'María González', email: 'mgonzalez@dcomercial.com', phone: '81-8123-4567', address: 'Parque Industrial Apodaca, N.L.', balance: 54200 },
-        { code: 'BP-002', name: 'Confecciones del Bajío S.A.', type: 'Cliente', contactName: 'Carlos Ruiz', email: 'cruiz@bajioindustrial.com', phone: '47-7890-1234', address: 'León, Guanajuato', balance: 32000 },
+        { code: 'BP-002', name: 'Distribuciones Industriales del Centro S.A.', type: 'Cliente', contactName: 'Carlos Ruiz', email: 'cruiz@distribucionesindustrial.com', phone: '22-7890-1234', address: 'Zona Industrial San Bartolo, Ilopango', balance: 32000 },
         { code: 'BP-003', name: 'Materiales y Fibras Sintéticas S.A.', type: 'Proveedor', contactName: 'John Smith', email: 'jsmith@fibrascorp.com', phone: '55-5555-8888', address: 'Tlalnepantla, Edo. Mex', balance: -45000 },
         { code: 'BP-004', name: 'Transportes Express del Norte', type: 'Fletero', contactName: 'Roberto Méndez', email: 'rmendez@transnorte.com', phone: '81-2345-6789', address: 'Escobedo, N.L.', balance: 0 },
         { code: 'BP-005', name: 'Químicos y Componentes Globales S.A.', type: 'Proveedor', contactName: 'Laura Vega', email: 'lvega@quimicoscorp.com', phone: '33-3333-2222', address: 'Guadalajara, Jalisco', balance: -18000 }

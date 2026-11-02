@@ -177,7 +177,7 @@ export default function CircuitoFase1View() {
             <div className="bg-slate-50 border border-slate-200 p-4 rounded-xl">
               <span className="text-[10px] font-black uppercase text-blue-600">Paso 1</span>
               <h4 className="font-bold text-slate-900 text-sm mt-1">[1] Ventas ➔ [3] Inventario</h4>
-              <p className="text-xs text-slate-600 mt-1">El cliente emite pedido de tela; el sistema valida y descuenta existencias automáticamente.</p>
+              <p className="text-xs text-slate-600 mt-1">El cliente emite pedido de compra; el sistema valida y descuenta existencias automáticamente.</p>
             </div>
 
             <div className="bg-slate-50 border border-slate-200 p-4 rounded-xl">
@@ -189,7 +189,7 @@ export default function CircuitoFase1View() {
             <div className="bg-slate-50 border border-slate-200 p-4 rounded-xl">
               <span className="text-[10px] font-black uppercase text-blue-600">Paso 3</span>
               <h4 className="font-bold text-slate-900 text-sm mt-1">[4] Compras ➔ [9] CxP</h4>
-              <p className="text-xs text-slate-600 mt-1">Órdenes de compra a proveedores de hilo generan pasivos y programación de pagos.</p>
+              <p className="text-xs text-slate-600 mt-1">Órdenes de compra a proveedores de materia prima generan pasivos y programación de pagos.</p>
             </div>
 
             <div className="bg-slate-50 border border-slate-200 p-4 rounded-xl">

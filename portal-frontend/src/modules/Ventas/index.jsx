@@ -3,16 +3,16 @@ import { useNavigate } from 'react-router-dom';
 
 const DEFAULT_CATALOG = [
   { sku: 'PT-TEL-101', name: 'Lote Producto Terminado Estándar Alfa', price: 1850, stock: 35, unit: 'rollos', category: 'Producto Terminado' },
-  { sku: 'PT-POP-102', name: 'Rollo Popelina Estampada Premium', price: 2150, stock: 15, unit: 'rollos', category: 'Producto Terminado' },
-  { sku: 'PT-RIB-103', name: 'Rollo Rib 1x1 con Spandex Elastomérico', price: 1950, stock: 22, unit: 'rollos', category: 'Producto Terminado' },
-  { sku: 'PT-FLE-104', name: 'Rollo Felpa Francesa Fleece 280g Térmico', price: 2800, stock: 18, unit: 'rollos', category: 'Producto Terminado' },
-  { sku: 'PT-PIQ-105', name: 'Lote Producto Terminado Modelo Plus', price: 2100, stock: 26, unit: 'rollos', category: 'Producto Terminado' },
-  { sku: 'SKU-TEL-01', name: 'Lote Producto Terminado Serie 100', price: 1850, stock: 45, unit: 'rollos', category: 'Producto Terminado' },
-  { sku: 'SKU-TEL-02', name: 'Lote Producto Terminado Serie 200', price: 1850, stock: 32, unit: 'rollos', category: 'Producto Terminado' },
-  { sku: 'SKU-TEL-03', name: 'Lote Producto Terminado Serie 300', price: 1780, stock: 60, unit: 'rollos', category: 'Producto Terminado' },
-  { sku: 'SKU-MEZ-01', name: 'Rollo Mezclilla Denim 12oz Índigo Strech', price: 2400, stock: 28, unit: 'rollos', category: 'Producto Terminado' },
-  { sku: 'SKU-MEZ-02', name: 'Rollo Mezclilla Denim 14oz Rígida Pesada', price: 2650, stock: 19, unit: 'rollos', category: 'Producto Terminado' },
-  { sku: 'SKU-POL-01', name: 'Lote Producto Terminado Compuesto', price: 1450, stock: 55, unit: 'rollos', category: 'Producto Terminado' },
+  { sku: 'PT-POP-102', name: 'Lote Producto Terminado Modelo Estándar', price: 2150, stock: 15, unit: 'unidades', category: 'Producto Terminado' },
+  { sku: 'PT-RIB-103', name: 'Lote Producto Terminado Modelo Reforzado', price: 1950, stock: 22, unit: 'unidades', category: 'Producto Terminado' },
+  { sku: 'PT-FLE-104', name: 'Lote Producto Terminado Modelo Industrial', price: 2800, stock: 18, unit: 'unidades', category: 'Producto Terminado' },
+  { sku: 'PT-PIQ-105', name: 'Lote Producto Terminado Modelo Plus', price: 2100, stock: 26, unit: 'unidades', category: 'Producto Terminado' },
+  { sku: 'SKU-TEL-01', name: 'Lote Producto Terminado Serie 100', price: 1850, stock: 45, unit: 'unidades', category: 'Producto Terminado' },
+  { sku: 'SKU-TEL-02', name: 'Lote Producto Terminado Serie 200', price: 1850, stock: 32, unit: 'unidades', category: 'Producto Terminado' },
+  { sku: 'SKU-TEL-03', name: 'Lote Producto Terminado Serie 300', price: 1780, stock: 60, unit: 'unidades', category: 'Producto Terminado' },
+  { sku: 'SKU-MEZ-01', name: 'Lote Producto Terminado Serie 400', price: 2400, stock: 28, unit: 'unidades', category: 'Producto Terminado' },
+  { sku: 'SKU-MEZ-02', name: 'Lote Producto Terminado Serie 500', price: 2650, stock: 19, unit: 'unidades', category: 'Producto Terminado' },
+  { sku: 'SKU-POL-01', name: 'Lote Producto Terminado Compuesto', price: 1450, stock: 55, unit: 'unidades', category: 'Producto Terminado' },
   { sku: 'MP-HIL-01', name: 'Materia Prima Base MP-01', price: 380, stock: 120, unit: 'kg', category: 'Materia Prima' },
   { sku: 'MP-POL-02', name: 'Materia Prima Sintética MP-02', price: 240, stock: 450, unit: 'kg', category: 'Materia Prima' },
   { sku: 'MP-TIN-03', name: 'Compuesto Reactivo Azul Marino', price: 490, stock: 18, unit: 'litros', category: 'Insumo Químico' }
@@ -130,7 +130,7 @@ export default function Ventas() {
   };
 
   const handleAddItem = () => {
-    setItems([...items, { sku: 'SKU-NUEVO', description: 'Nuevo Producto / Tela', quantity: '1', unitPrice: '500', dispatchLocation: 'Caja' }]);
+    setItems([...items, { sku: 'SKU-NUEVO', description: 'Nuevo Producto / Ítem', quantity: '1', unitPrice: '500', dispatchLocation: 'Caja' }]);
   };
 
   const handleAddCatalogItem = (product) => {
@@ -869,8 +869,8 @@ export default function Ventas() {
                     <div className="flex items-center gap-1 text-[11px]">
                       {[
                         { id: 'Todas', label: 'Todos' },
-                        { id: 'Producto Terminado', label: 'Telas (PT)' },
-                        { id: 'Materia Prima', label: 'Hilos (MP)' }
+                        { id: 'Producto Terminado', label: 'Terminados (PT)' },
+                        { id: 'Materia Prima', label: 'Insumos (MP)' }
                       ].map(tab => (
                         <button
                           key={tab.id}
@@ -894,7 +894,7 @@ export default function Ventas() {
                       type="text"
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      placeholder="🔍 Escriba una letra o número (ej: T, 1, 01, TEL, Algodón, PT, Gabardina)..."
+                      placeholder="🔍 Escriba una letra o número (ej: P, 1, 01, PROD, Insumo, PT)..."
                       className="w-full pl-9 pr-8 py-2 bg-white border-2 border-blue-300 focus:border-blue-600 rounded-lg text-xs font-semibold text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-400/30 transition-all shadow-xs"
                     />
                     <span className="absolute left-3 top-2.5 text-gray-400 text-xs">🔎</span>

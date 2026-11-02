@@ -83,7 +83,7 @@ export default function BigDataView() {
               Data Lake Industrial & Telemetría IoT en Tiempo Real
             </h1>
             <p className="text-sm text-slate-400 mt-1">
-              Ingesta masiva continua de sensores de tejeduría circular y autoclaves de tintorería a alta frecuencia.
+              Ingesta masiva continua de sensores de líneas de maquinado CNC y estaciones de producción a alta frecuencia.
             </p>
           </div>
 

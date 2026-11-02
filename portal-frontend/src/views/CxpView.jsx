@@ -36,7 +36,7 @@ export default function CxpView() {
   const [creditDays, setCreditDays] = useState(30);
   const [subtotal, setSubtotal] = useState('25000');
   const [retentionType, setRetentionType] = useState('Ninguna');
-  const [concept, setConcept] = useState('Compra de Materia Prima / Hilo');
+  const [concept, setConcept] = useState('Compra de Materia Prima / Insumos');
 
   const fetchBills = async () => {
     try {
@@ -707,7 +707,7 @@ export default function CxpView() {
                     type="text"
                     value={concept}
                     onChange={(e) => setConcept(e.target.value)}
-                    placeholder="Ej. Adquisición de Hilatura y Químicos de Teñido"
+                    placeholder="Ej. Adquisición de Materia Prima y Suministros Industriales"
                     className="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-red-500 focus:outline-none"
                     required
                   />
