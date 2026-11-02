@@ -264,7 +264,7 @@ async function runDemo() {
     // -------------------------------------------------------------
     console.log('8. Módulo de Compras...');
     await page.goto('http://localhost:5173/app/compras', { waitUntil: 'domcontentloaded' });
-    await updateHUD(page, '08', 'Compras & Abastecimiento', 'Órdenes de compra a proveedores de hilado, tintes y avíos con recepción directa en muelle de almacén.', '🛍️');
+    await updateHUD(page, '08', 'Compras & Abastecimiento', 'Órdenes de compra a proveedores de materia prima, componentes e insumos con recepción directa en muelle de almacén.', '🛍️');
     const voice8 = narrate('Módulo siete. Compras y Abastecimiento. Emite órdenes de compra a proveedores de hilo, tintes e insumos, con seguimiento de entregas y recepción directa en almacén.');
     await sleep(1000);
     await smoothScrollDown(page, 400);

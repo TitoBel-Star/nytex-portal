@@ -49,11 +49,11 @@ export default function Configuracion() {
       setElectronicDocType('SFEP (Facturación Electrónica Panamá)');
       setVatRate(7.0);
       setExchangeRateUsd(1.00);
-    } else if (c === 'Regional Norte') {
+    } else {
       setTaxAuthority('Ministerio de Hacienda / Dirección General de Impuestos Internos (MH / DGII)');
-      setElectronicDocType('CFDI 4.0');
-      setVatRate(16.0);
-      setExchangeRateUsd(19.85);
+      setElectronicDocType('DTE (Documentos Tributarios Electrónicos)');
+      setVatRate(13.0);
+      setExchangeRateUsd(1.00);
     }
   };
 
@@ -284,7 +284,7 @@ export default function Configuracion() {
                      country === 'Guatemala' ? 'NIT (Guatemala)' :
                      country === 'Honduras' ? 'RTN (Honduras)' :
                      country === 'Costa Rica' ? 'Cédula Jurídica (Costa Rica)' :
-                     country === 'Panamá' ? 'RUC / DV (Panamá)' : 'Identificación Fiscal (RFC / Tax ID)'}
+                     country === 'Panamá' ? 'RUC / DV (Panamá)' : 'Identificación Fiscal (NIT / NRC El Salvador)'}
                   </label>
                   <input 
                     type="text" 

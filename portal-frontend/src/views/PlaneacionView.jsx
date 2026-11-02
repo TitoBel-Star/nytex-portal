@@ -244,7 +244,7 @@ export default function PlaneacionView() {
                   </span>
                   <h5 className="font-bold text-xs text-gray-900 mt-2">{act.title}</h5>
                   {act.amount && <p className="text-[11px] text-gray-500 font-mono mt-0.5">Presupuesto: ${act.amount?.toLocaleString()} USD</p>}
-                  {act.hours && <p className="text-[11px] text-gray-500 font-mono mt-0.5">Tiempo de Tejido: {act.hours} horas máquina</p>}
+                  {act.hours && <p className="text-[11px] text-gray-500 font-mono mt-0.5">Tiempo de Producción: {act.hours} horas máquina</p>}
                 </div>
                 <button
                   disabled={executing}

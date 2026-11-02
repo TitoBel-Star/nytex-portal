@@ -973,7 +973,7 @@ export default function Contabilidad() {
               {finReportType === 'Resultados' && financialStatements?.estadoResultados && (
                 <div className="max-w-3xl mx-auto bg-white border rounded-2xl p-6 shadow-sm space-y-4">
                   <div className="border-b pb-3 text-center">
-                    <span className="text-xs uppercase font-bold tracking-wider text-gray-400">NYTEX TEXTILES DE EL SALVADOR S.A. DE C.V.</span>
+                    <span className="text-xs uppercase font-bold tracking-wider text-gray-400">NYTEX CORPORATION S.A. DE C.V.</span>
                     <h3 className="text-xl font-black text-gray-900 mt-1">Estado de Resultados Integral</h3>
                     <p className="text-xs text-gray-500">Del 01 de Octubre al 31 de Octubre de 2026 (Expresado en USD)</p>
                   </div>
@@ -1910,9 +1910,9 @@ export default function Contabilidad() {
               <div className="border border-gray-300 rounded-xl p-6 bg-white space-y-4 flex-1 overflow-y-auto text-xs font-mono">
                 {/* Membrete Oficial */}
                 <div className="text-center border-b border-gray-400 pb-3 font-sans">
-                  <h2 className="text-base font-black text-gray-900">NYTEX TEXTILES DE EL SALVADOR S.A. DE C.V.</h2>
+                  <h2 className="text-base font-black text-gray-900">NYTEX CORPORATION S.A. DE C.V.</h2>
                   <div className="text-xs text-gray-600">
-                    NIT: 0614-120592-101-4 • NRC: 294820-1 • Giro: Fabricación y Comercialización Textil
+                    NIT: 0614-120592-101-4 • NRC: 294820-1 • Giro: Venta, Distribución, Servicios y Manufactura General
                   </div>
                   <div className="mt-1 font-bold text-purple-900 uppercase">
                     LIBRO LEGAL DE {libroSubTab === 'Compras' ? 'COMPRAS' : libroSubTab === 'VentasCCF' ? 'VENTAS A CONTRIBUYENTES (CCF)' : libroSubTab === 'Consumidor' ? 'VENTAS A CONSUMIDOR FINAL' : 'EXPORTACIONES'}
@@ -2040,7 +2040,7 @@ export default function Contabilidad() {
                 </div>
 
                 <div className="space-y-1 text-gray-700">
-                  <div>CONTRIBUYENTE: <strong className="font-sans">NYTEX TEXTILES DE EL SALVADOR S.A. DE C.V.</strong></div>
+                  <div>CONTRIBUYENTE: <strong className="font-sans">NYTEX CORPORATION S.A. DE C.V.</strong></div>
                   <div>NIT: <strong>0614-120592-101-4</strong> | NRC: <strong>294820-1</strong></div>
                   <div>VENCIMIENTO: <strong>13 DE NOVIEMBRE DE 2026</strong></div>
                 </div>

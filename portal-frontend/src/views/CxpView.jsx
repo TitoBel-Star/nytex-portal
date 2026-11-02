@@ -614,7 +614,7 @@ export default function CxpView() {
                   >
                     {partners.map(p => (
                       <option key={p.code} value={p.code}>
-                        {p.code} - {p.name} (RFC: {p.taxId || 'Generico'}) | {p.bankName || 'Banco Registrado'}
+                        {p.code} - {p.name} (NIT/NRC: {p.taxId || 'Generico'}) | {p.bankName || 'Banco Registrado'}
                       </option>
                     ))}
                     {partners.length === 0 && (
@@ -802,7 +802,7 @@ export default function CxpView() {
                     onChange={(e) => setPayMethod(e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-800 focus:outline-none focus:border-red-600"
                   >
-                    <option value="Transferencia Bancaria SPEI">Transferencia Bancaria SPEI</option>
+                    <option value="Transferencia Bancaria Transfer365 / ACH">Transferencia Bancaria Transfer365 / ACH</option>
                     <option value="Transferencia Internacional SWIFT">Transferencia Internacional SWIFT</option>
                     <option value="Cheque Nominativo">Cheque Nominativo</option>
                   </select>
@@ -868,7 +868,7 @@ export default function CxpView() {
                         <button
                           onClick={() => openVoucher(selectedBill, p)}
                           className="px-2 py-1 bg-slate-800 hover:bg-slate-900 text-white font-bold rounded text-[10px]"
-                          title="Ver Comprobante Oficial SPEI"
+                          title="Ver Comprobante Oficial Transfer365 / SWIFT"
                         >
                           🖨️ Voucher
                         </button>
@@ -893,7 +893,7 @@ export default function CxpView() {
         )}
 
         {/* ======================================================== */}
-        {/* MODAL VOUCHER OFICIAL SPEI / COMPROBANTE DE DISPERSIÓN */}
+        {/* MODAL VOUCHER OFICIAL TRANSFER365 / COMPROBANTE DE DISPERSIÓN */}
         {/* ======================================================== */}
         {voucherModalOpen && selectedPayment && voucherBill && (
           <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
@@ -903,7 +903,7 @@ export default function CxpView() {
                   <span className="text-2xl">🏦</span>
                   <div>
                     <h3 className="text-base font-bold text-[#0A2540]">Comprobante Oficial de Dispersión Bancaria</h3>
-                    <p className="text-[10px] text-gray-400 font-mono">NyTEX Tesorería Corporativa | SPEI / SWIFT</p>
+                    <p className="text-[10px] text-gray-400 font-mono">NyTEX Tesorería Corporativa | Transfer365 / SWIFT</p>
                   </div>
                 </div>
                 <button onClick={() => setVoucherModalOpen(false)} className="text-gray-400 hover:text-gray-600 text-xl font-bold">✕</button>
@@ -917,7 +917,7 @@ export default function CxpView() {
 
                 <div className="grid grid-cols-2 gap-2 text-gray-600">
                   <div>
-                    <span className="block text-[10px] text-gray-400 uppercase">Referencia SPEI / Rastreo</span>
+                    <span className="block text-[10px] text-gray-400 uppercase">Referencia Transfer365 / Rastreo BCR</span>
                     <span className="font-mono font-bold text-gray-800">{selectedPayment.reference}</span>
                   </div>
                   <div>

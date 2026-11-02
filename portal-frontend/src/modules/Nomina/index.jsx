@@ -371,7 +371,7 @@ export default function Nomina() {
 
       </div>
 
-      {/* MODAL: RECIBO DE NÓMINA DIGITAL (CFDI TIMBRADO) */}
+      {/* MODAL: RECIBO DE NÓMINA DIGITAL (DTE / MINISTERIO DE HACIENDA) */}
       {selectedReceipt && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl max-w-2xl w-full p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
@@ -379,10 +379,10 @@ export default function Nomina() {
             <div className="flex justify-between items-start border-b pb-4">
               <div>
                 <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-blue-800 uppercase">
-                  CFDI Nómina Versión 4.0 (Simulada)
+                  DTE Planilla y Retenciones Laborales (MH El Salvador)
                 </span>
-                <h3 className="font-black text-gray-900 text-lg mt-1">NyTEX Soluciones Corporativas S.A.</h3>
-                <p className="text-xs text-gray-500">RFC: NTE180420TX9 • Régimen General de Ley Personas Morales</p>
+                <h3 className="font-black text-gray-900 text-lg mt-1">NyTEX Corporation S.A. de C.V.</h3>
+                <p className="text-xs text-gray-500">NIT: 0614-120592-101-4 • NRC: 294820-1 • Ministerio de Hacienda El Salvador</p>
               </div>
               <button onClick={() => setSelectedReceipt(null)} className="text-gray-400 hover:text-gray-600 text-xl font-bold">
                 ✕
@@ -469,7 +469,7 @@ export default function Nomina() {
                   Neto Efectivo Depositado en Cuenta
                 </span>
                 <span className="text-xs text-emerald-200">
-                  Folio Fiscal UUID: {selectedReceipt.cfdiUuid}
+                  Código de Generación DTE MH: {selectedReceipt.cfdiUuid}
                 </span>
               </div>
               <div className="text-2xl font-black font-mono">
@@ -479,7 +479,7 @@ export default function Nomina() {
 
             {/* Cargas Patronales (Informativo para la empresa) */}
             <div className="p-3 bg-gray-50 rounded-xl border border-gray-200 text-[11px] text-gray-600 flex justify-between items-center">
-              <span><strong>Cargas Patronales Adicionales:</strong> Seguridad Social Patronal: ${selectedReceipt.employerImss} • Fondos Laborales: ${selectedReceipt.employerInfonavit} • Contribución Nómina: ${selectedReceipt.stateTax}</span>
+              <span><strong>Aportaciones Patronales El Salvador:</strong> ISSS Patronal (7.5%): ${selectedReceipt.employerImss} • AFP Patronal (8.75%): ${selectedReceipt.employerInfonavit} • INSAFORP (1%): ${selectedReceipt.stateTax}</span>
               <span className="font-bold text-gray-900 font-mono">Costo Empresa: ${selectedReceipt.companyCost?.toLocaleString()}</span>
             </div>
 

@@ -70,7 +70,7 @@ export default function BiCubeView() {
               Cubo Multidimensional de Inteligencia de Negocios
             </h1>
             <p className="text-sm text-slate-400 mt-1">
-              Análisis *Slice & Dice* transversal cruzando Líneas de Tejido, Canales de Venta, Zonas Geográficas y Trimestres.
+              Análisis *Slice & Dice* transversal cruzando Líneas de Productos, Canales de Venta, Zonas Geográficas y Trimestres.
             </p>
           </div>
 
@@ -129,13 +129,13 @@ export default function BiCubeView() {
 
             {/* Dimensión: Familia de Producto */}
             <div>
-              <label className="block text-xs font-semibold text-slate-400 mb-1">Dimensión: Familia de Tejido</label>
+              <label className="block text-xs font-semibold text-slate-400 mb-1">Dimensión: Línea de Producto</label>
               <select 
                 value={selectedFamily}
                 onChange={(e) => setSelectedFamily(e.target.value)}
                 className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-cyan-500"
               >
-                <option value="Todas">Todas las Familias</option>
+                <option value="Todas">Todas las Líneas</option>
                 {dimensions?.productFamilies?.map(f => (
                   <option key={f} value={f}>{f}</option>
                 ))}
@@ -185,11 +185,11 @@ export default function BiCubeView() {
           </div>
 
           <div className="bg-slate-900 border border-slate-800 p-5 rounded-2xl">
-            <span className="text-xs font-semibold text-slate-400 uppercase">Costo de Manufactura</span>
+            <span className="text-xs font-semibold text-slate-400 uppercase">Costo de Manufactura / Operación</span>
             <div className="text-2xl font-black text-rose-400 mt-1">
               ${filteredCost.toLocaleString()} <span className="text-xs text-slate-500">USD</span>
             </div>
-            <p className="text-[11px] text-slate-500 mt-1">Materia prima, hilados e insumos</p>
+            <p className="text-[11px] text-slate-500 mt-1">Materia prima, componentes e insumos</p>
           </div>
 
           <div className="bg-slate-900 border border-slate-800 p-5 rounded-2xl">
@@ -203,9 +203,9 @@ export default function BiCubeView() {
           <div className="bg-slate-900 border border-slate-800 p-5 rounded-2xl">
             <span className="text-xs font-semibold text-slate-400 uppercase">Volumen Operativo</span>
             <div className="text-2xl font-black text-purple-400 mt-1">
-              {filteredVolumeKg.toLocaleString()} <span className="text-xs text-slate-500">kg tejido</span>
+              {filteredVolumeKg.toLocaleString()} <span className="text-xs text-slate-500">unidades</span>
             </div>
-            <p className="text-[11px] text-slate-500 mt-1">Rendimiento en rollos producidos</p>
+            <p className="text-[11px] text-slate-500 mt-1">Rendimiento en lotes terminados</p>
           </div>
         </div>
 
@@ -226,7 +226,7 @@ export default function BiCubeView() {
               <thead className="bg-slate-950 text-slate-400 uppercase tracking-wider font-semibold border-b border-slate-800">
                 <tr>
                   <th className="py-3 px-4">Periodo</th>
-                  <th className="py-3 px-4">Familia de Tejido</th>
+                  <th className="py-3 px-4">Línea de Producto</th>
                   <th className="py-3 px-4">Región</th>
                   <th className="py-3 px-4">Segmento Cliente</th>
                   <th className="py-3 px-4 text-right">Volumen (kg)</th>

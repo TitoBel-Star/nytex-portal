@@ -127,7 +127,7 @@ export default function CxcView() {
   const openPayModal = (inv) => {
     setPayingInvoice(inv);
     setPaymentAmount(inv.balance.toString());
-    setPaymentReference(`SPEI-${Math.floor(100000 + Math.random() * 900000)}`);
+    setPaymentReference(`T365-${Math.floor(100000 + Math.random() * 900000)}`);
     setPaymentModalOpen(true);
   };
 
@@ -441,7 +441,7 @@ export default function CxcView() {
                     onChange={(e) => setPaymentMethod(e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-800 focus:outline-none focus:border-purple-600"
                   >
-                    <option value="Transferencia SPEI">Transferencia Bancaria SPEI</option>
+                    <option value="Transferencia Transfer365">Transferencia Bancaria Transfer365 / ACH</option>
                     <option value="Tarjeta de Crédito Corporativa">Tarjeta de Crédito Corporativa</option>
                     <option value="Cheque Nominativo">Cheque Nominativo</option>
                     <option value="Efectivo / Caja">Efectivo / Caja Chica</option>
@@ -550,7 +550,7 @@ export default function CxcView() {
                   >
                     {partners.map(p => (
                       <option key={p.code} value={p.code}>
-                        {p.code} - {p.name} ({p.taxId || 'RFC Generico'})
+                        {p.code} - {p.name} ({p.taxId || 'NIT/NRC Generico'})
                       </option>
                     ))}
                     {partners.length === 0 && (

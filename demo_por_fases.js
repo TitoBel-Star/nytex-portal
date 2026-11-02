@@ -431,10 +431,10 @@ async function runFase1(page, narrator) {
   await smoothScrollUp(page, 350);
   await vComp;
 
-  // [5] MÓDULO DE PRODUCCIÓN (Manufactura Textil)
+  // [5] MÓDULO DE PRODUCCIÓN (Manufactura y Operaciones)
   await goToPage(page, 'http://localhost:5173/app/produccion');
-  await updateHUD(page, '[5] PRODUCCIÓN', 'Tarea 5.1 a 5.3: OP, Consumo de Insumos y Liquidación', 'Programación de 30 rollos de Gabardina en Línea de Producción Automatizada con lista de materiales BOM.', 'Descuento de insumos y materias primas, y pase a Producto Terminado.');
-  const vProd = narrator.narrate('Módulo cinco: Producción y Manufactura. Tarea 5.1: Programar Orden de Fabricación para treinta unidades en el Línea de Producción Automatizada. Tarea 5.2: Iniciar Fabricación. Descuenta los insumos requeridos del almacén de materias primas. Tarea 5.3: Liquidar Orden. Ingresa los treinta unidades terminados al almacén con su póliza de liquidación.');
+  await updateHUD(page, '[5] PRODUCCIÓN', 'Tarea 5.1 a 5.3: OP, Consumo de Insumos y Liquidación', 'Programación de 30 unidades de Producto Terminado en Línea de Producción Automatizada con lista de materiales BOM.', 'Descuento de insumos y materias primas, y pase a Producto Terminado.');
+  const vProd = narrator.narrate('Módulo cinco: Producción y Manufactura. Tarea 5.1: Programar Orden de Fabricación para treinta unidades en el Línea de Producción Automatizada. Tarea 5.2: Iniciar Fabricación. Descuenta los insumos requeridos del almacén de materias primas. Tarea 5.3: Liquidar Orden. Ingresa las treinta unidades terminadas al almacén con su póliza de liquidación.');
   await sleep(400);
   await humanClick(page, 'button:has-text("+ Nueva Orden de Fabricación"), button:has-text("Nueva Orden de Producción")');
   await sleep(900);
@@ -548,7 +548,7 @@ async function runFase2(page, narrator) {
   // [11] ACTIVOS FIJOS Y DEPRECIACIONES
   await goToPage(page, 'http://localhost:5173/app/activosfijos');
   await updateHUD(page, '[11] ACTIVOS FIJOS', 'Tarea 11.1 y 11.2: Alta de Línea de Producción Automatizada y Depreciación IFRS / NIC 16', 'Alta de maquinaria por $385,000 USD y corrida automática de depreciación mensual.', 'Genera Póliza de Diario de Depreciación afectando gasto y depreciación acumulada.');
-  const vAct = narrator.narrate('Módulo once: Activos Fijos. Tarea 11.1: Registrar Activo de Planta. Damos de alta el Telar Circular Mayer y Cie con valor de trescientos ochenta y cinco mil dólares y vida útil de diez años. Tarea 11.2: Ejecutar Depreciación Mensual Automática conforme a normas internacionales IFRS, emitiendo la póliza contable respectiva.');
+  const vAct = narrator.narrate('Módulo once: Activos Fijos. Tarea 11.1: Registrar Activo de Planta. Damos de alta la Línea de Producción Automatizada con valor de trescientos ochenta y cinco mil dólares y vida útil de diez años. Tarea 11.2: Ejecutar Depreciación Mensual Automática conforme a normas internacionales IFRS, emitiendo la póliza contable respectiva.');
   await sleep(400);
   await humanClick(page, 'button:has-text("EJECUTAR DEPRECIACIÓN"), button:has-text("Depreciación Mensual")');
   await sleep(800);
@@ -628,7 +628,7 @@ async function runFase3(page, narrator) {
   // [25] PLANEACIÓN DE LA DEMANDA & S&OP (MRP II)
   await goToPage(page, 'http://localhost:5173/app/planeacion');
   await updateHUD(page, '[25] S&OP / MRP II', 'Tarea 25.1: Sincronización S&OP y Disparo de Requerimientos', 'Explosión de requerimientos MRP II: Demanda 50 rollos ➔ Déficit neto 600 kg hilo.', 'Disparo automático de requisición a Compras y órdenes sugeridas a Producción.');
-  const vPlan = narrator.narrate('Módulo veinticinco: Planeación de la Demanda y S&OP MRP dos. Tarea 25.1: Ejecutar la Sincronización S&OP. El motor calcula la demanda proyectada, explosiona la lista de materiales y envía automáticamente las requisiciones a Compras y el plan de tejido a Producción.');
+  const vPlan = narrator.narrate('Módulo veinticinco: Planeación de la Demanda y S&OP MRP dos. Tarea 25.1: Ejecutar la Sincronización S&OP. El motor calcula la demanda proyectada, explosiona la lista de materiales y envía automáticamente las requisiciones a Compras y el plan de manufactura a Producción.');
   await sleep(400);
   await humanClick(page, 'button:has-text("Sincronización S&OP"), button:has-text("Ejecutar")');
   await sleep(900);
@@ -662,10 +662,10 @@ async function runFase4(page, narrator) {
 
   // [21] BIG DATA & TELEMETRÍA IOT INDUSTRIAL
   await goToPage(page, 'http://localhost:5173/app/bigdata');
-  await updateHUD(page, '[21] BIG DATA & IOT', 'Tarea 21.1: Monitor de Telemetría IoT en Vivo', 'Lectura de sensores en Línea de Producción Automatizada: 28.4 RPM, Temperatura 48.2 °C, Tensión 14.2 cN.', 'Prevención de fallas mecánicas y cálculo automático de metros tejidos.');
+  await updateHUD(page, '[21] BIG DATA & IOT', 'Tarea 21.1: Monitor de Telemetría IoT en Vivo', 'Lectura de sensores en Línea de Producción Automatizada: 28.4 RPM, Temperatura 48.2 °C, Tensión 14.2 cN.', 'Prevención de fallas mecánicas y cálculo automático de unidades producidas.');
   const vIot = narrator.narrate('Módulo veintiuno: Big Data y Telemetría IoT Industrial. Tarea 21.1: Monitor de Telemetría en Vivo. Monitorea en tiempo real las revoluciones por minuto, temperatura de rodamientos y tensión operativa en noventa y seis centros de trabajo, emitiendo alertas predictivas.');
   await sleep(400);
-  await humanMoveTo(page, 'div:has-text("RPM"), div:has-text("Telar"), svg');
+  await humanMoveTo(page, 'div:has-text("RPM"), div:has-text("Línea"), svg');
   await sleep(900);
   await vIot;
 

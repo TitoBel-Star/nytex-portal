@@ -463,7 +463,7 @@ export default function RRHH() {
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="font-semibold text-gray-700 block mb-1">RFC</label>
+                  <label className="font-semibold text-gray-700 block mb-1">NIT / DUI</label>
                   <input 
                     type="text" 
                     required
@@ -510,7 +510,7 @@ export default function RRHH() {
                 </div>
               </div>
               <div>
-                <label className="font-semibold text-gray-700 block mb-1">Cuenta / CLABE de Nómina</label>
+                <label className="font-semibold text-gray-700 block mb-1">No. Cuenta / Transfer365</label>
                 <input 
                   type="text" 
                   placeholder="072910001928374615"

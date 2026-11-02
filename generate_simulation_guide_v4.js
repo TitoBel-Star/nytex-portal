@@ -263,7 +263,7 @@ En el panel del Workspace y en el Portal se integran accesos a:
 2. **Campos a registrar en el modal:**
    - **Tipo de Socio:** Seleccionar \`Cliente\` (opciones: *Cliente, Proveedor, Fletero, Prospecto*).
    - **Nombre / Razón Social:** Digitar \`Distribuidora Comercial Panamericana S.A.\`.
-   - **Identificación Fiscal (RFC / Tax ID):** Digitar \`DTG980421KM8\`.
+   - **Identificación Fiscal (NIT / NRC El Salvador):** Digitar \`0614-120592-101-4\`.
    - **Términos de Pago Habituales:** Seleccionar \`Neto 30 días\`.
    - **Contacto Principal:** Digitar \`Lic. Fernando Morales\`.
    - **Correo Electrónico:** Digitar \`fmorales@distribuidorapanamericana.com\`.
@@ -352,7 +352,7 @@ En el panel del Workspace y en el Portal se integran accesos a:
 #### Tarea 8.1: Emisión Directa de Factura a Crédito
 1. **Acción inicial:** Hacer clic en el botón superior derecho **\`+ NUEVA FACTURA DIRECTA\`**.
 2. **Campos a registrar en el modal:**
-   - **Cliente:** Seleccionar \`BP-002 | Hilados & Diseños Industriales\`.
+   - **Cliente:** Seleccionar \`BP-002 | Distribución & Suministros Industriales\`.
    - **Días de Crédito:** Digitar \`30\`.
    - **Concepto / Descripción:** Digitar \`Venta de Lote de Producto Terminado Calidad Exportación\`.
    - **Monto Subtotal ($):** Digitar \`18,500.00\`.
@@ -572,11 +572,11 @@ En el panel del Workspace y en el Portal se integran accesos a:
    - **Nombre Completo:** Digitar \`Carlos Alberto Ramos Solís\`.
    - **Departamento:** Seleccionar \`Producción Fabril\` (opciones: *Control de Calidad, Almacén & Logística, Ventas & Marketing, Finanzas & Administración*).
    - **Puesto / Cargo:** Digitar \`Operador Maestro de Centro de Producción CNC\`.
-   - **RFC:** Digitar \`RASC880315HJ2\`.
-   - **Registro Laboral (Seguridad Social):** Digitar \`45088891234\`.
+   - **NIT / DUI:** Digitar \`0614-150388-102-1\`.
+   - **Registro Laboral (Seguridad Social / ISSS):** Digitar \`450888912\`.
    - **Salario Diario ($):** Digitar \`650.00\`.
-   - **Banco para Dispersión:** Seleccionar \`BBVA\` o \`Banorte\`.
-   - **Cuenta / CLABE Interbancaria:** Digitar \`012180001234567890\`.
+   - **Banco para Dispersión:** Seleccionar \`Banco Agrícola\` o \`Banco Cuscatlán\`.
+   - **No. Cuenta / Transfer365:** Digitar \`072910001234567890\`.
 3. **Acción de confirmación:** Hacer clic en **\`Guardar Colaborador\`**.
 4. **Resultado en pantalla:** El colaborador se agrega con código \`EMP-XXXX\` en estado activo.
 
@@ -752,8 +752,8 @@ En el panel del Workspace y en el Portal se integran accesos a:
 2. **Lectura de parámetros en pantalla:**
    - **Velocidad de RPM:** \`28.4 RPM\` (Rango operativo normal: 25 - 30 RPM).
    - **Temperatura de Rodamientos:** \`48.2 °C\` (Umbral de alarma: > 65 °C).
-   - **Tensión del Hilo:** \`14.2 cN\` (Sensor de rotura de trama).
-   - **Metros de Tela Tejidos en el Turno:** \`1,420 m\`.
+   - **Tensión / Calibración:** \`14.2 cN\` (Sensor de tolerancia operativa).
+   - **Unidades Producidas en el Turno:** \`1,420 uds\`.
 3. **Simulación de Alerta Preventiva:** Si un sensor detecta micro-paradas o vibración anómala, el sistema emite una orden de servicio a Mantenimiento.
 
 ---

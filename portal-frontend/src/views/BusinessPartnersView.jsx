@@ -238,7 +238,7 @@ const BusinessPartnersView = () => {
             <div>
               <h1 className="text-2xl font-extrabold text-[#0A2540] mb-1">Base de Datos Maestra Centralizada</h1>
               <p className="text-gray-600 text-sm leading-relaxed">
-                Gestiona todas las entidades externas (Clientes, Proveedores, Fleteros y Aliados). Ahora incluye la consulta y mantenimiento de <strong>Líneas de Crédito Autorizadas</strong>, <strong>Datos Bancarios para Dispersión</strong> (CLABE/SWIFT) e <strong>Historial Comercial & Financiero</strong> integrado con Compras, Ventas, CxP y CxC.
+                Gestiona todas las entidades externas (Clientes, Proveedores, Fleteros y Aliados). Ahora incluye la consulta y mantenimiento de <strong>Líneas de Crédito Autorizadas</strong>, <strong>Datos Bancarios para Dispersión</strong> (Cuenta / Transfer365 / SWIFT) e <strong>Historial Comercial & Financiero</strong> integrado con Compras, Ventas, CxP y CxC.
               </p>
             </div>
           </div>
@@ -342,7 +342,7 @@ const BusinessPartnersView = () => {
                         </td>
                         <td className="px-5 py-4">
                           <div className="font-bold text-[#0A2540]">{partner.name}</div>
-                          <div className="text-xs text-gray-400 font-mono">Tax ID: {partner.taxId || 'RFC-GENERICO'}</div>
+                          <div className="text-xs text-gray-400 font-mono">NIT/NRC: {partner.taxId || '0614-120592-101-4'}</div>
                         </td>
                         <td className="px-5 py-4">
                           <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${
@@ -375,7 +375,7 @@ const BusinessPartnersView = () => {
                             Cta: {partner.bankAccount || '0129-4820-9912'}
                           </div>
                           <div className="text-[10px] font-mono text-gray-400">
-                            CLABE: {partner.bankClabe || '012180001294820991'}
+                            Transfer365 / Cta: {partner.bankClabe || '072910294411'}
                           </div>
                         </td>
                         <td className="px-5 py-4">
@@ -591,13 +591,13 @@ const BusinessPartnersView = () => {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs font-bold text-gray-700 mb-1">CLABE INTERBANCARIA (18 DÍGITOS)</label>
+                    <label className="block text-xs font-bold text-gray-700 mb-1">NO. CUENTA / TRANSFER365 (ACH)</label>
                     <input 
                       type="text" 
                       value={formData.bankClabe}
                       onChange={(e) => setFormData({ ...formData, bankClabe: e.target.value })}
-                      placeholder="Ej. 012180001294820991"
-                      maxLength={18}
+                      placeholder="Ej. 072910294411"
+                      maxLength={24}
                       className="w-full border border-gray-300 rounded-lg p-2 text-sm font-mono bg-white" 
                     />
                   </div>
@@ -699,7 +699,7 @@ const BusinessPartnersView = () => {
                     Historial Comercial & Financiero - {selectedHistoryPartner.name}
                   </h3>
                   <p className="text-xs text-blue-200 font-mono">
-                    Código: {selectedHistoryPartner.code} | Tipo: {selectedHistoryPartner.type} | Tax ID: {selectedHistoryPartner.taxId || 'RFC-GENERICO'}
+                    Código: {selectedHistoryPartner.code} | Tipo: {selectedHistoryPartner.type} | NIT/NRC: {selectedHistoryPartner.taxId || '0614-120592-101-4'}
                   </p>
                 </div>
               </div>
@@ -734,7 +734,7 @@ const BusinessPartnersView = () => {
                 <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl">
                   <span className="text-[10px] font-bold uppercase text-amber-800 block">Datos Bancarios</span>
                   <span className="text-xs font-bold text-gray-800 block">{selectedHistoryPartner.bankName || 'Banco Corporativo Principal'}</span>
-                  <span className="text-[10px] font-mono text-gray-500 block truncate">CLABE: {selectedHistoryPartner.bankClabe || '012180001294820991'}</span>
+                  <span className="text-[10px] font-mono text-gray-500 block truncate">Transfer365: {selectedHistoryPartner.bankClabe || '072910294411'}</span>
                 </div>
               </div>
 

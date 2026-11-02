@@ -186,7 +186,7 @@ export default function CircuitoGobernanzaView() {
               <div>
                 <span className="text-[10px] font-bold text-purple-400 uppercase block mb-1">Paso 2 • [22] Minería</span>
                 <h4 className="font-bold text-sm text-white">Algoritmos ML</h4>
-                <p className="text-[11px] text-slate-400 mt-1">K-Means agrupa clientes RFM y Apriori detecta afinidad de tejidos.</p>
+                <p className="text-[11px] text-slate-400 mt-1">K-Means agrupa clientes RFM y Apriori detecta afinidad de productos y órdenes.</p>
               </div>
               <div className="mt-3 text-right text-xs text-slate-500">➔ Patrones</div>
             </div>

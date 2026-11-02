@@ -38,7 +38,7 @@ const BusinessPartner = sequelize.define('BusinessPartner', {
   code: { type: DataTypes.STRING, unique: true, allowNull: false },
   name: { type: DataTypes.STRING, allowNull: false },
   type: { type: DataTypes.STRING, allowNull: false }, // Cliente, Proveedor, Fletero, Prospecto, Aliado Comercial
-  taxId: { type: DataTypes.STRING, defaultValue: 'RFC-GENERICO' },
+  taxId: { type: DataTypes.STRING, defaultValue: '0614-120592-101-4' },
   contactName: { type: DataTypes.STRING },
   email: { type: DataTypes.STRING },
   phone: { type: DataTypes.STRING },
@@ -381,17 +381,17 @@ const AccountCatalog = sequelize.define('AccountCatalog', {
 const Employee = sequelize.define('Employee', {
   employeeCode: { type: DataTypes.STRING, unique: true, allowNull: false },
   fullName: { type: DataTypes.STRING, allowNull: false },
-  rfc: { type: DataTypes.STRING, allowNull: false },
-  curp: { type: DataTypes.STRING },
-  nss: { type: DataTypes.STRING, allowNull: false },
-  department: { type: DataTypes.STRING, defaultValue: 'Producción Fabril' }, // 'Producción Fabril', 'Logística & WMS', 'Ventas & Comercial', 'Administración & Finanzas'
+  rfc: { type: DataTypes.STRING, allowNull: false }, // NIT El Salvador
+  curp: { type: DataTypes.STRING }, // DUI El Salvador
+  nss: { type: DataTypes.STRING, allowNull: false }, // No. Afiliación ISSS
+  department: { type: DataTypes.STRING, defaultValue: 'Producción & Manufactura' }, // 'Producción & Manufactura', 'Logística & WMS', 'Ventas & Comercial', 'Administración & Finanzas'
   jobTitle: { type: DataTypes.STRING, allowNull: false },
   contractType: { type: DataTypes.STRING, defaultValue: 'Tiempo Indeterminado' },
   dailySalary: { type: DataTypes.FLOAT, defaultValue: 450 }, // SBD (Salario Base Diario)
   integratedDailySalary: { type: DataTypes.FLOAT, defaultValue: 472.5 }, // SDI (Salario Diario Integrado con factor de prestaciones)
   monthlySalary: { type: DataTypes.FLOAT, defaultValue: 13500 },
-  bankName: { type: DataTypes.STRING, defaultValue: 'Banco Operativo Central' },
-  bankAccount: { type: DataTypes.STRING, defaultValue: '072910294411' }, // Cuenta / CLABE
+  bankName: { type: DataTypes.STRING, defaultValue: 'Banco Agrícola / Banco Cuscatlán' },
+  bankAccount: { type: DataTypes.STRING, defaultValue: '072910294411' }, // Cuenta / Transfer365
   hireDate: { type: DataTypes.STRING, defaultValue: '2024-01-15' },
   status: { type: DataTypes.STRING, defaultValue: 'Activo' }, // 'Activo', 'Incapacidad', 'Vacaciones', 'Baja'
   avatar: { type: DataTypes.STRING, defaultValue: '👤' }
@@ -431,7 +431,7 @@ const PayrollRun = sequelize.define('PayrollRun', {
   totalNet: { type: DataTypes.FLOAT, defaultValue: 0 },
   totalEmployerImss: { type: DataTypes.FLOAT, defaultValue: 0 },
   totalEmployerInfonavit: { type: DataTypes.FLOAT, defaultValue: 0 },
-  totalStateTax: { type: DataTypes.FLOAT, defaultValue: 0 }, // 3% ISN
+  totalStateTax: { type: DataTypes.FLOAT, defaultValue: 0 }, // INSAFORP 1% Ley El Salvador
   totalCompanyCost: { type: DataTypes.FLOAT, defaultValue: 0 },
   bankSourceAccount: { type: DataTypes.STRING, defaultValue: 'BCO-BNTE-02' },
   disbursementTxCode: { type: DataTypes.STRING, allowNull: true },
@@ -2870,8 +2870,8 @@ app.get('/api/contabilidad/libros-iva', async (req, res) => {
         fecha: '2026-10-12',
         dteNumero: 'DTE-11-0000021',
         duca: 'DUCA-T-2026-009182',
-        paisDestino: 'Guatemala',
-        clienteExterior: 'Textiles del Norte S.A. (GT)',
+        paisDestino: 'Estados Unidos',
+        clienteExterior: 'Global Logistics & Supplies Inc. (USA)',
         valorFob: 25000.00,
         tasaIva: '0% (Exenta Ley de Zonas Francas / Export)'
       }
@@ -3492,10 +3492,10 @@ app.post('/api/nomina/calculate', async (req, res) => {
       const empTotalDeductions = Math.round((isrAmount + imssWorkerAmount) * 100) / 100;
       const netPay = Math.round((grossEarnings - empTotalDeductions) * 100) / 100;
 
-      // Cargas patronales (Costo Compañía)
-      const employerImss = Math.round((emp.integratedDailySalary * daysWorked * 0.185) * 100) / 100; // 18.5% Riesgo Operativo
-      const employerInfonavit = Math.round((emp.integratedDailySalary * daysWorked * 0.05) * 100) / 100; // 5% Infonavit
-      const stateTax = Math.round(grossEarnings * 0.03 * 100) / 100; // 3% ISN
+      // Cargas patronales El Salvador (ISSS 7.5%, AFP 8.75%, INSAFORP 1%)
+      const employerImss = Math.round((grossEarnings * 0.075) * 100) / 100; // ISSS Patronal 7.5%
+      const employerInfonavit = Math.round((grossEarnings * 0.0875) * 100) / 100; // AFP Patronal 8.75%
+      const stateTax = Math.round(grossEarnings * 0.01 * 100) / 100; // INSAFORP 1% Ley El Salvador
       const companyCost = Math.round((grossEarnings + employerImss + employerInfonavit + stateTax) * 100) / 100;
 
       totalGross += grossEarnings;
@@ -3510,8 +3510,8 @@ app.post('/api/nomina/calculate', async (req, res) => {
       totalEmployerInfonavit += employerInfonavit;
       totalStateTax += stateTax;
 
-      // CFDI Timbrado Fiscal simulado
-      const cfdiUuid = `UUID-${Math.random().toString(36).substring(2, 10).toUpperCase()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}-4A9F-2026`;
+      // DTE Generación Electrónica Ministerio de Hacienda El Salvador
+      const cfdiUuid = `DTE-MH-${Math.random().toString(36).substring(2, 10).toUpperCase()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}-4A9F-2026`;
 
       return {
         employeeCode: emp.employeeCode,
@@ -3648,14 +3648,14 @@ app.post('/api/nomina/post-accounting', async (req, res) => {
       { accountCode: '5101-01', accountName: 'Gastos de Personal - Sueldos y Salarios Base', debit: baseSalariesExpense, credit: 0 },
       { accountCode: '5101-02', accountName: 'Gastos de Personal - Horas Extraordinarias', debit: period.totalOvertime, credit: 0 },
       { accountCode: '5101-03', accountName: 'Gastos de Personal - Premios de Asistencia y Puntualidad', debit: period.totalBonuses, credit: 0 },
-      { accountCode: '5102-01', accountName: 'Cargas Sociales Patronales (Seguridad Social y Previsión)', debit: totalPatronal, credit: 0 },
-      { accountCode: '5102-02', accountName: 'Impuestos Locales sobre Nómina (ISN 3%)', debit: period.totalStateTax, credit: 0 },
+      { accountCode: '5102-01', accountName: 'Cargas Sociales Patronales (ISSS 7.5% y AFP 8.75%)', debit: totalPatronal, credit: 0 },
+      { accountCode: '5102-02', accountName: 'Aportes Patronales de Ley (INSAFORP 1%)', debit: period.totalStateTax, credit: 0 },
 
       // HABER (Retenciones de Impuestos, Pasivos por Enterar y Bancos)
-      { accountCode: '2105-01', accountName: 'Impuestos Retenidos por Salarios (Retenciones Fiscales por Pagar)', debit: 0, credit: period.totalIsr },
-      { accountCode: '2106-01', accountName: 'Seguridad Social - Aportes Laborales por Pagar', debit: 0, credit: period.totalImssWorker },
-      { accountCode: '2107-01', accountName: 'Seguridad Social - Aportes Patronales por Enterar', debit: 0, credit: totalPatronal },
-      { accountCode: '2107-02', accountName: 'Impuesto sobre Nómina (ISN) Estatal por Pagar', debit: 0, credit: period.totalStateTax },
+      { accountCode: '2105-01', accountName: 'Impuestos Retenidos por Salarios (Retenciones ISR por Enterar)', debit: 0, credit: period.totalIsr },
+      { accountCode: '2106-01', accountName: 'Seguridad Social - Aportes Laborales por Pagar (ISSS / AFP)', debit: 0, credit: period.totalImssWorker },
+      { accountCode: '2107-01', accountName: 'Seguridad Social - Aportes Patronales por Enterar (ISSS / AFP)', debit: 0, credit: totalPatronal },
+      { accountCode: '2107-02', accountName: 'Aportes Patronales por Pagar (INSAFORP)', debit: 0, credit: period.totalStateTax },
       { accountCode: '1101-02', accountName: 'Bancos Nacionales (Banco Operativo Central)', debit: 0, credit: period.totalNet }
     ];
 
@@ -4128,18 +4128,18 @@ app.get('/api/fase6/planeacion/mrp', async (req, res) => {
     });
     if (totalRollsDemanded === 0) totalRollsDemanded = 50; // Base para planeación si es nuevo
 
-    // 2. Parámetros de Transformación Industrial (BOM / Telar Circular)
-    // 1 Rollo de Tela (20 kg) requiere: 21 kg de Hilatura de Algodón (5% merma técnica) y 2.5 horas de telar
+    // 2. Parámetros de Transformación Industrial (BOM / Línea de Producción Industrial)
+    // 1 Lote de Producto Terminado requiere: Insumos Base MP-01 (con margen técnico del 5%) y 2.5 horas de máquina
     const kgYarnPerRoll = 21;
     const hoursPerRoll = 2.5;
 
     const totalYarnRequiredKg = totalRollsDemanded * kgYarnPerRoll;
     const totalLoomHoursRequired = totalRollsDemanded * hoursPerRoll;
 
-    // Stock actual de hilatura en inventario
-    const yarnItem = inventory.find(i => i.name.includes('Algodón') || i.sku.includes('HIL')) || {
-      sku: 'MAT-HIL-01',
-      name: 'Materia Prima Base MP-01',
+    // Stock actual de materia prima en inventario
+    const yarnItem = inventory.find(i => i.name.includes('Materia Prima') || i.sku.includes('MAT')) || {
+      sku: 'MAT-IND-01',
+      name: 'Materia Prima Base Grado A',
       stock: 450,
       unitCost: 85,
       minStock: 200
@@ -4149,10 +4149,10 @@ app.get('/api/fase6/planeacion/mrp', async (req, res) => {
     const yarnDeficitKg = Math.max(0, totalYarnRequiredKg - currentYarnStockKg);
     const purchaseCostRequired = Math.round(yarnDeficitKg * (yarnItem.unitCost || 85));
 
-    // Capacidad instalada mensual (Telares disponibles)
-    const looms = assets.filter(a => a.category.includes('Maquinaria') || a.name.includes('Telar'));
+    // Capacidad instalada mensual (Máquinas y líneas disponibles)
+    const looms = assets.filter(a => a.category.includes('Maquinaria') || a.name.includes('Planta') || a.name.includes('Línea'));
     const totalLoomsCount = Math.max(looms.length, 2);
-    const monthlyLoomCapacityHours = totalLoomsCount * 24 * 25; // 2 telares * 24h * 25 días útiles = 1200 horas
+    const monthlyLoomCapacityHours = totalLoomsCount * 24 * 25; // 2 máquinas * 24h * 25 días útiles = 1200 horas
     const loomUtilizationPct = Math.min(100, Math.round((totalLoomHoursRequired / monthlyLoomCapacityHours) * 100));
 
     res.json({
@@ -4169,7 +4169,7 @@ app.get('/api/fase6/planeacion/mrp', async (req, res) => {
         currentStockKg: currentYarnStockKg,
         deficitKg: yarnDeficitKg,
         suggestedPurchaseAmount: purchaseCostRequired,
-        recommendedSupplier: 'Materiales y Fibras Sintéticas S.A. (BP-003)',
+        recommendedSupplier: 'Distribuidora Global de Insumos Industriales S.A. (BP-003)',
         urgency: yarnDeficitKg > 0 ? 'Requerida Orden de Compra Inmediata' : 'Stock Suficiente'
       },
       capacity: {
@@ -4183,14 +4183,14 @@ app.get('/api/fase6/planeacion/mrp', async (req, res) => {
         {
           id: 'act-1',
           type: 'Compras',
-          title: `Generar Orden de Compra por ${yarnDeficitKg} kg de ${yarnItem.name}`,
+          title: `Generar Orden de Compra por ${yarnDeficitKg} unidades de ${yarnItem.name}`,
           amount: purchaseCostRequired,
           moduleTarget: 'Compras [4]'
         },
         {
           id: 'act-2',
           type: 'Producción',
-          title: `Programar Orden Fabril en Centro de Maquinado Industrial CNC (${totalRollsDemanded} rollos)`,
+          title: `Programar Orden Fabril en Línea de Producción Industrial (${totalRollsDemanded} unidades)`,
           hours: totalLoomHoursRequired,
           moduleTarget: 'Producción [5]'
         }
@@ -4683,7 +4683,7 @@ app.get('/api/fase7/datamining/clusters', async (req, res) => {
       { name: 'Modas y Confecciones El Águila', recency: 7, frequency: 19, monetary: 430000, cluster: 0 },
       { name: 'Confecciones del Bajío', recency: 12, frequency: 11, monetary: 165000, cluster: 1 },
       { name: 'Manufacturas Globales', recency: 16, frequency: 8, monetary: 120000, cluster: 1 },
-      { name: 'Pantalones y Tejidos León', recency: 18, frequency: 7, monetary: 98000, cluster: 1 },
+      { name: 'Suministros Comerciales San Salvador', recency: 18, frequency: 7, monetary: 98000, cluster: 1 },
       { name: 'Manufacturas del Valle', recency: 65, frequency: 3, monetary: 48000, cluster: 2 },
       { name: 'Deportivos Puebla', recency: 78, frequency: 2, monetary: 38000, cluster: 2 },
       { name: 'Boutique Diseños Urbanos', recency: 9, frequency: 1, monetary: 34000, cluster: 3 },
@@ -4717,34 +4717,34 @@ app.get('/api/fase7/datamining/rules', (req, res) => {
         support: 0.44,
         confidence: 0.89,
         lift: 2.14,
-        insight: 'El 89% de clientes que solicitan tejido Jersey demandan adicionalmente bobinas de hilo peinado para acabados.'
+        insight: 'El 89% de clientes que solicitan Producto Terminado Estándar demandan adicionalmente materia prima complementaria.'
       },
       {
         id: 'R-02',
         antecedent: ['Línea Industrial Reforzada'],
-        consequent: ['Elástano Spandex 40D'],
+        consequent: ['Componente de Polímero Grado A'],
         support: 0.31,
         confidence: 0.94,
         lift: 3.28,
-        insight: 'Fuerte acoplamiento entre confección de telas elásticas y adición de fibra sintética Spandex en tejeduría.'
+        insight: 'Fuerte acoplamiento entre requerimientos de línea industrial reforzada y componentes de polímero de alta resistencia.'
       },
       {
         id: 'R-03',
-        antecedent: ['Tinte Reactivo Azul Marino', 'Fijador de Color'],
+        antecedent: ['Reactivo de Acabado Grado A', 'Estabilizador de Proceso'],
         consequent: ['Componente Aditivo Industrial'],
         support: 0.26,
         confidence: 0.82,
         lift: 2.45,
-        insight: 'Los procesos de tintorería por agotamiento con colorantes reactivos compran casi siempre suavizante de terminación.'
+        insight: 'Los procesos de acabado industrial por agotamiento compran casi siempre aditivo estabilizador de terminación.'
       },
       {
         id: 'R-04',
         antecedent: ['Línea Industrial Térmica'],
-        consequent: ['Rib Elástano Spandex (Puños y Cuellos)'],
+        consequent: ['Kit de Ensamble y Fijación'],
         support: 0.28,
         confidence: 0.85,
         lift: 2.70,
-        insight: 'Fabricantes de sudaderas compran tejido de cuerpo en conjunto con rib complementario para confección integral.'
+        insight: 'Clientes corporativos adquieren la línea industrial térmica conjuntamente con kits complementarios para ensamble.'
       }
     ]
   });
@@ -4778,7 +4778,7 @@ app.put('/api/fase7/config/company', async (req, res) => {
       module: 'Configuracion',
       user: 'admin@consultores-nyt.com',
       ipAddress: '192.168.1.105',
-      details: `Parámetros corporativos y fiscales actualizados: Razón Social="${config.companyName}", RFC="${config.rfc}", Tipo Cambio USD=${config.exchangeRateUsd}`,
+      details: `Parámetros corporativos y fiscales actualizados: Razón Social="${config.companyName}", NIT="${config.rfc}", Tipo Cambio USD=${config.exchangeRateUsd}`,
       severity: 'WARNING'
     });
 
@@ -4818,7 +4818,7 @@ app.get('/api/fase7/config/roles', (req, res) => {
       role: 'Director Financiero / Contador',
       description: 'Gestión exclusiva de Contabilidad, Pólizas, Tesorería, Balanza Fiscal, CxC, CxP, Activos Fijos y Nómina.',
       usersCount: 3,
-      permissions: ['ACCOUNTING_ENTRIES', 'SPEI_DISBURSEMENT', 'FISCAL_REPORTS', 'PAYROLL_POST']
+      permissions: ['ACCOUNTING_ENTRIES', 'TRANSFER365_DISBURSEMENT', 'FISCAL_REPORTS', 'PAYROLL_POST']
     },
     {
       role: 'Jefe de Planta / Producción',
@@ -4929,14 +4929,14 @@ app.post('/api/fases/fase1/simulate', async (req, res) => {
       orderCode,
       clientCode: 'BP-001',
       clientName: 'Distribuidora Comercial del Norte S.A.',
-      clientRfc: 'DTN980312TX1',
-      deliveryAddress: 'Parque Industrial Huinalá, Apodaca, N.L.',
-      items: [{ sku: 'TEL-JER-01', name: 'Producto Terminado Estándar Alfa', quantity: 20, unitPrice: 2090.52, total: 41810.34 }],
+      clientRfc: '0614-120592-101-4',
+      deliveryAddress: 'Zona Industrial Plan de la Laguna, Antiguo Cuscatlán, El Salvador',
+      items: [{ sku: 'PROD-IND-01', name: 'Producto Terminado Estándar Alfa', quantity: 20, unitPrice: 2090.52, total: 41810.34 }],
       subtotal,
       tax,
       total: amount,
       paymentTerms: 'Contado Bancario',
-      carrier: 'Transportes Express del Norte',
+      carrier: 'Transportes Logísticos de El Salvador',
       freightCost: 0,
       status: 'Entregado'
     });
@@ -4965,9 +4965,9 @@ app.post('/api/fases/fase1/simulate', async (req, res) => {
       originModule: 'Ventas & Bancos',
       originReference: orderCode,
       lines: [
-        { accountCode: '101.01', accountName: 'Bancos - Banco Corporativo Principal', debit: amount, credit: 0 },
-        { accountCode: '401.01', accountName: 'Ventas de Tejido Tasa 13%', debit: 0, credit: subtotal },
-        { accountCode: '208.01', accountName: 'IVA Trasladado Cobrado (13%)', debit: 0, credit: tax }
+        { accountCode: '101.01', accountName: 'Bancos - Banco Agrícola / Cuscatlán', debit: amount, credit: 0 },
+        { accountCode: '401.01', accountName: 'Ventas de Productos y Servicios Tasa 13%', debit: 0, credit: subtotal },
+        { accountCode: '208.01', accountName: 'IVA Débito Fiscal Cobrado (13%)', debit: 0, credit: tax }
       ]
     });
 
@@ -5013,7 +5013,7 @@ app.get('/api/fases/fase2/summary', async (req, res) => {
         pendingBpmTasks,
         wmsPickingZonesCount: 4,
         fleetTrucksActiveCount: 3,
-        oeeAverage: '82.4% (Planta Tejeduría)',
+        oeeAverage: '82.4% (Planta Industrial)',
         bpmStatus: 'Workflows BPMN 2.0 Operativos'
       }
     });
@@ -5027,16 +5027,16 @@ app.post('/api/fases/fase2/simulate', async (req, res) => {
     const opCount = await ProductionOrder.count();
     const opCode = `OP-EXP-${String(opCount + 1).padStart(3, '0')}`;
 
-    // 1. Crear Orden Fabril en Telar
+    // 1. Crear Orden Fabril en Línea de Producción
     const op = await ProductionOrder.create({
       opCode,
-      productSku: 'TEL-RIB-02',
-      productName: 'Rib Elástano Spandex 95/5 (20kg/rollo)',
+      productSku: 'PROD-IND-02',
+      productName: 'Lote de Producto Terminado Tipo Industrial',
       targetQuantity: 35,
-      unit: 'rollos',
+      unit: 'unidades',
       bom: [
-        { sku: 'MAT-HIL-01', name: 'Materia Prima Base MP-01', requiredQuantity: 665, unit: 'kg' },
-        { sku: 'MAT-SPX-02', name: 'Fibra Spandex 40D', requiredQuantity: 35, unit: 'kg' }
+        { sku: 'MAT-IND-01', name: 'Materia Prima Base MP-01', requiredQuantity: 665, unit: 'kg' },
+        { sku: 'MAT-POL-02', name: 'Insumo Polímero Grado A', requiredQuantity: 35, unit: 'kg' }
       ],
       operator: 'Ing. Supervisor Fabril',
       workcenter: 'Centro de Maquinado Industrial CNC #2 - Planta 1',
@@ -5206,13 +5206,13 @@ async function startServer() {
     // 1. Migración segura de columnas en BusinessPartners, SaleOrders y AccountPayables (SQLite)
     try {
       const bpCols = (await sequelize.query("PRAGMA table_info(BusinessPartners)"))[0].map(c => c.name);
-      if (!bpCols.includes('taxId')) await sequelize.query("ALTER TABLE BusinessPartners ADD COLUMN taxId VARCHAR(255) DEFAULT 'RFC-GENERICO'");
+      if (!bpCols.includes('taxId')) await sequelize.query("ALTER TABLE BusinessPartners ADD COLUMN taxId VARCHAR(255) DEFAULT '0614-120592-101-4'");
       if (!bpCols.includes('notes')) await sequelize.query("ALTER TABLE BusinessPartners ADD COLUMN notes TEXT");
       if (!bpCols.includes('paymentTerms')) await sequelize.query("ALTER TABLE BusinessPartners ADD COLUMN paymentTerms VARCHAR(255) DEFAULT 'Neto 30 días'");
-      if (!bpCols.includes('bankName')) await sequelize.query("ALTER TABLE BusinessPartners ADD COLUMN bankName VARCHAR(255) DEFAULT 'Banco Corporativo Principal'");
+      if (!bpCols.includes('bankName')) await sequelize.query("ALTER TABLE BusinessPartners ADD COLUMN bankName VARCHAR(255) DEFAULT 'Banco Agrícola / Banco Cuscatlán'");
       if (!bpCols.includes('bankAccount')) await sequelize.query("ALTER TABLE BusinessPartners ADD COLUMN bankAccount VARCHAR(255) DEFAULT '0129-4820-9912'");
-      if (!bpCols.includes('bankClabe')) await sequelize.query("ALTER TABLE BusinessPartners ADD COLUMN bankClabe VARCHAR(255) DEFAULT '012180001294820991'");
-      if (!bpCols.includes('bankSwift')) await sequelize.query("ALTER TABLE BusinessPartners ADD COLUMN bankSwift VARCHAR(255) DEFAULT 'CORPUS33'");
+      if (!bpCols.includes('bankClabe')) await sequelize.query("ALTER TABLE BusinessPartners ADD COLUMN bankClabe VARCHAR(255) DEFAULT '072910294411'");
+      if (!bpCols.includes('bankSwift')) await sequelize.query("ALTER TABLE BusinessPartners ADD COLUMN bankSwift VARCHAR(255) DEFAULT 'AGRISVSS'");
 
       const soCols = (await sequelize.query("PRAGMA table_info(SaleOrders)"))[0].map(c => c.name);
       if (!soCols.includes('paymentMethod')) await sequelize.query("ALTER TABLE SaleOrders ADD COLUMN paymentMethod VARCHAR(255) DEFAULT 'Por Definir'");
@@ -5298,24 +5298,25 @@ async function startServer() {
       const existingPartners = await BusinessPartner.findAll();
       for (const p of existingPartners) {
         let updated = false;
-        if (!p.taxId || p.taxId === 'RFC-GENERICO') {
-          p.taxId = p.type === 'Proveedor' ? `PRV${p.code.replace(/\D/g, '')}880912MX1` : `CLI${p.code.replace(/\D/g, '')}920115TX0`;
+        if (!p.taxId || p.taxId.includes('RFC') || p.taxId.includes('MX') || p.taxId.includes('PRV') || p.taxId.includes('CLI')) {
+          const num = p.code.replace(/\D/g, '') || '101';
+          p.taxId = `0614-${num.padStart(6, '1')}-101-4`;
           updated = true;
         }
-        if (!p.bankName) {
-          p.bankName = p.type === 'Proveedor' ? 'BBVA Corporativo' : 'Banco Operativo Central';
+        if (!p.bankName || p.bankName.includes('BBVA')) {
+          p.bankName = p.type === 'Proveedor' ? 'Banco Agrícola S.A.' : 'Banco Cuscatlán El Salvador';
           updated = true;
         }
         if (!p.bankAccount) {
           p.bankAccount = '0129-4820-9912';
           updated = true;
         }
-        if (!p.bankClabe) {
-          p.bankClabe = '012180001294820991';
+        if (!p.bankClabe || p.bankClabe === '012180001294820991') {
+          p.bankClabe = '072910294411';
           updated = true;
         }
         if (!p.bankSwift) {
-          p.bankSwift = 'CORPUS33';
+          p.bankSwift = 'AGRISVSS';
           updated = true;
         }
         if (!p.paymentTerms) {
@@ -5466,16 +5467,16 @@ async function startServer() {
         {
           employeeCode: 'EMP-001',
           fullName: 'Ing. Roberto Morales Garza',
-          rfc: 'MOGR850612TX1',
-          curp: 'MOGR850612HNLRLR09',
-          nss: '48028599120',
-          department: 'Producción Fabril',
-          jobTitle: 'Supervisor Fabril de Producción',
+          rfc: '0614-120685-101-2',
+          curp: '02394821-4',
+          nss: '480285991',
+          department: 'Producción & Manufactura',
+          jobTitle: 'Supervisor de Planta y Manufactura',
           contractType: 'Tiempo Indeterminado',
           dailySalary: 850,
           integratedDailySalary: 892.50,
           monthlySalary: 25500,
-          bankName: 'Banco Operativo Central',
+          bankName: 'Banco Agrícola',
           bankAccount: '072910001827361920',
           hireDate: '2023-04-01',
           status: 'Activo',
@@ -5484,16 +5485,16 @@ async function startServer() {
         {
           employeeCode: 'EMP-002',
           fullName: 'Carlos Ramírez Almacenista',
-          rfc: 'RAAC901103NL2',
-          curp: 'RAAC901103HNLMC001',
-          nss: '48109012345',
+          rfc: '0614-031190-102-1',
+          curp: '03819284-5',
+          nss: '481090123',
           department: 'Logística & WMS',
           jobTitle: 'Encargado de Racks & Picking',
           contractType: 'Tiempo Indeterminado',
           dailySalary: 520,
           integratedDailySalary: 546.00,
           monthlySalary: 15600,
-          bankName: 'Banco Operativo Central',
+          bankName: 'Banco Cuscatlán',
           bankAccount: '072910004928172635',
           hireDate: '2024-02-15',
           status: 'Activo',
@@ -5502,16 +5503,16 @@ async function startServer() {
         {
           employeeCode: 'EMP-003',
           fullName: 'Laura Méndez Vázquez',
-          rfc: 'MEVL940820MN3',
-          curp: 'MEVL940820MNLNZ002',
-          nss: '48149488371',
-          department: 'Producción Fabril',
+          rfc: '0614-200894-101-3',
+          curp: '04918273-6',
+          nss: '481494883',
+          department: 'Producción & Manufactura',
           jobTitle: 'Operadora Especialista de Maquinaria Industrial',
           contractType: 'Tiempo Indeterminado',
           dailySalary: 460,
           integratedDailySalary: 483.00,
           monthlySalary: 13800,
-          bankName: 'Banco Operativo Central',
+          bankName: 'Banco Agrícola',
           bankAccount: '072910003819273645',
           hireDate: '2024-06-01',
           status: 'Activo',
@@ -5520,16 +5521,16 @@ async function startServer() {
         {
           employeeCode: 'EMP-004',
           fullName: 'Lic. Alejandro Castillo Ríos',
-          rfc: 'CARA881215TX4',
-          curp: 'CARA881215HNLSTL03',
-          nss: '48088819284',
+          rfc: '0614-151288-102-4',
+          curp: '05192847-7',
+          nss: '480888192',
           department: 'Ventas & Comercial',
           jobTitle: 'Ejecutivo de Cuentas Clave Corporativas',
           contractType: 'Tiempo Indeterminado',
           dailySalary: 750,
           integratedDailySalary: 787.50,
           monthlySalary: 22500,
-          bankName: 'BBVA',
+          bankName: 'Banco Cuscatlán',
           bankAccount: '012910007826354182',
           hireDate: '2023-09-10',
           status: 'Activo',
@@ -5538,16 +5539,16 @@ async function startServer() {
         {
           employeeCode: 'EMP-005',
           fullName: 'C.P. Mariana Garza Elizondo',
-          rfc: 'GAEM920405TX5',
-          curp: 'GAEM920405MNLRZ004',
-          nss: '48129204918',
+          rfc: '0614-050492-101-5',
+          curp: '06182940-8',
+          nss: '481292049',
           department: 'Administración & Finanzas',
           jobTitle: 'Especialista Contable & Nóminas',
           contractType: 'Tiempo Indeterminado',
           dailySalary: 800,
           integratedDailySalary: 840.00,
           monthlySalary: 24000,
-          bankName: 'Banco Operativo Central',
+          bankName: 'Banco Agrícola',
           bankAccount: '072910009827361524',
           hireDate: '2023-02-01',
           status: 'Activo',
@@ -5556,16 +5557,16 @@ async function startServer() {
         {
           employeeCode: 'EMP-006',
           fullName: 'Javier Treviño Santos',
-          rfc: 'TESJ870314NL6',
-          curp: 'TESJ870314HNLRL005',
-          nss: '48078749281',
+          rfc: '0614-140387-102-6',
+          curp: '07192843-9',
+          nss: '480787492',
           department: 'Logística & Despachos',
           jobTitle: 'Operador de Unidad de Reparto',
           contractType: 'Tiempo Indeterminado',
           dailySalary: 490,
           integratedDailySalary: 514.50,
           monthlySalary: 14700,
-          bankName: 'Banco Operativo Central',
+          bankName: 'Banco Davivienda El Salvador',
           bankAccount: '072910006718293041',
           hireDate: '2024-03-20',
           status: 'Activo',
@@ -5845,7 +5846,7 @@ async function startServer() {
           module: 'Tesoreria',
           user: 'admin@consultores-nyt.com',
           ipAddress: '192.168.1.105',
-          details: 'Autorización SPEI cuenta Banco Corporativo Principal por $109,720.00 USD para dispersión salarial.',
+          details: 'Autorización Transfer365 cuenta Banco Agrícola por $109,720.00 USD para dispersión salarial.',
           severity: 'WARNING'
         },
         {
