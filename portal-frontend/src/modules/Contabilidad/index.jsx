@@ -423,48 +423,6 @@ export default function Contabilidad() {
           </div>
         )}
 
-        {/* Banner Ilustrativo */}
-        <div className="bg-gradient-to-r from-[#2e1065] via-[#4c1d95] to-[#6d28d9] rounded-2xl p-6 text-white shadow-md">
-          <div className="max-w-4xl space-y-2">
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-white/20 text-white uppercase tracking-wider">
-              Contabilidad Central, Pólizas Automáticas & Cumplimiento Fiscal DTE (El Salvador)
-            </span>
-            <h2 className="text-2xl font-black">Libro Mayor, Catálogo de Cuentas & Declaraciones Oficiales</h2>
-            <p className="text-sm text-purple-100 leading-relaxed">
-              Consolidación en tiempo real de partida doble orientada a eventos. Catálogo maestro de cuentas con creación dinámica de auxiliares, liquidación automática de formularios fiscales (F-07, F-14, F-11), Libros de IVA Digitales y Estados Financieros NIIF.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6 pt-4 border-t border-white/20">
-            <div>
-              <span className="text-xs text-purple-200 font-bold uppercase">Cuentas en Catálogo</span>
-              <div className="text-xl font-bold">{accountCatalog.length} Cuentas</div>
-              <div className="text-xs text-purple-200">{accountCatalog.filter(a => a.level === 'Auxiliar').length} Cuentas Auxiliares</div>
-            </div>
-            <div>
-              <span className="text-xs text-purple-200 font-bold uppercase">Total Cargos (Debe)</span>
-              <div className="text-xl font-bold font-mono">
-                ${(trialBalance?.totalDebit || 0).toLocaleString()}
-              </div>
-              <div className="text-xs text-purple-200">Balanza 100% Cuadrada</div>
-            </div>
-            <div>
-              <span className="text-xs text-purple-200 font-bold uppercase">F-07 IVA Estimado</span>
-              <div className="text-xl font-bold font-mono text-amber-300">
-                ${(declaraciones?.f07?.totalPagarF07 || 0).toLocaleString()}
-              </div>
-              <div className="text-xs text-purple-200">Por liquidar al MH</div>
-            </div>
-            <div>
-              <span className="text-xs text-purple-200 font-bold uppercase">Candado Fiscal</span>
-              <div className="text-xl font-bold text-emerald-300">
-                {lockStatus ? '🔒 Sellado SHA-256' : '⚡ En Operación'}
-              </div>
-              <div className="text-xs text-emerald-200">Período Octubre 2026</div>
-            </div>
-          </div>
-        </div>
-
         {/* Pestañas de Vista */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden flex flex-col">
           <div className="flex flex-wrap border-b border-gray-100 px-6 py-3 bg-gray-50/50 justify-between items-center gap-2">
