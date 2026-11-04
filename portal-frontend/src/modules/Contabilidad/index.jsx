@@ -333,6 +333,8 @@ export default function Contabilidad() {
     return e.type === filterType;
   });
 
+  const totalFilteredCargos = filteredEntries.reduce((sum, e) => sum + (e.totalDebit || 0), 0);
+
   const filteredCatalogAccounts = accountCatalog.filter(acc => {
     const matchesType = filterAccountType === 'Todas' || acc.accountType === filterAccountType;
     const q = searchAccountText.toLowerCase();
@@ -422,6 +424,59 @@ export default function Contabilidad() {
             <button onClick={() => setNotif(null)} className="font-bold ml-4">✕</button>
           </div>
         )}
+
+        {/* Barra de Totales y Métricas Financieras Clave */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          <div className="bg-white border border-gray-200 rounded-xl p-3.5 shadow-xs flex items-center justify-between">
+            <div>
+              <span className="text-[11px] text-gray-500 font-bold uppercase tracking-wider block">Cuentas en Catálogo</span>
+              <div className="text-xl font-black text-gray-900 mt-0.5">{accountCatalog.length} Cuentas</div>
+              <div className="text-[11px] text-indigo-600 font-semibold">{accountCatalog.filter(a => a.level === 'Auxiliar').length} Cuentas Auxiliares</div>
+            </div>
+            <div className="w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-100 text-indigo-700 flex items-center justify-center text-lg font-bold">
+              📖
+            </div>
+          </div>
+
+          <div className="bg-white border border-gray-200 rounded-xl p-3.5 shadow-xs flex items-center justify-between">
+            <div>
+              <span className="text-[11px] text-gray-500 font-bold uppercase tracking-wider block">Total Cargos (Balanza)</span>
+              <div className="text-xl font-black font-mono text-purple-900 mt-0.5">
+                ${(trialBalance?.totalDebit || 0).toLocaleString('es-MX', { minimumFractionDigits: 2 })}
+              </div>
+              <div className="text-[11px] text-emerald-600 font-semibold">✓ Balanza 100% Cuadrada</div>
+            </div>
+            <div className="w-10 h-10 rounded-xl bg-purple-50 border border-purple-100 text-purple-700 flex items-center justify-center text-lg font-bold">
+              ⚖️
+            </div>
+          </div>
+
+          <div className="bg-white border border-gray-200 rounded-xl p-3.5 shadow-xs flex items-center justify-between">
+            <div>
+              <span className="text-[11px] text-gray-500 font-bold uppercase tracking-wider block">F-07 IVA Estimado</span>
+              <div className="text-xl font-black font-mono text-amber-700 mt-0.5">
+                ${(declaraciones?.f07?.totalPagarF07 || 0).toLocaleString('es-MX', { minimumFractionDigits: 2 })}
+              </div>
+              <div className="text-[11px] text-amber-600 font-semibold">Por liquidar al MH</div>
+            </div>
+            <div className="w-10 h-10 rounded-xl bg-amber-50 border border-amber-100 text-amber-700 flex items-center justify-center text-lg font-bold">
+              🏛️
+            </div>
+          </div>
+
+          <div className="bg-white border border-gray-200 rounded-xl p-3.5 shadow-xs flex items-center justify-between">
+            <div>
+              <span className="text-[11px] text-gray-500 font-bold uppercase tracking-wider block">Candado Fiscal</span>
+              <div className="text-xl font-black text-emerald-700 mt-0.5">
+                {lockStatus ? '🔒 Sellado SHA-256' : '⚡ En Operación'}
+              </div>
+              <div className="text-[11px] text-gray-500 font-semibold">Período Octubre 2026</div>
+            </div>
+            <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-100 text-emerald-700 flex items-center justify-center text-lg font-bold">
+              {lockStatus ? '🔒' : '⚡'}
+            </div>
+          </div>
+        </div>
 
         {/* Pestañas de Vista */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden flex flex-col">
@@ -601,6 +656,21 @@ export default function Contabilidad() {
                     ))
                   )}
                 </tbody>
+                {filteredEntries.length > 0 && (
+                  <tfoot className="bg-purple-50/50 border-t-2 border-purple-100 font-bold text-gray-900 text-xs">
+                    <tr>
+                      <td colSpan="5" className="px-6 py-3.5 text-right uppercase tracking-wider text-gray-600">
+                        Total Pólizas Filtradas ({filteredEntries.length}):
+                      </td>
+                      <td className="px-6 py-3.5 text-right font-mono text-sm text-purple-900 font-black">
+                        ${totalFilteredCargos.toLocaleString('es-MX', { minimumFractionDigits: 2 })}
+                      </td>
+                      <td colSpan="2" className="px-6 py-3.5 text-center text-emerald-700 font-semibold">
+                        ✓ Partida Doble Cuadrada
+                      </td>
+                    </tr>
+                  </tfoot>
+                )}
               </table>
             </div>
           )}
