@@ -357,6 +357,57 @@ export default function Contabilidad() {
     document.body.removeChild(link);
   };
 
+  // --- DESCARGA DE INFORME F-910 EN FORMATOS OFICIALES (TXT Y CSV) ---
+  const handleDownloadF910Txt = () => {
+    if (!retencionesF910?.registros || retencionesF910.registros.length === 0) {
+      alert('No hay registros de retenciones para exportar.');
+      return;
+    }
+    // Formato oficial delimitado por plecas/pipes (|) para carga masiva DGII
+    const lines = retencionesF910.registros.map(r => 
+      `${r.tipoIdentificacion}|${r.numeroIdentificacion}|${r.nombreCompleto}|${r.conceptoCodigo}|${r.montoDevengadoAnual.toFixed(2)}|${r.montoRetenidoRenta.toFixed(2)}|${r.estadoConstancia}`
+    );
+    const content = lines.join('\r\n');
+    const blob = new Blob([content], { type: 'text/plain;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', 'F910_Informe_Anual_Retenciones_2026.txt');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    setNotif({ type: 'success', msg: 'Archivo F910_Informe_Anual_Retenciones_2026.txt descargado en su carpeta de Descargas.' });
+  };
+
+  const handleDownloadF910Csv = () => {
+    if (!retencionesF910?.registros || retencionesF910.registros.length === 0) {
+      alert('No hay registros de retenciones para exportar.');
+      return;
+    }
+    const headers = ['Tipo Documento', 'Numero Identificacion', 'Colaborador / Proveedor', 'Codigo Ingreso / Concepto', 'Monto Devengado Anual (USD)', 'Retencion Renta Efectuada (USD)', 'Estado Constancia'];
+    const rows = retencionesF910.registros.map(r => [
+      r.tipoIdentificacion,
+      r.numeroIdentificacion,
+      `"${r.nombreCompleto.replace(/"/g, '""')}"`,
+      `"${r.conceptoCodigo.replace(/"/g, '""')}"`,
+      r.montoDevengadoAnual.toFixed(2),
+      r.montoRetenidoRenta.toFixed(2),
+      `"${r.estadoConstancia}"`
+    ]);
+    const csvContent = '\uFEFF' + [headers.join(','), ...rows.map(e => e.join(','))].join('\r\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', 'F910_Informe_Anual_Retenciones_2026.csv');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    setNotif({ type: 'success', msg: 'Archivo F910_Informe_Anual_Retenciones_2026.csv descargado en su carpeta de Descargas.' });
+  };
+
   const filteredEntries = entries.filter(e => {
     if (filterType === 'Todas') return true;
     return e.type === filterType;
@@ -2262,12 +2313,24 @@ export default function Contabilidad() {
                     <span className="text-xs text-gray-500">Total Retenido Acumulado:</span>
                     <div className="font-mono text-base font-bold text-purple-900">${(retencionesF910?.totalRetenido || 0).toLocaleString()} USD</div>
                   </div>
-                  <button
-                    onClick={() => alert('Layout F-910 generado exitosamente en formato TXT delimitado conforme normativa DGII.')}
-                    className="px-3.5 py-2 bg-purple-700 hover:bg-purple-800 text-white text-xs font-bold rounded-lg shadow transition"
-                  >
-                    📥 Descargar TXT / CSV F-910
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={handleDownloadF910Txt}
+                      className="px-3.5 py-2 bg-purple-700 hover:bg-purple-800 text-white text-xs font-bold rounded-lg shadow transition flex items-center gap-1.5"
+                      title="Descargar archivo plano TXT delimitado por pipes conforme formato oficial DGII"
+                    >
+                      <span>📥</span> Descargar TXT (DGII)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleDownloadF910Csv}
+                      className="px-3.5 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-lg shadow transition flex items-center gap-1.5"
+                      title="Descargar archivo CSV compatible con Microsoft Excel"
+                    >
+                      <span>📊</span> Descargar CSV (Excel)
+                    </button>
+                  </div>
                 </div>
               </div>
 
