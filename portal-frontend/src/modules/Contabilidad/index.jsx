@@ -681,9 +681,9 @@ export default function Contabilidad() {
   };
 
   return (
-    <div className="h-full flex flex-col bg-[#f4f7f9] overflow-y-auto w-full">
+    <div className="h-full flex flex-col bg-[#f4f7f9] overflow-y-auto w-full print:bg-white print:h-auto print:overflow-visible print:p-0 print:m-0">
       {/* Top Header */}
-      <div className="flex flex-col border-b border-gray-200 px-6 py-4 bg-white sticky top-0 z-10 shrink-0 shadow-sm w-full">
+      <div className="flex flex-col border-b border-gray-200 px-6 py-4 bg-white sticky top-0 z-10 shrink-0 shadow-sm w-full print:hidden">
         <div className="flex flex-wrap justify-between items-center gap-3">
           <div className="flex items-center text-lg text-gray-700">
             <span className="cursor-pointer hover:underline text-[#006EAD]" onClick={() => navigate('/portal')}>Portal</span>
@@ -734,7 +734,7 @@ export default function Contabilidad() {
         </div>
       </div>
 
-      <div className="flex-1 overflow-auto p-6 text-gray-800 w-full space-y-6">
+      <div className="flex-1 overflow-auto p-6 text-gray-800 w-full space-y-6 print:p-0 print:m-0 print:overflow-visible print:space-y-0">
         {/* Notificación flotante fija en pantalla */}
         {notif && (
           <div className={`fixed bottom-6 right-6 z-50 max-w-lg p-4 rounded-2xl flex items-center justify-between text-sm font-semibold shadow-2xl transition-all border ${
@@ -750,7 +750,7 @@ export default function Contabilidad() {
 
 
         {/* Barra de Totales y Métricas Financieras Clave */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 print:hidden">
           <div className="bg-white border border-gray-200 rounded-xl p-3.5 shadow-xs flex items-center justify-between">
             <div>
               <span className="text-[11px] text-gray-500 font-bold uppercase tracking-wider block">Cuentas en Catálogo</span>
@@ -803,8 +803,8 @@ export default function Contabilidad() {
         </div>
 
         {/* Pestañas de Vista */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden flex flex-col">
-          <div className="flex flex-wrap border-b border-gray-100 px-6 py-3 bg-gray-50/50 justify-between items-center gap-2">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden flex flex-col print:border-none print:shadow-none">
+          <div className="flex flex-wrap border-b border-gray-100 px-6 py-3 bg-gray-50/50 justify-between items-center gap-2 print:hidden">
             <div className="flex flex-wrap gap-2 items-center">
               <button
                 onClick={() => setActiveTab('Pólizas')}
@@ -1704,7 +1704,7 @@ export default function Contabilidad() {
           {activeTab === 'EstadosFinancieros' && (
             <div className="p-6 space-y-6">
               {/* Selector de Reporte Financiero */}
-              <div className="flex justify-between items-center bg-gray-50 p-3 rounded-xl border border-gray-200">
+              <div className="flex justify-between items-center bg-gray-50 p-3 rounded-xl border border-gray-200 print:hidden">
                 <div className="flex gap-2">
                   <button
                     onClick={() => setFinReportType('Balance')}
@@ -1755,7 +1755,7 @@ export default function Contabilidad() {
 
               {/* REPORTE 1: BALANCE GENERAL */}
               {finReportType === 'Balance' && financialStatements?.balanceGeneral && (
-                <div className="space-y-6">
+                <div className="space-y-6 printable-document print:p-0 print:m-0">
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     {/* COLUMNA IZQUIERDA: ACTIVOS */}
                     <div className="bg-white border rounded-2xl p-5 shadow-sm space-y-4">
@@ -1879,7 +1879,7 @@ export default function Contabilidad() {
 
               {/* REPORTE 2: ESTADO DE RESULTADOS */}
               {finReportType === 'Resultados' && financialStatements?.estadoResultados && (
-                <div className="max-w-3xl mx-auto bg-white border rounded-2xl p-6 shadow-sm space-y-4">
+                <div className="max-w-3xl mx-auto bg-white border rounded-2xl p-6 shadow-sm space-y-4 printable-document print:border-none print:shadow-none print:p-0 print:max-w-none print:w-full print:m-0">
                   <div className="border-b pb-3 text-center">
                     <span className="text-xs uppercase font-bold tracking-wider text-gray-400">NYTEX CORPORATION S.A. DE C.V.</span>
                     <h3 className="text-xl font-black text-gray-900 mt-1">Estado de Resultados Integral</h3>
@@ -1927,7 +1927,7 @@ export default function Contabilidad() {
               {finReportType === 'FlujoEfectivo' && (
                 <div className="space-y-6">
                   {/* Tarjetas de Resumen Ejecutivo de Flujos */}
-                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4 print:hidden">
                     <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-xs">
                       <div className="flex justify-between items-center text-xs text-gray-500 font-bold uppercase">
                         <span>Actividades Operación</span>
@@ -1974,7 +1974,7 @@ export default function Contabilidad() {
                   </div>
 
                   {/* Cuerpo Principal del Estado Financiero */}
-                  <div className="max-w-4xl mx-auto bg-white border border-gray-200 rounded-2xl p-7 shadow-sm space-y-6">
+                  <div className="max-w-4xl mx-auto bg-white border border-gray-200 rounded-2xl p-7 shadow-sm space-y-6 printable-document print:border-none print:shadow-none print:p-0 print:max-w-none print:w-full print:m-0 print:space-y-4">
                     {/* Encabezado Legal Formal conforme a Normativa de El Salvador */}
                     <div className="border-b border-gray-200 pb-4 text-center relative">
                       <div className="absolute right-0 top-0 flex gap-2 print:hidden">
@@ -2266,7 +2266,7 @@ export default function Contabilidad() {
               {finReportType === 'CambiosPatrimonio' && (
                 <div className="space-y-6">
                   {/* Tarjetas KPI de Estructura Patrimonial */}
-                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4 print:hidden">
                     <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-xs">
                       <div className="flex justify-between items-center text-xs text-gray-500 font-bold uppercase">
                         <span>Capital Social</span>
@@ -2313,7 +2313,7 @@ export default function Contabilidad() {
                   </div>
 
                   {/* Cuerpo Principal del Estado de Cambios en el Patrimonio */}
-                  <div className="max-w-4xl mx-auto bg-white border border-gray-200 rounded-2xl p-7 shadow-sm space-y-6">
+                  <div className="max-w-4xl mx-auto bg-white border border-gray-200 rounded-2xl p-7 shadow-sm space-y-6 printable-document print:border-none print:shadow-none print:p-0 print:max-w-none print:w-full print:m-0 print:space-y-4">
                     {/* Encabezado Legal Formal */}
                     <div className="border-b border-gray-200 pb-4 text-center relative">
                       <div className="absolute right-0 top-0 flex gap-2 print:hidden">

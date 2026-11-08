@@ -294,7 +294,7 @@ export default function PhaseWorkspaceView() {
   const activeModuleObj = currentConfig.modules.find(m => m.id === activeTab);
 
   return (
-    <div className="h-screen w-screen flex overflow-hidden bg-slate-100 font-sans text-slate-800">
+    <div className="h-screen w-screen flex overflow-hidden bg-slate-100 font-sans text-slate-800 print:block print:h-auto print:w-full print:overflow-visible print:bg-white">
       
       {/* ========================================================= */}
       {/* 🧭 BARRA LATERAL IZQUIERDA (SIDEBAR DE FASES Y MÓDULOS)   */}
@@ -302,7 +302,7 @@ export default function PhaseWorkspaceView() {
       <aside 
         className={`${
           isSidebarCollapsed ? 'w-20' : 'w-72'
-        } flex-shrink-0 bg-[#07192d] text-white flex flex-col h-full border-r border-slate-800 shadow-2xl transition-all duration-300 z-30 select-none relative`}
+        } flex-shrink-0 bg-[#07192d] text-white flex flex-col h-full border-r border-slate-800 shadow-2xl transition-all duration-300 z-30 select-none relative print:hidden`}
       >
         
         {/* Encabezado: Logo Corporativo NyTEX */}
@@ -616,10 +616,10 @@ export default function PhaseWorkspaceView() {
       {/* ========================================================= */}
       {/* 🖥️ PANTALLA DE TRABAJO PRINCIPAL (ÁREA DERECHA AMPLIA)     */}
       {/* ========================================================= */}
-      <main className="flex-1 flex flex-col h-full min-w-0 overflow-hidden bg-slate-50">
+      <main className="flex-1 flex flex-col h-full min-w-0 overflow-hidden bg-slate-50 print:block print:h-auto print:w-full print:overflow-visible print:bg-white print:p-0 print:m-0">
         
         {/* Barra Superior de la Pantalla de Trabajo */}
-        <header className="h-14 bg-white border-b border-slate-200/90 px-4 md:px-6 flex items-center justify-between shadow-xs flex-shrink-0 z-20">
+        <header className="h-14 bg-white border-b border-slate-200/90 px-4 md:px-6 flex items-center justify-between shadow-xs flex-shrink-0 z-20 print:hidden">
           <div className="flex items-center gap-3 min-w-0">
             <button
               onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
