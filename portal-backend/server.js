@@ -3288,6 +3288,30 @@ app.get('/api/contabilidad/financial-statements', async (req, res) => {
           variacionPasivosFiscales,
           flujoOperacionCalculado: flujoOperacionNeto
         }
+      },
+      cambiosPatrimonio: {
+        normativa: 'Sección 6 NIIF para las PYMES / Art. 123 y 295 Código de Comercio (El Salvador)',
+        saldoInicial: {
+          capitalSocial: 0.00,
+          reservaLegal: 0.00,
+          utilidadesAcumuladas: 0.00,
+          utilidadEjercicio: 0.00,
+          total: 0.00
+        },
+        movimientos: {
+          aportesCapital: patrimonioBase,
+          reservaLegalConstituida: reservaLegal,
+          utilidadNetaEjercicio: utilidadNetaEjercicio,
+          dividendosDecretados: 0.00,
+          capitalizacionUtilidades: 0.00
+        },
+        saldoFinal: {
+          capitalSocial: patrimonioBase,
+          reservaLegal: reservaLegal,
+          utilidadesAcumuladas: 0.00,
+          utilidadEjercicio: utilidadNetaEjercicio,
+          total: totalPatrimonio
+        }
       }
     });
   } catch (error) {
