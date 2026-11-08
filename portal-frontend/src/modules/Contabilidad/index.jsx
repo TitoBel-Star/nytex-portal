@@ -335,6 +335,165 @@ export default function Contabilidad() {
 
   const totalFilteredCargos = filteredEntries.reduce((sum, e) => sum + (e.totalDebit || 0), 0);
 
+  // --- CONSULTA Y FILTROS POR RANGO DE FECHAS ---
+  const [dateStart, setDateStart] = useState('2026-09-01');
+  const [dateEnd, setDateEnd] = useState('2026-10-31');
+  const [dateTypeFilter, setDateTypeFilter] = useState('Todas');
+  const [dateModuleFilter, setDateModuleFilter] = useState('Todos');
+  const [dateSearchText, setDateSearchText] = useState('');
+  const [dateViewMode, setDateViewMode] = useState('polizas'); // 'polizas' | 'cuentas' | 'resumen'
+  const [showDateReportModal, setShowDateReportModal] = useState(false);
+
+  // Módulos únicos detectados en pólizas
+  const availableOriginModules = ['Todos', ...Array.from(new Set(entries.map(e => e.originModule).filter(Boolean)))];
+
+  // Atajos de fechas
+  const handleSetDatePreset = (preset) => {
+    const today = new Date();
+    const pad = (n) => String(n).padStart(2, '0');
+    const toYMD = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+
+    if (preset === 'hoy') {
+      const t = toYMD(today);
+      setDateStart(t);
+      setDateEnd(t);
+    } else if (preset === 'mes_actual') {
+      const first = new Date(today.getFullYear(), today.getMonth(), 1);
+      const last = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+      setDateStart(toYMD(first));
+      setDateEnd(toYMD(last));
+    } else if (preset === 'mes_anterior') {
+      const firstPrev = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+      const lastPrev = new Date(today.getFullYear(), today.getMonth(), 0);
+      setDateStart(toYMD(firstPrev));
+      setDateEnd(toYMD(lastPrev));
+    } else if (preset === 'oct_2026') {
+      setDateStart('2026-10-01');
+      setDateEnd('2026-10-31');
+    } else if (preset === 'sep_2026') {
+      setDateStart('2026-09-01');
+      setDateEnd('2026-09-30');
+    } else if (preset === 'todo_2026') {
+      setDateStart('2026-01-01');
+      setDateEnd('2026-12-31');
+    } else if (preset === 'todo') {
+      setDateStart('');
+      setDateEnd('');
+    }
+  };
+
+  // Filtrado de pólizas por rango de fechas y parámetros
+  const dateFilteredEntries = entries.filter(e => {
+    if (dateStart && e.date < dateStart) return false;
+    if (dateEnd && e.date > dateEnd) return false;
+    if (dateTypeFilter !== 'Todas' && e.type !== dateTypeFilter) return false;
+    if (dateModuleFilter !== 'Todos' && e.originModule !== dateModuleFilter) return false;
+    if (dateSearchText.trim()) {
+      const q = dateSearchText.toLowerCase();
+      const matchCode = (e.entryCode || '').toLowerCase().includes(q);
+      const matchConcept = (e.concept || '').toLowerCase().includes(q);
+      const matchRef = (e.originReference || '').toLowerCase().includes(q);
+      const matchLines = (e.lines || []).some(l => 
+        (l.accountCode || '').toLowerCase().includes(q) || 
+        (l.accountName || '').toLowerCase().includes(q)
+      );
+      if (!matchCode && !matchConcept && !matchRef && !matchLines) return false;
+    }
+    return true;
+  });
+
+  // KPIs del Rango
+  const totalRangeDebit = dateFilteredEntries.reduce((sum, e) => sum + (e.totalDebit || 0), 0);
+  const totalRangeCredit = dateFilteredEntries.reduce((sum, e) => sum + (e.totalCredit || 0), 0);
+  const rangeDiff = Math.abs(totalRangeDebit - totalRangeCredit);
+  const isRangeBalanced = rangeDiff < 0.01;
+
+  const rangeIngresos = dateFilteredEntries.filter(e => e.type === 'Ingreso');
+  const rangeEgresos = dateFilteredEntries.filter(e => e.type === 'Egreso');
+  const rangeDiarios = dateFilteredEntries.filter(e => e.type === 'Diario');
+
+  const totalIngresosMonto = rangeIngresos.reduce((sum, e) => sum + (e.totalDebit || 0), 0);
+  const totalEgresosMonto = rangeEgresos.reduce((sum, e) => sum + (e.totalDebit || 0), 0);
+  const totalDiariosMonto = rangeDiarios.reduce((sum, e) => sum + (e.totalDebit || 0), 0);
+
+  // Acumulado por Cuentas (Balanza del Período)
+  const rangeAccountsMap = {};
+  dateFilteredEntries.forEach(entry => {
+    (entry.lines || []).forEach(l => {
+      if (!rangeAccountsMap[l.accountCode]) {
+        rangeAccountsMap[l.accountCode] = {
+          code: l.accountCode,
+          name: l.accountName,
+          debit: 0,
+          credit: 0,
+          count: 0
+        };
+      }
+      rangeAccountsMap[l.accountCode].debit += (l.debit || 0);
+      rangeAccountsMap[l.accountCode].credit += (l.credit || 0);
+      rangeAccountsMap[l.accountCode].count += 1;
+    });
+  });
+
+  const rangeAccountsList = Object.values(rangeAccountsMap).map(acc => {
+    const net = Math.round((acc.debit - acc.credit) * 100) / 100;
+    return {
+      ...acc,
+      debit: Math.round(acc.debit * 100) / 100,
+      credit: Math.round(acc.credit * 100) / 100,
+      netBalance: net,
+      nature: net >= 0 ? 'Deudora' : 'Acreedora'
+    };
+  }).sort((a, b) => a.code.localeCompare(b.code));
+
+  // Resumen por Módulos
+  const rangeModulesMap = {};
+  dateFilteredEntries.forEach(entry => {
+    const mod = entry.originModule || 'General';
+    if (!rangeModulesMap[mod]) {
+      rangeModulesMap[mod] = { module: mod, count: 0, total: 0 };
+    }
+    rangeModulesMap[mod].count += 1;
+    rangeModulesMap[mod].total += (entry.totalDebit || 0);
+  });
+  const rangeModulesList = Object.values(rangeModulesMap).sort((a, b) => b.total - a.total);
+
+  // Exportar a CSV de Fechas
+  const handleExportDateRangeCsv = () => {
+    if (dateFilteredEntries.length === 0) {
+      alert('No hay pólizas en el rango de fechas seleccionado.');
+      return;
+    }
+    let rows = [
+      ['Folio Poliza', 'Fecha Contable', 'Tipo', 'Concepto', 'Referencia', 'Modulo Origen', 'Total Debe', 'Total Haber', 'Estado', 'Cuentas Afectadas']
+    ];
+    dateFilteredEntries.forEach(e => {
+      const accountsSummary = (e.lines || []).map(l => `${l.accountCode} (${l.debit > 0 ? 'D:' + l.debit : 'H:' + l.credit})`).join('; ');
+      rows.push([
+        e.entryCode,
+        e.date,
+        e.type,
+        `"${(e.concept || '').replace(/"/g, '""')}"`,
+        `"${(e.originReference || '').replace(/"/g, '""')}"`,
+        e.originModule,
+        e.totalDebit,
+        e.totalCredit,
+        e.status || 'Cuadrada',
+        `"${accountsSummary.replace(/"/g, '""')}"`
+      ]);
+    });
+    const filename = `Polizas_NyTEX_${dateStart || 'Inicio'}_a_${dateEnd || 'Fin'}.csv`;
+    const csvContent = '\uFEFF' + rows.map(r => r.join(',')).join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', filename);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   const filteredCatalogAccounts = accountCatalog.filter(acc => {
     const matchesType = filterAccountType === 'Todas' || acc.accountType === filterAccountType;
     const q = searchAccountText.toLowerCase();
@@ -513,6 +672,16 @@ export default function Contabilidad() {
                 <span>📖</span> Cuentas & Auxiliares ({accountCatalog.length})
               </button>
               <button
+                onClick={() => setActiveTab('RangoFechas')}
+                className={`px-3.5 py-2 text-xs font-bold rounded-lg transition flex items-center gap-1.5 ${
+                  activeTab === 'RangoFechas' 
+                    ? 'bg-purple-700 text-white shadow-sm' 
+                    : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-100'
+                }`}
+              >
+                <span>📅</span> Rango de Fechas ({dateFilteredEntries.length})
+              </button>
+              <button
                 onClick={() => setActiveTab('EstadosFinancieros')}
                 className={`px-3.5 py-2 text-xs font-bold rounded-lg transition ${
                   activeTab === 'EstadosFinancieros' 
@@ -584,6 +753,29 @@ export default function Contabilidad() {
                     {t}
                   </button>
                 ))}
+              </div>
+            )}
+
+            {activeTab === 'RangoFechas' && (
+              <div className="flex items-center gap-2 text-xs">
+                <span className="text-gray-500 font-bold hidden sm:inline">Período:</span>
+                <span className="px-2.5 py-1 bg-purple-50 text-purple-800 border border-purple-200 rounded-lg font-mono font-bold text-xs">
+                  {dateStart || 'Inicio'} ➔ {dateEnd || 'Hoy'}
+                </span>
+                <button
+                  onClick={handleExportDateRangeCsv}
+                  className="px-2.5 py-1 bg-purple-600 hover:bg-purple-700 text-white rounded font-bold shadow-sm transition flex items-center gap-1"
+                  title="Exportar pólizas del rango a Excel"
+                >
+                  <span>📥</span> CSV
+                </button>
+                <button
+                  onClick={() => setShowDateReportModal(true)}
+                  className="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-700 text-white rounded font-bold shadow-sm transition flex items-center gap-1"
+                  title="Imprimir reporte formal del rango"
+                >
+                  <span>🖨️</span> Imprimir
+                </button>
               </div>
             )}
           </div>
@@ -837,6 +1029,509 @@ export default function Contabilidad() {
                   </tbody>
                 </table>
               </div>
+            </div>
+          )}
+
+          {/* VISTA NUEVA: CONSULTA Y REPORTE POR RANGO DE FECHAS */}
+          {activeTab === 'RangoFechas' && (
+            <div className="p-6 space-y-6">
+              {/* Tarjeta 1: Filtros de Rango de Fechas y Parámetros */}
+              <div className="bg-gradient-to-br from-purple-50/70 via-white to-indigo-50/50 p-5 rounded-2xl border border-purple-100 shadow-sm space-y-4">
+                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-purple-100/80 pb-3">
+                  <div className="flex items-center gap-2">
+                    <span className="w-8 h-8 rounded-lg bg-purple-600 text-white flex items-center justify-center text-base shadow-sm">
+                      📅
+                    </span>
+                    <div>
+                      <h3 className="font-bold text-gray-900 text-sm">Visualización por Rango de Fechas</h3>
+                      <p className="text-xs text-gray-500">Seleccione el período contable que desea auditar, consolidar o exportar</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={handleExportDateRangeCsv}
+                      className="px-3 py-1.5 bg-purple-700 hover:bg-purple-800 text-white text-xs font-bold rounded-lg shadow-sm transition flex items-center gap-1.5"
+                    >
+                      <span>📥</span> Exportar a Excel (CSV)
+                    </button>
+                    <button
+                      onClick={() => setShowDateReportModal(true)}
+                      className="px-3 py-1.5 bg-indigo-700 hover:bg-indigo-800 text-white text-xs font-bold rounded-lg shadow-sm transition flex items-center gap-1.5"
+                    >
+                      <span>🖨️</span> Imprimir Reporte Foliado
+                    </button>
+                  </div>
+                </div>
+
+                {/* Selectores de Fechas y Atajos Rápidos */}
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 items-end">
+                  <div className="lg:col-span-3">
+                    <label className="block text-xs font-bold text-gray-700 mb-1">
+                      Fecha Desde (Inicio):
+                    </label>
+                    <input
+                      type="date"
+                      value={dateStart}
+                      onChange={(e) => setDateStart(e.target.value)}
+                      className="w-full text-xs p-2.5 bg-white border border-gray-300 rounded-lg font-mono font-bold text-gray-800 focus:ring-2 focus:ring-purple-600 shadow-sm"
+                    />
+                  </div>
+
+                  <div className="lg:col-span-3">
+                    <label className="block text-xs font-bold text-gray-700 mb-1">
+                      Fecha Hasta (Fin):
+                    </label>
+                    <input
+                      type="date"
+                      value={dateEnd}
+                      onChange={(e) => setDateEnd(e.target.value)}
+                      className="w-full text-xs p-2.5 bg-white border border-gray-300 rounded-lg font-mono font-bold text-gray-800 focus:ring-2 focus:ring-purple-600 shadow-sm"
+                    />
+                  </div>
+
+                  {/* Atajos de Rango Rápido */}
+                  <div className="lg:col-span-6 flex flex-wrap items-center gap-1.5">
+                    <span className="text-xs font-bold text-gray-500 w-full mb-0.5">Atajos de Rango Rápido:</span>
+                    <button
+                      onClick={() => handleSetDatePreset('hoy')}
+                      className="px-2.5 py-1 text-xs font-semibold bg-white border border-gray-200 text-gray-700 hover:bg-purple-100 hover:text-purple-800 rounded-md transition shadow-xs"
+                    >
+                      Hoy
+                    </button>
+                    <button
+                      onClick={() => handleSetDatePreset('mes_actual')}
+                      className="px-2.5 py-1 text-xs font-semibold bg-white border border-gray-200 text-gray-700 hover:bg-purple-100 hover:text-purple-800 rounded-md transition shadow-xs"
+                    >
+                      Este Mes
+                    </button>
+                    <button
+                      onClick={() => handleSetDatePreset('mes_anterior')}
+                      className="px-2.5 py-1 text-xs font-semibold bg-white border border-gray-200 text-gray-700 hover:bg-purple-100 hover:text-purple-800 rounded-md transition shadow-xs"
+                    >
+                      Mes Anterior
+                    </button>
+                    <button
+                      onClick={() => handleSetDatePreset('oct_2026')}
+                      className="px-2.5 py-1 text-xs font-semibold bg-purple-100/70 border border-purple-300 text-purple-900 rounded-md transition font-bold"
+                    >
+                      Octubre 2026
+                    </button>
+                    <button
+                      onClick={() => handleSetDatePreset('sep_2026')}
+                      className="px-2.5 py-1 text-xs font-semibold bg-purple-100/70 border border-purple-300 text-purple-900 rounded-md transition font-bold"
+                    >
+                      Septiembre 2026
+                    </button>
+                    <button
+                      onClick={() => handleSetDatePreset('todo_2026')}
+                      className="px-2.5 py-1 text-xs font-semibold bg-white border border-gray-200 text-gray-700 hover:bg-purple-100 hover:text-purple-800 rounded-md transition shadow-xs"
+                    >
+                      Todo 2026
+                    </button>
+                    <button
+                      onClick={() => handleSetDatePreset('todo')}
+                      className="px-2.5 py-1 text-xs font-semibold bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-md transition"
+                    >
+                      Ver Todo
+                    </button>
+                  </div>
+                </div>
+
+                {/* Filtros secundarios: Tipo, Módulo y Buscador */}
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-3 pt-2 border-t border-purple-100/60 items-center">
+                  <div className="md:col-span-4 flex items-center gap-1.5">
+                    <span className="text-xs font-bold text-gray-600">Tipo:</span>
+                    {['Todas', 'Ingreso', 'Egreso', 'Diario'].map(t => (
+                      <button
+                        key={t}
+                        onClick={() => setDateTypeFilter(t)}
+                        className={`px-2.5 py-1 rounded text-xs font-bold transition ${
+                          dateTypeFilter === t
+                            ? 'bg-purple-700 text-white shadow-xs'
+                            : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-100'
+                        }`}
+                      >
+                        {t}
+                      </button>
+                    ))}
+                  </div>
+
+                  <div className="md:col-span-4 flex items-center gap-1.5">
+                    <label className="text-xs font-bold text-gray-600 shrink-0">Módulo Origen:</label>
+                    <select
+                      value={dateModuleFilter}
+                      onChange={(e) => setDateModuleFilter(e.target.value)}
+                      className="w-full text-xs p-1.5 bg-white border border-gray-300 rounded-lg text-gray-700 font-semibold focus:ring-2 focus:ring-purple-600"
+                    >
+                      {availableOriginModules.map(m => (
+                        <option key={m} value={m}>{m}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="md:col-span-4">
+                    <input
+                      type="text"
+                      placeholder="Buscar por concepto, folio o cuenta..."
+                      value={dateSearchText}
+                      onChange={(e) => setDateSearchText(e.target.value)}
+                      className="w-full text-xs p-1.5 bg-white border border-gray-300 rounded-lg text-gray-800 placeholder-gray-400 focus:ring-2 focus:ring-purple-600"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Tarjeta 2: KPIs Resumen del Rango Seleccionado */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-purple-100 text-purple-700 flex items-center justify-center font-bold text-lg">
+                    📑
+                  </div>
+                  <div>
+                    <div className="text-xs text-gray-400 font-bold uppercase tracking-wider">Pólizas en Rango</div>
+                    <div className="text-xl font-bold text-gray-900">{dateFilteredEntries.length}</div>
+                    <div className="text-[10px] text-gray-500 font-medium">de {entries.length} registradas en total</div>
+                  </div>
+                </div>
+
+                <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-lg">
+                    ⬆️
+                  </div>
+                  <div>
+                    <div className="text-xs text-gray-400 font-bold uppercase tracking-wider">Total Cargos (Debe)</div>
+                    <div className="text-xl font-mono font-bold text-blue-700">
+                      ${totalRangeDebit.toLocaleString('es-MX', { minimumFractionDigits: 2 })}
+                    </div>
+                    <div className="text-[10px] text-gray-500 font-medium">Movimientos deudores del período</div>
+                  </div>
+                </div>
+
+                <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-lg">
+                    ⬇️
+                  </div>
+                  <div>
+                    <div className="text-xs text-gray-400 font-bold uppercase tracking-wider">Total Abonos (Haber)</div>
+                    <div className="text-xl font-mono font-bold text-emerald-700">
+                      ${totalRangeCredit.toLocaleString('es-MX', { minimumFractionDigits: 2 })}
+                    </div>
+                    <div className="text-[10px] text-gray-500 font-medium">Movimientos acreedores del período</div>
+                  </div>
+                </div>
+
+                <div className={`p-4 rounded-xl border shadow-sm flex items-center gap-3 ${
+                  isRangeBalanced 
+                    ? 'bg-emerald-50/60 border-emerald-200 text-emerald-900' 
+                    : 'bg-red-50/60 border-red-200 text-red-900'
+                }`}>
+                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center font-bold text-lg ${
+                    isRangeBalanced ? 'bg-emerald-600 text-white' : 'bg-red-600 text-white'
+                  }`}>
+                    {isRangeBalanced ? '✓' : '⚠️'}
+                  </div>
+                  <div>
+                    <div className="text-xs font-bold uppercase tracking-wider">Cuadre del Rango</div>
+                    <div className="text-lg font-mono font-bold">
+                      {isRangeBalanced ? '$0.00' : `$${rangeDiff.toFixed(2)}`}
+                    </div>
+                    <div className="text-[10px] font-medium">
+                      {isRangeBalanced ? 'Partida Doble 100% Cuadrada' : 'Descuadre en el período'}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Barra de Distribución por Tipo de Póliza */}
+              <div className="bg-gray-50 p-3.5 rounded-xl border border-gray-200 flex flex-wrap items-center justify-between gap-4 text-xs">
+                <div className="flex items-center gap-2">
+                  <span className="font-bold text-gray-700">Composición del Período:</span>
+                  <span className="text-gray-500 font-mono text-[11px]">
+                    ({dateStart || 'Inicio'} al {dateEnd || 'Hoy'})
+                  </span>
+                </div>
+                <div className="flex flex-wrap items-center gap-4">
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                    <span className="font-semibold text-gray-600">Ingresos ({rangeIngresos.length}):</span>
+                    <span className="font-mono font-bold text-emerald-700">
+                      ${totalIngresosMonto.toLocaleString('es-MX', { minimumFractionDigits: 2 })}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-2.5 h-2.5 rounded-full bg-red-500"></span>
+                    <span className="font-semibold text-gray-600">Egresos ({rangeEgresos.length}):</span>
+                    <span className="font-mono font-bold text-red-700">
+                      ${totalEgresosMonto.toLocaleString('es-MX', { minimumFractionDigits: 2 })}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
+                    <span className="font-semibold text-gray-600">Diarios ({rangeDiarios.length}):</span>
+                    <span className="font-mono font-bold text-blue-700">
+                      ${totalDiariosMonto.toLocaleString('es-MX', { minimumFractionDigits: 2 })}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Selector de Modo de Visualización (Sub-Pestañas Internas) */}
+              <div className="flex border-b border-gray-200 justify-between items-center">
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setDateViewMode('polizas')}
+                    className={`px-4 py-2 text-xs font-bold border-b-2 transition flex items-center gap-1.5 ${
+                      dateViewMode === 'polizas'
+                        ? 'border-purple-700 text-purple-800'
+                        : 'border-transparent text-gray-500 hover:text-gray-800'
+                    }`}
+                  >
+                    <span>📑</span> Pólizas del Período ({dateFilteredEntries.length})
+                  </button>
+                  <button
+                    onClick={() => setDateViewMode('cuentas')}
+                    className={`px-4 py-2 text-xs font-bold border-b-2 transition flex items-center gap-1.5 ${
+                      dateViewMode === 'cuentas'
+                        ? 'border-purple-700 text-purple-800'
+                        : 'border-transparent text-gray-500 hover:text-gray-800'
+                    }`}
+                  >
+                    <span>⚖️</span> Movimientos por Cuentas / Mayor ({rangeAccountsList.length})
+                  </button>
+                  <button
+                    onClick={() => setDateViewMode('resumen')}
+                    className={`px-4 py-2 text-xs font-bold border-b-2 transition flex items-center gap-1.5 ${
+                      dateViewMode === 'resumen'
+                        ? 'border-purple-700 text-purple-800'
+                        : 'border-transparent text-gray-500 hover:text-gray-800'
+                    }`}
+                  >
+                    <span>📊</span> Resumen por Módulo de Origen ({rangeModulesList.length})
+                  </button>
+                </div>
+              </div>
+
+              {/* MODO 1: DETALLE DE PÓLIZAS EN EL RANGO */}
+              {dateViewMode === 'polizas' && (
+                <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-xs">
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left text-sm">
+                      <thead className="bg-gray-50 text-gray-600 text-xs uppercase font-bold border-b border-gray-200">
+                        <tr>
+                          <th className="px-5 py-3">Folio Póliza</th>
+                          <th className="px-5 py-3">Fecha</th>
+                          <th className="px-5 py-3 text-center">Tipo</th>
+                          <th className="px-5 py-3">Concepto Contable</th>
+                          <th className="px-5 py-3">Módulo Origen</th>
+                          <th className="px-5 py-3 text-right">Cargos / Abonos</th>
+                          <th className="px-5 py-3 text-center">Estado</th>
+                          <th className="px-5 py-3 text-right">Detalle Asientos</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-100 text-xs">
+                        {dateFilteredEntries.length === 0 ? (
+                          <tr>
+                            <td colSpan="8" className="px-6 py-12 text-center text-gray-400">
+                              <div className="text-3xl mb-2">🔍</div>
+                              <div className="font-bold text-gray-600">No se encontraron pólizas en este rango de fechas.</div>
+                              <div className="text-xs text-gray-400 mt-1">Pruebe ampliando el período o utilizando el botón "Ver Todo".</div>
+                            </td>
+                          </tr>
+                        ) : (
+                          dateFilteredEntries.map(e => (
+                            <tr key={e.id} className="hover:bg-purple-50/30 transition">
+                              <td className="px-5 py-3.5 font-mono font-bold text-purple-900">
+                                {e.entryCode}
+                              </td>
+                              <td className="px-5 py-3.5 text-gray-600 font-mono">
+                                {e.date}
+                              </td>
+                              <td className="px-5 py-3.5 text-center">
+                                <span className={`inline-block px-2.5 py-0.5 rounded-full text-[11px] font-bold border ${getPillColor(e.type)}`}>
+                                  {e.type}
+                                </span>
+                              </td>
+                              <td className="px-5 py-3.5">
+                                <div className="font-semibold text-gray-900">{e.concept}</div>
+                                <div className="text-[11px] text-gray-400 font-mono">Ref: {e.originReference || 'N/A'}</div>
+                              </td>
+                              <td className="px-5 py-3.5">
+                                <span className="px-2 py-0.5 bg-gray-100 rounded text-gray-700 font-semibold text-[11px]">
+                                  {e.originModule}
+                                </span>
+                              </td>
+                              <td className="px-5 py-3.5 text-right font-mono font-bold text-gray-800">
+                                ${e.totalDebit.toLocaleString('es-MX', { minimumFractionDigits: 2 })}
+                              </td>
+                              <td className="px-5 py-3.5 text-center">
+                                <span className="px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800">
+                                  ✓ Cuadrada
+                                </span>
+                              </td>
+                              <td className="px-5 py-3.5 text-right">
+                                <button
+                                  onClick={() => setSelectedEntry(e)}
+                                  className="text-purple-600 hover:text-purple-900 font-bold bg-purple-50 hover:bg-purple-100 border border-purple-200 px-2.5 py-1 rounded transition text-xs"
+                                >
+                                  Ver Asientos ({e.lines?.length || 0})
+                                </button>
+                              </td>
+                            </tr>
+                          ))
+                        )}
+                      </tbody>
+                      {dateFilteredEntries.length > 0 && (
+                        <tfoot className="bg-gray-100 text-gray-900 font-bold text-xs border-t-2 border-gray-300">
+                          <tr>
+                            <td colSpan="5" className="px-5 py-3 text-right">
+                              TOTALES DEL PERÍODO ({dateFilteredEntries.length} PÓLIZAS):
+                            </td>
+                            <td className="px-5 py-3 text-right font-mono text-purple-900 font-bold">
+                              ${totalRangeDebit.toLocaleString('es-MX', { minimumFractionDigits: 2 })}
+                            </td>
+                            <td className="px-5 py-3 text-center text-emerald-700 font-bold">
+                              ✓ Partida Doble
+                            </td>
+                            <td className="px-5 py-3 text-right">
+                              <span className="text-[11px] text-gray-500 font-mono">Cuadre 0.00</span>
+                            </td>
+                          </tr>
+                        </tfoot>
+                      )}
+                    </table>
+                  </div>
+                </div>
+              )}
+
+              {/* MODO 2: ACUMULADO POR CUENTAS CONTABLES EN EL RANGO */}
+              {dateViewMode === 'cuentas' && (
+                <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-xs">
+                  <div className="p-3.5 bg-gray-50 border-b border-gray-200 flex justify-between items-center text-xs">
+                    <span className="font-bold text-gray-700">
+                      Balanza de Movimientos del Período ({rangeAccountsList.length} Cuentas Afectadas)
+                    </span>
+                    <span className="text-gray-500 font-mono">
+                      Filtrado: {dateStart || 'Inicio'} al {dateEnd || 'Hoy'}
+                    </span>
+                  </div>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left text-sm">
+                      <thead className="bg-gray-50 text-gray-600 text-xs uppercase font-bold border-b border-gray-200">
+                        <tr>
+                          <th className="px-5 py-3 font-mono">Código Cuenta</th>
+                          <th className="px-5 py-3">Nombre de la Cuenta</th>
+                          <th className="px-5 py-3 text-center">Movimientos</th>
+                          <th className="px-5 py-3 text-right">Total Debe (Cargos)</th>
+                          <th className="px-5 py-3 text-right">Total Haber (Abonos)</th>
+                          <th className="px-5 py-3 text-right">Saldo Neto Período</th>
+                          <th className="px-5 py-3 text-center">Naturaleza</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-100 text-xs">
+                        {rangeAccountsList.length === 0 ? (
+                          <tr>
+                            <td colSpan="7" className="px-6 py-10 text-center text-gray-400">
+                              No hay movimientos de cuentas en el rango seleccionado.
+                            </td>
+                          </tr>
+                        ) : (
+                          rangeAccountsList.map(acc => (
+                            <tr key={acc.code} className="hover:bg-purple-50/20 transition">
+                              <td className="px-5 py-3 font-mono font-bold text-purple-900">
+                                {acc.code}
+                              </td>
+                              <td className="px-5 py-3 font-semibold text-gray-800">
+                                {acc.name}
+                              </td>
+                              <td className="px-5 py-3 text-center text-gray-500 font-mono">
+                                {acc.count}
+                              </td>
+                              <td className="px-5 py-3 text-right font-mono font-bold text-blue-700">
+                                ${acc.debit.toLocaleString('es-MX', { minimumFractionDigits: 2 })}
+                              </td>
+                              <td className="px-5 py-3 text-right font-mono font-bold text-emerald-700">
+                                ${acc.credit.toLocaleString('es-MX', { minimumFractionDigits: 2 })}
+                              </td>
+                              <td className="px-5 py-3 text-right font-mono font-bold text-gray-900">
+                                ${Math.abs(acc.netBalance).toLocaleString('es-MX', { minimumFractionDigits: 2 })}
+                              </td>
+                              <td className="px-5 py-3 text-center">
+                                <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                                  acc.nature === 'Deudora' 
+                                    ? 'bg-blue-100 text-blue-800' 
+                                    : 'bg-emerald-100 text-emerald-800'
+                                }`}>
+                                  {acc.nature}
+                                </span>
+                              </td>
+                            </tr>
+                          ))
+                        )}
+                      </tbody>
+                      {rangeAccountsList.length > 0 && (
+                        <tfoot className="bg-gray-100 text-gray-900 font-bold text-xs border-t-2 border-gray-300">
+                          <tr>
+                            <td colSpan="3" className="px-5 py-3 text-right">SUMAS IGUALES DEL RANGO:</td>
+                            <td className="px-5 py-3 text-right font-mono text-blue-900 font-bold">
+                              ${totalRangeDebit.toLocaleString('es-MX', { minimumFractionDigits: 2 })}
+                            </td>
+                            <td className="px-5 py-3 text-right font-mono text-emerald-900 font-bold">
+                              ${totalRangeCredit.toLocaleString('es-MX', { minimumFractionDigits: 2 })}
+                            </td>
+                            <td className="px-5 py-3 text-right font-mono text-gray-900 font-bold">
+                              ${rangeDiff.toFixed(2)}
+                            </td>
+                            <td className="px-5 py-3 text-center text-emerald-800 font-bold">
+                              ✓ Balanceado
+                            </td>
+                          </tr>
+                        </tfoot>
+                      )}
+                    </table>
+                  </div>
+                </div>
+              )}
+
+              {/* MODO 3: RESUMEN EJECUTIVO POR MÓDULO DE ORIGEN */}
+              {dateViewMode === 'resumen' && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {rangeModulesList.map(mod => {
+                    const pct = totalRangeDebit > 0 ? (mod.total / totalRangeDebit) * 100 : 0;
+                    return (
+                      <div key={mod.module} className="bg-white p-5 rounded-xl border border-gray-200 shadow-xs flex flex-col justify-between">
+                        <div className="flex justify-between items-start mb-3">
+                          <div>
+                            <span className="text-[11px] font-bold text-purple-700 bg-purple-50 px-2 py-0.5 rounded border border-purple-200 uppercase tracking-wider">
+                              Módulo Origen
+                            </span>
+                            <h4 className="text-base font-bold text-gray-900 mt-1">{mod.module}</h4>
+                          </div>
+                          <span className="text-xs font-mono font-bold bg-gray-100 px-2 py-1 rounded text-gray-700">
+                            {mod.count} Pólizas
+                          </span>
+                        </div>
+                        <div className="space-y-2">
+                          <div className="flex justify-between text-xs">
+                            <span className="text-gray-500 font-medium">Volumen Transaccionado:</span>
+                            <span className="font-mono font-bold text-gray-900 text-sm">
+                              ${mod.total.toLocaleString('es-MX', { minimumFractionDigits: 2 })} USD
+                            </span>
+                          </div>
+                          <div className="w-full bg-gray-100 rounded-full h-2.5 overflow-hidden">
+                            <div
+                              className="bg-purple-600 h-2.5 rounded-full transition-all duration-500"
+                              style={{ width: `${pct}%` }}
+                            ></div>
+                          </div>
+                          <div className="text-right text-[11px] text-gray-400 font-mono">
+                            {pct.toFixed(1)}% del volumen del período
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           )}
 
@@ -2046,6 +2741,116 @@ export default function Contabilidad() {
 
         {/* ========================================================================= */}
         {/* MODAL 5 (ADICIÓN 4): MANDAMIENTO DE PAGO ELECTRÓNICO (NPE) BANCARIO */}
+        {/* MODAL DE REPORTE POR RANGO DE FECHAS */}
+        {showDateReportModal && (
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-2xl max-w-4xl w-full p-8 shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto print:p-0 print:shadow-none">
+              {/* Membrete Oficial Institucional */}
+              <div className="flex justify-between items-start border-b-2 border-gray-900 pb-4">
+                <div>
+                  <h2 className="text-xl font-bold tracking-tight text-gray-900">NYTEX TEXTILES DE EL SALVADOR S.A. DE C.V.</h2>
+                  <p className="text-xs text-gray-500 font-mono">NIT: 0614-290995-102-3 • NRC: 294819-0 • Giro: Industria de Confección Textil</p>
+                  <h3 className="text-sm font-bold text-purple-900 uppercase mt-2">
+                    REPORTE OFICIAL DE MOVIMIENTOS Y PÓLIZAS CONTABLES
+                  </h3>
+                  <p className="text-xs text-gray-700 font-semibold">
+                    Período: Del {dateStart || 'Inicio'} al {dateEnd || 'Hoy'}
+                  </p>
+                </div>
+                <div className="text-right font-mono text-xs text-gray-500">
+                  <div>Fecha de Emisión: {new Date().toLocaleDateString('es-SV')}</div>
+                  <div>Pólizas en Rango: <strong>{dateFilteredEntries.length}</strong></div>
+                  <div>Tipo: <strong>{dateTypeFilter}</strong> | Módulo: <strong>{dateModuleFilter}</strong></div>
+                </div>
+              </div>
+
+              {/* Resumen de Partida Doble del Período */}
+              <div className="grid grid-cols-3 gap-4 bg-gray-50 p-4 rounded-xl border border-gray-200 text-xs">
+                <div>
+                  <span className="text-gray-500 font-bold block uppercase text-[10px]">Total Cargos (Debe)</span>
+                  <span className="text-base font-mono font-bold text-blue-900">
+                    ${totalRangeDebit.toLocaleString('es-MX', { minimumFractionDigits: 2 })}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-gray-500 font-bold block uppercase text-[10px]">Total Abonos (Haber)</span>
+                  <span className="text-base font-mono font-bold text-emerald-900">
+                    ${totalRangeCredit.toLocaleString('es-MX', { minimumFractionDigits: 2 })}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-gray-500 font-bold block uppercase text-[10px]">Diferencia de Cuadre</span>
+                  <span className="text-base font-mono font-bold text-purple-900">
+                    ${rangeDiff.toFixed(2)} (100% Cuadrado)
+                  </span>
+                </div>
+              </div>
+
+              {/* Tabla Resumida de Pólizas */}
+              <div className="border border-gray-200 rounded-lg overflow-hidden">
+                <table className="w-full text-left text-xs">
+                  <thead className="bg-gray-100 text-gray-700 font-bold uppercase border-b">
+                    <tr>
+                      <th className="p-2 font-mono">Folio</th>
+                      <th className="p-2">Fecha</th>
+                      <th className="p-2 text-center">Tipo</th>
+                      <th className="p-2">Concepto</th>
+                      <th className="p-2">Módulo</th>
+                      <th className="p-2 text-right">Cargos / Abonos</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200">
+                    {dateFilteredEntries.map(e => (
+                      <tr key={e.id}>
+                        <td className="p-2 font-mono font-bold">{e.entryCode}</td>
+                        <td className="p-2 font-mono">{e.date}</td>
+                        <td className="p-2 text-center font-bold">{e.type}</td>
+                        <td className="p-2">{e.concept}</td>
+                        <td className="p-2">{e.originModule}</td>
+                        <td className="p-2 text-right font-mono font-bold">
+                          ${e.totalDebit.toLocaleString('es-MX', { minimumFractionDigits: 2 })}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Casillas de Firma de Responsabilidad Legal */}
+              <div className="grid grid-cols-2 gap-12 pt-12 text-center text-xs">
+                <div className="border-t border-gray-400 pt-2">
+                  <p className="font-bold text-gray-900">C.P. Mario Castaneda</p>
+                  <p className="text-gray-500">Contador General • Lic. N° 49182-SV</p>
+                  <p className="text-[10px] text-gray-400 mt-1">Firma y Sello de Responsabilidad Contable</p>
+                </div>
+                <div className="border-t border-gray-400 pt-2">
+                  <p className="font-bold text-gray-900">Auditoría Externa Independiente</p>
+                  <p className="text-gray-500">Registro de Auditores Fiscales DGII</p>
+                  <p className="text-[10px] text-gray-400 mt-1">Certificación de Partida Doble e Integridad</p>
+                </div>
+              </div>
+
+              {/* Botones de Acción */}
+              <div className="flex justify-between items-center pt-4 border-t print:hidden">
+                <button
+                  type="button"
+                  onClick={() => setShowDateReportModal(false)}
+                  className="px-4 py-2 text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-lg transition"
+                >
+                  Cerrar
+                </button>
+                <button
+                  type="button"
+                  onClick={() => window.print()}
+                  className="px-5 py-2 text-xs bg-purple-700 hover:bg-purple-800 text-white font-bold rounded-lg shadow-sm transition flex items-center gap-1.5"
+                >
+                  <span>🖨️</span> Imprimir Documento Oficial
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* ========================================================================= */}
         {npeModalData && (
           <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
