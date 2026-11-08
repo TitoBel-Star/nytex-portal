@@ -19,6 +19,11 @@ export default function Contabilidad() {
   const [notif, setNotif] = useState(null);
   const [lockStatus, setLockStatus] = useState(null);
 
+  // Estados para Liquidación Fiscal F-07 y F-14
+  const [liquidatingF07, setLiquidatingF07] = useState(false);
+  const [liquidatingF14, setLiquidatingF14] = useState(false);
+  const [liquidatedModalData, setLiquidatedModalData] = useState(null);
+
   // Estados de Búsqueda y Filtro de Catálogo
   const [searchAccountText, setSearchAccountText] = useState('');
   const [filterAccountType, setFilterAccountType] = useState('Todas');
@@ -81,7 +86,8 @@ export default function Contabilidad() {
   }, []);
 
   const handleLiquidarF07 = async () => {
-    if (!declaraciones?.f07) return;
+    if (!declaraciones?.f07 || liquidatingF07) return;
+    setLiquidatingF07(true);
     try {
       const res = await fetch('/api/contabilidad/liquidar-f07', {
         method: 'POST',
@@ -96,17 +102,29 @@ export default function Contabilidad() {
       const data = await res.json();
       if (res.ok) {
         setNotif({ type: 'success', msg: data.message });
-        fetchData();
+        setLiquidatedModalData({
+          form: 'F-07',
+          title: 'Liquidación Mensual de IVA (F-07)',
+          subtitle: 'Período Tributario: Octubre 2026 • Ministerio de Hacienda El Salvador',
+          entry: data.entry,
+          npe: declaraciones?.f07?.npe || '0812-9948-2819-2041-88',
+          amount: declaraciones?.f07?.totalPagarF07,
+          name: 'Declaración y Pago de IVA'
+        });
+        await fetchData();
       } else {
         setNotif({ type: 'error', msg: data.error || 'Error al liquidar F-07' });
       }
     } catch (err) {
       setNotif({ type: 'error', msg: err.message });
+    } finally {
+      setLiquidatingF07(false);
     }
   };
 
   const handleLiquidarF14 = async () => {
-    if (!declaraciones?.f14) return;
+    if (!declaraciones?.f14 || liquidatingF14) return;
+    setLiquidatingF14(true);
     try {
       const res = await fetch('/api/contabilidad/liquidar-f14', {
         method: 'POST',
@@ -121,12 +139,23 @@ export default function Contabilidad() {
       const data = await res.json();
       if (res.ok) {
         setNotif({ type: 'success', msg: data.message });
-        fetchData();
+        setLiquidatedModalData({
+          form: 'F-14',
+          title: 'Pago a Cuenta & Retenciones de Renta (F-14)',
+          subtitle: 'Período Tributario: Octubre 2026 • Ministerio de Hacienda El Salvador',
+          entry: data.entry,
+          npe: declaraciones?.f14?.npe || '0812-7729-1049-5832-11',
+          amount: declaraciones?.f14?.totalPagarF14,
+          name: 'Pago a Cuenta & Retenciones de Renta'
+        });
+        await fetchData();
       } else {
         setNotif({ type: 'error', msg: data.error || 'Error al liquidar F-14' });
       }
     } catch (err) {
       setNotif({ type: 'error', msg: err.message });
+    } finally {
+      setLiquidatingF14(false);
     }
   };
 
@@ -574,15 +603,19 @@ export default function Contabilidad() {
       </div>
 
       <div className="flex-1 overflow-auto p-6 text-gray-800 w-full space-y-6">
-        {/* Notificación flotante */}
+        {/* Notificación flotante fija en pantalla */}
         {notif && (
-          <div className={`p-4 rounded-xl flex items-center justify-between text-sm font-semibold shadow-md ${
-            notif.type === 'success' ? 'bg-emerald-50 text-emerald-900 border border-emerald-200' : 'bg-red-50 text-red-900 border border-red-200'
+          <div className={`fixed bottom-6 right-6 z-50 max-w-lg p-4 rounded-2xl flex items-center justify-between text-sm font-semibold shadow-2xl transition-all border ${
+            notif.type === 'success' ? 'bg-emerald-50 text-emerald-950 border-emerald-400' : 'bg-red-50 text-red-950 border-red-400'
           }`}>
-            <span>{notif.msg}</span>
-            <button onClick={() => setNotif(null)} className="font-bold ml-4">✕</button>
+            <div className="flex items-center gap-2.5">
+              <span className="text-xl">{notif.type === 'success' ? '✅' : '⚠️'}</span>
+              <span>{notif.msg}</span>
+            </div>
+            <button onClick={() => setNotif(null)} className="font-bold ml-4 text-gray-500 hover:text-gray-900 text-lg">✕</button>
           </div>
         )}
+
 
         {/* Barra de Totales y Métricas Financieras Clave */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
@@ -1760,6 +1793,28 @@ export default function Contabilidad() {
                     </span>
                   </div>
 
+                  {declaraciones?.f07?.liquidado && (
+                    <div className="bg-emerald-50 border border-emerald-300 rounded-xl p-3 flex items-center justify-between shadow-xs">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xl">✅</span>
+                        <div>
+                          <span className="text-xs font-bold text-emerald-950 block">Liquidación de IVA Contabilizada</span>
+                          <span className="text-[11px] text-emerald-700">Póliza: <strong className="font-mono">{declaraciones.f07.entryCode}</strong> • Cuadrada ($0.00)</span>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const found = entries.find(e => e.entryCode === declaraciones.f07.entryCode) || declaraciones.f07.entry;
+                          if (found) setSelectedEntry(found);
+                        }}
+                        className="px-2.5 py-1 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-xs font-bold shadow-xs transition"
+                      >
+                        Ver Asientos
+                      </button>
+                    </div>
+                  )}
+
                   <div className="space-y-2.5 text-xs">
                     <div className="flex justify-between py-1 border-b border-gray-100">
                       <span className="text-gray-600">Ventas Gravadas con CCF (DTE-03):</span>
@@ -1797,12 +1852,46 @@ export default function Contabilidad() {
                     >
                       <span>🧾</span> Ver Mandamiento de Pago (NPE)
                     </button>
-                    <button
-                      onClick={handleLiquidarF07}
-                      className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-lg shadow transition"
-                    >
-                      ⚡ Liquidar y Generar Póliza de IVA
-                    </button>
+                    {declaraciones?.f07?.liquidado ? (
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const found = entries.find(e => e.entryCode === declaraciones.f07.entryCode) || declaraciones.f07.entry;
+                            if (found) setSelectedEntry(found);
+                          }}
+                          className="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg shadow transition flex items-center gap-1.5"
+                        >
+                          <span>✓</span> Póliza Contabilizada ({declaraciones.f07.entryCode})
+                        </button>
+                        <button
+                          type="button"
+                          onClick={handleLiquidarF07}
+                          disabled={liquidatingF07}
+                          title="Volver a generar o actualizar póliza de liquidación"
+                          className="px-2.5 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold rounded-lg border border-gray-300 transition"
+                        >
+                          {liquidatingF07 ? '⏳...' : '🔄 Re-liquidar'}
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={handleLiquidarF07}
+                        disabled={liquidatingF07}
+                        className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white text-xs font-bold rounded-lg shadow transition flex items-center gap-1.5"
+                      >
+                        {liquidatingF07 ? (
+                          <>
+                            <span className="animate-spin">⏳</span> Liquidando y Contabilizando...
+                          </>
+                        ) : (
+                          <>
+                            <span>⚡</span> Liquidar y Generar Póliza de IVA
+                          </>
+                        )}
+                      </button>
+                    )}
                   </div>
                 </div>
 
@@ -1820,6 +1909,28 @@ export default function Contabilidad() {
                       Vence: {declaraciones?.f14?.fechaVencimiento || '13 Nov 2026'}
                     </span>
                   </div>
+
+                  {declaraciones?.f14?.liquidado && (
+                    <div className="bg-emerald-50 border border-emerald-300 rounded-xl p-3 flex items-center justify-between shadow-xs">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xl">✅</span>
+                        <div>
+                          <span className="text-xs font-bold text-emerald-950 block">Liquidación F-14 Contabilizada</span>
+                          <span className="text-[11px] text-emerald-700">Póliza: <strong className="font-mono">{declaraciones.f14.entryCode}</strong> • Cuadrada ($0.00)</span>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const found = entries.find(e => e.entryCode === declaraciones.f14.entryCode) || declaraciones.f14.entry;
+                          if (found) setSelectedEntry(found);
+                        }}
+                        className="px-2.5 py-1 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-xs font-bold shadow-xs transition"
+                      >
+                        Ver Asientos
+                      </button>
+                    </div>
+                  )}
 
                   <div className="space-y-2.5 text-xs">
                     <div className="flex justify-between py-1 border-b border-gray-100">
@@ -1854,12 +1965,46 @@ export default function Contabilidad() {
                     >
                       <span>🧾</span> Ver Mandamiento de Pago (NPE)
                     </button>
-                    <button
-                      onClick={handleLiquidarF14}
-                      className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg shadow transition"
-                    >
-                      ⚡ Liquidar y Generar Póliza F-14
-                    </button>
+                    {declaraciones?.f14?.liquidado ? (
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const found = entries.find(e => e.entryCode === declaraciones.f14.entryCode) || declaraciones.f14.entry;
+                            if (found) setSelectedEntry(found);
+                          }}
+                          className="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg shadow transition flex items-center gap-1.5"
+                        >
+                          <span>✓</span> Póliza Contabilizada ({declaraciones.f14.entryCode})
+                        </button>
+                        <button
+                          type="button"
+                          onClick={handleLiquidarF14}
+                          disabled={liquidatingF14}
+                          title="Volver a generar póliza F-14"
+                          className="px-2.5 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold rounded-lg border border-gray-300 transition"
+                        >
+                          {liquidatingF14 ? '⏳...' : '🔄 Re-liquidar'}
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={handleLiquidarF14}
+                        disabled={liquidatingF14}
+                        className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white text-xs font-bold rounded-lg shadow transition flex items-center gap-1.5"
+                      >
+                        {liquidatingF14 ? (
+                          <>
+                            <span className="animate-spin">⏳</span> Liquidando y Contabilizando...
+                          </>
+                        ) : (
+                          <>
+                            <span>⚡</span> Liquidar y Generar Póliza F-14
+                          </>
+                        )}
+                      </button>
+                    )}
                   </div>
                 </div>
 
@@ -2927,6 +3072,154 @@ export default function Contabilidad() {
         )}
 
       </div>
+
+        {/* ========================================================================= */}
+        {/* MODAL DE CONFIRMACIÓN DETALLADA: PÓLIZA DE LIQUIDACIÓN GENERADA */}
+        {/* ========================================================================= */}
+        {liquidatedModalData && (
+          <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+            <div className="bg-white rounded-2xl max-w-xl w-full p-6 shadow-2xl border border-gray-200 space-y-4 max-h-[90vh] overflow-y-auto">
+              {/* Encabezado con Icono de Éxito */}
+              <div className="flex justify-between items-start border-b pb-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-2xl font-black shadow-inner">
+                    ✓
+                  </div>
+                  <div>
+                    <span className="px-2 py-0.5 text-[10px] font-bold bg-emerald-100 text-emerald-800 rounded uppercase">
+                      Póliza Fiscal Registrada
+                    </span>
+                    <h3 className="text-lg font-bold text-gray-900 mt-0.5">{liquidatedModalData.title}</h3>
+                    <p className="text-xs text-gray-500">{liquidatedModalData.subtitle}</p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setLiquidatedModalData(null)}
+                  className="text-gray-400 hover:text-gray-600 text-lg font-bold p-1"
+                >
+                  ✕
+                </button>
+              </div>
+
+              {/* Tarjeta de Resumen de Póliza */}
+              <div className="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-xl p-4 text-xs space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-600 font-bold">Folio de Póliza Generada:</span>
+                  <span className="text-base font-mono font-black text-emerald-950 bg-white px-2.5 py-1 rounded-lg border border-emerald-200 shadow-xs">
+                    {liquidatedModalData.entry?.entryCode || 'POL-2026-NUEVA'}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center text-gray-600">
+                  <span>Tipo de Asiento:</span>
+                  <span className="font-bold text-gray-800">Diario • Contabilidad Fiscal</span>
+                </div>
+                <div className="flex justify-between items-center text-gray-600">
+                  <span>Estatus de Partida Doble:</span>
+                  <span className="font-bold text-emerald-700 flex items-center gap-1">
+                    <span>✓</span> Cuadrada ($0.00 de diferencia)
+                  </span>
+                </div>
+              </div>
+
+              {/* Detalle de Asientos Contables Generados */}
+              <div>
+                <h4 className="text-xs font-bold text-gray-700 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                  <span>📋</span> Asientos Contables Registrados en el Período
+                </h4>
+                <div className="border border-gray-200 rounded-xl overflow-hidden">
+                  <table className="w-full text-left text-xs">
+                    <thead className="bg-gray-100 text-gray-700 uppercase font-bold text-[10px]">
+                      <tr>
+                        <th className="p-2 font-mono">Cuenta</th>
+                        <th className="p-2">Denominación</th>
+                        <th className="p-2 text-right">Debe</th>
+                        <th className="p-2 text-right">Haber</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-100 font-mono">
+                      {(liquidatedModalData.entry?.lines || []).map((l, i) => (
+                        <tr key={i} className="hover:bg-gray-50">
+                          <td className="p-2 font-bold text-purple-900">{l.accountCode}</td>
+                          <td className="p-2 font-sans text-gray-700">{l.accountName}</td>
+                          <td className="p-2 text-right text-blue-900 font-bold">
+                            {l.debit > 0 ? `$${l.debit.toLocaleString('es-MX', { minimumFractionDigits: 2 })}` : '-'}
+                          </td>
+                          <td className="p-2 text-right text-emerald-900 font-bold">
+                            {l.credit > 0 ? `$${l.credit.toLocaleString('es-MX', { minimumFractionDigits: 2 })}` : '-'}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                    <tfoot className="bg-gray-50 border-t font-mono font-bold text-[11px]">
+                      <tr>
+                        <td colSpan="2" className="p-2 font-sans text-right uppercase text-gray-600">Sumas Iguales:</td>
+                        <td className="p-2 text-right text-blue-900">
+                          ${(liquidatedModalData.entry?.totalDebit || 0).toLocaleString('es-MX', { minimumFractionDigits: 2 })}
+                        </td>
+                        <td className="p-2 text-right text-emerald-900">
+                          ${(liquidatedModalData.entry?.totalCredit || 0).toLocaleString('es-MX', { minimumFractionDigits: 2 })}
+                        </td>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </div>
+              </div>
+
+              {/* Mandamiento de Pago Bancario */}
+              {liquidatedModalData.npe && (
+                <div className="bg-purple-50 border border-purple-200 rounded-xl p-3 text-xs flex justify-between items-center">
+                  <div>
+                    <span className="text-[10px] uppercase font-bold text-purple-700 block">Mandamiento Oficial (NPE)</span>
+                    <span className="font-mono font-bold text-sm text-purple-950">{liquidatedModalData.npe}</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const data = { ...liquidatedModalData };
+                      setLiquidatedModalData(null);
+                      setNpeModalData({
+                        form: data.form,
+                        npe: data.npe,
+                        amount: data.amount,
+                        name: data.name
+                      });
+                    }}
+                    className="px-3 py-1.5 bg-purple-700 hover:bg-purple-800 text-white rounded-lg text-xs font-bold transition flex items-center gap-1 shadow-sm"
+                  >
+                    <span>🧾</span> Ver Boleta NPE
+                  </button>
+                </div>
+              )}
+
+              {/* Botones de Acción */}
+              <div className="flex flex-wrap justify-between items-center pt-3 border-t gap-2">
+                <button
+                  type="button"
+                  onClick={() => setLiquidatedModalData(null)}
+                  className="px-4 py-2 text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-lg transition"
+                >
+                  Cerrar
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const entryCode = liquidatedModalData.entry?.entryCode;
+                    setActiveTab('LibroDiario');
+                    setLiquidatedModalData(null);
+                    setTimeout(() => {
+                      const found = entries.find(e => e.entryCode === entryCode) || liquidatedModalData.entry;
+                      if (found) setSelectedEntry(found);
+                    }, 100);
+                  }}
+                  className="px-5 py-2 text-xs bg-purple-800 hover:bg-purple-900 text-white font-bold rounded-lg shadow-sm transition flex items-center gap-1.5"
+                >
+                  <span>📖</span> Ir al Libro Diario (Ver Póliza)
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
     </div>
   );
 }

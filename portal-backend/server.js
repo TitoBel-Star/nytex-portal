@@ -2695,6 +2695,16 @@ app.get('/api/contabilidad/declaraciones', async (req, res) => {
     const pagosACuentaAcreditables = Math.round(pagoACuenta175 * 12 * 100) / 100; // Anualizado
     const impuestoRentaNetoPagar = Math.max(0, Math.round((impuestoRentaBruto - pagosACuentaAcreditables) * 100) / 100);
 
+    // Buscar si ya existen pólizas registradas para F-07 y F-14 en el período
+    const f07Entry = await JournalEntry.findOne({
+      where: { originReference: 'F-07-2026-10' },
+      order: [['id', 'DESC']]
+    });
+    const f14Entry = await JournalEntry.findOne({
+      where: { originReference: 'F-14-2026-10' },
+      order: [['id', 'DESC']]
+    });
+
     res.json({
       periodoActual: 'Octubre 2026',
       ejercicioFiscal: '2026',
@@ -2712,7 +2722,10 @@ app.get('/api/contabilidad/declaraciones', async (req, res) => {
         totalPagarF07,
         npe: '0812-9948-2819-2041-88',
         fechaVencimiento: '2026-11-13',
-        estado: 'Listo para Presentar'
+        estado: f07Entry ? 'Liquidado y Contabilizado' : 'Listo para Presentar',
+        liquidado: !!f07Entry,
+        entryCode: f07Entry ? f07Entry.entryCode : null,
+        entry: f07Entry || null
       },
       f14: {
         codigo: 'F-14',
@@ -2725,7 +2738,10 @@ app.get('/api/contabilidad/declaraciones', async (req, res) => {
         totalPagarF14,
         npe: '0812-7729-1049-5832-11',
         fechaVencimiento: '2026-11-13',
-        estado: 'Listo para Presentar'
+        estado: f14Entry ? 'Liquidado y Contabilizado' : 'Listo para Presentar',
+        liquidado: !!f14Entry,
+        entryCode: f14Entry ? f14Entry.entryCode : null,
+        entry: f14Entry || null
       },
       f11: {
         codigo: 'F-11',
