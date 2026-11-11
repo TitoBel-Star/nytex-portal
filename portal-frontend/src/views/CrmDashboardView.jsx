@@ -1,14 +1,257 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+// Catálogo base de Kardex (Productos y Servicios de NyTEX ERP)
+const DEFAULT_KARDEX = [
+  { sku: 'PT-TEL-101', name: 'Lote Producto Terminado Estándar Alfa', category: 'Producto Terminado', unitPrice: 1850, stock: 35, unit: 'rollos' },
+  { sku: 'PT-POP-102', name: 'Lote Producto Terminado Modelo Estándar', category: 'Producto Terminado', unitPrice: 2150, stock: 15, unit: 'unidades' },
+  { sku: 'PT-RIB-103', name: 'Lote Producto Terminado Modelo Reforzado', category: 'Producto Terminado', unitPrice: 1950, stock: 22, unit: 'unidades' },
+  { sku: 'PT-FLE-104', name: 'Lote Producto Terminado Modelo Industrial', category: 'Producto Terminado', unitPrice: 2800, stock: 18, unit: 'unidades' },
+  { sku: 'PT-PIQ-105', name: 'Lote Producto Terminado Modelo Plus', category: 'Producto Terminado', unitPrice: 2100, stock: 26, unit: 'unidades' },
+  { sku: 'SKU-TEL-01', name: 'Lote Producto Terminado Serie 100', category: 'Producto Terminado', unitPrice: 1850, stock: 45, unit: 'unidades' },
+  { sku: 'SKU-TEL-02', name: 'Lote Producto Terminado Serie 200', category: 'Producto Terminado', unitPrice: 1850, stock: 32, unit: 'unidades' },
+  { sku: 'SKU-TEL-03', name: 'Lote Producto Terminado Serie 300', category: 'Producto Terminado', unitPrice: 1780, stock: 60, unit: 'unidades' },
+  { sku: 'SKU-MEZ-01', name: 'Lote Producto Terminado Serie 400', category: 'Producto Terminado', unitPrice: 2400, stock: 28, unit: 'unidades' },
+  { sku: 'SKU-MEZ-02', name: 'Lote Producto Terminado Serie 500', category: 'Producto Terminado', unitPrice: 2650, stock: 19, unit: 'unidades' },
+  { sku: 'SKU-POL-01', name: 'Lote Producto Terminado Compuesto', category: 'Producto Terminado', unitPrice: 1450, stock: 55, unit: 'unidades' },
+  { sku: 'MP-HIL-01', name: 'Materia Prima Base MP-01', category: 'Materia Prima', unitPrice: 380, stock: 120, unit: 'kg' },
+  { sku: 'MP-POL-02', name: 'Materia Prima Sintética MP-02', category: 'Materia Prima', unitPrice: 240, stock: 450, unit: 'kg' },
+  { sku: 'MP-TIN-03', name: 'Compuesto Reactivo Azul Marino', category: 'Insumo Químico', unitPrice: 490, stock: 18, unit: 'litros' },
+  { sku: 'SRV-CONS-01', name: 'Servicio de Consultoría y Diagnóstico ERP', category: 'Servicio', unitPrice: 1200, stock: 999, unit: 'servicio' },
+  { sku: 'SRV-MIG-02', name: 'Servicio de Migración a la Nube e Infraestructura', category: 'Servicio', unitPrice: 3500, stock: 999, unit: 'servicio' },
+  { sku: 'SRV-CAP-03', name: 'Capacitación y Adopción de Usuarios NyTEX', category: 'Servicio', unitPrice: 750, stock: 999, unit: 'servicio' },
+  { sku: 'SRV-SOP-04', name: 'Soporte Hypercare 24/7 (Bolsa Mensual)', category: 'Servicio', unitPrice: 2400, stock: 999, unit: 'servicio' }
+];
+
+// Razones oficiales de No Compra (Venta Perdida)
+const LOST_SALE_REASONS = [
+  '1. No compró por precio alto',
+  '2. No compró por la Marca',
+  '3. No compró porque no hay existencias',
+  '4. No compró porque quería crédito y no se le dio',
+  '5. No compra por mal servicio'
+];
+
+// Tipos de Contacto según Manual de Usuario NyTEX CRM (Paso 2)
+const CONTACT_TYPES = [
+  { id: 'Llamada', label: 'Llamada', icon: 'fas fa-phone-alt', bg: 'bg-blue-50 text-blue-700 border-blue-300' },
+  { id: 'Reunión Presencial', label: 'Reunión Presencial', icon: 'fas fa-handshake', bg: 'bg-emerald-50 text-emerald-700 border-emerald-300' },
+  { id: 'Videoconferencia', label: 'Videoconferencia', icon: 'fas fa-video', bg: 'bg-purple-50 text-purple-700 border-purple-300' },
+  { id: 'Correo', label: 'Correo', icon: 'fas fa-envelope', bg: 'bg-amber-50 text-amber-700 border-amber-300' },
+  { id: 'Envío de Muestras', label: 'Envío de Muestras', icon: 'fas fa-box-open', bg: 'bg-indigo-50 text-indigo-700 border-indigo-300' }
+];
+
 const initialDeals = [
-  { id: 1, title: 'Implementación ERP - Fase 1', company: 'Industrias Apex', value: '$15,000', stage: 'Nuevo', date: '24 Sep', priority: 'Alta', contact: 'Roberto Silva', email: 'rsilva@apex.com', phone: '+503 7890-1234', assignedTo: 'María Asesora' },
-  { id: 2, title: 'Migración a la nube', company: 'TechSolutions S.A.', value: '$8,500', stage: 'Nuevo', date: '23 Sep', priority: 'Media', contact: 'Karla Morales', email: 'kmorales@techsolutions.com', phone: '+503 7654-3210', assignedTo: 'Alejandro Castillo' },
-  { id: 3, title: 'Módulo de Facturación Electrónica', company: 'Comercializadora del Sur', value: '$3,200', stage: 'Contactado', date: '21 Sep', priority: 'Alta', contact: 'Luis Gómez', email: 'lgomez@comsur.com', phone: '+503 7123-4567', assignedTo: 'María Asesora' },
-  { id: 4, title: 'Consultoría Logística', company: 'Logistics Pro', value: '$5,000', stage: 'Calificado', date: '18 Sep', priority: 'Baja', contact: 'Sandra Peña', email: 'spena@logisticspro.com', phone: '+503 7321-9876', assignedTo: 'Carlos Méndez' },
-  { id: 5, title: 'Renovación Licencias anual', company: 'Grupo Inmobiliario', value: '$12,000', stage: 'Calificado', date: '15 Sep', priority: 'Alta', contact: 'Eduardo Castro', email: 'ecastro@grupoinm.com', phone: '+503 7987-6543', assignedTo: 'Alejandro Castillo' },
-  { id: 6, title: 'Proyecto WMS', company: 'Almacenes Globales', value: '$25,000', stage: 'Cotizado', date: '10 Sep', priority: 'Media', contact: 'Guillermo Vega', email: 'gvega@almacenesg.com', phone: '+503 7456-1122', assignedTo: 'María Asesora' },
-  { id: 7, title: 'Soporte Hypercare', company: 'Constructora XYZ', value: '$2,400', stage: 'Ganado', date: '05 Sep', priority: 'Media', contact: 'Patricia Henríquez', email: 'phenriquez@xyz.com', phone: '+503 7889-0011', assignedTo: 'Carlos Méndez' },
+  { 
+    id: 1, 
+    title: 'Implementación ERP - Fase 1', 
+    company: 'Industrias Apex', 
+    value: '$15,000', 
+    stage: 'Nuevo', 
+    date: '24 Sep', 
+    priority: 'Alta', 
+    contact: 'Roberto Silva', 
+    email: 'rsilva@apex.com', 
+    phone: '+503 7890-1234', 
+    assignedTo: 'María Asesora',
+    activities: [
+      {
+        id: 101,
+        contactType: 'Reunión Presencial',
+        notes: 'Minuta: Reunión en instalaciones del cliente. Se revisó alcance de Fase 1 (Módulos 1 al 4). Solicitan términos de pago a 30 días y entrega en planta.',
+        nextTask: 'Enviar cotización ajustada con cronograma',
+        nextTaskDate: '2026-09-24 10:00',
+        registeredAt: '2026-09-18 16:30',
+        registeredBy: 'María Asesora'
+      }
+    ],
+    quote: {
+      paymentTerms: 'Crédito 30 días',
+      deliveryMode: 'Entrega en Sucursal',
+      deliveryAddress: 'Planta Industrial Apex, Km 14',
+      items: [
+        { id: 11, sku: 'SRV-CONS-01', name: 'Servicio de Consultoría y Diagnóstico ERP', category: 'Servicio', unitPrice: 1200, quantity: 2, total: 2400, status: 'comprado', lostReason: null, lostNotes: '', lostDate: null },
+        { id: 12, sku: 'SRV-MIG-02', name: 'Servicio de Migración a la Nube e Infraestructura', category: 'Servicio', unitPrice: 3500, quantity: 3, total: 10500, status: 'cotizado', lostReason: null, lostNotes: '', lostDate: null },
+        { id: 13, sku: 'SRV-CAP-03', name: 'Capacitación y Adopción de Usuarios NyTEX', category: 'Servicio', unitPrice: 700, quantity: 3, total: 2100, status: 'cotizado', lostReason: null, lostNotes: '', lostDate: null }
+      ]
+    }
+  },
+  { 
+    id: 2, 
+    title: 'Migración a la nube', 
+    company: 'TechSolutions S.A.', 
+    value: '$8,500', 
+    stage: 'Nuevo', 
+    date: '23 Sep', 
+    priority: 'Media', 
+    contact: 'Karla Morales', 
+    email: 'kmorales@techsolutions.com', 
+    phone: '+503 7654-3210', 
+    assignedTo: 'Alejandro Castillo',
+    activities: [
+      {
+        id: 201,
+        contactType: 'Videoconferencia',
+        notes: 'Minuta: Se revisó la infraestructura de servidores locales con el equipo de TI de TechSolutions. Solicitan cotización para migración y plan de capacitación.',
+        nextTask: 'Enviar cotización ajustada y acordar fecha de inicio',
+        nextTaskDate: '2026-09-23 11:30',
+        registeredAt: '2026-09-20 14:00',
+        registeredBy: 'Alejandro Castillo'
+      }
+    ],
+    quote: {
+      paymentTerms: 'Crédito 30 días',
+      deliveryMode: 'A Domicilio',
+      deliveryAddress: 'Torre TechSolutions, Nivel 5',
+      items: [
+        { id: 21, sku: 'SRV-MIG-02', name: 'Servicio de Migración a la Nube e Infraestructura', category: 'Servicio', unitPrice: 3500, quantity: 2, total: 7000, status: 'comprado', lostReason: null, lostNotes: '', lostDate: null },
+        { id: 22, sku: 'SRV-CAP-03', name: 'Capacitación y Adopción de Usuarios NyTEX', category: 'Servicio', unitPrice: 750, quantity: 2, total: 1500, status: 'comprado', lostReason: null, lostNotes: '', lostDate: null }
+      ]
+    }
+  },
+  { 
+    id: 3, 
+    title: 'Módulo de Facturación Electrónica', 
+    company: 'Comercializadora del Sur', 
+    value: '$3,200', 
+    stage: 'Contactado', 
+    date: '21 Sep', 
+    priority: 'Alta', 
+    contact: 'Luis Gómez', 
+    email: 'lgomez@comsur.com', 
+    phone: '+503 7123-4567', 
+    assignedTo: 'María Asesora',
+    activities: [
+      {
+        id: 301,
+        contactType: 'Llamada',
+        notes: 'Minuta: Primera llamada de contacto. El cliente requiere timbrado DTE urgente para cumplir normativa fiscal.',
+        nextTask: 'Llamada de seguimiento para revisión de propuesta',
+        nextTaskDate: '2026-09-21 15:00',
+        registeredAt: '2026-09-19 10:15',
+        registeredBy: 'María Asesora'
+      }
+    ],
+    quote: {
+      paymentTerms: 'Contado',
+      deliveryMode: 'Entrega en Sucursal',
+      deliveryAddress: '',
+      items: [
+        { id: 31, sku: 'SRV-CONS-01', name: 'Servicio de Consultoría y Diagnóstico ERP', category: 'Servicio', unitPrice: 1200, quantity: 1, total: 1200, status: 'cotizado', lostReason: null, lostNotes: '', lostDate: null },
+        { id: 32, sku: 'SRV-SOP-04', name: 'Soporte Hypercare 24/7 (Bolsa Mensual)', category: 'Servicio', unitPrice: 2000, quantity: 1, total: 2000, status: 'cotizado', lostReason: null, lostNotes: '', lostDate: null }
+      ]
+    }
+  },
+  { 
+    id: 4, 
+    title: 'Consultoría Logística', 
+    company: 'Logistics Pro', 
+    value: '$5,000', 
+    stage: 'Calificado', 
+    date: '18 Sep', 
+    priority: 'Baja', 
+    contact: 'Sandra Peña', 
+    email: 'spena@logisticspro.com', 
+    phone: '+503 7321-9876', 
+    assignedTo: 'Carlos Méndez',
+    activities: [],
+    quote: {
+      paymentTerms: 'Crédito 15 días',
+      deliveryMode: 'Entrega en Sucursal',
+      deliveryAddress: '',
+      items: [
+        { id: 41, sku: 'SRV-CONS-01', name: 'Servicio de Consultoría y Diagnóstico ERP', category: 'Servicio', unitPrice: 1250, quantity: 4, total: 5000, status: 'cotizado', lostReason: null, lostNotes: '', lostDate: null }
+      ]
+    }
+  },
+  { 
+    id: 5, 
+    title: 'Renovación Licencias anual', 
+    company: 'Grupo Inmobiliario', 
+    value: '$12,000', 
+    stage: 'Calificado', 
+    date: '15 Sep', 
+    priority: 'Alta', 
+    contact: 'Eduardo Castro', 
+    email: 'ecastro@grupoinm.com', 
+    phone: '+503 7987-6543', 
+    assignedTo: 'Alejandro Castillo',
+    activities: [],
+    quote: {
+      paymentTerms: 'Contado',
+      deliveryMode: 'Entrega en Sucursal',
+      deliveryAddress: '',
+      items: [
+        { id: 51, sku: 'SRV-SOP-04', name: 'Soporte Hypercare 24/7 (Bolsa Mensual)', category: 'Servicio', unitPrice: 2400, quantity: 5, total: 12000, status: 'cotizado', lostReason: null, lostNotes: '', lostDate: null }
+      ]
+    }
+  },
+  { 
+    id: 6, 
+    title: 'Proyecto WMS', 
+    company: 'Almacenes Globales', 
+    value: '$25,000', 
+    stage: 'Cotizado', 
+    date: '10 Sep', 
+    priority: 'Media', 
+    contact: 'Guillermo Vega', 
+    email: 'gvega@almacenesg.com', 
+    phone: '+503 7456-1122', 
+    assignedTo: 'María Asesora',
+    activities: [
+      {
+        id: 601,
+        contactType: 'Envío de Muestras',
+        notes: 'Minuta: Se despacharon muestras de etiquetas de código de barras y terminales para pruebas en almacén central.',
+        nextTask: 'Reunión de seguimiento de resultados de muestras',
+        nextTaskDate: '2026-09-10 09:00',
+        registeredAt: '2026-09-05 11:00',
+        registeredBy: 'María Asesora'
+      }
+    ],
+    quote: {
+      paymentTerms: 'Crédito 30 días',
+      deliveryMode: 'A Domicilio',
+      deliveryAddress: 'Centro de Distribución Almacenes Globales, Nave 4',
+      items: [
+        { id: 61, sku: 'PT-FLE-104', name: 'Lote Producto Terminado Modelo Industrial', category: 'Producto Terminado', unitPrice: 2800, quantity: 5, total: 14000, status: 'comprado', lostReason: null, lostNotes: '', lostDate: null },
+        { id: 62, sku: 'PT-POP-102', name: 'Lote Producto Terminado Modelo Estándar', category: 'Producto Terminado', unitPrice: 2150, quantity: 3, total: 6450, status: 'perdido', lostReason: '3. No compró porque no hay existencias', lostNotes: 'Cliente requería entrega inmediata pero el inventario estaba en producción.', lostDate: '2026-09-10 11:15' },
+        { id: 63, sku: 'SRV-CONS-01', name: 'Servicio de Consultoría y Diagnóstico ERP', category: 'Servicio', unitPrice: 1200, quantity: 2, total: 2400, status: 'perdido', lostReason: '1. No compró por precio alto', lostNotes: 'Cliente consideró el costo de consultoría fuera de presupuesto.', lostDate: '2026-09-10 11:20' }
+      ]
+    }
+  },
+  { 
+    id: 7, 
+    title: 'Soporte Hypercare', 
+    company: 'Constructora XYZ', 
+    value: '$2,400', 
+    stage: 'Ganado', 
+    date: '05 Sep', 
+    priority: 'Media', 
+    contact: 'Patricia Henríquez', 
+    email: 'phenriquez@xyz.com', 
+    phone: '+503 7889-0011', 
+    assignedTo: 'Carlos Méndez',
+    activities: [
+      {
+        id: 701,
+        contactType: 'Llamada',
+        notes: 'Minuta: Cierre formal del acuerdo. Se acordó inicio de bolsa Hypercare con soporte extendido.',
+        nextTask: 'Monitoreo de tickets de primer mes',
+        nextTaskDate: '2026-09-30 17:00',
+        registeredAt: '2026-09-05 16:00',
+        registeredBy: 'Carlos Méndez'
+      }
+    ],
+    quote: {
+      paymentTerms: 'Contado',
+      deliveryMode: 'Entrega en Sucursal',
+      deliveryAddress: '',
+      items: [
+        { id: 71, sku: 'SRV-SOP-04', name: 'Soporte Hypercare 24/7 (Bolsa Mensual)', category: 'Servicio', unitPrice: 2400, quantity: 1, total: 2400, status: 'comprado', lostReason: null, lostNotes: '', lostDate: null }
+      ]
+    }
+  },
 ];
 
 const stages = ['Nuevo', 'Contactado', 'Calificado', 'Cotizado', 'Ganado'];
@@ -43,6 +286,35 @@ const CrmDashboardView = () => {
   const [selectedDeal, setSelectedDeal] = useState(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
 
+  // Pestaña activa en Modal Detalle ('actividades' | 'cotizacion' | 'venta_perdida' | 'info')
+  const [detailTab, setDetailTab] = useState('actividades');
+
+  // Formulario Registro de Actividades (Pasos 2, 3, 4 del Manual de Usuario)
+  const [activityForm, setActivityForm] = useState({
+    contactType: 'Llamada',
+    notes: '',
+    nextTask: 'Llamada de seguimiento',
+    nextTaskDate: ''
+  });
+
+  // Catálogo de Kardex (Productos y Servicios)
+  const [kardexCatalog, setKardexCatalog] = useState(DEFAULT_KARDEX);
+
+  // Formulario Agregar SKU a Cotización
+  const [quoteForm, setQuoteForm] = useState({
+    selectedSku: '',
+    quantity: 1,
+    unitPrice: ''
+  });
+
+  // Modal Emergente para Registrar Motivo de Venta Perdida (1 al 5)
+  const [lostSaleModal, setLostSaleModal] = useState({
+    isOpen: false,
+    targetItem: null, // null | item object | 'ALL'
+    reason: LOST_SALE_REASONS[0],
+    notes: ''
+  });
+
   // Filtros
   const [showFilterBar, setShowFilterBar] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -59,7 +331,7 @@ const CrmDashboardView = () => {
     }, 4500);
   };
 
-  // Cargar Business Partners desde el API
+  // Cargar Business Partners e Inventario / Kardex desde el API
   useEffect(() => {
     fetch('/api/business-partners')
       .then(res => res.json())
@@ -73,6 +345,33 @@ const CrmDashboardView = () => {
       .catch(err => {
         console.error('Error fetching business partners:', err);
         setBusinessPartners(getFallbackPartners());
+      });
+
+    // Cargar Kardex dinámico si está disponible en backend
+    fetch('/api/inventario/items')
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data) && data.length > 0) {
+          const mapped = data.map(it => ({
+            sku: it.sku,
+            name: it.name || it.description,
+            category: it.category || 'Inventario',
+            unitPrice: Number(it.price || it.unitPrice || it.cost || 100),
+            stock: Number(it.stock || it.quantity || 10),
+            unit: it.unit || 'unidades'
+          }));
+          // Combinar con servicios base
+          setKardexCatalog(prev => {
+            const combined = [...mapped];
+            DEFAULT_KARDEX.forEach(def => {
+              if (!combined.some(c => c.sku === def.sku)) combined.push(def);
+            });
+            return combined;
+          });
+        }
+      })
+      .catch(() => {
+        // Fallback predeterminado ya asignado
       });
   }, []);
 
@@ -196,7 +495,14 @@ const CrmDashboardView = () => {
       email: formData.email.trim(),
       phone: formData.phone.trim(),
       assignedTo: formData.assignedTo,
-      notes: formData.notes.trim()
+      notes: formData.notes.trim(),
+      activities: [],
+      quote: {
+        paymentTerms: 'Contado',
+        deliveryMode: 'Entrega en Sucursal',
+        deliveryAddress: '',
+        items: []
+      }
     };
 
     setDeals(prev => [newDealItem, ...prev]);
@@ -204,17 +510,40 @@ const CrmDashboardView = () => {
     showToast(`✅ Oportunidad "${newDealItem.title}" agregada con éxito a la etapa "${newDealItem.stage}".`);
   };
 
-  // Abrir Detalle de Oportunidad
+  // Abrir Detalle de Oportunidad (Paso 1 del Manual)
   const handleCardClick = (deal) => {
-    setSelectedDeal(deal);
+    const normalized = {
+      ...deal,
+      activities: deal.activities || [],
+      quote: deal.quote || {
+        paymentTerms: 'Contado',
+        deliveryMode: 'Entrega en Sucursal',
+        deliveryAddress: '',
+        items: []
+      }
+    };
+    setSelectedDeal(normalized);
+    setDetailTab('actividades');
+    setActivityForm({
+      contactType: 'Llamada',
+      notes: '',
+      nextTask: 'Llamada de seguimiento',
+      nextTaskDate: ''
+    });
+    setQuoteForm({
+      selectedSku: '',
+      quantity: 1,
+      unitPrice: ''
+    });
     setIsDetailOpen(true);
   };
 
   // Cambiar Etapa de Oportunidad
   const handleMoveStage = (targetStage) => {
     if (!selectedDeal) return;
-    setDeals(prev => prev.map(d => d.id === selectedDeal.id ? { ...d, stage: targetStage } : d));
-    setSelectedDeal(prev => ({ ...prev, stage: targetStage }));
+    const updated = { ...selectedDeal, stage: targetStage };
+    setDeals(prev => prev.map(d => d.id === selectedDeal.id ? updated : d));
+    setSelectedDeal(updated);
     
     if (targetStage === 'Ganado') {
       showToast(`🎉 ¡Felicitaciones! "${selectedDeal.title}" se movió a GANADO.`);
@@ -231,6 +560,305 @@ const CrmDashboardView = () => {
       setIsDetailOpen(false);
       showToast(`Oportunidad descartada del pipeline.`);
     }
+  };
+
+  // =========================================================
+  // GESTIÓN DE ACTIVIDADES Y SEGUIMIENTO (PASOS 1 A 4 DEL MANUAL)
+  // =========================================================
+  const handleSaveActivity = (e) => {
+    e.preventDefault();
+    if (!activityForm.notes.trim()) {
+      alert('Paso 3 requerido: Por favor redacte la minuta de acuerdos con el cliente.');
+      return;
+    }
+
+    const newActivity = {
+      id: Date.now(),
+      contactType: activityForm.contactType,
+      notes: activityForm.notes.trim(),
+      nextTask: activityForm.nextTask.trim() || 'Llamada de seguimiento',
+      nextTaskDate: activityForm.nextTaskDate || 'Pendiente por definir',
+      registeredAt: new Date().toLocaleString('es-SV', { dateStyle: 'short', timeStyle: 'short' }),
+      registeredBy: selectedDeal.assignedTo || 'Asesor Comercial'
+    };
+
+    const updatedActivities = [newActivity, ...(selectedDeal.activities || [])];
+    
+    // Actualizar fecha de seguimiento de la tarjeta si se especificó
+    let updatedDate = selectedDeal.date;
+    if (activityForm.nextTaskDate) {
+      try {
+        const d = new Date(activityForm.nextTaskDate);
+        const day = d.getDate();
+        const monthNames = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+        if (!isNaN(day)) {
+          updatedDate = `${day} ${monthNames[d.getMonth()]}`;
+        }
+      } catch (err) {
+        // fallback
+      }
+    }
+
+    const updatedDeal = {
+      ...selectedDeal,
+      activities: updatedActivities,
+      date: updatedDate
+    };
+
+    setSelectedDeal(updatedDeal);
+    setDeals(prev => prev.map(d => d.id === updatedDeal.id ? updatedDeal : d));
+
+    setActivityForm({
+      contactType: 'Llamada',
+      notes: '',
+      nextTask: 'Llamada de seguimiento',
+      nextTaskDate: ''
+    });
+
+    showToast(`✅ Pasos 1 al 4 completados: Actividad (${newActivity.contactType}) registrada con éxito.`);
+  };
+
+  // =========================================================
+  // GESTIÓN DE COTIZACIÓN KARDEX & VENTA PERDIDA
+  // =========================================================
+
+  // Resumen financiero de la cotización actual
+  const quoteSummary = useMemo(() => {
+    if (!selectedDeal || !selectedDeal.quote || !Array.isArray(selectedDeal.quote.items)) {
+      return { totalCotizado: 0, totalComprado: 0, totalPerdido: 0, totalPendiente: 0, lostPercent: '0.0', itemsCount: 0, lostCount: 0, purchasedCount: 0 };
+    }
+    const items = selectedDeal.quote.items;
+    let totalCotizado = 0;
+    let totalComprado = 0;
+    let totalPerdido = 0;
+    let totalPendiente = 0;
+    let lostCount = 0;
+    let purchasedCount = 0;
+
+    items.forEach(it => {
+      const sub = (Number(it.unitPrice) || 0) * (Number(it.quantity) || 1);
+      totalCotizado += sub;
+      if (it.status === 'comprado') {
+        totalComprado += sub;
+        purchasedCount++;
+      } else if (it.status === 'perdido') {
+        totalPerdido += sub;
+        lostCount++;
+      } else {
+        totalPendiente += sub;
+      }
+    });
+
+    const lostPercent = totalCotizado > 0 ? ((totalPerdido / totalCotizado) * 100).toFixed(1) : '0.0';
+
+    return {
+      totalCotizado,
+      totalComprado,
+      totalPerdido,
+      totalPendiente,
+      lostPercent,
+      itemsCount: items.length,
+      lostCount,
+      purchasedCount
+    };
+  }, [selectedDeal]);
+
+  // Actualizar condiciones comerciales de la cotización (Crédito/Contado, Entrega)
+  const handleUpdateQuoteCondition = (field, value) => {
+    if (!selectedDeal) return;
+    const currentQuote = selectedDeal.quote || {
+      paymentTerms: 'Contado',
+      deliveryMode: 'Entrega en Sucursal',
+      deliveryAddress: '',
+      items: []
+    };
+    const updatedQuote = { ...currentQuote, [field]: value };
+    const updatedDeal = { ...selectedDeal, quote: updatedQuote };
+    setSelectedDeal(updatedDeal);
+    setDeals(prev => prev.map(d => d.id === updatedDeal.id ? updatedDeal : d));
+  };
+
+  // Agregar nuevo SKU del Kardex a la cotización
+  const handleAddSkuToQuote = (e) => {
+    e.preventDefault();
+    if (!quoteForm.selectedSku) {
+      alert('Por favor seleccione un SKU de la lista de Kardex.');
+      return;
+    }
+
+    const kardexItem = kardexCatalog.find(k => k.sku === quoteForm.selectedSku);
+    const qty = parseInt(quoteForm.quantity, 10) || 1;
+    const price = parseFloat(quoteForm.unitPrice) || (kardexItem ? kardexItem.unitPrice : 0);
+
+    const newItem = {
+      id: Date.now(),
+      sku: quoteForm.selectedSku,
+      name: kardexItem ? kardexItem.name : quoteForm.selectedSku,
+      category: kardexItem ? kardexItem.category : 'General',
+      unitPrice: price,
+      quantity: qty,
+      total: price * qty,
+      status: 'cotizado', // 'cotizado' | 'comprado' | 'perdido'
+      lostReason: null,
+      lostNotes: '',
+      lostDate: null
+    };
+
+    const currentQuote = selectedDeal.quote || {
+      paymentTerms: 'Contado',
+      deliveryMode: 'Entrega en Sucursal',
+      deliveryAddress: '',
+      items: []
+    };
+
+    const updatedItems = [...(currentQuote.items || []), newItem];
+    const updatedQuote = { ...currentQuote, items: updatedItems };
+    const updatedDeal = { ...selectedDeal, quote: updatedQuote };
+
+    setSelectedDeal(updatedDeal);
+    setDeals(prev => prev.map(d => d.id === updatedDeal.id ? updatedDeal : d));
+
+    setQuoteForm({
+      selectedSku: '',
+      quantity: 1,
+      unitPrice: ''
+    });
+
+    showToast(`📦 SKU "${newItem.sku}" incorporado a la cotización.`);
+  };
+
+  // Marcar SKU como comprado (Compra Parcial o Individual)
+  const handleMarkItemPurchased = (itemId) => {
+    const currentQuote = selectedDeal.quote || { items: [] };
+    const updatedItems = (currentQuote.items || []).map(it => {
+      if (it.id === itemId) {
+        return { ...it, status: 'comprado', lostReason: null, lostNotes: '', lostDate: null };
+      }
+      return it;
+    });
+
+    const updatedQuote = { ...currentQuote, items: updatedItems };
+    const updatedDeal = { ...selectedDeal, quote: updatedQuote };
+
+    setSelectedDeal(updatedDeal);
+    setDeals(prev => prev.map(d => d.id === updatedDeal.id ? updatedDeal : d));
+    showToast(`✅ SKU marcado como COMPRADO.`);
+  };
+
+  // Comprar TODOS los SKUs de la cotización
+  const handlePurchaseAllItems = () => {
+    const currentQuote = selectedDeal.quote || { items: [] };
+    if (!currentQuote.items || currentQuote.items.length === 0) {
+      alert('No hay SKUs en la cotización para comprar.');
+      return;
+    }
+
+    const updatedItems = currentQuote.items.map(it => ({
+      ...it,
+      status: 'comprado',
+      lostReason: null,
+      lostNotes: '',
+      lostDate: null
+    }));
+
+    const updatedQuote = { ...currentQuote, items: updatedItems };
+    const updatedDeal = { ...selectedDeal, quote: updatedQuote, stage: 'Ganado' };
+
+    setSelectedDeal(updatedDeal);
+    setDeals(prev => prev.map(d => d.id === updatedDeal.id ? updatedDeal : d));
+    showToast(`🎉 ¡Compra Total Aprobada! Todos los SKUs fueron marcados como comprados y la oportunidad pasó a GANADO.`);
+  };
+
+  // Abrir Modal para Registrar Venta Perdida (Eliminar SKU o Rechazar Toda la Cotización)
+  const handleOpenLostSaleModal = (target) => {
+    // target: objeto item | 'ALL'
+    setLostSaleModal({
+      isOpen: true,
+      targetItem: target,
+      reason: LOST_SALE_REASONS[0],
+      notes: ''
+    });
+  };
+
+  // Confirmar Registro de Venta Perdida con uno de los 5 motivos obligatorios
+  const handleConfirmLostSale = () => {
+    const { targetItem, reason, notes } = lostSaleModal;
+    const nowStr = new Date().toLocaleString('es-SV', { dateStyle: 'short', timeStyle: 'short' });
+    const currentQuote = selectedDeal.quote || { items: [] };
+
+    let updatedItems = [];
+    if (targetItem === 'ALL') {
+      // Rechazar toda la cotización
+      updatedItems = (currentQuote.items || []).map(it => {
+        if (it.status !== 'comprado') {
+          return {
+            ...it,
+            status: 'perdido',
+            lostReason: reason,
+            lostNotes: notes || 'Cotización rechazada en su totalidad por el cliente.',
+            lostDate: nowStr
+          };
+        }
+        return it;
+      });
+      showToast(`📉 Toda la cotización fue registrada como VENTA PERDIDA (${reason}).`);
+    } else {
+      // Descartar un SKU específico
+      updatedItems = (currentQuote.items || []).map(it => {
+        if (it.id === targetItem.id) {
+          return {
+            ...it,
+            status: 'perdido',
+            lostReason: reason,
+            lostNotes: notes,
+            lostDate: nowStr
+          };
+        }
+        return it;
+      });
+      showToast(`📉 SKU "${targetItem.sku}" registrado como VENTA PERDIDA (${reason}).`);
+    }
+
+    const updatedQuote = { ...currentQuote, items: updatedItems };
+    const updatedDeal = { ...selectedDeal, quote: updatedQuote };
+
+    setSelectedDeal(updatedDeal);
+    setDeals(prev => prev.map(d => d.id === updatedDeal.id ? updatedDeal : d));
+
+    setLostSaleModal({
+      isOpen: false,
+      targetItem: null,
+      reason: LOST_SALE_REASONS[0],
+      notes: ''
+    });
+  };
+
+  // Restaurar SKU a estado Cotizado / Pendiente
+  const handleRestoreItem = (itemId) => {
+    const currentQuote = selectedDeal.quote || { items: [] };
+    const updatedItems = (currentQuote.items || []).map(it => {
+      if (it.id === itemId) {
+        return { ...it, status: 'cotizado', lostReason: null, lostNotes: '', lostDate: null };
+      }
+      return it;
+    });
+
+    const updatedQuote = { ...currentQuote, items: updatedItems };
+    const updatedDeal = { ...selectedDeal, quote: updatedQuote };
+
+    setSelectedDeal(updatedDeal);
+    setDeals(prev => prev.map(d => d.id === updatedDeal.id ? updatedDeal : d));
+    showToast(`↩️ SKU restaurado a estado "Cotizado".`);
+  };
+
+  // Sincronizar monto estimado de la oportunidad con la cotización
+  const handleSyncDealValue = () => {
+    const sum = quoteSummary.totalComprado > 0 ? quoteSummary.totalComprado : quoteSummary.totalCotizado;
+    const formatted = `$${sum.toLocaleString()}`;
+    const updatedDeal = { ...selectedDeal, value: formatted };
+    setSelectedDeal(updatedDeal);
+    setDeals(prev => prev.map(d => d.id === updatedDeal.id ? updatedDeal : d));
+    showToast(`🔄 Monto de la oportunidad actualizado a ${formatted} según cotización.`);
   };
 
   return (
@@ -416,6 +1044,27 @@ const CrmDashboardView = () => {
                           <span>{deal.date}</span>
                         </div>
                       </div>
+
+                      {/* Chips indicadores: Actividades, Cotización y Venta Perdida */}
+                      {((deal.activities && deal.activities.length > 0) || (deal.quote && deal.quote.items && deal.quote.items.length > 0)) && (
+                        <div className="flex flex-wrap gap-1 mt-2 pt-2 border-t border-gray-100">
+                          {deal.activities && deal.activities.length > 0 && (
+                            <span className="text-[10px] font-semibold text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-100 flex items-center">
+                              <i className="fas fa-history mr-1 text-[9px]"></i>{deal.activities.length} act.
+                            </span>
+                          )}
+                          {deal.quote && deal.quote.items && deal.quote.items.length > 0 && (
+                            <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-100 flex items-center">
+                              <i className="fas fa-boxes mr-1 text-[9px]"></i>{deal.quote.items.length} SKUs
+                            </span>
+                          )}
+                          {deal.quote && deal.quote.items && deal.quote.items.some(i => i.status === 'perdido') && (
+                            <span className="text-[10px] font-semibold text-red-700 bg-red-50 px-1.5 py-0.5 rounded border border-red-100 flex items-center">
+                              <i className="fas fa-exclamation-triangle mr-1 text-[9px]"></i>Venta perdida
+                            </span>
+                          )}
+                        </div>
+                      )}
                     </div>
                   ))}
                   
@@ -724,71 +1373,81 @@ const CrmDashboardView = () => {
       )}
 
       {/* ========================================================= */}
-      {/* MODAL: DETALLE Y CAMBIO DE ETAPA DE OPORTUNIDAD           */}
+      {/* MODAL: DETALLE, ACTIVIDADES, COTIZACIÓN KARDEX & AUDITORÍA*/}
       {/* ========================================================= */}
       {isDetailOpen && selectedDeal && (
-        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-xl flex flex-col overflow-hidden animate-fadeIn">
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-3 md:p-6 overflow-hidden">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[94vh] flex flex-col overflow-hidden animate-fadeIn border border-gray-100">
             
             {/* Modal Header */}
-            <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center bg-[#0A2540] text-white">
-              <div>
+            <div className="px-6 py-3.5 border-b border-gray-200 flex justify-between items-center bg-[#0A2540] text-white shrink-0">
+              <div className="flex items-center space-x-3">
                 <span className={`text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider ${getPriorityColor(selectedDeal.priority)}`}>
                   {selectedDeal.priority}
                 </span>
-                <h3 className="text-base font-bold mt-1">{selectedDeal.title}</h3>
-                <p className="text-xs text-blue-200 flex items-center mt-0.5">
-                  <i className="far fa-building mr-1.5"></i>
-                  <span>{selectedDeal.company}</span>
-                  {selectedDeal.partnerCode && (
-                    <span className="ml-2 bg-blue-400/30 text-blue-100 text-[10px] font-bold px-1.5 py-0.2 rounded">
-                      {selectedDeal.partnerCode}
-                    </span>
-                  )}
-                </p>
+                <div>
+                  <h3 className="text-base font-bold leading-tight">{selectedDeal.title}</h3>
+                  <p className="text-xs text-blue-200 flex items-center mt-0.5">
+                    <i className="far fa-building mr-1.5"></i>
+                    <span>{selectedDeal.company}</span>
+                    {selectedDeal.partnerCode && (
+                      <span className="ml-2 bg-blue-400/30 text-blue-100 text-[10px] font-bold px-1.5 py-0.2 rounded">
+                        {selectedDeal.partnerCode}
+                      </span>
+                    )}
+                  </p>
+                </div>
               </div>
               <button 
                 onClick={() => setIsDetailOpen(false)}
-                className="text-gray-300 hover:text-white text-xl font-bold p-1 leading-none"
+                className="text-gray-300 hover:text-white text-xl font-bold p-1 leading-none transition"
               >
                 ✕
               </button>
             </div>
 
-            {/* Content */}
-            <div className="p-6 space-y-5 text-sm">
-              <div className="grid grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl border border-gray-200">
-                <div>
-                  <p className="text-gray-500 text-xs font-bold uppercase">Monto Estimado</p>
-                  <p className="text-xl font-black text-[#006EAD]">{selectedDeal.value}</p>
+            {/* Barra Superior de Resumen y Control de Etapa */}
+            <div className="bg-slate-100/90 px-6 py-3 border-b border-gray-200 shrink-0 space-y-3">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+                <div className="bg-white p-2 rounded-lg border border-gray-200 shadow-xs">
+                  <span className="text-gray-400 font-bold uppercase text-[10px] block">Monto Estimado</span>
+                  <span className="text-base font-black text-[#006EAD]">{selectedDeal.value}</span>
                 </div>
-                <div>
-                  <p className="text-gray-500 text-xs font-bold uppercase">Fecha de Seguimiento</p>
-                  <p className="text-sm font-bold text-gray-800"><i className="far fa-clock mr-1 text-gray-400"></i>{selectedDeal.date}</p>
+                <div className="bg-white p-2 rounded-lg border border-gray-200 shadow-xs">
+                  <span className="text-gray-400 font-bold uppercase text-[10px] block">Próx. Seguimiento</span>
+                  <span className="text-xs font-bold text-gray-800 flex items-center mt-1">
+                    <i className="far fa-clock mr-1 text-[#006EAD]"></i>{selectedDeal.date}
+                  </span>
                 </div>
-                <div>
-                  <p className="text-gray-500 text-xs font-bold uppercase">Contacto</p>
-                  <p className="text-sm text-gray-700">{selectedDeal.contact || 'No especificado'}</p>
+                <div className="bg-white p-2 rounded-lg border border-gray-200 shadow-xs">
+                  <span className="text-gray-400 font-bold uppercase text-[10px] block">Contacto</span>
+                  <span className="text-xs font-semibold text-gray-800 truncate block mt-1" title={selectedDeal.contact}>
+                    {selectedDeal.contact || 'No especificado'}
+                  </span>
                 </div>
-                <div>
-                  <p className="text-gray-500 text-xs font-bold uppercase">Asesor Asignado</p>
-                  <p className="text-sm text-gray-700">{selectedDeal.assignedTo || 'María Asesora'}</p>
+                <div className="bg-white p-2 rounded-lg border border-gray-200 shadow-xs">
+                  <span className="text-gray-400 font-bold uppercase text-[10px] block">Asesor Asignado</span>
+                  <span className="text-xs font-semibold text-gray-800 truncate block mt-1" title={selectedDeal.assignedTo}>
+                    {selectedDeal.assignedTo || 'María Asesora'}
+                  </span>
                 </div>
               </div>
 
-              {/* Selector de Etapa */}
-              <div>
-                <p className="text-xs font-bold text-gray-700 uppercase mb-2">Avanzar o Mover a Etapa:</p>
-                <div className="grid grid-cols-5 gap-2">
+              {/* Selector de Etapa del Embudo */}
+              <div className="flex items-center space-x-2">
+                <span className="text-[11px] font-bold text-gray-600 uppercase tracking-wider shrink-0">
+                  Avanzar Etapa:
+                </span>
+                <div className="grid grid-cols-5 gap-1.5 flex-1">
                   {stages.map(st => (
                     <button
                       key={st}
                       type="button"
                       onClick={() => handleMoveStage(st)}
-                      className={`px-2 py-2 rounded-lg text-xs font-bold transition text-center border ${
+                      className={`px-2 py-1.5 rounded-lg text-xs font-bold transition text-center border ${
                         selectedDeal.stage === st 
-                          ? 'bg-[#006EAD] text-white border-[#006EAD] shadow-sm' 
-                          : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-100'
+                          ? 'bg-[#006EAD] text-white border-[#006EAD] shadow-xs' 
+                          : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'
                       }`}
                     >
                       {st}
@@ -796,25 +1455,916 @@ const CrmDashboardView = () => {
                   ))}
                 </div>
               </div>
+            </div>
 
-              {/* Acciones */}
-              <div className="flex justify-between items-center pt-4 border-t border-gray-200">
-                <button
-                  type="button"
-                  onClick={handleDeleteDeal}
-                  className="text-red-600 hover:text-red-800 text-xs font-bold hover:underline flex items-center"
-                >
-                  <i className="fas fa-trash-alt mr-1"></i>Descartar Oportunidad
-                </button>
+            {/* Pestañas de Navegación del Modal */}
+            <div className="flex border-b border-gray-200 bg-white px-6 shrink-0 text-xs font-bold">
+              <button
+                type="button"
+                onClick={() => setDetailTab('actividades')}
+                className={`py-3 px-4 border-b-2 flex items-center space-x-2 transition ${
+                  detailTab === 'actividades'
+                    ? 'border-[#006EAD] text-[#006EAD] bg-blue-50/50'
+                    : 'border-transparent text-gray-500 hover:text-gray-800'
+                }`}
+              >
+                <i className="fas fa-calendar-check"></i>
+                <span>Seguimiento y Actividades (Manual Pasos 1-4)</span>
+                <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${
+                  detailTab === 'actividades' ? 'bg-[#006EAD] text-white' : 'bg-gray-200 text-gray-700'
+                }`}>
+                  {selectedDeal.activities?.length || 0}
+                </span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setDetailTab('cotizacion')}
+                className={`py-3 px-4 border-b-2 flex items-center space-x-2 transition ${
+                  detailTab === 'cotizacion'
+                    ? 'border-[#006EAD] text-[#006EAD] bg-blue-50/50'
+                    : 'border-transparent text-gray-500 hover:text-gray-800'
+                }`}
+              >
+                <i className="fas fa-boxes"></i>
+                <span>Cotización (Kardex) & Compra Parcial/Total</span>
+                <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${
+                  detailTab === 'cotizacion' ? 'bg-[#006EAD] text-white' : 'bg-gray-200 text-gray-700'
+                }`}>
+                  {selectedDeal.quote?.items?.length || 0}
+                </span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setDetailTab('venta_perdida')}
+                className={`py-3 px-4 border-b-2 flex items-center space-x-2 transition ${
+                  detailTab === 'venta_perdida'
+                    ? 'border-red-600 text-red-600 bg-red-50/50'
+                    : 'border-transparent text-gray-500 hover:text-gray-800'
+                }`}
+              >
+                <i className="fas fa-chart-pie"></i>
+                <span>Rastro & Auditoría Venta Perdida</span>
+                {quoteSummary.lostCount > 0 && (
+                  <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-red-500 text-white font-bold animate-pulse">
+                    {quoteSummary.lostCount}
+                  </span>
+                )}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setDetailTab('info')}
+                className={`py-3 px-4 border-b-2 flex items-center space-x-2 transition ${
+                  detailTab === 'info'
+                    ? 'border-[#006EAD] text-[#006EAD] bg-blue-50/50'
+                    : 'border-transparent text-gray-500 hover:text-gray-800'
+                }`}
+              >
+                <i className="fas fa-info-circle"></i>
+                <span>Datos Generales</span>
+              </button>
+            </div>
+
+            {/* Contenido de la Pestaña Activa */}
+            <div className="flex-1 overflow-y-auto p-6 bg-slate-50/60 text-sm">
+              
+              {/* ======================================================== */}
+              {/* PESTAÑA 1: REGISTRO DE ACTIVIDADES (PASOS 1 AL 4 MANUAL) */}
+              {/* ======================================================== */}
+              {detailTab === 'actividades' && (
+                <div className="space-y-6">
+                  
+                  {/* Banner Explicativo Oficial del Manual */}
+                  <div className="bg-gradient-to-r from-blue-900 to-[#006EAD] text-white p-4 rounded-xl shadow-xs">
+                    <div className="flex items-center space-x-2 mb-1">
+                      <i className="fas fa-book-reader text-yellow-300"></i>
+                      <h4 className="font-bold text-sm">Flujo Oficial: Pasos para Registrar Actividades (Manual NyTEX CRM)</h4>
+                    </div>
+                    <p className="text-xs text-blue-100">
+                      Cumplimiento de los 4 pasos para registro oportuno en el expediente: Selección de canal, redacción de acuerdos y programación obligatoria de la siguiente interacción.
+                    </p>
+                  </div>
+
+                  {/* Formulario de Pasos 1 al 4 */}
+                  <form onSubmit={handleSaveActivity} className="bg-white p-5 rounded-xl border border-gray-200 shadow-xs space-y-5">
+                    
+                    {/* Paso 1: Abrir la Oportunidad (Confirmación de contexto activo) */}
+                    <div className="bg-blue-50/70 border border-blue-200 rounded-lg p-3 flex items-center justify-between text-xs text-blue-900">
+                      <div className="flex items-center space-x-2">
+                        <span className="w-5 h-5 rounded-full bg-[#006EAD] text-white flex items-center justify-center font-bold text-[11px]">1</span>
+                        <span className="font-bold">Paso 1: Oportunidad Abierta:</span>
+                        <span className="text-gray-700">{selectedDeal.title} • {selectedDeal.company}</span>
+                      </div>
+                      <span className="bg-blue-200/60 text-[#006EAD] font-bold px-2 py-0.5 rounded text-[10px]">
+                        Etapa: {selectedDeal.stage}
+                      </span>
+                    </div>
+
+                    {/* Paso 2: Seleccionar Tipo de Contacto */}
+                    <div>
+                      <div className="flex items-center space-x-2 mb-2">
+                        <span className="w-5 h-5 rounded-full bg-[#006EAD] text-white flex items-center justify-center font-bold text-[11px]">2</span>
+                        <label className="font-bold text-gray-800 text-xs uppercase tracking-wider">
+                          Paso 2: Seleccionar Tipo de Contacto <span className="text-red-500">*</span>
+                        </label>
+                      </div>
+                      <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                        {CONTACT_TYPES.map(ct => {
+                          const isSelected = activityForm.contactType === ct.id;
+                          return (
+                            <button
+                              key={ct.id}
+                              type="button"
+                              onClick={() => setActivityForm(prev => ({ ...prev, contactType: ct.id }))}
+                              className={`p-2.5 rounded-xl border text-xs font-bold transition flex flex-col items-center justify-center space-y-1.5 text-center ${
+                                isSelected 
+                                  ? 'bg-[#006EAD] text-white border-[#006EAD] shadow-md ring-2 ring-blue-300' 
+                                  : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'
+                              }`}
+                            >
+                              <i className={`${ct.icon} text-base ${isSelected ? 'text-white' : 'text-[#006EAD]'}`}></i>
+                              <span className="text-[11px] leading-tight">{ct.label}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Paso 3: Redactar Minuta de Acuerdos */}
+                    <div>
+                      <div className="flex items-center space-x-2 mb-2">
+                        <span className="w-5 h-5 rounded-full bg-[#006EAD] text-white flex items-center justify-center font-bold text-[11px]">3</span>
+                        <label className="font-bold text-gray-800 text-xs uppercase tracking-wider">
+                          Paso 3: Redactar Minuta de Acuerdos y Solicitudes <span className="text-red-500">*</span>
+                        </label>
+                      </div>
+                      <textarea
+                        required
+                        rows="3"
+                        value={activityForm.notes}
+                        onChange={(e) => setActivityForm(prev => ({ ...prev, notes: e.target.value }))}
+                        placeholder="Escriba un resumen de los puntos acordados, compromisos adquiridos y solicitudes específicas del cliente..."
+                        className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#006EAD] text-xs bg-slate-50/50"
+                      ></textarea>
+                    </div>
+
+                    {/* Paso 4: Programar Siguiente Tarea */}
+                    <div>
+                      <div className="flex items-center space-x-2 mb-2">
+                        <span className="w-5 h-5 rounded-full bg-[#006EAD] text-white flex items-center justify-center font-bold text-[11px]">4</span>
+                        <label className="font-bold text-gray-800 text-xs uppercase tracking-wider">
+                          Paso 4: Programar Siguiente Tarea (Fecha y Hora) <span className="text-red-500">*</span>
+                        </label>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-[11px] font-semibold text-gray-600 mb-1">
+                            Acción o Tarea de Seguimiento
+                          </label>
+                          <input
+                            type="text"
+                            required
+                            placeholder="Ej. Llamada de seguimiento o envío de cotización ajustada"
+                            value={activityForm.nextTask}
+                            onChange={(e) => setActivityForm(prev => ({ ...prev, nextTask: e.target.value }))}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#006EAD] text-xs"
+                          />
+                          <div className="flex flex-wrap gap-1 mt-1.5">
+                            {['Llamada de seguimiento', 'Envío de cotización ajustada', 'Reunión de demostración', 'Revisión de muestras'].map(sug => (
+                              <button
+                                key={sug}
+                                type="button"
+                                onClick={() => setActivityForm(prev => ({ ...prev, nextTask: sug }))}
+                                className="text-[10px] bg-gray-100 hover:bg-gray-200 text-gray-700 px-1.5 py-0.5 rounded transition"
+                              >
+                                {sug}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="block text-[11px] font-semibold text-gray-600 mb-1">
+                            Fecha y Hora Programada
+                          </label>
+                          <input
+                            type="datetime-local"
+                            required
+                            value={activityForm.nextTaskDate}
+                            onChange={(e) => setActivityForm(prev => ({ ...prev, nextTaskDate: e.target.value }))}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#006EAD] text-xs font-semibold text-gray-800"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Botón de Guardado de Actividad */}
+                    <div className="flex justify-end pt-2 border-t border-gray-100">
+                      <button
+                        type="submit"
+                        className="px-5 py-2.5 bg-[#006EAD] hover:bg-[#005587] text-white rounded-xl font-bold shadow-md transition flex items-center space-x-2 text-xs"
+                      >
+                        <i className="fas fa-check-circle"></i>
+                        <span>Registrar Actividad en Bitácora</span>
+                      </button>
+                    </div>
+
+                  </form>
+
+                  {/* Historial / Bitácora de Actividades Registradas */}
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <h4 className="font-bold text-gray-800 text-xs uppercase tracking-wider flex items-center">
+                        <i className="fas fa-history mr-1.5 text-[#006EAD]"></i>
+                        Historial y Bitácora de Interacciones ({selectedDeal.activities?.length || 0})
+                      </h4>
+                      <span className="text-[11px] text-gray-400">Orden cronológico</span>
+                    </div>
+
+                    {(!selectedDeal.activities || selectedDeal.activities.length === 0) ? (
+                      <div className="bg-white p-6 rounded-xl border border-dashed border-gray-300 text-center text-gray-400 text-xs">
+                        <i className="far fa-comments text-2xl mb-1 text-gray-300 block"></i>
+                        Aún no se han registrado actividades para esta oportunidad.<br/>
+                        Utilice el formulario superior para completar los 4 pasos descritos en el manual.
+                      </div>
+                    ) : (
+                      <div className="space-y-3">
+                        {selectedDeal.activities.map(act => {
+                          const contactObj = CONTACT_TYPES.find(c => c.id === act.contactType) || CONTACT_TYPES[0];
+                          return (
+                            <div key={act.id} className="bg-white p-4 rounded-xl border border-gray-200 shadow-xs hover:border-gray-300 transition space-y-2">
+                              <div className="flex justify-between items-start">
+                                <div className="flex items-center space-x-2">
+                                  <span className={`px-2 py-0.5 rounded text-[11px] font-bold border flex items-center ${contactObj.bg}`}>
+                                    <i className={`${contactObj.icon} mr-1`}></i>
+                                    {act.contactType}
+                                  </span>
+                                  <span className="text-gray-400 text-xs">•</span>
+                                  <span className="text-xs font-semibold text-gray-700">{act.registeredBy}</span>
+                                </div>
+                                <span className="text-[11px] text-gray-400">{act.registeredAt}</span>
+                              </div>
+
+                              <p className="text-xs text-gray-800 bg-slate-50 p-2.5 rounded-lg border border-gray-100 whitespace-pre-wrap leading-relaxed">
+                                {act.notes}
+                              </p>
+
+                              {act.nextTask && (
+                                <div className="bg-blue-50/60 border border-blue-100 p-2 rounded-lg text-xs text-blue-900 flex items-center justify-between">
+                                  <span className="font-semibold flex items-center">
+                                    <i className="far fa-clock mr-1.5 text-[#006EAD]"></i>
+                                    Próxima Tarea: {act.nextTask}
+                                  </span>
+                                  <span className="font-bold text-[11px] bg-white px-2 py-0.5 rounded text-[#006EAD] border border-blue-200">
+                                    {act.nextTaskDate}
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+
+                </div>
+              )}
+
+              {/* ======================================================== */}
+              {/* PESTAÑA 2: COTIZACIÓN COMPLETA KARDEX & COMPRA PARCIAL   */}
+              {/* ======================================================== */}
+              {detailTab === 'cotizacion' && (
+                <div className="space-y-6">
+                  
+                  {/* Encabezado y Condiciones Comerciales */}
+                  <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-xs space-y-4">
+                    <div className="flex justify-between items-center border-b border-gray-100 pb-2">
+                      <h4 className="font-bold text-gray-800 text-xs uppercase tracking-wider flex items-center">
+                        <i className="fas fa-file-invoice-dollar mr-1.5 text-[#006EAD]"></i>
+                        Condiciones Comerciales de la Cotización
+                      </h4>
+                      <span className="text-[11px] font-semibold text-gray-500">Módulo 1 CRM • Origen de Pedido</span>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      <div>
+                        <label className="block text-xs font-bold text-gray-700 uppercase mb-1">
+                          Condición de Pago <span className="text-red-500">*</span>
+                        </label>
+                        <select
+                          value={selectedDeal.quote?.paymentTerms || 'Contado'}
+                          onChange={(e) => handleUpdateQuoteCondition('paymentTerms', e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#006EAD] text-xs font-bold bg-white"
+                        >
+                          <option value="Contado">💵 Contado (Pago Inmediato)</option>
+                          <option value="Crédito 15 días">💳 Crédito 15 días</option>
+                          <option value="Crédito 30 días">💳 Crédito 30 días</option>
+                          <option value="Crédito 60 días">💳 Crédito 60 días</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-bold text-gray-700 uppercase mb-1">
+                          Tipo de Entrega <span className="text-red-500">*</span>
+                        </label>
+                        <select
+                          value={selectedDeal.quote?.deliveryMode || 'Entrega en Sucursal'}
+                          onChange={(e) => handleUpdateQuoteCondition('deliveryMode', e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#006EAD] text-xs font-bold bg-white"
+                        >
+                          <option value="Entrega en Sucursal">🏢 Entrega en Sucursal (Mostrador)</option>
+                          <option value="A Domicilio">🚚 A Domicilio (Logística / Flete)</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-bold text-gray-700 uppercase mb-1">
+                          Dirección de Despacho
+                        </label>
+                        <input
+                          type="text"
+                          placeholder={selectedDeal.quote?.deliveryMode === 'A Domicilio' ? 'Ingresar dirección exacta...' : 'N/A - Retira en sucursal'}
+                          value={selectedDeal.quote?.deliveryAddress || ''}
+                          onChange={(e) => handleUpdateQuoteCondition('deliveryAddress', e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#006EAD] text-xs"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Resumen Financiero y KPIs de Cotización */}
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <div className="bg-white p-3 rounded-xl border border-gray-200 shadow-xs">
+                      <span className="text-gray-400 font-bold uppercase text-[10px] block">Total Cotizado</span>
+                      <span className="text-lg font-black text-gray-900">${quoteSummary.totalCotizado.toLocaleString()}</span>
+                      <span className="text-[10px] text-gray-500 block">{quoteSummary.itemsCount} SKUs cotizados</span>
+                    </div>
+
+                    <div className="bg-emerald-50 p-3 rounded-xl border border-emerald-200 shadow-xs">
+                      <span className="text-emerald-700 font-bold uppercase text-[10px] block">Comprado / Aprobado</span>
+                      <span className="text-lg font-black text-emerald-800">${quoteSummary.totalComprado.toLocaleString()}</span>
+                      <span className="text-[10px] text-emerald-600 block">{quoteSummary.purchasedCount} SKUs ganados</span>
+                    </div>
+
+                    <div className="bg-red-50 p-3 rounded-xl border border-red-200 shadow-xs">
+                      <span className="text-red-700 font-bold uppercase text-[10px] block">Venta Perdida</span>
+                      <span className="text-lg font-black text-red-800">${quoteSummary.totalPerdido.toLocaleString()}</span>
+                      <span className="text-[10px] text-red-600 font-bold block">{quoteSummary.lostPercent}% del total cotizado</span>
+                    </div>
+
+                    <div className="bg-blue-50 p-3 rounded-xl border border-blue-200 shadow-xs">
+                      <span className="text-blue-700 font-bold uppercase text-[10px] block">Pendiente / Abierto</span>
+                      <span className="text-lg font-black text-[#006EAD]">${quoteSummary.totalPendiente.toLocaleString()}</span>
+                      <button
+                        type="button"
+                        onClick={handleSyncDealValue}
+                        className="text-[10px] text-[#006EAD] hover:underline font-bold block mt-0.5"
+                      >
+                        🔄 Sincronizar Oportunidad
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Formulario Agregar SKU del Kardex */}
+                  <form onSubmit={handleAddSkuToQuote} className="bg-white p-4 rounded-xl border border-gray-200 shadow-xs space-y-3">
+                    <h5 className="font-bold text-gray-800 text-xs uppercase tracking-wider flex items-center">
+                      <i className="fas fa-plus-circle mr-1.5 text-[#006EAD]"></i>
+                      Agregar Productos o Servicios del Kardex
+                    </h5>
+                    
+                    <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-end">
+                      <div className="sm:col-span-6">
+                        <label className="block text-[11px] font-bold text-gray-700 uppercase mb-1">
+                          Seleccionar SKU del Kardex <span className="text-red-500">*</span>
+                        </label>
+                        <select
+                          required
+                          value={quoteForm.selectedSku}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            const found = kardexCatalog.find(k => k.sku === val);
+                            setQuoteForm(prev => ({
+                              ...prev,
+                              selectedSku: val,
+                              unitPrice: found ? found.unitPrice : ''
+                            }));
+                          }}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#006EAD] text-xs bg-white font-medium"
+                        >
+                          <option value="">-- Seleccionar SKU de Producto o Servicio --</option>
+                          {kardexCatalog.map(item => (
+                            <option key={item.sku} value={item.sku}>
+                              [{item.sku}] {item.name} • Stock: {item.stock} {item.unit || ''} • (${item.unitPrice})
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div className="sm:col-span-2">
+                        <label className="block text-[11px] font-bold text-gray-700 uppercase mb-1">
+                          Cantidad
+                        </label>
+                        <input
+                          type="number"
+                          min="1"
+                          required
+                          value={quoteForm.quantity}
+                          onChange={(e) => setQuoteForm(prev => ({ ...prev, quantity: e.target.value }))}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#006EAD] text-xs font-bold text-center"
+                        />
+                      </div>
+
+                      <div className="sm:col-span-2">
+                        <label className="block text-[11px] font-bold text-gray-700 uppercase mb-1">
+                          Precio Unitario ($)
+                        </label>
+                        <input
+                          type="number"
+                          step="0.01"
+                          required
+                          placeholder="0.00"
+                          value={quoteForm.unitPrice}
+                          onChange={(e) => setQuoteForm(prev => ({ ...prev, unitPrice: e.target.value }))}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#006EAD] text-xs font-bold"
+                        />
+                      </div>
+
+                      <div className="sm:col-span-2">
+                        <button
+                          type="submit"
+                          className="w-full py-2 px-3 bg-[#006EAD] hover:bg-[#005587] text-white rounded-lg font-bold text-xs shadow-xs transition flex items-center justify-center space-x-1"
+                        >
+                          <i className="fas fa-cart-plus"></i>
+                          <span>Agregar SKU</span>
+                        </button>
+                      </div>
+                    </div>
+                  </form>
+
+                  {/* Tabla de SKUs de la Cotización */}
+                  <div className="bg-white rounded-xl border border-gray-200 shadow-xs overflow-hidden">
+                    <div className="px-4 py-3 border-b border-gray-100 flex justify-between items-center bg-slate-50/80">
+                      <span className="font-bold text-xs text-gray-800 uppercase tracking-wider">
+                        Desglose de SKUs Solicitados ({selectedDeal.quote?.items?.length || 0})
+                      </span>
+                      
+                      {/* Acciones Masivas */}
+                      <div className="flex space-x-2">
+                        <button
+                          type="button"
+                          onClick={handlePurchaseAllItems}
+                          className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold shadow-2xs transition flex items-center space-x-1"
+                        >
+                          <i className="fas fa-check-double text-[10px]"></i>
+                          <span>Comprar Todos los SKUs</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleOpenLostSaleModal('ALL')}
+                          className="px-2.5 py-1 bg-red-600 hover:bg-red-700 text-white rounded-lg text-xs font-bold shadow-2xs transition flex items-center space-x-1"
+                        >
+                          <i className="fas fa-ban text-[10px]"></i>
+                          <span>Rechazar Toda la Cotización</span>
+                        </button>
+                      </div>
+                    </div>
+
+                    {(!selectedDeal.quote?.items || selectedDeal.quote.items.length === 0) ? (
+                      <div className="p-8 text-center text-gray-400 text-xs">
+                        <i className="fas fa-box-open text-3xl mb-2 text-gray-300 block"></i>
+                        No hay productos o servicios agregados en esta cotización.<br/>
+                        Seleccione un SKU del Kardex arriba para armar la propuesta completa.
+                      </div>
+                    ) : (
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-xs text-left">
+                          <thead className="bg-gray-100/70 text-gray-600 uppercase font-bold text-[10px]">
+                            <tr>
+                              <th className="p-3">SKU & Descripción</th>
+                              <th className="p-3 text-center">Cant.</th>
+                              <th className="p-3 text-right">P. Unitario</th>
+                              <th className="p-3 text-right">Subtotal</th>
+                              <th className="p-3 text-center">Estado de Compra</th>
+                              <th className="p-3 text-center">Acciones</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-gray-100">
+                            {selectedDeal.quote.items.map(it => {
+                              const isPurchased = it.status === 'comprado';
+                              const isLost = it.status === 'perdido';
+                              const subtotal = (Number(it.unitPrice) || 0) * (Number(it.quantity) || 1);
+
+                              return (
+                                <tr key={it.id} className={`hover:bg-slate-50/80 transition ${
+                                  isPurchased ? 'bg-emerald-50/30' : isLost ? 'bg-red-50/40' : ''
+                                }`}>
+                                  <td className="p-3">
+                                    <div className="flex items-center space-x-2">
+                                      <span className="font-mono font-bold text-gray-900 bg-gray-100 px-1.5 py-0.5 rounded text-[11px]">
+                                        {it.sku}
+                                      </span>
+                                      <div>
+                                        <p className="font-semibold text-gray-800 leading-tight">{it.name}</p>
+                                        <span className="text-[10px] text-gray-400">{it.category || 'General'}</span>
+                                      </div>
+                                    </div>
+                                    {isLost && (
+                                      <div className="mt-1.5 p-1.5 bg-red-100/70 rounded text-[11px] text-red-800 border border-red-200">
+                                        <span className="font-bold">⚠️ Razón de No Compra:</span> {it.lostReason}
+                                        {it.lostNotes && <span className="block italic text-red-700 mt-0.5">Nota: "{it.lostNotes}"</span>}
+                                      </div>
+                                    )}
+                                  </td>
+                                  <td className="p-3 text-center font-bold text-gray-700">
+                                    {it.quantity}
+                                  </td>
+                                  <td className="p-3 text-right font-medium text-gray-700">
+                                    ${Number(it.unitPrice).toLocaleString()}
+                                  </td>
+                                  <td className="p-3 text-right font-bold text-gray-900">
+                                    ${subtotal.toLocaleString()}
+                                  </td>
+                                  <td className="p-3 text-center">
+                                    {isPurchased ? (
+                                      <span className="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-bold text-[10px] inline-flex items-center">
+                                        <i className="fas fa-check-circle mr-1"></i> Comprado
+                                      </span>
+                                    ) : isLost ? (
+                                      <span className="bg-red-100 text-red-800 px-2 py-0.5 rounded-full font-bold text-[10px] inline-flex items-center">
+                                        <i className="fas fa-times-circle mr-1"></i> Venta Perdida
+                                      </span>
+                                    ) : (
+                                      <span className="bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded-full font-bold text-[10px] inline-flex items-center">
+                                        <i className="far fa-clock mr-1"></i> Cotizado
+                                      </span>
+                                    )}
+                                  </td>
+                                  <td className="p-3 text-center">
+                                    <div className="flex justify-center space-x-1.5">
+                                      {/* Botón Comprar */}
+                                      {!isPurchased && (
+                                        <button
+                                          type="button"
+                                          onClick={() => handleMarkItemPurchased(it.id)}
+                                          title="Comprar / Aprobar SKU"
+                                          className="p-1.5 bg-emerald-100 hover:bg-emerald-200 text-emerald-800 rounded font-bold transition text-xs"
+                                        >
+                                          <i className="fas fa-check"></i>
+                                        </button>
+                                      )}
+
+                                      {/* Botón Descartar / Venta Perdida */}
+                                      {!isLost && (
+                                        <button
+                                          type="button"
+                                          onClick={() => handleOpenLostSaleModal(it)}
+                                          title="Eliminar SKU / Registrar Venta Perdida"
+                                          className="p-1.5 bg-red-100 hover:bg-red-200 text-red-700 rounded font-bold transition text-xs"
+                                        >
+                                          <i className="fas fa-trash-alt"></i>
+                                        </button>
+                                      )}
+
+                                      {/* Botón Restaurar */}
+                                      {(isPurchased || isLost) && (
+                                        <button
+                                          type="button"
+                                          onClick={() => handleRestoreItem(it.id)}
+                                          title="Restaurar a estado Cotizado"
+                                          className="p-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded font-bold transition text-xs"
+                                        >
+                                          <i className="fas fa-undo"></i>
+                                        </button>
+                                      )}
+                                    </div>
+                                  </td>
+                                </tr>
+                              );
+                            })}
+                          </tbody>
+                        </table>
+                      </div>
+                    )}
+                  </div>
+
+                </div>
+              )}
+
+              {/* ======================================================== */}
+              {/* PESTAÑA 3: RASTRO Y AUDITORÍA DE VENTA PERDIDA          */}
+              {/* ======================================================== */}
+              {detailTab === 'venta_perdida' && (
+                <div className="space-y-6">
+                  
+                  {/* Encabezado de Auditoría */}
+                  <div className="bg-gradient-to-r from-red-900 to-rose-700 text-white p-4 rounded-xl shadow-xs">
+                    <div className="flex items-center space-x-2 mb-1">
+                      <i className="fas fa-chart-line text-yellow-300 text-lg"></i>
+                      <h4 className="font-bold text-sm">Auditoría de Venta Perdida & Rastro Comercial (Lead-to-Order)</h4>
+                    </div>
+                    <p className="text-xs text-red-100">
+                      Trazabilidad exacta entre lo que el cliente pidió originalmente vs lo que realmente compró vs lo que descartó, catalogado bajo los 5 motivos estratégicos de no compra.
+                    </p>
+                  </div>
+
+                  {/* Métricas Principales de Fuga Comercial */}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-xs">
+                      <span className="text-gray-400 font-bold uppercase text-[10px] block">Monto Total Solicitado</span>
+                      <span className="text-xl font-black text-gray-900">${quoteSummary.totalCotizado.toLocaleString()}</span>
+                      <span className="text-xs text-gray-500 mt-1 block">Demanda bruta inicial</span>
+                    </div>
+
+                    <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-xs">
+                      <span className="text-emerald-600 font-bold uppercase text-[10px] block">Monto Efectivamente Comprado</span>
+                      <span className="text-xl font-black text-emerald-700">${quoteSummary.totalComprado.toLocaleString()}</span>
+                      <span className="text-xs text-emerald-600 mt-1 block">Conversión real lograda</span>
+                    </div>
+
+                    <div className="bg-white p-4 rounded-xl border border-red-200 shadow-xs bg-red-50/20">
+                      <span className="text-red-600 font-bold uppercase text-[10px] block">Monto Venta Perdida</span>
+                      <span className="text-xl font-black text-red-700">${quoteSummary.totalPerdido.toLocaleString()}</span>
+                      <span className="text-xs text-red-600 font-bold mt-1 block">
+                        Tasa de fuga: {quoteSummary.lostPercent}%
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Desglose por los 5 Motivos de No Compra */}
+                  <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-xs space-y-3">
+                    <h5 className="font-bold text-gray-800 text-xs uppercase tracking-wider flex items-center">
+                      <i className="fas fa-list-ol mr-1.5 text-red-600"></i>
+                      Distribución por Motivo de Rechazo (Razones 1 al 5)
+                    </h5>
+
+                    <div className="space-y-2">
+                      {LOST_SALE_REASONS.map(reason => {
+                        const itemsWithReason = (selectedDeal.quote?.items || []).filter(
+                          it => it.status === 'perdido' && it.lostReason === reason
+                        );
+                        const reasonAmount = itemsWithReason.reduce(
+                          (sum, it) => sum + ((Number(it.unitPrice) || 0) * (Number(it.quantity) || 1)),
+                          0
+                        );
+                        const percentOfLoss = quoteSummary.totalPerdido > 0 
+                          ? ((reasonAmount / quoteSummary.totalPerdido) * 100).toFixed(0) 
+                          : 0;
+
+                        return (
+                          <div key={reason} className="p-2.5 rounded-lg border border-gray-100 bg-slate-50/70 text-xs flex justify-between items-center">
+                            <div className="flex items-center space-x-2">
+                              <span className={`w-2.5 h-2.5 rounded-full ${itemsWithReason.length > 0 ? 'bg-red-500' : 'bg-gray-300'}`}></span>
+                              <span className={`font-semibold ${itemsWithReason.length > 0 ? 'text-gray-900 font-bold' : 'text-gray-500'}`}>
+                                {reason}
+                              </span>
+                            </div>
+                            <div className="flex items-center space-x-3 text-right">
+                              <span className="text-gray-500 text-[11px]">{itemsWithReason.length} SKUs</span>
+                              <span className="font-mono font-bold text-red-700">${reasonAmount.toLocaleString()}</span>
+                              <span className="text-[10px] bg-red-100 text-red-800 font-bold px-1.5 py-0.2 rounded">
+                                {percentOfLoss}%
+                              </span>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Rastro Detallado de SKUs Descartados */}
+                  <div className="bg-white rounded-xl border border-gray-200 shadow-xs overflow-hidden">
+                    <div className="px-4 py-3 border-b border-gray-100 bg-slate-50 font-bold text-xs text-gray-800 uppercase tracking-wider">
+                      Detalle y Evidencia de SKUs NO Comprados ({quoteSummary.lostCount})
+                    </div>
+
+                    {quoteSummary.lostCount === 0 ? (
+                      <div className="p-6 text-center text-gray-400 text-xs">
+                        <i className="fas fa-shield-alt text-2xl text-emerald-400 mb-1 block"></i>
+                        No hay registros de venta perdida en esta oportunidad.<br/>
+                        Todos los SKUs cotizados están vigentes o fueron aprobados por el cliente.
+                      </div>
+                    ) : (
+                      <div className="divide-y divide-gray-100 text-xs">
+                        {selectedDeal.quote.items.filter(it => it.status === 'perdido').map(it => {
+                          const sub = (Number(it.unitPrice) || 0) * (Number(it.quantity) || 1);
+                          return (
+                            <div key={it.id} className="p-4 space-y-2 hover:bg-red-50/20 transition">
+                              <div className="flex justify-between items-start">
+                                <div>
+                                  <span className="font-mono font-bold text-red-700 bg-red-50 px-2 py-0.5 rounded text-xs border border-red-200">
+                                    {it.sku}
+                                  </span>
+                                  <span className="font-bold text-gray-900 ml-2">{it.name}</span>
+                                  <span className="text-gray-500 text-xs ml-2">({it.quantity} unidades x ${it.unitPrice})</span>
+                                </div>
+                                <span className="font-mono font-black text-red-700 text-sm">
+                                  -${sub.toLocaleString()} USD
+                                </span>
+                              </div>
+
+                              <div className="bg-white p-2.5 rounded-lg border border-red-100 text-xs">
+                                <div className="flex items-center text-red-800 font-bold mb-0.5">
+                                  <i className="fas fa-exclamation-circle mr-1.5"></i>
+                                  {it.lostReason}
+                                </div>
+                                {it.lostNotes && (
+                                  <p className="text-gray-600 italic text-[11px] mt-1 pl-4 border-l-2 border-red-300">
+                                    "{it.lostNotes}"
+                                  </p>
+                                )}
+                                <div className="text-[10px] text-gray-400 mt-1 flex justify-between">
+                                  <span>Registrado por: {selectedDeal.assignedTo || 'Asesor'}</span>
+                                  <span>Fecha: {it.lostDate || 'Reciente'}</span>
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+
+                </div>
+              )}
+
+              {/* ======================================================== */}
+              {/* PESTAÑA 4: DATOS GENERALES DE LA OPORTUNIDAD            */}
+              {/* ======================================================== */}
+              {detailTab === 'info' && (
+                <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-xs space-y-4">
+                  <h4 className="font-bold text-gray-800 text-xs uppercase tracking-wider border-b border-gray-100 pb-2">
+                    Ficha de la Oportunidad de Negocio
+                  </h4>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                    <div>
+                      <span className="text-gray-400 font-bold uppercase text-[10px] block">Título</span>
+                      <p className="font-bold text-gray-900 text-sm mt-0.5">{selectedDeal.title}</p>
+                    </div>
+                    <div>
+                      <span className="text-gray-400 font-bold uppercase text-[10px] block">Empresa / Cuenta</span>
+                      <p className="font-bold text-gray-900 text-sm mt-0.5">{selectedDeal.company}</p>
+                    </div>
+                    <div>
+                      <span className="text-gray-400 font-bold uppercase text-[10px] block">Correo Electrónico</span>
+                      <p className="font-medium text-gray-700 mt-0.5">{selectedDeal.email || 'No registrado'}</p>
+                    </div>
+                    <div>
+                      <span className="text-gray-400 font-bold uppercase text-[10px] block">Teléfono / WhatsApp</span>
+                      <p className="font-medium text-gray-700 mt-0.5">{selectedDeal.phone || 'No registrado'}</p>
+                    </div>
+                    <div>
+                      <span className="text-gray-400 font-bold uppercase text-[10px] block">Prioridad</span>
+                      <span className={`inline-block mt-1 text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider ${getPriorityColor(selectedDeal.priority)}`}>
+                        {selectedDeal.priority}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="text-gray-400 font-bold uppercase text-[10px] block">Asesor a Cargo</span>
+                      <p className="font-semibold text-gray-800 mt-0.5">{selectedDeal.assignedTo || 'María Asesora'}</p>
+                    </div>
+                  </div>
+
+                  {selectedDeal.notes && (
+                    <div className="pt-2">
+                      <span className="text-gray-400 font-bold uppercase text-[10px] block mb-1">Notas Iniciales</span>
+                      <p className="bg-slate-50 p-3 rounded-lg border border-gray-100 text-xs text-gray-700 whitespace-pre-wrap">
+                        {selectedDeal.notes}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+
+            </div>
+
+            {/* Modal Footer con Acciones */}
+            <div className="px-6 py-3.5 bg-white border-t border-gray-200 flex justify-between items-center shrink-0">
+              <button
+                type="button"
+                onClick={handleDeleteDeal}
+                className="text-red-600 hover:text-red-800 text-xs font-bold hover:underline flex items-center transition"
+              >
+                <i className="fas fa-trash-alt mr-1.5"></i>Descartar Oportunidad
+              </button>
+
+              <div className="flex space-x-2">
                 <button
                   type="button"
                   onClick={() => setIsDetailOpen(false)}
-                  className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-xs font-bold transition"
+                  className="px-5 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl text-xs font-bold transition"
                 >
                   Cerrar
                 </button>
               </div>
+            </div>
 
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================= */}
+      {/* MODAL EMERGENTE: REGISTRAR MOTIVO DE VENTA PERDIDA        */}
+      {/* ========================================================= */}
+      {lostSaleModal.isOpen && (
+        <div className="fixed inset-0 bg-black/70 z-[60] flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden animate-fadeIn border border-red-200">
+            
+            {/* Modal Header */}
+            <div className="px-5 py-3.5 bg-red-700 text-white flex justify-between items-center">
+              <div className="flex items-center space-x-2">
+                <i className="fas fa-exclamation-triangle text-yellow-300"></i>
+                <h4 className="font-bold text-sm">Registrar Causal de Venta Perdida</h4>
+              </div>
+              <button
+                type="button"
+                onClick={() => setLostSaleModal({ isOpen: false, targetItem: null, reason: LOST_SALE_REASONS[0], notes: '' })}
+                className="text-white hover:text-gray-200 font-bold text-lg"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Modal Content */}
+            <div className="p-5 space-y-4 text-xs">
+              <div className="bg-red-50 p-3 rounded-xl border border-red-200 text-red-900">
+                <span className="font-bold block uppercase text-[10px]">Elemento a Descartar:</span>
+                {lostSaleModal.targetItem === 'ALL' ? (
+                  <p className="font-bold text-sm mt-0.5">Toda la Cotización Actual ({quoteSummary.itemsCount} SKUs)</p>
+                ) : (
+                  <p className="font-bold text-sm mt-0.5">
+                    [{lostSaleModal.targetItem?.sku}] {lostSaleModal.targetItem?.name} • ({lostSaleModal.targetItem?.quantity} un. x ${lostSaleModal.targetItem?.unitPrice})
+                  </p>
+                )}
+                <span className="text-[11px] text-red-700 block mt-1">
+                  Se generará el indicador de fuga comercial para análisis y auditoría gerencial.
+                </span>
+              </div>
+
+              {/* Selección Obligatoria de los 5 Motivos */}
+              <div>
+                <label className="block text-xs font-bold text-gray-800 uppercase mb-2">
+                  Seleccione la Razón Oficial de la NO Compra <span className="text-red-500">*</span>
+                </label>
+                <div className="space-y-2">
+                  {LOST_SALE_REASONS.map(rs => (
+                    <label
+                      key={rs}
+                      className={`flex items-center space-x-3 p-2.5 rounded-xl border cursor-pointer transition ${
+                        lostSaleModal.reason === rs
+                          ? 'bg-red-50/80 border-red-500 text-red-950 font-bold ring-1 ring-red-400'
+                          : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="lostReasonRadio"
+                        value={rs}
+                        checked={lostSaleModal.reason === rs}
+                        onChange={(e) => setLostSaleModal(prev => ({ ...prev, reason: e.target.value }))}
+                        className="text-red-600 focus:ring-red-500 h-4 w-4"
+                      />
+                      <span className="text-xs">{rs}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {/* Justificación o Notas Adicionales */}
+              <div>
+                <label className="block text-[11px] font-bold text-gray-700 uppercase mb-1">
+                  Observaciones adicionales o detalle de la objeción del cliente
+                </label>
+                <textarea
+                  rows="2"
+                  value={lostSaleModal.notes}
+                  onChange={(e) => setLostSaleModal(prev => ({ ...prev, notes: e.target.value }))}
+                  placeholder="Detalles sobre por qué no se concretó la venta (competencia, precio ofertado, etc.)..."
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 text-xs"
+                ></textarea>
+              </div>
+
+            </div>
+
+            {/* Modal Footer */}
+            <div className="px-5 py-3 bg-gray-50 border-t border-gray-200 flex justify-end space-x-2">
+              <button
+                type="button"
+                onClick={() => setLostSaleModal({ isOpen: false, targetItem: null, reason: LOST_SALE_REASONS[0], notes: '' })}
+                className="px-4 py-2 border border-gray-300 rounded-lg font-semibold text-gray-600 hover:bg-gray-100 transition text-xs"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmLostSale}
+                className="px-5 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-bold shadow-md transition text-xs flex items-center space-x-1.5"
+              >
+                <i className="fas fa-check"></i>
+                <span>Confirmar Venta Perdida</span>
+              </button>
             </div>
 
           </div>
