@@ -315,6 +315,20 @@ const CrmDashboardView = () => {
     notes: ''
   });
 
+  // Pestañas y estado de cotización en Modal Crear Oportunidad
+  const [createModalTab, setCreateModalTab] = useState('datos'); // 'datos' | 'cotizacion'
+  const [newDealQuote, setNewDealQuote] = useState({
+    paymentTerms: 'Contado',
+    deliveryMode: 'Entrega en Sucursal',
+    deliveryAddress: '',
+    items: []
+  });
+  const [newDealSkuForm, setNewDealSkuForm] = useState({
+    selectedSku: '',
+    quantity: 1,
+    unitPrice: ''
+  });
+
   // Filtros
   const [showFilterBar, setShowFilterBar] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -433,6 +447,18 @@ const CrmDashboardView = () => {
   const handleOpenModal = () => {
     setPartnerMode('catalog');
     setSelectedPartnerCode('');
+    setCreateModalTab('datos');
+    setNewDealQuote({
+      paymentTerms: 'Contado',
+      deliveryMode: 'Entrega en Sucursal',
+      deliveryAddress: '',
+      items: []
+    });
+    setNewDealSkuForm({
+      selectedSku: '',
+      quantity: 1,
+      unitPrice: ''
+    });
     setFormData({
       title: '',
       company: '',
@@ -448,6 +474,48 @@ const CrmDashboardView = () => {
       notes: ''
     });
     setIsModalOpen(true);
+  };
+
+  // Agregar SKU en la Cotización Inicial al Crear Oportunidad
+  const handleAddNewDealSku = (e) => {
+    e.preventDefault();
+    if (!newDealSkuForm.selectedSku) {
+      alert('Por favor seleccione un SKU del Kardex.');
+      return;
+    }
+    const kardexItem = kardexCatalog.find(k => k.sku === newDealSkuForm.selectedSku);
+    const qty = parseInt(newDealSkuForm.quantity, 10) || 1;
+    const price = parseFloat(newDealSkuForm.unitPrice) || (kardexItem ? kardexItem.unitPrice : 0);
+
+    const newItem = {
+      id: Date.now(),
+      sku: newDealSkuForm.selectedSku,
+      name: kardexItem ? kardexItem.name : newDealSkuForm.selectedSku,
+      category: kardexItem ? kardexItem.category : 'General',
+      unitPrice: price,
+      quantity: qty,
+      total: price * qty,
+      status: 'cotizado',
+      lostReason: null,
+      lostNotes: '',
+      lostDate: null
+    };
+
+    const updatedItems = [...newDealQuote.items, newItem];
+    const totalQuote = updatedItems.reduce((acc, it) => acc + (it.unitPrice * it.quantity), 0);
+
+    setNewDealQuote(prev => ({ ...prev, items: updatedItems }));
+    setFormData(prev => ({ ...prev, value: String(totalQuote) }));
+    setNewDealSkuForm({ selectedSku: '', quantity: 1, unitPrice: '' });
+    showToast(`📦 SKU "${newItem.sku}" añadido. Monto estimado actualizado a $${totalQuote.toLocaleString()}`);
+  };
+
+  // Eliminar SKU de la Cotización Inicial al Crear Oportunidad
+  const handleRemoveNewDealSku = (itemId) => {
+    const updatedItems = newDealQuote.items.filter(it => it.id !== itemId);
+    const totalQuote = updatedItems.reduce((acc, it) => acc + (it.unitPrice * it.quantity), 0);
+    setNewDealQuote(prev => ({ ...prev, items: updatedItems }));
+    setFormData(prev => ({ ...prev, value: totalQuote > 0 ? String(totalQuote) : '' }));
   };
 
   // Selección de un Business Partner del Catálogo
@@ -498,10 +566,10 @@ const CrmDashboardView = () => {
       notes: formData.notes.trim(),
       activities: [],
       quote: {
-        paymentTerms: 'Contado',
-        deliveryMode: 'Entrega en Sucursal',
-        deliveryAddress: '',
-        items: []
+        paymentTerms: newDealQuote.paymentTerms,
+        deliveryMode: newDealQuote.deliveryMode,
+        deliveryAddress: newDealQuote.deliveryAddress,
+        items: newDealQuote.items
       }
     };
 
@@ -1088,10 +1156,10 @@ const CrmDashboardView = () => {
       {/* ========================================================= */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl flex flex-col max-h-[92vh] overflow-hidden animate-fadeIn">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl flex flex-col max-h-[92vh] overflow-hidden animate-fadeIn border border-gray-100">
             
             {/* Modal Header */}
-            <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center bg-[#0A2540] text-white">
+            <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center bg-[#0A2540] text-white shrink-0">
               <div className="flex items-center space-x-3">
                 <div className="w-9 h-9 rounded-lg bg-[#006EAD] flex items-center justify-center text-white text-lg">
                   <i className="fas fa-plus"></i>
@@ -1109,9 +1177,43 @@ const CrmDashboardView = () => {
               </button>
             </div>
 
+            {/* Pestañas del Modal de Creación */}
+            <div className="flex border-b border-gray-200 bg-slate-50 px-6 shrink-0 text-xs font-bold">
+              <button
+                type="button"
+                onClick={() => setCreateModalTab('datos')}
+                className={`py-2.5 px-4 border-b-2 flex items-center space-x-2 transition ${
+                  createModalTab === 'datos'
+                    ? 'border-[#006EAD] text-[#006EAD] bg-white'
+                    : 'border-transparent text-gray-500 hover:text-gray-800'
+                }`}
+              >
+                <i className="fas fa-file-alt"></i>
+                <span>1. Datos del Proyecto y Cliente</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setCreateModalTab('cotizacion')}
+                className={`py-2.5 px-4 border-b-2 flex items-center space-x-2 transition ${
+                  createModalTab === 'cotizacion'
+                    ? 'border-[#006EAD] text-[#006EAD] bg-white'
+                    : 'border-transparent text-gray-500 hover:text-gray-800'
+                }`}
+              >
+                <i className="fas fa-boxes"></i>
+                <span>2. Cotización Kardex (SKUs, Crédito/Contado, Entrega)</span>
+                <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${
+                  newDealQuote.items.length > 0 ? 'bg-emerald-600 text-white' : 'bg-gray-200 text-gray-700'
+                }`}>
+                  {newDealQuote.items.length}
+                </span>
+              </button>
+            </div>
+
             {/* Modal Form */}
-            <form onSubmit={handleSaveDeal} className="p-6 overflow-y-auto space-y-4 text-sm">
-              
+            <form onSubmit={handleSaveDeal} className="p-6 overflow-y-auto space-y-4 text-sm flex-1">
+              {createModalTab === 'datos' && (
+                <>
               {/* Sección 1: Título y Monto */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="md:col-span-2">
@@ -1350,21 +1452,233 @@ const CrmDashboardView = () => {
                 ></textarea>
               </div>
 
+                </>
+              )}
+
+              {createModalTab === 'cotizacion' && (
+                <div className="space-y-4">
+                  <div className="bg-blue-50/70 p-3.5 rounded-xl border border-blue-200 text-xs text-blue-900">
+                    <span className="font-bold block uppercase text-[10px] text-[#006EAD]">
+                      Cotización Inicial Completa (Kardex & Condiciones Comerciales)
+                    </span>
+                    <p className="mt-0.5">
+                      Defina los SKUs solicitados por el prospecto, si es a <strong>Crédito o Contado</strong>, y si se entrega en <strong>Sucursal o a Domicilio</strong>. El monto total de venta se calculará automáticamente.
+                    </p>
+                  </div>
+
+                  {/* Condiciones Comerciales */}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-white p-3.5 rounded-xl border border-gray-200">
+                    <div>
+                      <label className="block text-xs font-bold text-gray-700 uppercase mb-1">
+                        Condición de Pago
+                      </label>
+                      <select
+                        value={newDealQuote.paymentTerms}
+                        onChange={(e) => setNewDealQuote(prev => ({ ...prev, paymentTerms: e.target.value }))}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-xs font-bold bg-white"
+                      >
+                        <option value="Contado">💵 Contado</option>
+                        <option value="Crédito 15 días">💳 Crédito 15 días</option>
+                        <option value="Crédito 30 días">💳 Crédito 30 días</option>
+                        <option value="Crédito 60 días">💳 Crédito 60 días</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold text-gray-700 uppercase mb-1">
+                        Tipo de Entrega
+                      </label>
+                      <select
+                        value={newDealQuote.deliveryMode}
+                        onChange={(e) => setNewDealQuote(prev => ({ ...prev, deliveryMode: e.target.value }))}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-xs font-bold bg-white"
+                      >
+                        <option value="Entrega en Sucursal">🏢 Entrega en Sucursal</option>
+                        <option value="A Domicilio">🚚 A Domicilio</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold text-gray-700 uppercase mb-1">
+                        Dirección de Despacho
+                      </label>
+                      <input
+                        type="text"
+                        placeholder={newDealQuote.deliveryMode === 'A Domicilio' ? 'Ingresar dirección...' : 'N/A - Sucursal'}
+                        value={newDealQuote.deliveryAddress}
+                        onChange={(e) => setNewDealQuote(prev => ({ ...prev, deliveryAddress: e.target.value }))}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-xs"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Formulario Agregar SKU del Kardex */}
+                  <div className="bg-slate-50 p-4 rounded-xl border border-gray-200 space-y-3">
+                    <h5 className="font-bold text-gray-800 text-xs uppercase tracking-wider flex items-center">
+                      <i className="fas fa-cart-plus mr-1.5 text-[#006EAD]"></i>
+                      Incorporar SKU del Kardex a la Propuesta
+                    </h5>
+                    
+                    <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-end">
+                      <div className="sm:col-span-6">
+                        <label className="block text-[11px] font-bold text-gray-700 uppercase mb-1">
+                          Producto / Servicio (Kardex)
+                        </label>
+                        <select
+                          value={newDealSkuForm.selectedSku}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            const found = kardexCatalog.find(k => k.sku === val);
+                            setNewDealSkuForm(prev => ({
+                              ...prev,
+                              selectedSku: val,
+                              unitPrice: found ? found.unitPrice : ''
+                            }));
+                          }}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-xs bg-white font-medium"
+                        >
+                          <option value="">-- Seleccionar SKU del Kardex --</option>
+                          {kardexCatalog.map(k => (
+                            <option key={k.sku} value={k.sku}>
+                              [{k.sku}] {k.name} • Stock: {k.stock} • (${k.unitPrice})
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div className="sm:col-span-2">
+                        <label className="block text-[11px] font-bold text-gray-700 uppercase mb-1">
+                          Cantidad
+                        </label>
+                        <input
+                          type="number"
+                          min="1"
+                          value={newDealSkuForm.quantity}
+                          onChange={(e) => setNewDealSkuForm(prev => ({ ...prev, quantity: e.target.value }))}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-xs font-bold text-center"
+                        />
+                      </div>
+
+                      <div className="sm:col-span-2">
+                        <label className="block text-[11px] font-bold text-gray-700 uppercase mb-1">
+                          P. Unitario ($)
+                        </label>
+                        <input
+                          type="number"
+                          step="0.01"
+                          placeholder="0.00"
+                          value={newDealSkuForm.unitPrice}
+                          onChange={(e) => setNewDealSkuForm(prev => ({ ...prev, unitPrice: e.target.value }))}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-xs font-bold"
+                        />
+                      </div>
+
+                      <div className="sm:col-span-2">
+                        <button
+                          type="button"
+                          onClick={handleAddNewDealSku}
+                          className="w-full py-2 px-3 bg-[#006EAD] hover:bg-[#005587] text-white rounded-lg font-bold text-xs shadow-xs transition"
+                        >
+                          + Agregar SKU
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Tabla de SKUs de la nueva oportunidad */}
+                  <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+                    <div className="px-4 py-2.5 bg-slate-50 border-b border-gray-200 flex justify-between items-center text-xs font-bold text-gray-700">
+                      <span>SKUs Cotizados ({newDealQuote.items.length})</span>
+                      <span className="text-[#006EAD] font-black text-sm">
+                        Total: ${newDealQuote.items.reduce((acc, it) => acc + (it.unitPrice * it.quantity), 0).toLocaleString()}
+                      </span>
+                    </div>
+
+                    {newDealQuote.items.length === 0 ? (
+                      <div className="p-6 text-center text-gray-400 text-xs">
+                        No ha agregado SKUs aún. Puede agregarlos ahora o posterior al crear la oportunidad.
+                      </div>
+                    ) : (
+                      <table className="w-full text-xs text-left">
+                        <thead className="bg-gray-50 text-gray-600 font-bold text-[10px] uppercase">
+                          <tr>
+                            <th className="p-2.5">SKU & Nombre</th>
+                            <th className="p-2.5 text-center">Cant.</th>
+                            <th className="p-2.5 text-right">P. Unit.</th>
+                            <th className="p-2.5 text-right">Subtotal</th>
+                            <th className="p-2.5 text-center">Quitar</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100">
+                          {newDealQuote.items.map(it => (
+                            <tr key={it.id}>
+                              <td className="p-2.5">
+                                <span className="font-mono font-bold text-gray-900 bg-gray-100 px-1 py-0.5 rounded text-[10px] mr-1.5">
+                                  {it.sku}
+                                </span>
+                                <span className="font-semibold text-gray-800">{it.name}</span>
+                              </td>
+                              <td className="p-2.5 text-center font-bold">{it.quantity}</td>
+                              <td className="p-2.5 text-right">${Number(it.unitPrice).toLocaleString()}</td>
+                              <td className="p-2.5 text-right font-black text-[#006EAD]">${(it.unitPrice * it.quantity).toLocaleString()}</td>
+                              <td className="p-2.5 text-center">
+                                <button
+                                  type="button"
+                                  onClick={() => handleRemoveNewDealSku(it.id)}
+                                  className="text-red-500 hover:text-red-700 font-bold p-1"
+                                >
+                                  ✕
+                                </button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    )}
+                  </div>
+
+                </div>
+              )}
+
               {/* Botones de Acción */}
-              <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200">
-                <button
-                  type="button"
-                  onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 border border-gray-300 rounded-lg font-semibold text-gray-600 hover:bg-gray-50 transition"
-                >
-                  Cancelar
-                </button>
-                <button
-                  type="submit"
-                  className="px-5 py-2 bg-[#006EAD] hover:bg-[#005587] text-white rounded-lg font-bold shadow-md transition flex items-center"
-                >
-                  <i className="fas fa-check mr-2"></i>Guardar Oportunidad
-                </button>
+              <div className="flex justify-between items-center pt-4 border-t border-gray-200">
+                <div>
+                  {createModalTab === 'datos' ? (
+                    <button
+                      type="button"
+                      onClick={() => setCreateModalTab('cotizacion')}
+                      className="text-xs text-[#006EAD] hover:underline font-bold flex items-center space-x-1"
+                    >
+                      <span>Ir a Cotización Kardex (Opcional)</span>
+                      <i className="fas fa-arrow-right text-[10px]"></i>
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setCreateModalTab('datos')}
+                      className="text-xs text-gray-600 hover:underline font-bold flex items-center space-x-1"
+                    >
+                      <i className="fas fa-arrow-left text-[10px]"></i>
+                      <span>Volver a Datos Generales</span>
+                    </button>
+                  )}
+                </div>
+
+                <div className="flex space-x-3">
+                  <button
+                    type="button"
+                    onClick={() => setIsModalOpen(false)}
+                    className="px-4 py-2 border border-gray-300 rounded-lg font-semibold text-gray-600 hover:bg-gray-50 transition"
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-5 py-2 bg-[#006EAD] hover:bg-[#005587] text-white rounded-lg font-bold shadow-md transition flex items-center"
+                  >
+                    <i className="fas fa-check mr-2"></i>Guardar Oportunidad
+                  </button>
+                </div>
               </div>
 
             </form>
