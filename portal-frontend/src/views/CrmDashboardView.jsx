@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const initialDeals = [
@@ -17,11 +17,17 @@ const CrmDashboardView = () => {
   const navigate = useNavigate();
   const [deals, setDeals] = useState(initialDeals);
 
+  // Business Partners Catálogo
+  const [businessPartners, setBusinessPartners] = useState([]);
+  const [partnerMode, setPartnerMode] = useState('catalog'); // 'catalog' | 'manual'
+  const [selectedPartnerCode, setSelectedPartnerCode] = useState('');
+
   // Modal Crear Oportunidad
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
     company: '',
+    partnerCode: '',
     value: '',
     stage: 'Nuevo',
     priority: 'Alta',
@@ -43,7 +49,7 @@ const CrmDashboardView = () => {
   const [priorityFilter, setPriorityFilter] = useState('Todas');
   const [stageFilter, setStageFilter] = useState('Todas');
 
-  // Mensaje de notificación
+  // Mensaje de notificación (Toast)
   const [toastMessage, setToastMessage] = useState('');
 
   const showToast = (msg) => {
@@ -52,6 +58,35 @@ const CrmDashboardView = () => {
       setToastMessage('');
     }, 4500);
   };
+
+  // Cargar Business Partners desde el API
+  useEffect(() => {
+    fetch('/api/business-partners')
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data) && data.length > 0) {
+          setBusinessPartners(data);
+        } else {
+          setBusinessPartners(getFallbackPartners());
+        }
+      })
+      .catch(err => {
+        console.error('Error fetching business partners:', err);
+        setBusinessPartners(getFallbackPartners());
+      });
+  }, []);
+
+  const getFallbackPartners = () => [
+    { code: 'BP-001', name: 'Distribuidora Comercial del Norte S.A.', type: 'Cliente', contactName: 'María González', email: 'mgonzalez@dcomercial.com', phone: '+503 7890-1234' },
+    { code: 'BP-002', name: 'Distribuciones Industriales del Centro S.A.', type: 'Cliente', contactName: 'Carlos Ruiz', email: 'cruiz@distribucionesindustrial.com', phone: '+503 7654-3210' },
+    { code: 'BP-003', name: 'Materiales y Fibras Sintéticas S.A.', type: 'Proveedor', contactName: 'John Smith', email: 'jsmith@fibrascorp.com', phone: '+503 7123-4567' },
+    { code: 'BP-004', name: 'Transportes Express del Norte', type: 'Fletero', contactName: 'Roberto Méndez', email: 'rmendez@transnorte.com', phone: '+503 7321-9876' },
+    { code: 'BP-005', name: 'Químicos y Componentes Globales S.A.', type: 'Proveedor', contactName: 'Laura Vega', email: 'lvega@quimicoscorp.com', phone: '+503 7987-6543' },
+    { code: 'BP-006', name: 'Industrias Apex', type: 'Cliente', contactName: 'Roberto Silva', email: 'rsilva@apex.com', phone: '+503 7890-1234' },
+    { code: 'BP-007', name: 'Comercializadora del Sur', type: 'Cliente', contactName: 'Luis Gómez', email: 'lgomez@comsur.com', phone: '+503 7123-4567' },
+    { code: 'BP-008', name: 'Logistics Pro', type: 'Cliente', contactName: 'Sandra Peña', email: 'spena@logisticspro.com', phone: '+503 7321-9876' },
+    { code: 'BP-009', name: 'Almacenes Globales', type: 'Cliente', contactName: 'Guillermo Vega', email: 'gvega@almacenesg.com', phone: '+503 7456-1122' }
+  ];
 
   // Helper de colores de prioridad
   const getPriorityColor = (priority) => {
@@ -97,9 +132,12 @@ const CrmDashboardView = () => {
 
   // Abrir Modal de Creación
   const handleOpenModal = () => {
+    setPartnerMode('catalog');
+    setSelectedPartnerCode('');
     setFormData({
       title: '',
       company: '',
+      partnerCode: '',
       value: '',
       stage: 'Nuevo',
       priority: 'Alta',
@@ -113,11 +151,32 @@ const CrmDashboardView = () => {
     setIsModalOpen(true);
   };
 
+  // Selección de un Business Partner del Catálogo
+  const handleSelectPartner = (e) => {
+    const code = e.target.value;
+    setSelectedPartnerCode(code);
+    if (!code) {
+      setFormData(prev => ({ ...prev, company: '', partnerCode: '' }));
+      return;
+    }
+    const partner = businessPartners.find(p => p.code === code);
+    if (partner) {
+      setFormData(prev => ({
+        ...prev,
+        company: partner.name,
+        partnerCode: partner.code,
+        contact: partner.contactName || prev.contact,
+        email: partner.email || prev.email,
+        phone: partner.phone || prev.phone
+      }));
+    }
+  };
+
   // Guardar Nueva Oportunidad
   const handleSaveDeal = (e) => {
     e.preventDefault();
     if (!formData.title.trim() || !formData.company.trim()) {
-      alert('Por favor ingrese al menos el Título del Proyecto y la Empresa.');
+      alert('Por favor ingrese el Título de la Oportunidad y seleccione o escriba la Empresa.');
       return;
     }
 
@@ -128,6 +187,7 @@ const CrmDashboardView = () => {
       id: Date.now(),
       title: formData.title.trim(),
       company: formData.company.trim(),
+      partnerCode: formData.partnerCode,
       value: formattedVal,
       stage: formData.stage,
       date: formData.date.trim() || '30 Nov',
@@ -339,7 +399,15 @@ const CrmDashboardView = () => {
                       </div>
                       
                       <h4 className="font-bold text-[#0A2540] text-sm leading-tight mb-1 group-hover:text-[#006EAD] transition-colors">{deal.title}</h4>
-                      <p className="text-xs text-gray-500 mb-3"><i className="far fa-building mr-1"></i>{deal.company}</p>
+                      <p className="text-xs text-gray-500 mb-3 flex items-center">
+                        <i className="far fa-building mr-1.5 text-gray-400"></i>
+                        <span>{deal.company}</span>
+                        {deal.partnerCode && (
+                          <span className="ml-1.5 bg-blue-50 text-[#006EAD] text-[9px] font-bold px-1.5 py-0.2 rounded border border-blue-200">
+                            {deal.partnerCode}
+                          </span>
+                        )}
+                      </p>
                       
                       <div className="flex justify-between items-center pt-2 border-t border-gray-50">
                         <span className="font-extrabold text-[#006EAD] text-sm">{deal.value}</span>
@@ -395,8 +463,8 @@ const CrmDashboardView = () => {
             {/* Modal Form */}
             <form onSubmit={handleSaveDeal} className="p-6 overflow-y-auto space-y-4 text-sm">
               
-              {/* Sección 1: Datos Principales */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Sección 1: Título y Monto */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="md:col-span-2">
                   <label className="block text-xs font-bold text-gray-700 uppercase mb-1">
                     Título de la Oportunidad / Proyecto <span className="text-red-500">*</span>
@@ -404,23 +472,9 @@ const CrmDashboardView = () => {
                   <input
                     type="text"
                     required
-                    placeholder="Ej. Implementación ERP - Fase 2 o Suministro Textil 2026"
+                    placeholder="Ej. Venta de ERP Fase 4 o Implementación CRM"
                     value={formData.title}
                     onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#006EAD] text-sm"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold text-gray-700 uppercase mb-1">
-                    Empresa / Razón Social <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="Ej. Hilandería Central S.A."
-                    value={formData.company}
-                    onChange={(e) => setFormData({ ...formData, company: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#006EAD] text-sm"
                   />
                 </div>
@@ -443,7 +497,107 @@ const CrmDashboardView = () => {
                 </div>
               </div>
 
-              {/* Sección 2: Configuración del Pipeline */}
+              {/* Sección 2: EMPRESA / RAZÓN SOCIAL CON PESTAÑAS (BUSINESS PARTNERS vs MANUAL) */}
+              <div className="bg-slate-50 p-4 rounded-xl border border-gray-200 space-y-3">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                  <div>
+                    <span className="block text-xs font-bold text-gray-700 uppercase">
+                      Empresa / Razón Social <span className="text-red-500">*</span>
+                    </span>
+                    <span className="text-[11px] text-gray-500">Seleccione del catálogo o capture un prospecto nuevo</span>
+                  </div>
+                  
+                  {/* Selector de Pestañas */}
+                  <div className="inline-flex bg-gray-200/90 p-1 rounded-lg text-xs font-bold self-start sm:self-auto">
+                    <button
+                      type="button"
+                      onClick={() => setPartnerMode('catalog')}
+                      className={`px-3 py-1 rounded-md transition-all flex items-center gap-1.5 ${
+                        partnerMode === 'catalog'
+                          ? 'bg-[#006EAD] text-white shadow-sm'
+                          : 'text-gray-600 hover:text-gray-900'
+                      }`}
+                    >
+                      <i className="fas fa-address-book text-[11px]"></i>
+                      <span>Business Partners</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setPartnerMode('manual');
+                        setSelectedPartnerCode('');
+                      }}
+                      className={`px-3 py-1 rounded-md transition-all flex items-center gap-1.5 ${
+                        partnerMode === 'manual'
+                          ? 'bg-[#006EAD] text-white shadow-sm'
+                          : 'text-gray-600 hover:text-gray-900'
+                      }`}
+                    >
+                      <i className="fas fa-pen text-[11px]"></i>
+                      <span>Escribir Manual</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Vista Pestaña 1: Catálogo de Business Partners */}
+                {partnerMode === 'catalog' ? (
+                  <div className="space-y-2">
+                    <select
+                      value={selectedPartnerCode}
+                      onChange={handleSelectPartner}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-[#006EAD] text-sm font-medium"
+                    >
+                      <option value="">-- Seleccionar Socio de Negocio registrado en NyTEX --</option>
+                      {businessPartners.map(bp => (
+                        <option key={bp.code} value={bp.code}>
+                          [{bp.code}] {bp.name} — ({bp.type || 'Socio'})
+                        </option>
+                      ))}
+                    </select>
+
+                    {selectedPartnerCode ? (
+                      <div className="flex items-center justify-between bg-emerald-50 border border-emerald-200 px-3 py-2 rounded-lg text-xs text-emerald-800">
+                        <div className="flex items-center gap-2">
+                          <i className="fas fa-check-circle text-emerald-600 text-sm"></i>
+                          <span>
+                            Socio Vinculado: <strong>{formData.company}</strong> [{selectedPartnerCode}] • Datos de contacto sincronizados.
+                          </span>
+                        </div>
+                        <button 
+                          type="button" 
+                          onClick={() => { setSelectedPartnerCode(''); setFormData({ ...formData, company: '', partnerCode: '' }); }}
+                          className="text-emerald-700 hover:text-emerald-950 font-bold underline ml-2 text-[11px]"
+                        >
+                          Limpiar
+                        </button>
+                      </div>
+                    ) : (
+                      <p className="text-[11px] text-gray-500 italic flex items-center gap-1.5">
+                        <i className="fas fa-info-circle text-[#006EAD]"></i>
+                        <span>Al seleccionar un socio, se completarán automáticamente el nombre de la empresa, contacto, correo y teléfono.</span>
+                      </p>
+                    )}
+                  </div>
+                ) : (
+                  /* Vista Pestaña 2: Escribir Manualmente */
+                  <div>
+                    <input
+                      type="text"
+                      required={partnerMode === 'manual'}
+                      placeholder="Escriba el nombre de la empresa / razón social del nuevo prospecto..."
+                      value={formData.company}
+                      onChange={(e) => setFormData({ ...formData, company: e.target.value, partnerCode: '' })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#006EAD] text-sm bg-white"
+                    />
+                    <p className="text-[11px] text-blue-700 mt-1.5 flex items-center gap-1.5">
+                      <i className="fas fa-user-plus text-[#006EAD]"></i>
+                      <span><strong>Prospecto Nuevo:</strong> No registrado en catálogo. Podrá ser promovido a Business Partner al cerrar la venta.</span>
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/* Sección 3: Configuración del Pipeline */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2 border-t border-gray-100">
                 <div>
                   <label className="block text-xs font-bold text-gray-700 uppercase mb-1">
@@ -481,7 +635,7 @@ const CrmDashboardView = () => {
                   </label>
                   <input
                     type="text"
-                    placeholder="Ej. 15 Dic"
+                    placeholder="Ej. 30 Nov"
                     value={formData.date}
                     onChange={(e) => setFormData({ ...formData, date: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#006EAD] text-sm"
@@ -489,7 +643,7 @@ const CrmDashboardView = () => {
                 </div>
               </div>
 
-              {/* Sección 3: Contacto y Responsable */}
+              {/* Sección 4: Contacto y Responsable */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2 border-t border-gray-100">
                 <div>
                   <label className="block text-xs font-bold text-gray-700 uppercase mb-1">
@@ -497,7 +651,7 @@ const CrmDashboardView = () => {
                   </label>
                   <input
                     type="text"
-                    placeholder="Ej. Ing. Juan Pérez"
+                    placeholder="Ej. Juan Pérez"
                     value={formData.contact}
                     onChange={(e) => setFormData({ ...formData, contact: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#006EAD] text-sm"
@@ -510,7 +664,7 @@ const CrmDashboardView = () => {
                   </label>
                   <input
                     type="email"
-                    placeholder="jperez@cliente.com"
+                    placeholder="perez@empresa.com"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#006EAD] text-sm"
@@ -533,7 +687,7 @@ const CrmDashboardView = () => {
                 </div>
               </div>
 
-              {/* Sección 4: Notas / Calificación BANT */}
+              {/* Sección 5: Notas / Calificación BANT */}
               <div className="pt-2 border-t border-gray-100">
                 <label className="block text-xs font-bold text-gray-700 uppercase mb-1">
                   Notas de Calificación BANT / Descripción
@@ -583,7 +737,15 @@ const CrmDashboardView = () => {
                   {selectedDeal.priority}
                 </span>
                 <h3 className="text-base font-bold mt-1">{selectedDeal.title}</h3>
-                <p className="text-xs text-blue-200"><i className="far fa-building mr-1"></i>{selectedDeal.company}</p>
+                <p className="text-xs text-blue-200 flex items-center mt-0.5">
+                  <i className="far fa-building mr-1.5"></i>
+                  <span>{selectedDeal.company}</span>
+                  {selectedDeal.partnerCode && (
+                    <span className="ml-2 bg-blue-400/30 text-blue-100 text-[10px] font-bold px-1.5 py-0.2 rounded">
+                      {selectedDeal.partnerCode}
+                    </span>
+                  )}
+                </p>
               </div>
               <button 
                 onClick={() => setIsDetailOpen(false)}
