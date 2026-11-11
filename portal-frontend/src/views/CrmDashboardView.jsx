@@ -254,11 +254,44 @@ const initialDeals = [
   },
 ];
 
+// Calcular valor activo sincronizado de una cotización
+const calculateQuoteActiveValue = (quote, stage, fallbackValue) => {
+  if (!quote || !Array.isArray(quote.items) || quote.items.length === 0) {
+    return fallbackValue;
+  }
+  let totalComprado = 0;
+  let totalPendiente = 0;
+  let totalCotizado = 0;
+  quote.items.forEach(it => {
+    const sub = (Number(it.unitPrice) || 0) * (Number(it.quantity) || 1);
+    totalCotizado += sub;
+    if (it.status === 'comprado') {
+      totalComprado += sub;
+    } else if (it.status !== 'perdido') {
+      totalPendiente += sub;
+    }
+  });
+
+  if (stage === 'Ganado') {
+    const val = totalComprado > 0 ? totalComprado : totalCotizado;
+    return `$${val.toLocaleString()}`;
+  }
+
+  // Valor vigente activo en la negociación (lo cotizado no perdido)
+  const active = totalPendiente + totalComprado;
+  return `$${active.toLocaleString()}`;
+};
+
 const stages = ['Nuevo', 'Contactado', 'Calificado', 'Cotizado', 'Ganado'];
 
 const CrmDashboardView = () => {
   const navigate = useNavigate();
-  const [deals, setDeals] = useState(initialDeals);
+  const [deals, setDeals] = useState(() =>
+    initialDeals.map(d => ({
+      ...d,
+      value: calculateQuoteActiveValue(d.quote, d.stage, d.value)
+    }))
+  );
 
   // Business Partners Catálogo
   const [businessPartners, setBusinessPartners] = useState([]);
@@ -417,8 +450,14 @@ const CrmDashboardView = () => {
     const openDeals = deals.filter(d => d.stage !== 'Ganado');
     const wonDeals = deals.filter(d => d.stage === 'Ganado');
 
-    const totalOpenVal = openDeals.reduce((sum, d) => sum + parseVal(d.value), 0);
-    const totalWonVal = wonDeals.reduce((sum, d) => sum + parseVal(d.value), 0);
+    const totalOpenVal = openDeals.reduce((sum, d) => {
+      const v = calculateQuoteActiveValue(d.quote, d.stage, d.value);
+      return sum + parseVal(v);
+    }, 0);
+    const totalWonVal = wonDeals.reduce((sum, d) => {
+      const v = calculateQuoteActiveValue(d.quote, d.stage, d.value);
+      return sum + parseVal(v);
+    }, 0);
     const winRate = deals.length > 0 ? ((wonDeals.length / deals.length) * 100).toFixed(1) : '0.0';
 
     return {
@@ -580,17 +619,21 @@ const CrmDashboardView = () => {
 
   // Abrir Detalle de Oportunidad (Paso 1 del Manual)
   const handleCardClick = (deal) => {
+    const rawQuote = deal.quote || {
+      paymentTerms: 'Contado',
+      deliveryMode: 'Entrega en Sucursal',
+      deliveryAddress: '',
+      items: []
+    };
+    const syncedValue = calculateQuoteActiveValue(rawQuote, deal.stage, deal.value);
     const normalized = {
       ...deal,
+      value: syncedValue,
       activities: deal.activities || [],
-      quote: deal.quote || {
-        paymentTerms: 'Contado',
-        deliveryMode: 'Entrega en Sucursal',
-        deliveryAddress: '',
-        items: []
-      }
+      quote: rawQuote
     };
     setSelectedDeal(normalized);
+    setDeals(prev => prev.map(d => d.id === normalized.id ? normalized : d));
     setDetailTab('actividades');
     setActivityForm({
       contactType: 'Llamada',
@@ -609,7 +652,8 @@ const CrmDashboardView = () => {
   // Cambiar Etapa de Oportunidad
   const handleMoveStage = (targetStage) => {
     if (!selectedDeal) return;
-    const updated = { ...selectedDeal, stage: targetStage };
+    const syncedValue = calculateQuoteActiveValue(selectedDeal.quote, targetStage, selectedDeal.value);
+    const updated = { ...selectedDeal, stage: targetStage, value: syncedValue };
     setDeals(prev => prev.map(d => d.id === selectedDeal.id ? updated : d));
     setSelectedDeal(updated);
     
@@ -781,7 +825,8 @@ const CrmDashboardView = () => {
 
     const updatedItems = [...(currentQuote.items || []), newItem];
     const updatedQuote = { ...currentQuote, items: updatedItems };
-    const updatedDeal = { ...selectedDeal, quote: updatedQuote };
+    const syncedValue = calculateQuoteActiveValue(updatedQuote, selectedDeal.stage, selectedDeal.value);
+    const updatedDeal = { ...selectedDeal, quote: updatedQuote, value: syncedValue };
 
     setSelectedDeal(updatedDeal);
     setDeals(prev => prev.map(d => d.id === updatedDeal.id ? updatedDeal : d));
@@ -806,7 +851,8 @@ const CrmDashboardView = () => {
     });
 
     const updatedQuote = { ...currentQuote, items: updatedItems };
-    const updatedDeal = { ...selectedDeal, quote: updatedQuote };
+    const syncedValue = calculateQuoteActiveValue(updatedQuote, selectedDeal.stage, selectedDeal.value);
+    const updatedDeal = { ...selectedDeal, quote: updatedQuote, value: syncedValue };
 
     setSelectedDeal(updatedDeal);
     setDeals(prev => prev.map(d => d.id === updatedDeal.id ? updatedDeal : d));
@@ -830,7 +876,8 @@ const CrmDashboardView = () => {
     }));
 
     const updatedQuote = { ...currentQuote, items: updatedItems };
-    const updatedDeal = { ...selectedDeal, quote: updatedQuote, stage: 'Ganado' };
+    const syncedValue = calculateQuoteActiveValue(updatedQuote, 'Ganado', selectedDeal.value);
+    const updatedDeal = { ...selectedDeal, quote: updatedQuote, stage: 'Ganado', value: syncedValue };
 
     setSelectedDeal(updatedDeal);
     setDeals(prev => prev.map(d => d.id === updatedDeal.id ? updatedDeal : d));
@@ -888,7 +935,8 @@ const CrmDashboardView = () => {
     }
 
     const updatedQuote = { ...currentQuote, items: updatedItems };
-    const updatedDeal = { ...selectedDeal, quote: updatedQuote };
+    const syncedValue = calculateQuoteActiveValue(updatedQuote, selectedDeal.stage, selectedDeal.value);
+    const updatedDeal = { ...selectedDeal, quote: updatedQuote, value: syncedValue };
 
     setSelectedDeal(updatedDeal);
     setDeals(prev => prev.map(d => d.id === updatedDeal.id ? updatedDeal : d));
@@ -912,7 +960,8 @@ const CrmDashboardView = () => {
     });
 
     const updatedQuote = { ...currentQuote, items: updatedItems };
-    const updatedDeal = { ...selectedDeal, quote: updatedQuote };
+    const syncedValue = calculateQuoteActiveValue(updatedQuote, selectedDeal.stage, selectedDeal.value);
+    const updatedDeal = { ...selectedDeal, quote: updatedQuote, value: syncedValue };
 
     setSelectedDeal(updatedDeal);
     setDeals(prev => prev.map(d => d.id === updatedDeal.id ? updatedDeal : d));
@@ -921,12 +970,12 @@ const CrmDashboardView = () => {
 
   // Sincronizar monto estimado de la oportunidad con la cotización
   const handleSyncDealValue = () => {
-    const sum = quoteSummary.totalComprado > 0 ? quoteSummary.totalComprado : quoteSummary.totalCotizado;
-    const formatted = `$${sum.toLocaleString()}`;
-    const updatedDeal = { ...selectedDeal, value: formatted };
+    if (!selectedDeal) return;
+    const syncedValue = calculateQuoteActiveValue(selectedDeal.quote, selectedDeal.stage, selectedDeal.value);
+    const updatedDeal = { ...selectedDeal, value: syncedValue };
     setSelectedDeal(updatedDeal);
     setDeals(prev => prev.map(d => d.id === updatedDeal.id ? updatedDeal : d));
-    showToast(`🔄 Monto de la oportunidad actualizado a ${formatted} según cotización.`);
+    showToast(`🔄 Monto de la oportunidad sincronizado a ${syncedValue} según cotización activa.`);
   };
 
   return (
@@ -1106,7 +1155,9 @@ const CrmDashboardView = () => {
                       </p>
                       
                       <div className="flex justify-between items-center pt-2 border-t border-gray-50">
-                        <span className="font-extrabold text-[#006EAD] text-sm">{deal.value}</span>
+                        <span className="font-extrabold text-[#006EAD] text-sm">
+                          {calculateQuoteActiveValue(deal.quote, deal.stage, deal.value)}
+                        </span>
                         <div className="flex items-center text-gray-400 text-xs">
                           <i className="far fa-clock mr-1"></i>
                           <span>{deal.date}</span>
@@ -1724,8 +1775,17 @@ const CrmDashboardView = () => {
             <div className="bg-slate-100/90 px-6 py-3 border-b border-gray-200 shrink-0 space-y-3">
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
                 <div className="bg-white p-2 rounded-lg border border-gray-200 shadow-xs">
-                  <span className="text-gray-400 font-bold uppercase text-[10px] block">Monto Estimado</span>
-                  <span className="text-base font-black text-[#006EAD]">{selectedDeal.value}</span>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-400 font-bold uppercase text-[10px] block">Monto Estimado</span>
+                    {selectedDeal.quote?.items?.length > 0 && (
+                      <span className="text-[9px] bg-emerald-100 text-emerald-800 font-bold px-1.5 py-0.2 rounded flex items-center">
+                        <i className="fas fa-check mr-1 text-[8px]"></i>Auto
+                      </span>
+                    )}
+                  </div>
+                  <span className="text-base font-black text-[#006EAD]">
+                    {calculateQuoteActiveValue(selectedDeal.quote, selectedDeal.stage, selectedDeal.value)}
+                  </span>
                 </div>
                 <div className="bg-white p-2 rounded-lg border border-gray-200 shadow-xs">
                   <span className="text-gray-400 font-bold uppercase text-[10px] block">Próx. Seguimiento</span>
@@ -2131,13 +2191,9 @@ const CrmDashboardView = () => {
                     <div className="bg-blue-50 p-3 rounded-xl border border-blue-200 shadow-xs">
                       <span className="text-blue-700 font-bold uppercase text-[10px] block">Pendiente / Abierto</span>
                       <span className="text-lg font-black text-[#006EAD]">${quoteSummary.totalPendiente.toLocaleString()}</span>
-                      <button
-                        type="button"
-                        onClick={handleSyncDealValue}
-                        className="text-[10px] text-[#006EAD] hover:underline font-bold block mt-0.5"
-                      >
-                        🔄 Sincronizar Oportunidad
-                      </button>
+                      <span className="text-[10px] text-emerald-700 font-bold flex items-center mt-1">
+                        <i className="fas fa-check-circle mr-1 text-emerald-600"></i>Sincronizado con Oportunidad
+                      </span>
                     </div>
                   </div>
 
