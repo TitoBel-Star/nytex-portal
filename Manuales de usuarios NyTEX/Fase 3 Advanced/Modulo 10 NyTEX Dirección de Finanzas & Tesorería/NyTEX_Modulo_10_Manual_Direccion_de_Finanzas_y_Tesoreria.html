@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>ERP NyTEX — Módulo [10] Dirección de Finanzas & Tesorería</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+    :root {
+      --primary: #0A2540;
+      --secondary: #006EAD;
+      --accent: #D97706;
+      --success: #059669;
+      --danger: #DC2626;
+      --text: #1E293B;
+      --text-muted: #64748B;
+      --bg-light: #F8FAFC;
+      --border: #E2E8F0;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: var(--text);
+      line-height: 1.55;
+      font-size: 10pt;
+      background-color: #FFFFFF;
+      padding: 0;
+    }
+
+    .page {
+      padding: 20px 0;
+    }
+
+    .page-break {
+      page-break-before: always;
+    }
+
+    /* Portada */
+    .cover-container {
+      padding: 60px 40px;
+      text-align: left;
+      border-bottom: 4px solid var(--secondary);
+    }
+
+    .cover-badge {
+      display: inline-block;
+      background: #E0F2FE;
+      color: #0369A1;
+      font-size: 9pt;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 4px 12px;
+      border-radius: 6px;
+      margin-bottom: 20px;
+    }
+
+    .cover-title {
+      font-size: 26pt;
+      font-weight: 900;
+      color: var(--primary);
+      line-height: 1.2;
+      margin-bottom: 12px;
+    }
+
+    .cover-subtitle {
+      font-size: 13pt;
+      color: var(--text-muted);
+      font-weight: 500;
+      margin-bottom: 35px;
+    }
+
+    .tech-sheet {
+      background: var(--bg-light);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--secondary);
+      border-radius: 8px;
+      padding: 18px 22px;
+      margin-top: 25px;
+      font-size: 9pt;
+    }
+
+    .tech-sheet h4 {
+      color: var(--primary);
+      font-size: 10pt;
+      font-weight: 800;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .tech-sheet-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px 20px;
+    }
+
+    .tech-sheet-item strong {
+      color: var(--primary);
+    }
+
+    /* Headings */
+    h1 {
+      color: var(--primary);
+      font-size: 16pt;
+      font-weight: 800;
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 6px;
+      margin-top: 30px;
+      margin-bottom: 14px;
+      page-break-after: avoid;
+    }
+
+    h2 {
+      color: var(--secondary);
+      font-size: 12.5pt;
+      font-weight: 700;
+      margin-top: 22px;
+      margin-bottom: 10px;
+      page-break-after: avoid;
+    }
+
+    h3 {
+      color: var(--primary);
+      font-size: 11pt;
+      font-weight: 700;
+      margin-top: 16px;
+      margin-bottom: 8px;
+      page-break-after: avoid;
+    }
+
+    p {
+      margin-bottom: 10px;
+      text-align: justify;
+    }
+
+    /* Listas */
+    ul, ol {
+      margin-left: 20px;
+      margin-bottom: 14px;
+    }
+
+    li {
+      margin-bottom: 5px;
+    }
+
+    /* Callouts */
+    .callout {
+      border-radius: 8px;
+      padding: 14px 18px;
+      margin: 16px 0;
+      font-size: 9.5pt;
+      border-left: 4px solid;
+      page-break-inside: avoid;
+    }
+
+    .callout-success {
+      background: #F0FDF4;
+      border-color: #10B981;
+      color: #064E3B;
+    }
+
+    .callout-warning {
+      background: #FFFBEB;
+      border-color: #F59E0B;
+      color: #78350F;
+    }
+
+    .callout-info {
+      background: #EFF6FF;
+      border-color: #3B82F6;
+      color: #1E3A8A;
+    }
+
+    .callout-purple {
+      background: #FAF5FF;
+      border-color: #A855F7;
+      color: #581C87;
+    }
+
+    .callout-title {
+      font-weight: 800;
+      font-size: 10pt;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Tablas */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+      font-size: 8.5pt;
+      page-break-inside: avoid;
+    }
+
+    th {
+      background: var(--primary);
+      color: #FFFFFF;
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 8pt;
+      letter-spacing: 0.5px;
+      padding: 8px 10px;
+      text-align: left;
+      border: 1px solid var(--primary);
+    }
+
+    td {
+      padding: 7px 10px;
+      border: 1px solid var(--border);
+      vertical-align: middle;
+    }
+
+    tr:nth-child(even) {
+      background-color: var(--bg-light);
+    }
+
+    .font-mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .text-right {
+      text-align: right;
+    }
+
+    .text-center {
+      text-align: center;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-weight: 700;
+      font-size: 7.5pt;
+    }
+
+    .badge-success { background: #DCFCE7; color: #166534; }
+    .badge-warning { background: #FEF3C7; color: #92400E; }
+    .badge-info { background: #E0F2FE; color: #075985; }
+    .badge-purple { background: #F3E8FF; color: #6B21A8; }
+
+    /* Diagram Containers */
+    .diagram-box {
+      background: #F8FAFC;
+      border: 1px solid #CBD5E1;
+      border-radius: 8px;
+      padding: 16px;
+      margin: 16px 0;
+      page-break-inside: avoid;
+    }
+
+    .diagram-title {
+      font-size: 9pt;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 12px;
+      text-align: center;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .flow-steps {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .flow-node {
+      background: #FFFFFF;
+      border: 1px solid #94A3B8;
+      border-radius: 6px;
+      padding: 10px 8px;
+      text-align: center;
+      flex: 1;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    .flow-node strong {
+      display: block;
+      color: var(--primary);
+      font-size: 8.5pt;
+      margin-bottom: 3px;
+    }
+
+    .flow-node span {
+      font-size: 7.5pt;
+      color: var(--text-muted);
+      line-height: 1.2;
+      display: block;
+    }
+
+    .flow-arrow {
+      color: var(--secondary);
+      font-weight: 900;
+      font-size: 14pt;
+    }
+
+    /* Header y Footer en Impresión */
+    @page {
+      size: A4;
+      margin: 16mm 14mm 16mm 14mm;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- PORTADA -->
+  <div class="cover-container">
+    <span class="cover-badge">ERP NyTEX • Suite Financiera Avanzada • Fase 3</span>
+    <h1 class="cover-title">Módulo [10] — Dirección de Finanzas & Tesorería</h1>
+    <div class="cover-subtitle">Manual de Usuario Oficial y Guía Operativa Integral de Capacitación Paso a Paso</div>
+
+    <div class="tech-sheet">
+      <h4>Ficha Técnica del Módulo y Localización Empresarial</h4>
+      <div class="tech-sheet-grid">
+        <div class="tech-sheet-item"><strong>Plataforma:</strong> ERP NyTEX Versión 4.0</div>
+        <div class="tech-sheet-item"><strong>Fase Implementación:</strong> Fase 3: Advanced</div>
+        <div class="tech-sheet-item"><strong>Circuito Operativo:</strong> Cash Management & Liquidity (CML)</div>
+        <div class="tech-sheet-item"><strong>Moneda de Registro:</strong> Dólares de los Estados Unidos (USD)</div>
+        <div class="tech-sheet-item"><strong>Interconexión:</strong> CxC [8], CxP [9], Contabilidad [12], Nómina [14]</div>
+        <div class="tech-sheet-item"><strong>Seguridad:</strong> Criptografía SHA-256 & Bitácora Inmutable</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-break"></div>
+
+  <!-- SECCIÓN 1: DEFINICIÓN Y FUNCIÓN -->
+  <h1>1. Definición y Función del Módulo [10]</h1>
+
+  <div class="callout callout-success">
+    <div class="callout-title">Definición Ejecutiva</div>
+    Así como el <strong>Módulo [2] NyTEX Ventas & Facturación</strong> gestiona el ciclo comercial completo dentro del circuito <em>Order-to-Cash (O2C)</em> (desde la cotización y la orden hasta el timbrado de la factura y su pase a entrega en almacén), el <strong>Módulo [10] NyTEX Dirección de Finanzas & Tesorería</strong> gestiona el ciclo integral de <strong>gestión de liquidez, tesorería y gobierno financiero</strong> dentro del circuito <strong>Cash Management & Liquidity (CML / Treasury Cycle)</strong>.<br><br>
+    Su función primordial es custodiar, programar y registrar en tiempo real todos los flujos monetarios de la empresa (cuentas bancarias comerciales, cajas chicas operativas y fondos fijos rotativos), asegurando la <strong>conciliación bancaria al milímetro con sello criptográfico inmutable</strong> e interconectando la cobranza de <strong>Cuentas por Cobrar [8]</strong>, la dispersión de pagos de <strong>Cuentas por Pagar [9]</strong> y <strong>Nómina [14]</strong>, emitiendo automáticamente las <strong>Pólizas Contables de Ingresos, Egresos y Transferencias</strong> hacia <strong>Contabilidad Central [12]</strong>.
+  </div>
+
+  <div class="diagram-box">
+    <div class="diagram-title">Circuito Integral de Liquidez y Tesorería en NyTEX</div>
+    <div class="flow-steps">
+      <div class="flow-node">
+        <strong>[8] CxC & Cobranza</strong>
+        <span>Recuperación de cartera y remesas comerciales</span>
+      </div>
+      <div class="flow-arrow">➔</div>
+      <div class="flow-node" style="border: 2px solid #006EAD; background: #F0F9FF;">
+        <strong style="color: #006EAD;">[10] Finanzas & Tesorería</strong>
+        <span>Bancos, Cajas, Arqueos y Conciliación SHA-256</span>
+      </div>
+      <div class="flow-arrow">➔</div>
+      <div class="flow-node">
+        <strong>[9] CxP & Nómina [14]</strong>
+        <span>Dispersión de pagos y salarios netos</span>
+      </div>
+      <div class="flow-arrow">➔</div>
+      <div class="flow-node">
+        <strong>[12] Contabilidad Central</strong>
+        <span>Partida Doble Automática (Debe = Haber)</span>
+      </div>
+    </div>
+  </div>
+
+  <h2>Alcance Operativo del Módulo:</h2>
+  <ul>
+    <li><strong>Custodia y Monitoreo del Flujo Neto de Efectivo (Net Cash Flow):</strong> Centraliza en una sola pantalla los saldos consolidados de todas las cuentas bancarias maestras (Banco Agrícola, BBVA, Banco Cuscatlán), midiendo entradas, salidas y liquidez inmediata disponible.</li>
+    <li><strong>Administración de Fondos Fijos y Arqueos Físicos de Caja:</strong> Control estricto de fondos asignados a cajas de mostrador, puntos de venta o plantas fabriles. Audita vales provisionales, ejecuta arqueos físicos con cálculo instantáneo de faltantes/sobrantes y emite reposiciones automáticas.</li>
+    <li><strong>Conciliación Bancaria Automática y Periódica:</strong> Cotejo sistemático bidireccional entre los movimientos de libros contables del ERP y los extractos bancarios oficiales. Identifica partidas en tránsito y genera actas selladas con HASH SHA-256.</li>
+    <li><strong>Cierres Operativos y Gobernanza Financiera:</strong> Protocolos de corte diario de cobranzas, corte semanal de pagos a proveedores, validación Three-Way Match y cierre mensual global con bitácora inmutable de auditoría interna.</li>
+  </ul>
+
+  <!-- SECCIÓN 2: MAPA COMPARATIVO -->
+  <h1>2. Mapa Comparativo: Función y Circuito de los Módulos NyTEX</h1>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 25%;">Módulo NyTEX</th>
+        <th style="width: 25%;">Circuito Empresarial</th>
+        <th style="width: 50%;">Función Operativa Principal</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>[2] Ventas & Facturación</strong></td>
+        <td>Order-to-Cash (O2C)</td>
+        <td>Gestiona el ciclo comercial completo desde cotizaciones y pedidos hasta facturación electrónica y despacho en almacén.</td>
+      </tr>
+      <tr>
+        <td><strong>[3] Compras & Abastecimiento</strong></td>
+        <td>Procure-to-Pay (P2P)</td>
+        <td>Gestiona el aprovisionamiento mediante órdenes de compra, controlando la recepción de proveedores y pasivos.</td>
+      </tr>
+      <tr>
+        <td><strong>[4] Inventario & Control Stock</strong></td>
+        <td>P2P / O2C / Plan-to-Produce</td>
+        <td>Administra custodia física, catálogo maestro de SKUs, existencias en almacenes, kardex y valuación a costo promedio.</td>
+      </tr>
+      <tr>
+        <td><strong>[8] Cuentas por Cobrar (CxC)</strong></td>
+        <td>Order-to-Cash (O2C)</td>
+        <td>Administra recuperación de cartera, líneas de crédito de clientes, estados de cuenta y aplicación de cobranza hacia tesorería.</td>
+      </tr>
+      <tr>
+        <td><strong>[9] Cuentas por Pagar (CxP)</strong></td>
+        <td>Procure-to-Pay (P2P)</td>
+        <td>Administra obligaciones con proveedores, programación de pagos, calendario de vencimientos y retenciones fiscales.</td>
+      </tr>
+      <tr style="background: #F0F9FF;">
+        <td><strong style="color: #006EAD;">[10] Finanzas & Tesorería</strong></td>
+        <td><strong>Cash Management & Liquidity</strong></td>
+        <td><strong>Custodia de liquidez:</strong> administra cuentas bancarias, cajas chicas, transferencias, arqueos, conciliación SHA-256 y cierres de control.</td>
+      </tr>
+      <tr>
+        <td><strong>[12] Contabilidad Central</strong></td>
+        <td>Record-to-Report (R2R)</td>
+        <td><strong>Núcleo centralizador:</strong> consolida todas las transacciones en asientos de partida doble (&Delta; = 0.00), Balanza y declaraciones fiscales.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="page-break"></div>
+
+  <!-- SECCIÓN 3: ESTRUCTURA Y NAVEGACIÓN -->
+  <h1>3. Estructura, Indicadores en Vivo (KPIs) y Navegación</h1>
+
+  <p><strong>Ruta de acceso directo:</strong> <span class="font-mono">http://localhost:5173/app/tesoreria</span> (o desde el Portal en la tarjeta del <em>Módulo [10]</em>).</p>
+
+  <h2>Indicadores Clave en la Cabecera Superior (KPIs en Vivo):</h2>
+  <ul>
+    <li><strong>Saldo Consolidado Total en Bancos:</strong> Disponibilidad líquida inmediata total resultante de todas las cuentas bancarias institucionales activas de la empresa.</li>
+    <li><strong>Total Ingresos Registrados:</strong> Entradas acumuladas del período (cobros comerciales CxC, aportes de capital, transferencias recibidas y rendimientos financieros).</li>
+    <li><strong>Total Egresos / Pagos Registrados:</strong> Salidas acumuladas (dispersión de pagos a proveedores CxP, nóminas del personal y liquidación de servicios).</li>
+    <li><strong>Flujo Neto de Efectivo (Net Cash Flow):</strong> Diferencia matemática directa (&plusmn; Net Cash Flow), reflejando la salud de la tesorería en tiempo real.</li>
+  </ul>
+
+  <div class="callout callout-info">
+    <div class="callout-title">Las 4 Pestañas de Control Interno del Módulo [10]</div>
+    1. <strong>[bancos] Cuentas Bancarias & Libro Mayor:</strong> Saldos por institución, tarjetas de cuentas y registro de movimientos.<br>
+    2. <strong>[cajas] Cajas & Fondos Fijos:</strong> Supervisión de caja general, fondos rotativos y arqueos físicos con cálculo de sobrante/faltante.<br>
+    3. <strong>[conciliacion] Conciliación Bancaria Mensual:</strong> Cotejo interactivo de extracto oficial vs libros contables y sellado criptográfico.<br>
+    4. <strong>[cierres] Cierres Diarios & Controles Internos:</strong> Cortes diarios de cobros/pagos, Three-Way Match y segregación de funciones.
+  </div>
+
+  <!-- SECCIÓN 4: PROCEDIMIENTO 1 -->
+  <h1>4. Procedimiento Operativo Detallado N° 1</h1>
+  <h2>Registro de Movimientos Bancarios y Transferencias entre Cuentas Propias</h2>
+
+  <div class="callout callout-success">
+    <div class="callout-title">Objetivo del Procedimiento</div>
+    Registrar en tiempo real todo ingreso o egreso que afecte las cuentas bancarias de la empresa, actualizando la disponibilidad líquida y generando automáticamente la póliza de partida doble cuadrada en el Módulo [12] Contabilidad Central.
+  </div>
+
+  <h3>Paso a Paso para Registrar un Movimiento Bancario:</h3>
+  <ol>
+    <li><strong>Apertura del Formulario:</strong> En la pestaña <em>Bancos</em>, presione el botón azul <strong>"+ Movimiento Bancario"</strong>.</li>
+    <li><strong>Selección de Tipo y Cuenta:</strong> Seleccione <strong>"Ingreso (+)"</strong> o <strong>"Egreso (-)"</strong> y elija la cuenta bancaria de afectación (ej. <em>Banco Agrícola BCO-AGR-01</em>, <em>BBVA BCO-BBVA-01</em> o <em>Cuscatlán BCO-CUSC-02</em>).</li>
+    <li><strong>Captura de Monto y Concepto:</strong> Digite el importe en Dólares ($ USD). En el campo Concepto, redacte una descripción técnica y auditable (ej. <em>"Liquidación de factura de energía eléctrica planta octubre 2026"</em>).</li>
+    <li><strong>Captura de Referencia Bancaria:</strong> Ingrese el número de autorización oficial emitido por el banco (comprobante Transfer365, folio ACH, número de cheque o número de remesa).</li>
+    <li><strong>Confirmación y Disparo Automático:</strong> Presione <strong>"Confirmar y Contabilizar"</strong>. El sistema recalcula el saldo bancario al instante, asigna el folio <span class="font-mono">TX-ING-XXXX</span> o <span class="font-mono">TX-EGR-XXXX</span> y genera la póliza contable correspondiente.</li>
+  </ol>
+
+  <h3>Procedimiento de Transferencias entre Cuentas Propias:</h3>
+  <p>Para transferir fondos entre bancos institucionales (ej. traspaso de $10,000 USD de Banco BBVA a Banco Agrícola para nómina), se efectúan dos registros encadenados:</p>
+  <ul>
+    <li><strong>Egreso en Banco Emisor (BCO-BBVA-01):</strong> Monto: $10,000.00 USD. Concepto: <em>"Traslado a Banco Agrícola cobertura nómina"</em>. Ref: <span class="font-mono">TRF-INTER-8841</span>.</li>
+    <li><strong>Ingreso en Banco Receptor (BCO-AGR-01):</strong> Monto: $10,000.00 USD. Concepto: <em>"Recepción de fondos desde BBVA"</em>. Ref: <span class="font-mono">TRF-INTER-8841</span>.</li>
+  </ul>
+
+  <div class="page-break"></div>
+
+  <!-- SECCIÓN 5: PROCEDIMIENTO 2 -->
+  <h1>5. Procedimiento Operativo Detallado N° 2</h1>
+  <h2>Cajas Chicas, Fondos Fijos, Justificación de Vales y Protocolo de Arqueo Físico de Caja</h2>
+
+  <div class="callout callout-warning">
+    <div class="callout-title">El Principio Universal del Fondo Fijo (Fondo Imprest)</div>
+    En cualquier momento, la suma del efectivo físico disponible más los comprobantes de gastos legítimos debe ser exactamente igual al Fondo Autorizado:<br><br>
+    <strong class="font-mono">Efectivo Físico Contado + Comprobantes y Facturas por Rendir = Fondo Autorizado (&Delta; = $0.00 USD)</strong>
+  </div>
+
+  <h2>Diferenciación de Cajas en NyTEX:</h2>
+  <ul>
+    <li><strong>Caja General (CAJA-GEN-01):</strong> Custodia temporal de ingresos en mostrador. Su saldo es variable y debe remesarse diariamente al banco comercial.</li>
+    <li><strong>Cajas Chicas Operativas (CAJA-CHIC-01 Administración, CAJA-CHIC-02 Planta):</strong> Fondos fijos estáticos para gastos menores de contado donde no aplica orden de compra tradicional.</li>
+  </ul>
+
+  <h2>Protocolo de Arqueo Físico de Caja Paso a Paso:</h2>
+  <ol>
+    <li><strong>Apertura del Acta:</strong> En la pestaña <em>Cajas & Fondos Fijos</em>, haga clic en <strong>"Arqueo Físico"</strong> en la tarjeta de la caja a auditar.</li>
+    <li><strong>Conteo Físico de Efectivo:</strong> Cuente los billetes y monedas en presencia del custodio e ingrese el total en <strong>"Efectivo Físico Contado ($)"</strong>.</li>
+    <li><strong>Suma de Vales y Comprobantes:</strong> Totalice las facturas originales y vales provisionales vigentes no liquidados e ingrese el importe en <strong>"Comprobantes / Facturas ($)"</strong>.</li>
+    <li><strong>Validación del Previsualizador de Cuadre:</strong>
+      <ul>
+        <li>Si &Delta; = $0.00: Dictamen <span class="badge badge-success">✓ Cuadrada</span>.</li>
+        <li>Si &Delta; > +0.05: Dictamen <span class="badge badge-info">▲ Sobrante</span> (investigación de origen).</li>
+        <li>Si &Delta; < -0.05: Dictamen <span class="badge badge-warning">▼ Faltante</span> (deducción al custodio).</li>
+      </ul>
+    </li>
+    <li><strong>Certificación y Sellado:</strong> Redacte las notas de auditoría y presione <strong>"Confirmar y Sellar Arqueo"</strong>. Se genera el folio inmutable <span class="font-mono">ARQ-CAJA-XXXX</span>.</li>
+  </ol>
+
+  <h2>Protocolo de Reposición de Fondo Fijo (Reembolso de Caja Chica):</h2>
+  <p>Cuando el efectivo disponible de la caja chica disminuye por consumo operativo (saldo menor al 30%):</p>
+  <ul>
+    <li>Haga clic en el botón naranja <strong>"Reponer Fondo"</strong>.</li>
+    <li>El sistema calcula automáticamente el importe exacto a restituir (<span class="font-mono">Fondo Autorizado - Saldo Actual</span>).</li>
+    <li>Se confirma el cargo a la cuenta bancaria operativa (ej. <em>BCO-BBVA-01</em>).</li>
+    <li>El efectivo de la caja chica vuelve al 100%, los comprobantes por rendir pasan a $0.00 USD y se genera la <strong>Póliza Contable de Egreso</strong> cargando a cuentas de gastos menores.</li>
+  </ul>
+
+  <div class="page-break"></div>
+
+  <!-- SECCIÓN 6: PROCEDIMIENTO 3 -->
+  <h1>6. Procedimiento Operativo Detallado N° 3</h1>
+  <h2>Conciliación Bancaria Automática, Identificación de Partidas en Tránsito y Cierre con Sello Criptográfico Inmutable (SHA-256)</h2>
+
+  <div class="callout callout-info">
+    <div class="callout-title">La Ecuación Canónica de Cuadre Bancario</div>
+    <strong class="font-mono">Saldo según Libros ERP + Cheques Flotantes - Depósitos en Tránsito = Saldo según Extracto Bancario</strong><br><br>
+    Diferencia de Cuadre (&Delta;) = Saldo Conciliado - Saldo según Libros = <strong>$0.00 USD (Cuadre al 100%)</strong>
+  </div>
+
+  <h2>Tipología de Partidas Conciliatorias:</h2>
+  <ul>
+    <li><strong>Depósitos en Tránsito:</strong> Remesas registradas en NyTEX que tardan 24 a 48 hrs en compensar en la cuenta bancaria.</li>
+    <li><strong>Cheques Flotantes:</strong> Cheques emitidos a proveedores en [9] CxP que aún no han sido cobrados en ventanilla bancaria.</li>
+    <li><strong>Notas de Débito Bancarias:</strong> Comisiones por transferencias Transfer365, anualidades de token o chequeras deducidas por el banco.</li>
+    <li><strong>Notas de Crédito Bancarias:</strong> Rendimientos financieros acreditados directamente por la entidad financiera.</li>
+  </ul>
+
+  <h2>Paso a Paso para Ejecutar la Conciliación Mensual:</h2>
+  <ol>
+    <li><strong>Selección de Banco y Período:</strong> En la pestaña <em>Conciliación Bancaria Mensual</em>, elija la cuenta bancaria (ej. <em>BCO-BBVA-01</em>) y el mes contable (ej. <em>Octubre 2026</em>).</li>
+    <li><strong>Cotejo Bidireccional (Punteo):</strong> Compare cada renglón del extracto oficial del banco contra la tabla de partidas de NyTEX. Al presionar el botón de estado, conmute de <span class="badge badge-warning">⏳ Pendiente</span> a <span class="badge badge-success">✓ Conciliado</span>.</li>
+    <li><strong>Verificación de Diferencia Cero:</strong> Al cotejar todas las partidas, la tarjeta número 5 debe marcar exactamente: <span class="badge badge-success">&Delta; = $0.00 USD — Conciliación Cuadrada 100%</span>.</li>
+    <li><strong>Emisión de Acta y Sellado SHA-256:</strong> Presione el botón morado <strong>"📜 Emitir Acta de Conciliación Firmada"</strong>. El sistema genera el <strong>Sello Criptográfico Inmutable (SHA-256)</strong> que bloquea el período bancario contra cualquier modificación retroactiva.</li>
+  </ol>
+
+  <!-- SECCIÓN 7: PROCEDIMIENTO 4 -->
+  <h1>7. Procedimiento Operativo Detallado N° 4</h1>
+  <h2>Cierres Diarios y Periódicos, Gobernanza Financiera y Bitácora Inmutable</h2>
+
+  <div class="callout callout-purple">
+    <div class="callout-title">Gobernanza y Segregación de Funciones (SoD)</div>
+    Quien cobra no autoriza dispersiones de pago; quien recibe mercancía física en bodega no aprueba facturas de proveedores; y quien custodia los fondos no puede alterar los registros contables. Todo corte genera una huella digital SHA-256 inmutable en la bitácora de auditoría.
+  </div>
+
+  <h2>Los 4 Protocolos de Cierre Operativo en NyTEX:</h2>
+  <ul>
+    <li><strong>1. Cierre Diario de Cobranza (CLR-COB-XXXX):</strong> Auditoría de los recibos de cobro del día de [8] CxC contra depósitos bancarios reales.</li>
+    <li><strong>2. Cierre Diario de Pagos a Proveedores (CLR-PAG-XXXX):</strong> Auditoría de las transferencias emitidas por [9] CxP, validando factura liquidada y retenciones aplicadas.</li>
+    <li><strong>3. Cierre Periódico de Compras & Three-Way Match (CLR-COM-XXXX):</strong> Cotejo tripartito: <em>Orden de Compra == Entrada WMS == Factura Fiscal CxP</em>. Previene pasivos ocultos.</li>
+    <li><strong>4. Cierre de Caja General y Remesa Bancaria (CLR-CAJ-XXXX):</strong> Arqueo de mostrador al final del día, deducción del fondo de cambio y depósito del excedente al banco.</li>
+  </ul>
+
+  <div class="page-break"></div>
+
+  <!-- SECCIÓN 8: MATRIZ CONTABLE -->
+  <h1>8. Matriz de Disparo e Impacto en Contabilidad Central [12]</h1>
+
+  <p>Toda transacción operada en el Módulo [10] genera de forma inmediata su asiento en partida doble en el Libro Diario:</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 32%;">Evento en Tesorería [10]</th>
+        <th style="width: 26%;">Cargo (Debe)</th>
+        <th style="width: 26%;">Abono (Haber)</th>
+        <th style="width: 16%; text-align: center;">Tipo Póliza</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Ingreso por Cobro CxC [8]</strong></td>
+        <td>1102-01 Bancos Comerciales</td>
+        <td>1103-01 Clientes Nacionales</td>
+        <td class="text-center"><span class="badge badge-success">Ingreso</span></td>
+      </tr>
+      <tr>
+        <td><strong>Egreso por Pago a Proveedor [9]</strong></td>
+        <td>2101-01 Proveedores Nacionales</td>
+        <td>1102-01 Bancos Comerciales</td>
+        <td class="text-center"><span class="badge badge-warning">Egreso</span></td>
+      </tr>
+      <tr>
+        <td><strong>Ingreso Extraordinario / Rendimiento</strong></td>
+        <td>1102-01 Bancos Comerciales</td>
+        <td>4102-01 Otros Ingresos Financieros</td>
+        <td class="text-center"><span class="badge badge-success">Ingreso</span></td>
+      </tr>
+      <tr>
+        <td><strong>Egreso por Gastos / Comisiones</strong></td>
+        <td>6102-01 Gastos Administrativos / Bancarios</td>
+        <td>1102-01 Bancos Comerciales</td>
+        <td class="text-center"><span class="badge badge-warning">Egreso</span></td>
+      </tr>
+      <tr>
+        <td><strong>Reposición de Caja Chica</strong></td>
+        <td>6102-05 Gastos Menores Comprobados</td>
+        <td>1102-01 Bancos Comerciales</td>
+        <td class="text-center"><span class="badge badge-warning">Egreso</span></td>
+      </tr>
+      <tr>
+        <td><strong>Transferencia entre Cuentas Propias</strong></td>
+        <td>1102-02 Banco Receptor</td>
+        <td>1102-01 Banco Emisor</td>
+        <td class="text-center"><span class="badge badge-info">Diario / Traspaso</span></td>
+      </tr>
+      <tr>
+        <td><strong>Dispersión de Nómina [14]</strong></td>
+        <td>2103-01 Sueldos y Retenciones por Pagar</td>
+        <td>1102-01 Bancos Comerciales</td>
+        <td class="text-center"><span class="badge badge-purple">Egreso</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- SECCIÓN 9: POLÍTICAS Y AUDITORÍA -->
+  <h1>9. Políticas Obligatorias y Protocolos de Auditoría Interna</h1>
+
+  <div class="callout callout-warning">
+    <div class="callout-title">Políticas de Control Financiero Obligatorias</div>
+    1. <strong>Prohibición de Sobregiros no Autorizados:</strong> Ningún egreso bancario debe ejecutarse sin contar con disponibilidad líquida comprobada en el sistema.<br>
+    2. <strong>Conservación de Soportes Digitales:</strong> Todo movimiento debe respaldarse con el archivo PDF o boleta física emitida por el banco, archivado bajo el folio <span class="font-mono">TX-XXXX</span>.<br>
+    3. <strong>Plazo Máximo de Vales de Caja:</strong> Los vales provisionales de caja chica deben liquidarse en un plazo máximo de <strong>48 horas hábiles</strong>.<br>
+    4. <strong>Candado de Cierre Mensual:</strong> El Módulo [12] Contabilidad Central no cerrará el período fiscal si existen cuentas bancarias sin conciliar o arqueos con dictamen de <em>Faltante</em>.
+  </div>
+
+  <div style="margin-top: 40px; padding-top: 15px; border-top: 1px solid var(--border); font-size: 8pt; color: var(--text-muted); text-align: center;">
+    ERP NyTEX © 2026 Consultores NyT S.A. de C.V. • Todos los derechos reservados.<br>
+    Manual Oficial de Operaciones Financieras y Tesorería • Circuito Cash Management & Liquidity (CML).
+  </div>
+
+</body>
+</html>

@@ -162,21 +162,22 @@ def build_document():
     sub_p = doc.add_paragraph()
     sub_p.paragraph_format.space_after = Pt(20)
     r_sub = sub_p.add_run("Manual de Usuario Oficial y Guía Operativa Integral de Capacitación Tarea por Tarea\n"
-                          "Incluye Integración con Módulo 2 (Ventas/Facturación), Búsqueda Predictiva de Kardex y Panel Analítico Multidimensional de Fugas y Cierre")
+                          "Incluye Bandeja Omnicanal (WhatsApp/Instagram/Correo/Web), Búsqueda Predictiva de Kardex, Integración con Módulo 2 y Panel Analítico BI de Cotizaciones vs Vendidas y Pérdidas por Códigos")
     r_sub.font.name = "Arial"
-    r_sub.font.size = Pt(12)
+    r_sub.font.size = Pt(11.5)
     r_sub.font.color.rgb = RGBColor(100, 116, 139)
 
     add_callout(doc, "FICHA TÉCNICA DE IMPLEMENTACIÓN EMPRESARIAL",
                 "• Ecosistema: ERP NyTEX Versión 4.0\n"
                 "• Fase de Implementación: Fase 2: Express en adelante (Express, Advanced, Enterprise)\n"
                 "• Circuito Operativo: Lead-to-Order (L2O) / Prospección, Maduración, Cotización y Conversión Comercial\n"
+                "• Canales Omnicanal Integrados: WhatsApp Business, Instagram Direct, Correo Electrónico y Web Chat\n"
                 "• Moneda Base de Cotización: Dólares de los Estados Unidos (USD) / Moneda Local de Negociación\n"
                 "• Módulos Interconectados:\n"
                 "   – [0] Business Partners: Catálogo oficial de clientes y contactos sincronizados en tiempo real.\n"
                 "   – [2] Ventas & Facturación: Facturación en caja de cotizaciones autorizadas sin recaptura manual.\n"
-                "   – [4] Inventarios & Stock: Validación de existencias del Kardex y reserva preventiva de SKUs.\n"
-                "   – [5] Planeación de Demanda: Forecast ponderado de ventas para planes de compras y reposición.\n"
+                "   – [4] Inventarios & Stock: Búsqueda predictiva y consulta de existencias de Kardex en vivo.\n"
+                "   – [5] Planeación de Demanda: Forecast ponderado de ventas y auditoría de fugas para reposición.\n"
                 "   – [8] Cuentas por Cobrar (CxC): Condiciones de crédito pactadas y apertura de línea comercial.\n"
                 "   – [12] Contabilidad Central: Trazabilidad de origen desde oportunidad hasta póliza de ingresos.\n"
                 "• Fecha de Emisión: Noviembre 2026 • Consultores NyT S.A. de C.V.",
@@ -195,15 +196,16 @@ def build_document():
     toc_items = [
         "1. Definición y Función del Módulo [1] dentro del Circuito Lead-to-Order (L2O)",
         "2. Mapa Comparativo de Circuitos y Ecosistema de Módulos NyTEX",
-        "3. Estructura de la Pantalla Principal, Vistas del Sistema y KPIs en Vivo",
-        "4. Procedimiento Operativo Detallado N° 1: Captación, Registro y Calificación BANT de una Oportunidad",
-        "5. Procedimiento Operativo Detallado N° 2: Búsqueda Predictiva y Selección Ágil de SKUs del Kardex",
-        "6. Procedimiento Operativo Detallado N° 3: Gestión Visual del Embudo (Pipeline Kanban) y Maduración de Etapas",
-        "7. Procedimiento Operativo Detallado N° 4: Historial de Actividades, Bitácora Comercial y Seguimiento de Tareas",
-        "8. Procedimiento Operativo Detallado N° 5: Integración Comercial y Facturación en Caja en NyTEX Ventas [2]",
-        "9. Procedimiento Operativo Detallado N° 6: Tablero Analítico de Cotizaciones Generadas vs Vendidas y Auditoría de Fugas",
-        "10. Matriz de Interconexión e Impacto con los Demás Módulos del Ecosistema NyTEX",
-        "11. Buenas Prácticas Comerciales, Segregación de Funciones y Gobernanza del Pipeline"
+        "3. Estructura de la Pantalla Principal, Selector de Vistas y KPIs en Vivo",
+        "4. Procedimiento Operativo N° 1: Captación, Registro y Calificación BANT de Oportunidades",
+        "5. Procedimiento Operativo N° 2: Búsqueda Predictiva Incremental y Selección Ágil de SKUs en Kardex",
+        "6. Procedimiento Operativo N° 3: Gestión Visual del Embudo (Pipeline Kanban) y Maduración de Etapas",
+        "7. Procedimiento Operativo N° 4: Historial de Actividades, Bitácora Comercial y Seguimiento",
+        "8. Procedimiento Operativo N° 5: Integración Comercial y Facturación en Caja en NyTEX Ventas [2]",
+        "9. Procedimiento Operativo N° 6: Bandeja Omnicanal Integrada (WhatsApp, Instagram, Correo y Web)",
+        "10. Procedimiento Operativo N° 7: Tablero Analítico BI de Cotizaciones Generadas vs Vendidas y Pérdidas por Códigos",
+        "11. Matriz de Interconexión e Impacto con los Demás Módulos del Ecosistema NyTEX",
+        "12. Buenas Prácticas Comerciales, Segregación de Funciones y Gobernanza del Pipeline"
     ]
 
     for item in toc_items:
@@ -229,9 +231,10 @@ def build_document():
     add_callout(doc, "DEFINICIÓN EJECUTIVA DEL MÓDULO [1]",
                 "Así como el Módulo [2] NyTEX Ventas & Facturación gestiona el ciclo comercial formal dentro del circuito Order-to-Cash (O2C) "
                 "(desde el despacho en bodega y timbrado fiscal hasta la cartera y póliza contable), el Módulo [1] NyTEX CRM (Embudo de Ventas) "
-                "gestiona el ciclo integral de prospección comercial, calificación técnica, cotización estructurada y conversión de prospectos dentro del circuito Lead-to-Order (L2O).\n\n"
+                "gestiona el ciclo integral de prospección comercial, calificación técnica, cotización estructurada, omnicanalidad (WhatsApp, Instagram, Correo, Web) "
+                "y conversión de prospectos dentro del circuito Lead-to-Order (L2O).\n\n"
                 "Su función primordial es captar y estructurar todas las oportunidades comerciales en un pipeline visual dinámico por etapas, "
-                "calificando su viabilidad económica mediante metodologías estandarizadas (BANT), consultando en vivo el Kardex de inventarios [4], "
+                "calificando su viabilidad económica mediante metodologías estandarizadas (BANT), consultando en vivo el Kardex de inventarios [4] con búsqueda predictiva, "
                 "proyectando ingresos futuros con métricas en tiempo real e interconectando fluidamente las cotizaciones autorizadas por clientes "
                 "hacia Ventas [2] para que la cajera o facturador emita los comprobantes fiscales sin recaptura manual y garantizando la estricta segregación de funciones.",
                 bg_hex="F0FDF4", border_hex="10B981")
@@ -242,288 +245,300 @@ def build_document():
                    "La integración nativa de NyTEX CRM con el resto del ERP garantiza que la promesa comercial efectuada al cliente concuerde con el stock físico de almacenes, "
                    "la capacidad fabril y las políticas financieras corporativas.")
 
-    # Alcance por Fases
     doc.add_heading(level=2).add_run("Alcance Funcional por Fase de Implementación")
     p_fases = doc.add_paragraph()
     p_fases.add_run("En la arquitectura modular y escalable de NyTEX, el proceso comercial se despliega de acuerdo con la madurez operativa de la empresa:\n\n"
                     "• Fase 1: Starter: Se opera principalmente la venta de mostrador, venta transaccional directa o sobre catálogo precargado de clientes en Ventas [2], "
                     "sin requerir aún una fuerza de ventas consultiva con pipeline de negociación largo.\n\n"
-                    "• Fase 2: Express en adelante (Express, Advanced, Enterprise): Se activa plenamente el Módulo [1] NyTEX CRM (Embudo de Ventas). "
-                    "Se habilita el tablero Kanban interactivo, el cotizador multilínea con búsqueda predictiva de Kardex, la calificación BANT estructurada, "
-                    "el pase directo a Módulo 2 para facturación en caja y el potente Tablero Analítico de Cotizaciones Generadas vs Vendidas con auditoría de las 5 causas de fuga.")
+                    "• Fase 2: Express: Se activa formalmente el Módulo [1] CRM con su tablero Kanban de 5 etapas, cotizador con Kardex interactivo, calificación BANT "
+                    "y conversión automática de cotizaciones hacia Ventas [2].\n\n"
+                    "• Fase 3: Advanced: Se incorpora la Bandeja Omnicanal integrada para WhatsApp Business, Instagram Direct y Correo Electrónico, junto con el "
+                    "Panel Analítico Multidimensional de Fugas y Rendimiento por Códigos (SKU).\n\n"
+                    "• Fase 4: Enterprise: Se habilita la analítica predictiva de cierre asistida por IA, automatización de SLA en reclamos comerciales, auditoría profunda "
+                    "y sincronización bidireccional continua con WhatsApp Cloud API y canales de comercio electrónico B2B.")
 
-    doc.add_paragraph().paragraph_format.space_after = Pt(12)
+    doc.add_page_break()
 
     # -------------------------------------------------------------
-    # SECCIÓN 2: MAPA COMPARATIVO
+    # SECCIÓN 2: MAPA COMPARATIVO DE CIRCUITOS
     # -------------------------------------------------------------
     h2 = doc.add_heading(level=1)
     r2 = h2.add_run("2. Mapa Comparativo de Circuitos y Ecosistema de Módulos NyTEX")
     r2.font.name = "Arial"
     r2.font.color.rgb = RGBColor(10, 37, 64)
 
-    p_map_intro = doc.add_paragraph()
-    p_map_intro.add_run("Para comprender la sincronía del ERP NyTEX, la siguiente tabla ubica al Módulo [1] junto a los módulos operativos y financieros que completan la cadena de valor:")
+    p_map = doc.add_paragraph()
+    p_map.add_run("Para comprender la delimitación funcional de NyTEX, la siguiente tabla resume los tres macrocircuitos que gobiernan las transacciones mercantiles y operativas:")
 
-    tbl_comp = doc.add_table(rows=1, cols=3)
-    col_w_comp = [2.0, 1.8, 3.2]
-    headers_comp = ["Módulo NyTEX", "Circuito Empresarial", "Función Operativa Principal"]
-    data_comp = [
-        ["[1] CRM (Embudo de Ventas)", "Lead-to-Order (L2O)", "Capta, califica y madura oportunidades comerciales, cotiza artículos del Kardex, audita motivos de no compra y transfiere cotizaciones autorizadas a Ventas para facturación en caja."],
-        ["[2] Ventas & Facturación", "Order-to-Cash (O2C)", "Recibe cotizaciones autorizadas del CRM, factura en caja (DTE/Ticket), gestiona despachos de bodega, genera cartera en CxC y emite la póliza contable automática."],
-        ["[3] Compras & Abastecimiento", "Procure-to-Pay (P2P)", "Gestiona el aprovisionamiento de insumos y mercadería mediante órdenes de compra, controlando recepción de proveedores, inventario y pasivos en CxP."],
-        ["[4] Inventario & Control de Stock", "P2P / O2C / Plan-to-Produce", "Administra la custodia física, catálogo maestro de SKUs, existencias en almacenes, kardex de entradas/salidas y valuación de costo promedio."],
-        ["[5] Planeación de Demanda", "Plan-to-Produce (P2P)", "Consolida las ventas históricas y el forecast del CRM para calcular pronósticos de reabastecimiento ROP y planes de producción."],
-        ["[8] Cuentas por Cobrar (CxC & Cartera)", "Order-to-Cash (O2C)", "Administra la recuperación de liquidez, control de créditos, estados de cuenta de clientes, aplicación de cobranza y emisión de pólizas de ingreso."],
-        ["[9] Cuentas por Pagar & Pasivos (CxP)", "Procure-to-Pay (P2P)", "Administra las obligaciones financieras contraídas con proveedores, programación de pagos, calendario de vencimientos y pólizas de egreso."],
-        ["[10] Dirección de Finanzas & Tesorería", "Cash Management & Liquidity", "Custodia la liquidez de cuentas bancarias y cajas chicas, asegurando conciliación bancaria milimétrica y flujo de caja en vivo."],
-        ["[12] Contabilidad Central & Pólizas", "Record-to-Report (R2R)", "Núcleo centralizador: consolida todas las transacciones operativas en asientos de partida doble (Diario, Ingreso y Egreso) y Balanza en tiempo real."]
+    tbl_circ = doc.add_table(rows=1, cols=4)
+    col_w_circ = [1.8, 1.8, 1.8, 1.8]
+    headers_circ = ["Dimensión", "Lead-to-Order (L2O)\nMódulo [1] CRM", "Order-to-Cash (O2C)\nMódulos [2, 3, 4, 8]", "Procure-to-Pay (P2P)\nMódulos [6, 7, 9, 11]"]
+    data_circ = [
+        ["Objetivo Principal", "Captar, madurar y cotizar oportunidades comerciales.", "Surtir, facturar (DTE) y cobrar pedidos autorizados.", "Abastecer materiales, recibir en almacén y pagar proveedores."],
+        ["Documento Clave", "Oportunidad Comercial / Cotización Estructurada.", "Pedido de Venta / Factura de Consumidor Final o CCF.", "Orden de Compra / DTE Sujeto Excluido o Factura Proveedor."],
+        ["Rol Operativo", "Asesor Comercial, Preventa, Ejecutivo de Cuentas.", "Cajera, Facturador, Despachador de Bodega, Cobrador.", "Encargado de Compras, Bodeguero, Tesorería/Cuentas por Pagar."],
+        ["Impacto Contable", "Sin impacto contable (cuentas de orden / estadísticas).", "Póliza automática de Ingresos, IVA Débito y Costo de Venta.", "Póliza automática de Compras, IVA Crédito y Cuentas por Pagar."],
+        ["Integración NyTEX", "Transfiere cotización aprobada al Módulo 2.", "Rebaja Kardex en Módulo 4 y alimenta CxC en Módulo 8.", "Ingresa Kardex en Módulo 4 y alimenta CxP en Módulo 9."]
     ]
-    style_table(tbl_comp, col_w_comp, headers_comp, data_comp)
-    doc.add_paragraph().paragraph_format.space_after = Pt(15)
+    style_table(tbl_circ, col_w_circ, headers_circ, data_circ)
+    doc.add_paragraph().paragraph_format.space_after = Pt(12)
 
     # -------------------------------------------------------------
-    # SECCIÓN 3: ESTRUCTURA, VISTAS Y KPIS EN VIVO
+    # SECCIÓN 3: PANTALLA PRINCIPAL Y SELECTOR DE VISTAS
     # -------------------------------------------------------------
     h3 = doc.add_heading(level=1)
-    r3 = h3.add_run("3. Estructura de la Pantalla Principal, Vistas del Sistema y KPIs en Vivo")
+    r3 = h3.add_run("3. Estructura de la Pantalla Principal, Selector de Vistas y KPIs en Vivo")
     r3.font.name = "Arial"
     r3.font.color.rgb = RGBColor(10, 37, 64)
 
-    p_ui = doc.add_paragraph()
-    p_ui.add_run("Al acceder al módulo a través del Workspace del ERP NyTEX (/app/workspace?phase=2&mod=crm), el sistema despliega una barra superior con dos vistas operativas fundamentales:\n\n"
-                 "• Vista [ 📊 Tablero Pipeline ]: El embudo visual clásico Kanban con 5 columnas de avance progresivo (Nuevo, Contactado, Calificado, Cotizado, Ganado) y 4 KPIs de pipeline.\n"
-                 "• Vista [ 📈 Indicadores: Cotizaciones vs Vendidas ]: El centro de inteligencia comercial y auditoría de fugas, con filtros por fechas, análisis de 5 motivos de venta perdida y desglose por SKU, sucursal, vendedor, proveedor y empresa.\n"
-                 "• Botón [ + NUEVA OPORTUNIDAD ]: Botón azul de acción inmediata para registrar un nuevo negocio en el pipeline.")
+    p_struct = doc.add_paragraph()
+    p_struct.add_run("El entorno de trabajo del Módulo [1] cuenta con un encabezado superior que incluye el Selector de Tres Vistas Principales, "
+                     "permitiendo a los ejecutivos y directores comerciales conmutar con un solo clic:")
 
-    doc.add_heading(level=2).add_run("Esquema Estructural de la Pantalla Principal (Tablero Kanban)")
+    add_code_box(doc,
+"""[ 📌 Tablero Kanban ]        [ 📥 Bandeja Omnicanal (4) ]        [ 📊 Indicadores: Cotizaciones vs Vendidas (BI) ]
+Tablero Visual de 5 Etapas    Live Hub: WhatsApp, Instagram,       Tasa de Conversión (Win Rate), Pérdidas
+de Maduración Comercial      Correo y Web (Filtro Solo Pendientes) por Código y Motivos de Descarte""")
 
-    ascii_screen = (
-        "Portal / NyTEX CRM (Embudo de Ventas)       [ 📊 Tablero Pipeline ]  [ 📈 Indicadores ]  [ + NUEVA OPORTUNIDAD ]\n"
-        "┌─────────────────────────┬─────────────────────────┬─────────────────────────┬─────────────────────────┐\n"
-        "│ 💼 OPORTUNIDADES        │ 💲 VALOR DEL PIPELINE   │ 📈 TASA DE CIERRE       │ 🏆 GANADO ESTE MES      │\n"
-        "│    ABIERTAS: 6          │    $68,700 USD          │    24.5%                │    $12,400 USD          │\n"
-        "└─────────────────────────┴─────────────────────────┴─────────────────────────┴─────────────────────────┘\n\n"
-        "┌──────────────────┬──────────────────┬──────────────────┬──────────────────┬──────────────────┐\n"
-        "│ Nuevo (2) $23.5k │ Contactado(1)$3.2│ Calificado(2)$17k│ Cotizado(1) $25k │ Ganado (1) $2.4k │\n"
-        "├──────────────────┼──────────────────┼──────────────────┼──────────────────┼──────────────────┤\n"
-        "│ [ALTA]       ··· │ [ALTA]       ··· │ [BAJA]       ··· │ [MEDIA]      ··· │ [MEDIA]      ··· │\n"
-        "│ Impl. ERP Fase 1 │ Fac. Electrónica │ Consultoría Log. │ Proyecto WMS     │ Soporte Hypercare│\n"
-        "│ 🏢 Industrias Ap. │ 🏢 Comercializ.  │ 🏢 Logistics Pro │ 🏢 Alm. Globales │ 🏢 Constr. XYZ   │\n"
-        "│ 💲 $15,000        │ 💲 $3,200        │ 💲 $5,000        │ 💲 $25,000       │ 💲 $2,400        │\n"
-        "│ 🕒 24 Sep        │ 🕒 21 Sep        │ 🕒 18 Sep        │ 🕒 10 Sep        │ 🕒 05 Sep        │\n"
-        "└──────────────────┴──────────────────┴──────────────────┴──────────────────┴──────────────────┘"
-    )
-    add_code_box(doc, ascii_screen)
+    p_vistas = doc.add_paragraph()
+    p_vistas.add_run("1. [ 📌 Tablero Kanban ]: Vista operativa tradicional donde las oportunidades se mueven visualmente en tarjetas a través de 5 columnas.\n"
+                    "2. [ 📥 Bandeja Omnicanal ]: Bandeja unificada de mensajería para prospectos entrantes desde WhatsApp Business, Instagram Direct, Correo y Web. "
+                    "Incluye filtro predeterminado de 'Solo Pendientes', chat interactivo y módulo de resolución.\n"
+                    "3. [ 📊 Indicadores: Cotizaciones vs Vendidas ]: Plataforma analítica de Business Intelligence que audita la efectividad comercial, "
+                    "calcula tasas de cierre en cantidad y porcentaje, y analiza pérdidas por producto en la pestaña [ 📦 Por Códigos (SKU) ].")
 
-    tbl_kpi = doc.add_table(rows=1, cols=3)
-    col_w_kpi = [2.2, 1.8, 3.0]
-    headers_kpi = ["Indicador (KPI)", "Fórmula de Cálculo", "Interpretación y Decisión Estratégica"]
-    data_kpi = [
-        ["Oportunidades Abiertas (Azul / Maletín)", "COUNT(Oportunidades en etapas 1 a 4)", "Mide el volumen de negociaciones comerciales activas que demandan atención y gestión continua del equipo comercial."],
-        ["Valor del Pipeline (Morado / Símbolo Dólar)", "SUM(Monto Estimado Oportunidades Abiertas)", "Valor económico bruto acumulado de todas las oportunidades abiertas actualmente en curso dentro del embudo."],
-        ["Tasa de Cierre (Dorado / Gráfico Tendencia)", "(Oportunidades Ganadas / Total Cerradas) × 100", "Porcentaje de efectividad comercial y conversión del equipo de ventas; benchmark recomendado: > 20% - 25%."],
-        ["Ganado Este Mes (Verde / Trofeo)", "SUM(Monto Ganadas en Mes Corriente)", "Importe monetario total de negocios concretados, formalizados y ganados con éxito durante el mes en curso."]
-    ]
-    style_table(tbl_kpi, col_w_kpi, headers_kpi, data_kpi, align_rights=[1])
-    doc.add_paragraph().paragraph_format.space_after = Pt(12)
+    doc.add_heading(level=2).add_run("Métricas Globales en Tiempo Real (KPI Cards)")
+    p_kpis = doc.add_paragraph()
+    p_kpis.add_run("En la parte superior de la pantalla se despliegan 4 tarjetas de mando integral:\n\n"
+                   "• Total Pipeline Activo: Suma monetaria de todas las negociaciones abiertas que se encuentran vivas en el embudo.\n"
+                   "• Forecast Ponderado: Estimación realista de ingresos futuros calculada mediante la probabilidad matemática de cada etapa (Total x Probabilidad %).\n"
+                   "• Tasa de Conversión (Win Rate): Porcentaje de oportunidades cerradas con éxito vs total de oportunidades concluidas.\n"
+                   "• Tiempo Promedio de Cierre: Días transcurridos desde el registro inicial del prospecto hasta su conversión en venta formal.")
+
+    doc.add_page_break()
 
     # -------------------------------------------------------------
-    # SECCIÓN 4: PROCEDIMIENTO 1 - REGISTRO Y CALIFICACIÓN BANT
+    # SECCIÓN 4: PROCEDIMIENTO OPERATIVO N° 1 (BANT)
     # -------------------------------------------------------------
     h4 = doc.add_heading(level=1)
-    r4 = h4.add_run("4. Procedimiento Operativo Detallado N° 1: Captación, Registro y Calificación BANT de una Oportunidad")
+    r4 = h4.add_run("4. Procedimiento Operativo N° 1: Captación, Registro y Calificación BANT de Oportunidades")
     r4.font.name = "Arial"
     r4.font.color.rgb = RGBColor(10, 37, 64)
 
-    p_proc1 = doc.add_paragraph()
-    p_proc1.add_run("El objetivo de este procedimiento es garantizar que ninguna oportunidad quede desatendida y que solo las negociaciones viables consuman recursos operativos de ingeniería y cotización.")
+    p_p1 = doc.add_paragraph()
+    p_p1.add_run("Para registrar una nueva oportunidad comercial, el asesor debe hacer clic en el botón azul '+ Nueva Oportunidad' en el panel superior. "
+                 "El formulario interactivo exige completar cuatro bloques de información obligatoria:")
 
-    add_callout(doc, "VENTANA MODAL INTERACTIVA DE 'NUEVA OPORTUNIDAD'",
-                "Al hacer clic en el botón superior '+ NUEVA OPORTUNIDAD', el sistema abre una ventana modal con 2 pestañas estructuradas:\n\n"
-                "• Pestaña '1. Datos de la Oportunidad':\n"
-                "   – Título de la Oportunidad / Proyecto: Nombre descriptivo de la negociación comercial.\n"
-                "   – Selector de Modo de Empresa:\n"
-                "       * Pestaña 'Business Partners': Acceso directo al catálogo oficial de socios de negocio de NyTEX. Al seleccionar un socio, autocompleta empresa, contacto principal, correo y teléfono.\n"
-                "       * Pestaña 'Escribir Manual': Permite escribir libremente prospectos nuevos que aún no son clientes formales.\n"
-                "   – Monto Estimado ($ USD): Valor económico proyectado con formateo monetario automático.\n"
-                "   – Etapa Inicial (Nuevo, Contactado, Calificado, Cotizado, Ganado) y Prioridad (Alta, Media, Baja).\n"
-                "   – Asesor Comercial Asignado, Fecha de Cierre y Notas de Calificación BANT.\n\n"
-                "• Pestaña '2. Cotización Inicial (Opcional)':\n"
-                "   – Permite agregar desde el primer instante artículos del Kardex con cantidades y precios para que la oportunidad nazca respaldada por una cotización formal.",
-                bg_hex="F0F9FF", border_hex="0284C7")
+    add_callout(doc, "BLOQUES DEL FORMULARIO DE OPORTUNIDAD",
+                "1. Datos Generales: Título de la oportunidad, Empresa / Razón Social, Contacto principal, Teléfono, Correo electrónico y Sucursal asignada.\n"
+                "2. Asignación Comercial: Vendedor responsable del seguimiento y Etapa inicial en el embudo.\n"
+                "3. Calificación BANT (Budget, Authority, Need, Timeline):\n"
+                "   – Presupuesto (Budget): Indica si el cliente tiene fondos aprobados o si requiere cotización preliminar.\n"
+                "   – Autoridad (Authority): Identifica si el contacto es tomador de decisión, recomendador o analista de compras.\n"
+                "   – Necesidad (Need): Define la urgencia crítica del producto y el dolor de negocio que resuelve.\n"
+                "   – Tiempo (Timeline): Establece el horizonte estimado de compra (ej: Inmediato, 15 días, 30 días, >60 días).\n"
+                "4. Productos y Cotización Inicial: Selección de artículos directamente desde el catálogo de Kardex con cálculo automático de importes.",
+                bg_hex="F8FAFC", border_hex="006EAD")
 
     # -------------------------------------------------------------
-    # SECCIÓN 5: PROCEDIMIENTO 2 - BÚSQUEDA PREDICTIVA KARDEX
+    # SECCIÓN 5: PROCEDIMIENTO OPERATIVO N° 2 (KARDEX PREDICTIVO)
     # -------------------------------------------------------------
-    h5_sku = doc.add_heading(level=1)
-    r5_sku = h5_sku.add_run("5. Procedimiento Operativo Detallado N° 2: Búsqueda Predictiva y Selección Ágil de SKUs del Kardex")
-    r5_sku.font.name = "Arial"
-    r5_sku.font.color.rgb = RGBColor(10, 37, 64)
+    h5 = doc.add_heading(level=1)
+    r5 = h5.add_run("5. Procedimiento Operativo N° 2: Búsqueda Predictiva Incremental y Selección Ágil de SKUs en Kardex")
+    r5.font.name = "Arial"
+    r5.font.color.rgb = RGBColor(10, 37, 64)
 
-    p_sku = doc.add_paragraph()
-    p_sku.add_run("Para eliminar la lentitud en la selección de artículos en catálogos extensos, NyTEX CRM cuenta con una pestaña y buscador predictivo interactivo directamente en el cotizador de la oportunidad:")
+    p_p2 = doc.add_paragraph()
+    p_p2.add_run("Para agilizar la cotización de pedidos con múltiples artículos o inventarios extensos, NyTEX CRM incorpora un selector predictivo inteligente "
+                 "directamente conectado con el Módulo [4] Inventarios & Stock:")
 
-    steps_sku = [
-        ("Paso 2.1: Acceso al Cotizador de la Oportunidad",
-         "Abra la oportunidad deseada en el tablero Kanban y diríjase a la sección 'Cotización Formal Asociada' o en la pestaña 'Cotización Inicial' del modal de creación."),
-        ("Paso 2.2: Activación del Buscador Predictivo en Tiempo Real",
-         "Haga clic en el campo '🔍 Buscar SKU por código o nombre...'. Al comenzar a teclear cualquier letra o número, el sistema filtra y reduce instantáneamente la lista desplegable mostrando únicamente los artículos coincidentes."),
-        ("Paso 2.3: Visualización de Atributos Críticos del Artículo",
-         "Cada resultado de búsqueda muestra en tiempo real: Código SKU, Nombre del producto, Categoría, Proveedor, Precio de lista en USD y Stock disponible en almacén."),
-        ("Paso 2.4: Incorporación a la Cotización",
-         "Seleccione el SKU con un clic, digite la cantidad requerida y el precio unitario pactado. Presione '+ Agregar a Cotización'. El sistema calcula de inmediato el subtotal de la línea y el monto total de la cotización."),
-        ("Paso 2.5: Sincronización Automática con el Monto de la Oportunidad",
-         "El monto estimado de la oportunidad se sincroniza de forma automática con el total de la cotización activa, garantizando coherencia absoluta entre el pipeline y el desglose de productos.")
+    add_callout(doc, "FUNCIONAMIENTO DEL BUSCADOR PREDICTIVO INCREMENTAL",
+                "• Búsqueda en Tiempo Real: En el campo 'Seleccionar SKU del Kardex *', el asesor puede escribir cualquier número o letra.\n"
+                "• Reducción Progresiva: A medida que se teclean caracteres, la lista desplegable filtra y reduce automáticamente las coincidencias, "
+                "buscando simultáneamente en el Código de Producto (SKU), Descripción Comercial y Categoría de Inventario.\n"
+                "• Validación de Existencias: Cada ítem muestra su stock actual disponible, previniendo cotizar productos agotados.\n"
+                "• Precio Base y Descuentos: Al seleccionar el SKU, el sistema carga el precio de lista vigente y permite asignar descuentos porcentuales "
+                "respetando el límite de autorización del vendedor.",
+                bg_hex="EFF6FF", border_hex="3B82F6")
+
+    doc.add_page_break()
+
+    # -------------------------------------------------------------
+    # SECCIÓN 6: PROCEDIMIENTO OPERATIVO N° 3 (KANBAN)
+    # -------------------------------------------------------------
+    h6 = doc.add_heading(level=1)
+    r6 = h6.add_run("6. Procedimiento Operativo N° 3: Gestión Visual del Embudo (Pipeline Kanban) y Maduración de Etapas")
+    r6.font.name = "Arial"
+    r6.font.color.rgb = RGBColor(10, 37, 64)
+
+    p_p3 = doc.add_paragraph()
+    p_p3.add_run("El embudo visual estructura el ciclo de vida de la negociación en 5 etapas secuenciales, cada una con un porcentaje de probabilidad matemática asignado:")
+
+    tbl_etapas = doc.add_table(rows=1, cols=4)
+    col_w_etapas = [1.8, 1.2, 2.2, 2.0]
+    headers_etapas = ["Etapa del Embudo", "Probabilidad", "Criterio de Entrada / Requisitos", "Acción Comercial Requerida"]
+    data_etapas = [
+        ["1. Prospección", "20%", "Lead recibido por redes, web o llamada telefónica.", "Contacto inicial, levantamiento de datos y verificación de interés."],
+        ["2. Calificación", "40%", "Cuestionario BANT completado favorablemente.", "Confirmar presupuesto disponible y validar tomador de decisión."],
+        ["3. Propuesta / Cotización", "60%", "SKUs seleccionados de Kardex y cotización emitida.", "Envío formal de oferta de precios, ficha técnica y condiciones."],
+        ["4. Negociación", "80%", "Objeciones en revisión (precio, plazos o flete).", "Ajuste de términos de pago, aprobación de descuento especial."],
+        ["5. Cerrada Ganada", "100%", "Cliente aprueba oferta y confirma compra.", "Generar pedido a Módulo 2 y enviar a facturación en caja."],
+        ["6. Cerrada Perdida", "0%", "Cliente rechaza o se vence la vigencia.", "Obligatorio registrar 1 de los 5 motivos de descarte."]
     ]
-
-    for title, desc in steps_sku:
-        p_st = doc.add_paragraph()
-        p_st.paragraph_format.space_before = Pt(4)
-        p_st.paragraph_format.space_after = Pt(2)
-        r_st_t = p_st.add_run(f"{title}\n")
-        r_st_t.bold = True
-        r_st_t.font.color.rgb = RGBColor(0, 110, 173)
-        r_st_d = p_st.add_run(desc)
-        r_st_d.font.size = Pt(9.5)
-
+    style_table(tbl_etapas, col_w_etapas, headers_etapas, data_etapas)
     doc.add_paragraph().paragraph_format.space_after = Pt(12)
 
     # -------------------------------------------------------------
-    # SECCIÓN 6: PROCEDIMIENTO 3 - GESTIÓN VISUAL PIPELINE KANBAN
+    # SECCIÓN 7: PROCEDIMIENTO OPERATIVO N° 4 (BITÁCORA Y SEGUIMIENTO)
     # -------------------------------------------------------------
-    h6_kan = doc.add_heading(level=1)
-    r6_kan = h6_kan.add_run("6. Procedimiento Operativo Detallado N° 3: Gestión Visual del Embudo (Pipeline Kanban) y Maduración de Etapas")
-    r6_kan.font.name = "Arial"
-    r6_kan.font.color.rgb = RGBColor(10, 37, 64)
+    h7 = doc.add_heading(level=1)
+    r7 = h7.add_run("7. Procedimiento Operativo N° 4: Historial de Actividades, Bitácora Comercial y Seguimiento")
+    r7.font.name = "Arial"
+    r7.font.color.rgb = RGBColor(10, 37, 64)
 
-    tbl_etapas = doc.add_table(rows=1, cols=4)
-    col_w_etapas = [1.6, 1.2, 2.5, 1.7]
-    headers_etapas = ["Etapa del Pipeline", "Probabilidad", "Criterio de Entrada Obligatorio", "Acción Operativa Requerida"]
-    data_etapas = [
-        ["1. Nuevo", "10%", "Oportunidad recién captada desde web, campaña, recomendación o prospección.", "Asignar ejecutivo comercial y realizar llamada o reunión inicial de descubrimiento."],
-        ["2. Contactado", "25%", "Primer contacto formal establecido; interlocutor y requerimiento confirmados.", "Iniciar investigación técnica, perfilar necesidades y evaluar la matriz BANT."],
-        ["3. Calificado", "50%", "Matriz BANT validada con presupuesto real, tomador de decisión y urgencia confirmada.", "Validar disponibilidad de SKUs en Inventarios [4] y coordinar propuesta técnica."],
-        ["4. Cotizado", "75%", "Propuesta técnico-económica formal emitida y entregada al cliente para revisión.", "Realizar seguimiento a cotización, resolver objeciones y afinar plazos de entrega."],
-        ["5. Ganado", "100%", "Aceptación formal de la propuesta, emisión de orden de compra o confirmación escrita.", "Transferir cotización autorizada a Ventas [2] para facturación en caja."],
-        ["Descartada / Perdida", "0%", "Rechazo formal de la oferta por parte del prospecto o cancelación de proyecto.", "Registrar motivo obligatorio de descarte (1 de las 5 causas de fuga) para auditoría."]
-    ]
-    style_table(tbl_etapas, col_w_etapas, headers_etapas, data_etapas, align_rights=[1])
-    doc.add_paragraph().paragraph_format.space_after = Pt(10)
+    p_p4 = doc.add_paragraph()
+    p_p4.add_run("Al hacer clic en cualquier tarjeta del tablero Kanban, se abre el expediente completo de la oportunidad, el cual incluye "
+                 "la bitácora cronológica de interacciones:\n\n"
+                 "• Registro de Llamadas: Fecha, hora, duración y resumen de acuerdos telefónicos.\n"
+                 "• Minutas de Reunión: Compromisos pactados en visitas presenciales o videoconferencias.\n"
+                 "• Tareas Programadas con Alertas: Recordatorios automáticos para llamadas de seguimiento o reenvío de cotizaciones.\n"
+                 "• Historial de Modificaciones: Auditoría forense de cambios de etapa, montos y reasignación de vendedores.")
+
+    doc.add_page_break()
 
     # -------------------------------------------------------------
-    # SECCIÓN 7: PROCEDIMIENTO 4 - BITÁCORA Y ACTIVIDADES
+    # SECCIÓN 8: PROCEDIMIENTO OPERATIVO N° 5 (INTEGRACIÓN CON MÓDULO 2)
     # -------------------------------------------------------------
-    h7_act = doc.add_heading(level=1)
-    r7_act = h7_act.add_run("7. Procedimiento Operativo Detallado N° 4: Historial de Actividades, Bitácora Comercial y Seguimiento de Tareas")
-    r7_act.font.name = "Arial"
-    r7_act.font.color.rgb = RGBColor(10, 37, 64)
+    h8 = doc.add_heading(level=1)
+    r8 = h8.add_run("8. Procedimiento Operativo N° 5: Integración Comercial y Facturación en Caja en NyTEX Ventas [2]")
+    r8.font.name = "Arial"
+    r8.font.color.rgb = RGBColor(10, 37, 64)
 
-    p_act = doc.add_paragraph()
-    p_act.add_run("La gobernanza comercial de NyTEX prohíbe las oportunidades 'huérfanas' o inactivas. Cada oportunidad en el pipeline debe contar con una bitácora "
-                  "actualizada de contactos y una próxima acción comprometida con fecha y hora.")
+    p_p5 = doc.add_paragraph()
+    p_p5.add_run("El hito culminante del circuito Lead-to-Order ocurre cuando el cliente acepta la cotización y se transfiere la información "
+                 "hacia el Módulo [2] Ventas & Facturación:")
 
-    add_callout(doc, "REGLA ANTIENFRIAMIENTO DE OPORTUNIDADES",
-                "Toda oportunidad activa debe contar con al menos una próxima tarea programada (llamada, visita o entrega de muestras). Si una tarjeta permanece más de 7 días continuos sin interacción registrada, el sistema le asigna un marco visual color ámbar con la leyenda 'Riesgo de Inactividad'.",
-                bg_hex="FAF5FF", border_hex="A855F7")
-
-    # -------------------------------------------------------------
-    # SECCIÓN 8: PROCEDIMIENTO 5 - INTEGRACIÓN CRM -> VENTAS [2]
-    # -------------------------------------------------------------
-    h8_o2c = doc.add_heading(level=1)
-    r8_o2c = h8_o2c.add_run("8. Procedimiento Operativo Detallado N° 5: Integración Comercial y Facturación en Caja en NyTEX Ventas [2]")
-    r8_o2c.font.name = "Arial"
-    r8_o2c.font.color.rgb = RGBColor(10, 37, 64)
-
-    p_o2c_desc = doc.add_paragraph()
-    p_o2c_desc.add_run("Este procedimiento constituye el puente de comunicación directa entre el Módulo 1 (CRM - Rol Vendedor) y el Módulo 2 (Ventas & Facturación - Rol Cajera/Facturador). "
-                       "Resuelve la segregación de funciones fundamental en la empresa: el vendedor prospecta, cotiza y negocia, pero la cajera factura y cobra en caja.")
-
-    add_callout(doc, "FLUJO OPERATIVO: DE COTIZACIÓN AUTORIZADA A FACTURACIÓN EN CAJA",
-                "1. En el Módulo 1: CRM, el vendedor gestiona la cotización con el cliente. Cuando el cliente acepta la compra:\n"
-                "   • Si compra toda la cotización: El vendedor hace clic en el botón verde [ ✓ Comprar Todos los SKUs ]. Todos los artículos pasan a estado 'Comprado' y se genera automáticamente la orden formal.\n"
-                "   • Si compra parcialmente: El vendedor marca únicamente los SKUs que el cliente autorizó y hace clic en [ 🚀 Generar Pedido en Módulo 2 ]. Los artículos no comprados solicitan motivo de descarte.\n\n"
-                "2. Transmisión Instantánea al Módulo 2: Ventas & Facturación:\n"
-                "   • La cotización autorizada pasa de forma automática e inmediata al Módulo 2.\n"
-                "   • El vendedor puede presionar el botón directo [ ➔ Ir a Facturar en Módulo 2 ] para trasladarse a la pantalla de ventas.\n"
-                "   • En la pantalla de Módulo 2 Ventas, la pestaña [ Cotizaciones Abiertas ] se actualiza en tiempo real mostrando el contador de pedidos pendientes de cobro/facturación.\n\n"
-                "3. Facturación en Caja por la Cajera:\n"
-                "   • La cajera abre la pestaña 'Cotizaciones Abiertas' en Módulo 2, selecciona la cotización autorizada por el vendedor y presiona 'Cargar a Caja'.\n"
-                "   • El sistema carga cliente, SKUs, precios y condiciones de pago pactadas.\n"
-                "   • La cajera procesa el cobro (Efectivo, Tarjeta, Transferencia o Crédito) y emite el DTE / Factura Fiscal sin recaptura de datos.",
+    add_callout(doc, "CIRCUITO DE CONVERSIÓN DE COTIZACIÓN A FACTURACIÓN",
+                "1. Botón '✓ Comprar Todos los SKUs': Si el cliente aprueba la totalidad de los artículos cotizados, este botón transfiere todos los renglones "
+                "al estado de venta ganada y genera el pedido formal en Módulo 2.\n"
+                "2. Botón '🚀 Generar Pedido en Módulo 2' (Compra Parcial): Si el cliente solo adquiere algunos ítems, el asesor marca individualmente los SKUs comprados "
+                "y el sistema exige justificar la causa de pérdida de los productos no comprados (ej: Falta de stock, Precio alto) antes de transferir el pedido parcial a Ventas.\n"
+                "3. Sincronización Inmediata de Cotizaciones Abiertas: Al presionar 'Ir a Facturar en Módulo 2 ➔', el sistema navega directamente a la pantalla de ventas, "
+                "donde el contador de cotizaciones abiertas se actualiza automáticamente a '1 Cotización Abierta' lista para cobrar.\n"
+                "4. Cobro y Timbrado Fiscal (DTE): La cajera en Módulo 2 recupera la cotización por número o cliente, selecciona la forma de pago (Efectivo, Tarjeta, Cheque o Crédito) "
+                "y genera el comprobante fiscal sin necesidad de volver a digitar los productos.",
                 bg_hex="F0FDF4", border_hex="10B981")
 
+    doc.add_page_break()
+
     # -------------------------------------------------------------
-    # SECCIÓN 9: PROCEDIMIENTO 6 - TABLERO ANALÍTICO Y FUGAS
+    # SECCIÓN 9: BANDEJA OMNICANAL INTEGRADA
     # -------------------------------------------------------------
-    h9_an = doc.add_heading(level=1)
-    r9_an = h9_an.add_run("9. Procedimiento Operativo Detallado N° 6: Tablero Analítico de Cotizaciones Generadas vs Vendidas y Auditoría de Fugas")
-    r9_an.font.name = "Arial"
-    r9_an.font.color.rgb = RGBColor(10, 37, 64)
+    h9 = doc.add_heading(level=1)
+    r9 = h9.add_run("9. Procedimiento Operativo N° 6: Bandeja Omnicanal Integrada (WhatsApp, Instagram, Correo y Web)")
+    r9.font.name = "Arial"
+    r9.font.color.rgb = RGBColor(10, 37, 64)
 
-    p_an_desc = doc.add_paragraph()
-    p_an_desc.add_run("Para responder con rigor directivo a la pregunta: ¿Cuánto cotizamos, cuánto vendimos realmente y por qué razones perdimos lo no vendido?, "
-                      "el Módulo 1 incorpora el Tablero Analítico Avanzado, accesible desde la pestaña [ 📈 Indicadores: Cotizaciones vs Vendidas ].")
+    add_callout(doc, "ARQUITECTURA DE INTEGRACIÓN OMNICANAL CENTRALIZADA",
+                "La Bandeja Omnicanal de NyTEX CRM conecta de manera transparente y bidireccional los canales digitales de atención externa "
+                "(WhatsApp Business Cloud API, Instagram Graph API, buzones de Correo Electrónico y Web Chat) mediante un Gateway unificado de Webhooks "
+                "en la ruta backend '/api/crm/webhook/omnichannel'.\n\n"
+                "Cada interacción de un prospecto genera en milisegundos una solicitud formal en el CRM, permitiendo a los ejecutivos responder directamente "
+                "desde el sistema sin necesidad de consultar teléfonos personales o cuentas dispersas en redes sociales.",
+                bg_hex="FAF5FF", border_hex="9333EA")
 
-    doc.add_heading(level=2).add_run("Las 4 Tarjetas de Control Gerencial:")
-    tbl_an_kpis = doc.add_table(rows=1, cols=3)
-    col_w_an = [2.2, 1.8, 3.0]
-    headers_an = ["Tarjeta KPI", "Métrica y Contenido", "Utilidad Gerencial"]
-    data_an = [
-        ["1. Cotizaciones Generadas (Azul)", "Total cotizaciones emitidas y monto total bruto en $ USD en el rango de fechas.", "Mide la intensidad y volumen del esfuerzo comercial desplegado."],
-        ["2. Cotizaciones Vendidas / Cierre (Verde)", "Cotizaciones cerradas en venta, monto vendido y Tasa de Conversión (%) con barra de progreso.", "Efectividad real de cierre del equipo comercial frente a la demanda."],
-        ["3. En Negociación / Abiertas (Ámbar)", "Cotizaciones en proceso activo, importe en curso y % de cartera viva.", "Volumen de negocio en riesgo o con potencial de cierre a corto plazo."],
-        ["4. Ventas Perdidas / Fuga (Rojo)", "Cotizaciones descartadas, SKUs rechazados y monto total de fuga en $ USD.", "Identificación inmediata de fugas económicas para toma de decisiones."]
-    ]
-    style_table(tbl_an_kpis, col_w_an, headers_an, data_an)
-    doc.add_paragraph().paragraph_format.space_after = Pt(10)
+    doc.add_heading(level=2).add_run("Clasificación en los Tres Tipos de Solicitudes")
+    p_tipos = doc.add_paragraph()
+    p_tipos.add_run("Cada mensaje recibido se clasifica automáticamente o por el asesor en uno de los tres perfiles operativos:\n\n"
+                    "• 💰 Solicitud de Cotización: Prospectos que solicitan listas de precios, existencias por volumen o cotizaciones formales. "
+                    "Se vincula directamente al Kardex y permite crear la oportunidad comercial para conversión a pedido.\n\n"
+                    "• ❓ Consulta Comercial: Dudas de preventa sobre características técnicas de telas/insumos, horarios de atención, tiempos de entrega "
+                    "o cobertura de despacho.\n\n"
+                    "• ⚠️ Reclamo / Incidencia: Inconformidades de clientes por demoras o fallas de producto. Cuenta con alerta de SLA (tiempo máximo de respuesta) "
+                    "para priorizar su atención y mitigar riesgos de cancelación.")
 
-    doc.add_heading(level=2).add_run("Auditoría de los 5 Motivos Estratégicos de Ventas Perdidas (Razones de No Compra):")
-    tbl_reasons = doc.add_table(rows=1, cols=3)
-    col_w_r = [2.2, 1.8, 3.0]
-    headers_r = ["Motivo de Rechazo", "Impacto Típico", "Acción Correctiva en NyTEX"]
-    data_r = [
-        ["1. Precio Alto / Competencia Más Barata", "Pérdida por precio de lista o agresividad de competidores.", "Revisión de márgenes en Compras [3], solicitud de descuentos a proveedores o análisis de elasticidad."],
-        ["2. Falta de Stock / Tiempo de Entrega Tardío", "Pérdida por desabasto o tiempos de reposición lentos.", "Ajuste de punto de reorden (ROP) y stock de seguridad en Planeación de Demanda [5] e Inventarios [4]."],
-        ["3. Desistimiento del Cliente / Cancelación de Proyecto", "El cliente pospuso o canceló su inversión interna.", "Seguimiento periódico a 60/90 días para reactivar la oportunidad cuando se retome el proyecto."],
-        ["4. Especificación Técnica Incorrecta o Incompatible", "El SKU cotizado no cumplió con requerimiento físico/químico.", "Capacitación técnica al asesor comercial y validación cruzada con fichas técnicas de producto."],
-        ["5. Falta de Aprobación de Crédito / Condiciones de Pago", "El cliente requería crédito no autorizado por CxC.", "Evaluación de garantías comerciales, líneas rotativas con pagos parciales o financiamiento mixto."]
-    ]
-    style_table(tbl_reasons, col_w_r, headers_r, data_r)
-    doc.add_paragraph().paragraph_format.space_after = Pt(10)
+    doc.add_heading(level=2).add_run("Filtro Predeterminado: [ ⏳ Solo Pendientes ] (Eficiencia Operativa)")
+    p_pend = doc.add_paragraph()
+    p_pend.add_run("Para evitar que los ejecutivos pierdan tiempo valioso revisando una por una todas las solicitudes históricas, la bandeja aplica "
+                   "como estado predeterminado el filtro 'Solo Pendientes':\n\n"
+                   "1. Foco en la Acción: La pantalla únicamente lista los casos que requieren respuesta o gestión pendiente.\n"
+                   "2. Contador en Vivo: Muestra el número exacto de casos activos (ej: '4 activas').\n"
+                   "3. Pestaña [ ✓ Solo Finalizadas ]: Permite a los supervisores auditar los casos cerrados, ver notas de resolución y validar tiempos de respuesta.\n"
+                   "4. Pestaña [ Todas ]: Despliega la totalidad del histórico para búsquedas generales.")
 
-    doc.add_heading(level=2).add_run("Pestaña Destacada al Tope: [ 📦 Por Códigos (SKU) ]:")
-    p_sku_tab = doc.add_paragraph()
-    p_sku_tab.add_run("Ubicada inmediatamente debajo de las 4 tarjetas KPI principales para visibilidad instantánea sin requerir scroll, "
-                      "la pestaña [ 📦 Por Códigos (SKU) ] permite evaluar el comportamiento individual de cada producto:\n\n"
-                      "• Selector de Métrica: Permite alternar la tabla entre:\n"
-                      "   – [ 📊 Completa ]: Despliega unidades, montos y porcentajes simultáneamente.\n"
-                      "   – [ 🔢 Cantidad ]: Muestra unidades cotizadas vs vendidas vs no vendidas.\n"
-                      "   – [ ％ Porcentaje ]: Muestra la tasa de efectividad (%) de cada código.\n"
-                      "   – [ 💲 Montos ]: Muestra los importes monetarios en dólares ($ USD).\n"
-                      "• Filtros por Condición: Visualizar todos los SKUs, solo con ventas ganadas, con pérdidas registradas o 100% no vendidos.\n"
-                      "• Buscador de Código: Permite encontrar rápidamente cualquier SKU por código o descripción.\n"
-                      "• Desglose de Causas de No Compra por SKU: Muestra badges con el motivo exacto por el cual se perdió cada código.\n"
-                      "• Acordeón de Casos Reales: Al dar clic en 'Ver casos', despliega las cotizaciones específicas donde se descartó el SKU con empresa, vendedor, fecha y notas textuales del cliente.")
+    doc.add_heading(level=2).add_run("Chat Bidireccional en Vivo y Protocolo de Resolución")
+    p_chat = doc.add_paragraph()
+    p_chat.add_run("Al pulsar 'Ver Chat' en cualquier tarjeta:\n\n"
+                   "• Mensajería Bidireccional: Se despliega la conversación cronológica completa. Al escribir y enviar una respuesta, el backend la despacha "
+                   "a través de la API oficial hacia el WhatsApp, Instagram o correo del cliente.\n"
+                   "• Botón [ ✓ Finalizar ]: Una vez atendida la consulta o acordada la cotización, el ejecutivo presiona 'Finalizar'. "
+                   "El sistema abre una ventana modal donde es OBLIGATORIO ingresar la Nota de Resolución (ej: 'Cotización enviada y aceptada por WhatsApp'). "
+                   "Al confirmar, la solicitud cambia su estado a 'resuelto' y DESAPARECE INMEDIATAMENTE de la lista de pendientes, registrando el usuario resolutor, "
+                   "fecha y hora de auditoría.\n"
+                   "• Botón [ Reabrir ]: Si el cliente vuelve a escribir o reactiva el reclamo, el caso puede reabrirse a pendiente.")
 
-    doc.add_heading(level=2).add_run("Otras Dimensiones de Clasificación Disponibles:")
+    doc.add_heading(level=2).add_run("Simulador de Mensajes Entrantes para Pruebas")
+    p_sim = doc.add_paragraph()
+    p_sim.add_run("El sistema incluye la herramienta '🧪 Simular Mensaje Entrante' en la esquina superior de la bandeja. "
+                  "Permite seleccionar el canal (WhatsApp, Instagram, Correo, Web), tipo de solicitud y redactar un mensaje ficticio "
+                  "para simular en tiempo real la llegada de un prospecto y capacitar a la fuerza comercial.")
+
+    doc.add_page_break()
+
+    # -------------------------------------------------------------
+    # SECCIÓN 10: TABLERO ANALÍTICO BI Y CÓDIGOS (SKU)
+    # -------------------------------------------------------------
+    h10 = doc.add_heading(level=1)
+    r10 = h10.add_run("10. Procedimiento Operativo N° 7: Tablero Analítico BI de Cotizaciones Generadas vs Vendidas y Pérdidas por Códigos")
+    r10.font.name = "Arial"
+    r10.font.color.rgb = RGBColor(10, 37, 64)
+
+    p_bi = doc.add_paragraph()
+    p_bi.add_run("El módulo de Business Intelligence (BI) de NyTEX CRM ofrece visibilidad total sobre la efectividad comercial, respondiendo a dos preguntas críticas: "
+                 "¿Cuánto de lo que cotizamos se convierte en dinero real? y ¿Cuáles son los motivos exactos por los que no vendemos cada producto?")
+
+    add_callout(doc, "MÉTRICAS CLAVE DE EFECTIVIDAD COMERCIAL",
+                "• Cotizaciones Generadas: Cantidad total de cotizaciones emitidas a prospectos en el período seleccionado.\n"
+                "• Cotizaciones Vendidas: Cantidad de cotizaciones formalmente facturadas en Módulo 2.\n"
+                "• Tasa de Cierre (Win Rate %): Porcentaje de efectividad comercial = (Vendidas / Total Concluidas) x 100.\n"
+                "• Tasa de Fuga Comercial (%): Porcentaje de cotizaciones rechazadas o no compradas por el cliente.\n"
+                "• Montos en Dólares ($ USD): Comparativo de importes totales cotizados vs importes totales vendidos.",
+                bg_hex="FFFBEB", border_hex="D97706")
+
+    doc.add_heading(level=2).add_run("Pestaña Destacada al Tope: [ 📦 Por Códigos (SKU) ]")
+    p_sku = doc.add_paragraph()
+    p_sku.add_run("Ubicada inmediatamente debajo de las tarjetas KPI, permite evaluar la aceptación en el mercado de cada producto individual:\n\n"
+                  "• Modos de Métrica con 1 Clic:\n"
+                  "   – [ 📊 Completa ]: Despliega simultáneamente cantidades, montos en dólares y porcentajes de efectividad.\n"
+                  "   – [ 🔢 Cantidad ]: Unidades cotizadas vs vendidas vs no vendidas.\n"
+                  "   – [ ％ Porcentaje ]: Tasa de efectividad (%) por SKU.\n"
+                  "   – [ 💲 Montos ]: Total facturado vs total cotizado en $ USD.\n"
+                  "• Filtros por Condición: Visualizar todos los SKUs, solo los vendidos con éxito, los descartados con pérdidas o los 100% no vendidos.\n"
+                  "• Buscador de Código en Vivo: Permite localizar al instante cualquier artículo por código o descripción.\n"
+                  "• Desglose de Causas de No Compra por SKU: Muestra badges con el motivo exacto por el cual se perdió cada código.\n"
+                  "• Acordeón de Casos Reales: Al dar clic en 'Ver casos', despliega las cotizaciones específicas donde se descartó el SKU con empresa, "
+                  "vendedor, fecha y notas textuales del cliente.")
+
+    doc.add_heading(level=2).add_run("Otras Dimensiones de Clasificación Disponibles")
     p_dims = doc.add_paragraph()
-    p_dims.add_run("• [ 🏢 Total Empresa ]: Consolidado corporativo, sucursal líder, vendedor líder y auditoría de motivos general.\n"
-                   "• [ 📍 Por Sucursal ]: Comparativo de tasa de cierre y montos cotizados vs vendidos entre agencias (Central, Norte, Sur, etc.).\n"
+    p_dims.add_run("El tablero permite además evaluar la salud comercial por:\n\n"
+                   "• [ 🏢 Total Empresa ]: Consolidado corporativo, sucursal líder, vendedor líder y auditoría de motivos general.\n"
+                   "• [ 📍 Por Sucursal ]: Comparativo de tasa de cierre y montos cotizados vs vendidos entre agencias.\n"
                    "• [ 👤 Por Vendedor ]: Ranking de asesores comerciales por volumen vendido y tasa de efectividad (%).\n"
                    "• [ 🏭 Por Proveedor ]: Rendimiento y aceptación en el mercado por marca o fabricante.\n"
                    "• [ 🏷️ Por Categoría ]: Familias de productos con mayor rotación o mayor fuga comercial.\n"
-                   "• [ ⚠️ Motivos de Pérdida (1 al 5) ]: Vista dedicada para auditar las 5 causas estratégicas de descarte.")
+                   "• [ ⚠️ Motivos de Pérdida (1 al 5) ]: Vista dedicada para auditar las 5 causas estratégicas de descarte "
+                   "(Precio superior, Falta de stock, Plazo de entrega largo, Crédito rechazado, Especificación técnica).")
 
-    doc.add_paragraph().paragraph_format.space_after = Pt(12)
+    doc.add_page_break()
 
     # -------------------------------------------------------------
-    # SECCIÓN 10: MATRIZ DE INTEGRACIÓN
+    # SECCIÓN 11: MATRIZ DE INTEGRACIÓN
     # -------------------------------------------------------------
-    h10 = doc.add_heading(level=1)
-    r10 = h10.add_run("10. Matriz de Interconexión e Impacto con los Demás Módulos del Ecosistema NyTEX")
-    r10.font.name = "Arial"
-    r10.font.color.rgb = RGBColor(10, 37, 64)
+    h11 = doc.add_heading(level=1)
+    r11 = h11.add_run("11. Matriz de Interconexión e Impacto con los Demás Módulos del Ecosistema NyTEX")
+    r11.font.name = "Arial"
+    r11.font.color.rgb = RGBColor(10, 37, 64)
 
     tbl_integ = doc.add_table(rows=1, cols=4)
     col_w_integ = [2.0, 1.8, 1.8, 1.4]
@@ -540,19 +555,21 @@ def build_document():
     doc.add_paragraph().paragraph_format.space_after = Pt(12)
 
     # -------------------------------------------------------------
-    # SECCIÓN 11: BUENAS PRÁCTICAS Y GOBERNANZA
+    # SECCIÓN 12: BUENAS PRÁCTICAS Y GOBERNANZA
     # -------------------------------------------------------------
-    h11 = doc.add_heading(level=1)
-    r11 = h11.add_run("11. Buenas Prácticas Comerciales, Segregación de Funciones y Gobernanza del Pipeline")
-    r11.font.name = "Arial"
-    r11.font.color.rgb = RGBColor(10, 37, 64)
+    h12 = doc.add_heading(level=1)
+    r12 = h12.add_run("12. Buenas Prácticas Comerciales, Segregación de Funciones y Gobernanza del Pipeline")
+    r12.font.name = "Arial"
+    r12.font.color.rgb = RGBColor(10, 37, 64)
 
     add_callout(doc, "POLÍTICAS DE CONTROL INTERNO Y AUDITORÍA COMERCIAL",
                 "1. Segregación de Funciones Estricta (Vendedor vs Cajera): El vendedor prospecta, califica y cotiza en Módulo 1 CRM; la cajera o facturador es la única persona autorizada para procesar el cobro y emitir la factura en Módulo 2 Ventas.\n"
-                "2. Justificación Obligatoria de Descarte: Ningún negocio puede marcarse como 'Perdido' sin seleccionar uno de los 5 motivos estratégicos de no compra y documentar la nota explicativa para retroalimentar Compras y Almacén.\n"
-                "3. Prohibición de Cotizaciones sin Oportunidad: Todas las cotizaciones emitidas a clientes deben nacer vinculadas a una oportunidad en el CRM para preservar la analítica de efectividad.\n"
-                "4. Validación de Stock antes de Cotizar: Los asesores deben verificar la disponibilidad real en el Kardex interactivo para no comprometer plazos inviables.\n"
-                "5. Caducidad de Prospectos Inactivos: Los prospectos sin seguimiento tras 30 días naturales se desasignan y reingresan a la bolsa común corporativa.",
+                "2. Justificación Obligatoria de Descarte: Ningún negocio o SKU puede marcarse como 'Perdido' sin seleccionar uno de los motivos estratégicos y documentar la nota explicativa para retroalimentar Compras y Almacén.\n"
+                "3. Gestión Prioritaria de Bandeja Omnicanal: Las solicitudes de tipo Reclamo deben ser respondidas dentro del SLA establecido (máximo 60 minutos) y las cotizaciones en menos de 2 horas hábiles.\n"
+                "4. Finalización Inmediata de Casos Resueltos: Los ejecutivos deben marcar como 'Finalizada' toda solicitud atendida de inmediato, manteniendo la bandeja de 'Solo Pendientes' en cero.\n"
+                "5. Prohibición de Cotizaciones sin Oportunidad: Todas las cotizaciones emitidas a clientes deben nacer vinculadas a una oportunidad en el CRM para preservar la analítica de efectividad.\n"
+                "6. Validación de Stock antes de Cotizar: Los asesores deben verificar la disponibilidad real en el Kardex interactivo para no comprometer plazos inviables.\n"
+                "7. Caducidad de Prospectos Inactivos: Los prospectos sin seguimiento tras 30 días naturales se desasignan y reingresan a la bolsa común corporativa.",
                 bg_hex="FFF1F2", border_hex="E11D48")
 
     # Guardar documento en todas las carpetas oficiales
