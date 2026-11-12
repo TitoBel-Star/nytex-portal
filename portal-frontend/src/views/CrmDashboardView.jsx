@@ -1,26 +1,42 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-// Catálogo base de Kardex (Productos y Servicios de NyTEX ERP)
+// Catálogo base de Kardex (Productos y Servicios de NyTEX ERP) con Proveedores
 const DEFAULT_KARDEX = [
-  { sku: 'PT-TEL-101', name: 'Lote Producto Terminado Estándar Alfa', category: 'Producto Terminado', unitPrice: 1850, stock: 35, unit: 'rollos' },
-  { sku: 'PT-POP-102', name: 'Lote Producto Terminado Modelo Estándar', category: 'Producto Terminado', unitPrice: 2150, stock: 15, unit: 'unidades' },
-  { sku: 'PT-RIB-103', name: 'Lote Producto Terminado Modelo Reforzado', category: 'Producto Terminado', unitPrice: 1950, stock: 22, unit: 'unidades' },
-  { sku: 'PT-FLE-104', name: 'Lote Producto Terminado Modelo Industrial', category: 'Producto Terminado', unitPrice: 2800, stock: 18, unit: 'unidades' },
-  { sku: 'PT-PIQ-105', name: 'Lote Producto Terminado Modelo Plus', category: 'Producto Terminado', unitPrice: 2100, stock: 26, unit: 'unidades' },
-  { sku: 'SKU-TEL-01', name: 'Lote Producto Terminado Serie 100', category: 'Producto Terminado', unitPrice: 1850, stock: 45, unit: 'unidades' },
-  { sku: 'SKU-TEL-02', name: 'Lote Producto Terminado Serie 200', category: 'Producto Terminado', unitPrice: 1850, stock: 32, unit: 'unidades' },
-  { sku: 'SKU-TEL-03', name: 'Lote Producto Terminado Serie 300', category: 'Producto Terminado', unitPrice: 1780, stock: 60, unit: 'unidades' },
-  { sku: 'SKU-MEZ-01', name: 'Lote Producto Terminado Serie 400', category: 'Producto Terminado', unitPrice: 2400, stock: 28, unit: 'unidades' },
-  { sku: 'SKU-MEZ-02', name: 'Lote Producto Terminado Serie 500', category: 'Producto Terminado', unitPrice: 2650, stock: 19, unit: 'unidades' },
-  { sku: 'SKU-POL-01', name: 'Lote Producto Terminado Compuesto', category: 'Producto Terminado', unitPrice: 1450, stock: 55, unit: 'unidades' },
-  { sku: 'MP-HIL-01', name: 'Materia Prima Base MP-01', category: 'Materia Prima', unitPrice: 380, stock: 120, unit: 'kg' },
-  { sku: 'MP-POL-02', name: 'Materia Prima Sintética MP-02', category: 'Materia Prima', unitPrice: 240, stock: 450, unit: 'kg' },
-  { sku: 'MP-TIN-03', name: 'Compuesto Reactivo Azul Marino', category: 'Insumo Químico', unitPrice: 490, stock: 18, unit: 'litros' },
-  { sku: 'SRV-CONS-01', name: 'Servicio de Consultoría y Diagnóstico ERP', category: 'Servicio', unitPrice: 1200, stock: 999, unit: 'servicio' },
-  { sku: 'SRV-MIG-02', name: 'Servicio de Migración a la Nube e Infraestructura', category: 'Servicio', unitPrice: 3500, stock: 999, unit: 'servicio' },
-  { sku: 'SRV-CAP-03', name: 'Capacitación y Adopción de Usuarios NyTEX', category: 'Servicio', unitPrice: 750, stock: 999, unit: 'servicio' },
-  { sku: 'SRV-SOP-04', name: 'Soporte Hypercare 24/7 (Bolsa Mensual)', category: 'Servicio', unitPrice: 2400, stock: 999, unit: 'servicio' }
+  { sku: 'PT-TEL-101', name: 'Lote Producto Terminado Estándar Alfa', category: 'Producto Terminado', provider: 'Textiles del Pacífico S.A.', unitPrice: 1850, stock: 35, unit: 'rollos' },
+  { sku: 'PT-POP-102', name: 'Lote Producto Terminado Modelo Estándar', category: 'Producto Terminado', provider: 'Textiles del Pacífico S.A.', unitPrice: 2150, stock: 15, unit: 'unidades' },
+  { sku: 'PT-RIB-103', name: 'Lote Producto Terminado Modelo Reforzado', category: 'Producto Terminado', provider: 'Industrias TexAlfa', unitPrice: 1950, stock: 22, unit: 'unidades' },
+  { sku: 'PT-FLE-104', name: 'Lote Producto Terminado Modelo Industrial', category: 'Producto Terminado', provider: 'Industrias TexAlfa', unitPrice: 2800, stock: 18, unit: 'unidades' },
+  { sku: 'PT-PIQ-105', name: 'Lote Producto Terminado Modelo Plus', category: 'Producto Terminado', provider: 'Textiles del Pacífico S.A.', unitPrice: 2100, stock: 26, unit: 'unidades' },
+  { sku: 'SKU-TEL-01', name: 'Lote Producto Terminado Serie 100', category: 'Producto Terminado', provider: 'Distribuidora Global Textil', unitPrice: 1850, stock: 45, unit: 'unidades' },
+  { sku: 'SKU-TEL-02', name: 'Lote Producto Terminado Serie 200', category: 'Producto Terminado', provider: 'Distribuidora Global Textil', unitPrice: 1850, stock: 32, unit: 'unidades' },
+  { sku: 'SKU-TEL-03', name: 'Lote Producto Terminado Serie 300', category: 'Producto Terminado', provider: 'Distribuidora Global Textil', unitPrice: 1780, stock: 60, unit: 'unidades' },
+  { sku: 'SKU-MEZ-01', name: 'Lote Producto Terminado Serie 400', category: 'Producto Terminado', provider: 'Hilaturas y Telas S.A.', unitPrice: 2400, stock: 28, unit: 'unidades' },
+  { sku: 'SKU-MEZ-02', name: 'Lote Producto Terminado Serie 500', category: 'Producto Terminado', provider: 'Hilaturas y Telas S.A.', unitPrice: 2650, stock: 19, unit: 'unidades' },
+  { sku: 'SKU-POL-01', name: 'Lote Producto Terminado Compuesto', category: 'Producto Terminado', provider: 'Hilaturas y Telas S.A.', unitPrice: 1450, stock: 55, unit: 'unidades' },
+  { sku: 'MP-HIL-01', name: 'Materia Prima Base MP-01', category: 'Materia Prima', provider: 'Fibras Sintéticas Corp', unitPrice: 380, stock: 120, unit: 'kg' },
+  { sku: 'MP-POL-02', name: 'Materia Prima Sintética MP-02', category: 'Materia Prima', provider: 'Fibras Sintéticas Corp', unitPrice: 240, stock: 450, unit: 'kg' },
+  { sku: 'MP-TIN-03', name: 'Compuesto Reactivo Azul Marino', category: 'Insumo Químico', provider: 'Químicos y Colorantes CA', unitPrice: 490, stock: 18, unit: 'litros' },
+  { sku: 'SRV-CONS-01', name: 'Servicio de Consultoría y Diagnóstico ERP', category: 'Servicio', provider: 'Servicios NyTEX Tech', unitPrice: 1200, stock: 999, unit: 'servicio' },
+  { sku: 'SRV-MIG-02', name: 'Servicio de Migración a la Nube e Infraestructura', category: 'Servicio', provider: 'Servicios Cloud Tech', unitPrice: 3500, stock: 999, unit: 'servicio' },
+  { sku: 'SRV-CAP-03', name: 'Capacitación y Adopción de Usuarios NyTEX', category: 'Servicio', provider: 'Academia NyTEX', unitPrice: 750, stock: 999, unit: 'servicio' },
+  { sku: 'SRV-SOP-04', name: 'Soporte Hypercare 24/7 (Bolsa Mensual)', category: 'Servicio', provider: 'Soporte Hypercare NyTEX', unitPrice: 2400, stock: 999, unit: 'servicio' }
+];
+
+// Lista de Sucursales de NyTEX
+const BRANCHES_LIST = [
+  'Sucursal Central (San Salvador)',
+  'Sucursal Norte (Santa Ana)',
+  'Sucursal Oriente (San Miguel)',
+  'Sucursal Occidente (Sonsonate)'
+];
+
+// Lista de Asesores Comerciales (Vendedores)
+const SELLERS_LIST = [
+  'María Asesora',
+  'Carlos Méndez',
+  'Alejandro Castillo',
+  'Ana Gómez'
 ];
 
 // Razones oficiales de No Compra (Venta Perdida)
@@ -48,7 +64,9 @@ const initialDeals = [
     company: 'Industrias Apex', 
     value: '$15,000', 
     stage: 'Nuevo', 
-    date: '24 Sep', 
+    date: '24 Sep',
+    createdDate: '2026-09-18',
+    branch: 'Sucursal Central (San Salvador)',
     priority: 'Alta', 
     contact: 'Roberto Silva', 
     email: 'rsilva@apex.com', 
@@ -70,9 +88,9 @@ const initialDeals = [
       deliveryMode: 'Entrega en Sucursal',
       deliveryAddress: 'Planta Industrial Apex, Km 14',
       items: [
-        { id: 11, sku: 'SRV-CONS-01', name: 'Servicio de Consultoría y Diagnóstico ERP', category: 'Servicio', unitPrice: 1200, quantity: 2, total: 2400, status: 'comprado', lostReason: null, lostNotes: '', lostDate: null },
-        { id: 12, sku: 'SRV-MIG-02', name: 'Servicio de Migración a la Nube e Infraestructura', category: 'Servicio', unitPrice: 3500, quantity: 3, total: 10500, status: 'cotizado', lostReason: null, lostNotes: '', lostDate: null },
-        { id: 13, sku: 'SRV-CAP-03', name: 'Capacitación y Adopción de Usuarios NyTEX', category: 'Servicio', unitPrice: 700, quantity: 3, total: 2100, status: 'cotizado', lostReason: null, lostNotes: '', lostDate: null }
+        { id: 11, sku: 'SRV-CONS-01', name: 'Servicio de Consultoría y Diagnóstico ERP', category: 'Servicio', provider: 'Servicios NyTEX Tech', unitPrice: 1200, quantity: 2, total: 2400, status: 'comprado', lostReason: null, lostNotes: '', lostDate: null },
+        { id: 12, sku: 'SRV-MIG-02', name: 'Servicio de Migración a la Nube e Infraestructura', category: 'Servicio', provider: 'Servicios Cloud Tech', unitPrice: 3500, quantity: 3, total: 10500, status: 'cotizado', lostReason: null, lostNotes: '', lostDate: null },
+        { id: 13, sku: 'SRV-CAP-03', name: 'Capacitación y Adopción de Usuarios NyTEX', category: 'Servicio', provider: 'Academia NyTEX', unitPrice: 700, quantity: 3, total: 2100, status: 'cotizado', lostReason: null, lostNotes: '', lostDate: null }
       ]
     }
   },
@@ -81,8 +99,10 @@ const initialDeals = [
     title: 'Migración a la nube', 
     company: 'TechSolutions S.A.', 
     value: '$8,500', 
-    stage: 'Nuevo', 
-    date: '23 Sep', 
+    stage: 'Ganado', 
+    date: '23 Sep',
+    createdDate: '2026-09-20',
+    branch: 'Sucursal Central (San Salvador)',
     priority: 'Media', 
     contact: 'Karla Morales', 
     email: 'kmorales@techsolutions.com', 
@@ -104,8 +124,8 @@ const initialDeals = [
       deliveryMode: 'A Domicilio',
       deliveryAddress: 'Torre TechSolutions, Nivel 5',
       items: [
-        { id: 21, sku: 'SRV-MIG-02', name: 'Servicio de Migración a la Nube e Infraestructura', category: 'Servicio', unitPrice: 3500, quantity: 2, total: 7000, status: 'comprado', lostReason: null, lostNotes: '', lostDate: null },
-        { id: 22, sku: 'SRV-CAP-03', name: 'Capacitación y Adopción de Usuarios NyTEX', category: 'Servicio', unitPrice: 750, quantity: 2, total: 1500, status: 'comprado', lostReason: null, lostNotes: '', lostDate: null }
+        { id: 21, sku: 'SRV-MIG-02', name: 'Servicio de Migración a la Nube e Infraestructura', category: 'Servicio', provider: 'Servicios Cloud Tech', unitPrice: 3500, quantity: 2, total: 7000, status: 'comprado', lostReason: null, lostNotes: '', lostDate: null },
+        { id: 22, sku: 'SRV-CAP-03', name: 'Capacitación y Adopción de Usuarios NyTEX', category: 'Servicio', provider: 'Academia NyTEX', unitPrice: 750, quantity: 2, total: 1500, status: 'comprado', lostReason: null, lostNotes: '', lostDate: null }
       ]
     }
   },
@@ -115,7 +135,9 @@ const initialDeals = [
     company: 'Comercializadora del Sur', 
     value: '$3,200', 
     stage: 'Contactado', 
-    date: '21 Sep', 
+    date: '12 Oct',
+    createdDate: '2026-10-12',
+    branch: 'Sucursal Oriente (San Miguel)',
     priority: 'Alta', 
     contact: 'Luis Gómez', 
     email: 'lgomez@comsur.com', 
@@ -127,8 +149,8 @@ const initialDeals = [
         contactType: 'Llamada',
         notes: 'Minuta: Primera llamada de contacto. El cliente requiere timbrado DTE urgente para cumplir normativa fiscal.',
         nextTask: 'Llamada de seguimiento para revisión de propuesta',
-        nextTaskDate: '2026-09-21 15:00',
-        registeredAt: '2026-09-19 10:15',
+        nextTaskDate: '2026-10-15 15:00',
+        registeredAt: '2026-10-12 10:15',
         registeredBy: 'María Asesora'
       }
     ],
@@ -137,8 +159,8 @@ const initialDeals = [
       deliveryMode: 'Entrega en Sucursal',
       deliveryAddress: '',
       items: [
-        { id: 31, sku: 'SRV-CONS-01', name: 'Servicio de Consultoría y Diagnóstico ERP', category: 'Servicio', unitPrice: 1200, quantity: 1, total: 1200, status: 'cotizado', lostReason: null, lostNotes: '', lostDate: null },
-        { id: 32, sku: 'SRV-SOP-04', name: 'Soporte Hypercare 24/7 (Bolsa Mensual)', category: 'Servicio', unitPrice: 2000, quantity: 1, total: 2000, status: 'cotizado', lostReason: null, lostNotes: '', lostDate: null }
+        { id: 31, sku: 'SRV-CONS-01', name: 'Servicio de Consultoría y Diagnóstico ERP', category: 'Servicio', provider: 'Servicios NyTEX Tech', unitPrice: 1200, quantity: 1, total: 1200, status: 'cotizado', lostReason: null, lostNotes: '', lostDate: null },
+        { id: 32, sku: 'SRV-SOP-04', name: 'Soporte Hypercare 24/7 (Bolsa Mensual)', category: 'Servicio', provider: 'Soporte Hypercare NyTEX', unitPrice: 2000, quantity: 1, total: 2000, status: 'cotizado', lostReason: null, lostNotes: '', lostDate: null }
       ]
     }
   },
@@ -148,7 +170,9 @@ const initialDeals = [
     company: 'Logistics Pro', 
     value: '$5,000', 
     stage: 'Calificado', 
-    date: '18 Sep', 
+    date: '18 Oct',
+    createdDate: '2026-10-18',
+    branch: 'Sucursal Norte (Santa Ana)',
     priority: 'Baja', 
     contact: 'Sandra Peña', 
     email: 'spena@logisticspro.com', 
@@ -160,7 +184,7 @@ const initialDeals = [
       deliveryMode: 'Entrega en Sucursal',
       deliveryAddress: '',
       items: [
-        { id: 41, sku: 'SRV-CONS-01', name: 'Servicio de Consultoría y Diagnóstico ERP', category: 'Servicio', unitPrice: 1250, quantity: 4, total: 5000, status: 'cotizado', lostReason: null, lostNotes: '', lostDate: null }
+        { id: 41, sku: 'SRV-CONS-01', name: 'Servicio de Consultoría y Diagnóstico ERP', category: 'Servicio', provider: 'Servicios NyTEX Tech', unitPrice: 1250, quantity: 4, total: 5000, status: 'cotizado', lostReason: null, lostNotes: '', lostDate: null }
       ]
     }
   },
@@ -170,7 +194,9 @@ const initialDeals = [
     company: 'Grupo Inmobiliario', 
     value: '$12,000', 
     stage: 'Calificado', 
-    date: '15 Sep', 
+    date: '25 Oct',
+    createdDate: '2026-10-25',
+    branch: 'Sucursal Central (San Salvador)',
     priority: 'Alta', 
     contact: 'Eduardo Castro', 
     email: 'ecastro@grupoinm.com', 
@@ -182,17 +208,19 @@ const initialDeals = [
       deliveryMode: 'Entrega en Sucursal',
       deliveryAddress: '',
       items: [
-        { id: 51, sku: 'SRV-SOP-04', name: 'Soporte Hypercare 24/7 (Bolsa Mensual)', category: 'Servicio', unitPrice: 2400, quantity: 5, total: 12000, status: 'cotizado', lostReason: null, lostNotes: '', lostDate: null }
+        { id: 51, sku: 'SRV-SOP-04', name: 'Soporte Hypercare 24/7 (Bolsa Mensual)', category: 'Servicio', provider: 'Soporte Hypercare NyTEX', unitPrice: 2400, quantity: 5, total: 12000, status: 'cotizado', lostReason: null, lostNotes: '', lostDate: null }
       ]
     }
   },
   { 
     id: 6, 
-    title: 'Proyecto WMS', 
+    title: 'Proyecto WMS y Telas', 
     company: 'Almacenes Globales', 
-    value: '$25,000', 
+    value: '$22,850', 
     stage: 'Cotizado', 
-    date: '10 Sep', 
+    date: '02 Nov',
+    createdDate: '2026-11-02',
+    branch: 'Sucursal Occidente (Sonsonate)',
     priority: 'Media', 
     contact: 'Guillermo Vega', 
     email: 'gvega@almacenesg.com', 
@@ -202,10 +230,10 @@ const initialDeals = [
       {
         id: 601,
         contactType: 'Envío de Muestras',
-        notes: 'Minuta: Se despacharon muestras de etiquetas de código de barras y terminales para pruebas en almacén central.',
+        notes: 'Minuta: Se despacharon muestras de producto terminado industrial para pruebas de resistencia.',
         nextTask: 'Reunión de seguimiento de resultados de muestras',
-        nextTaskDate: '2026-09-10 09:00',
-        registeredAt: '2026-09-05 11:00',
+        nextTaskDate: '2026-11-05 09:00',
+        registeredAt: '2026-11-02 11:00',
         registeredBy: 'María Asesora'
       }
     ],
@@ -214,19 +242,21 @@ const initialDeals = [
       deliveryMode: 'A Domicilio',
       deliveryAddress: 'Centro de Distribución Almacenes Globales, Nave 4',
       items: [
-        { id: 61, sku: 'PT-FLE-104', name: 'Lote Producto Terminado Modelo Industrial', category: 'Producto Terminado', unitPrice: 2800, quantity: 5, total: 14000, status: 'comprado', lostReason: null, lostNotes: '', lostDate: null },
-        { id: 62, sku: 'PT-POP-102', name: 'Lote Producto Terminado Modelo Estándar', category: 'Producto Terminado', unitPrice: 2150, quantity: 3, total: 6450, status: 'perdido', lostReason: '3. No compró porque no hay existencias', lostNotes: 'Cliente requería entrega inmediata pero el inventario estaba en producción.', lostDate: '2026-09-10 11:15' },
-        { id: 63, sku: 'SRV-CONS-01', name: 'Servicio de Consultoría y Diagnóstico ERP', category: 'Servicio', unitPrice: 1200, quantity: 2, total: 2400, status: 'perdido', lostReason: '1. No compró por precio alto', lostNotes: 'Cliente consideró el costo de consultoría fuera de presupuesto.', lostDate: '2026-09-10 11:20' }
+        { id: 61, sku: 'PT-FLE-104', name: 'Lote Producto Terminado Modelo Industrial', category: 'Producto Terminado', provider: 'Industrias TexAlfa', unitPrice: 2800, quantity: 5, total: 14000, status: 'comprado', lostReason: null, lostNotes: '', lostDate: null },
+        { id: 62, sku: 'PT-POP-102', name: 'Lote Producto Terminado Modelo Estándar', category: 'Producto Terminado', provider: 'Textiles del Pacífico S.A.', unitPrice: 2150, quantity: 3, total: 6450, status: 'perdido', lostReason: '3. No compró porque no hay existencias', lostNotes: 'Cliente requería entrega inmediata pero el inventario estaba en producción.', lostDate: '2026-11-04 11:15' },
+        { id: 63, sku: 'SRV-CONS-01', name: 'Servicio de Consultoría y Diagnóstico ERP', category: 'Servicio', provider: 'Servicios NyTEX Tech', unitPrice: 1200, quantity: 2, total: 2400, status: 'perdido', lostReason: '1. No compró por precio alto', lostNotes: 'Cliente consideró el costo de consultoría fuera de presupuesto.', lostDate: '2026-11-04 11:20' }
       ]
     }
   },
   { 
     id: 7, 
-    title: 'Soporte Hypercare', 
+    title: 'Soporte Hypercare Taller', 
     company: 'Constructora XYZ', 
     value: '$2,400', 
     stage: 'Ganado', 
-    date: '05 Sep', 
+    date: '05 Nov',
+    createdDate: '2026-11-05',
+    branch: 'Sucursal Norte (Santa Ana)',
     priority: 'Media', 
     contact: 'Patricia Henríquez', 
     email: 'phenriquez@xyz.com', 
@@ -238,8 +268,8 @@ const initialDeals = [
         contactType: 'Llamada',
         notes: 'Minuta: Cierre formal del acuerdo. Se acordó inicio de bolsa Hypercare con soporte extendido.',
         nextTask: 'Monitoreo de tickets de primer mes',
-        nextTaskDate: '2026-09-30 17:00',
-        registeredAt: '2026-09-05 16:00',
+        nextTaskDate: '2026-11-30 17:00',
+        registeredAt: '2026-11-05 16:00',
         registeredBy: 'Carlos Méndez'
       }
     ],
@@ -248,10 +278,152 @@ const initialDeals = [
       deliveryMode: 'Entrega en Sucursal',
       deliveryAddress: '',
       items: [
-        { id: 71, sku: 'SRV-SOP-04', name: 'Soporte Hypercare 24/7 (Bolsa Mensual)', category: 'Servicio', unitPrice: 2400, quantity: 1, total: 2400, status: 'comprado', lostReason: null, lostNotes: '', lostDate: null }
+        { id: 71, sku: 'SRV-SOP-04', name: 'Soporte Hypercare 24/7 (Bolsa Mensual)', category: 'Servicio', provider: 'Soporte Hypercare NyTEX', unitPrice: 2400, quantity: 1, total: 2400, status: 'comprado', lostReason: null, lostNotes: '', lostDate: null }
       ]
     }
   },
+  { 
+    id: 8, 
+    title: 'Suministro Lotes Tejido Alfa', 
+    company: 'Agroindustrias La Paz', 
+    value: '$7,600', 
+    stage: 'Cotizado', 
+    date: '07 Nov',
+    createdDate: '2026-11-07',
+    branch: 'Sucursal Oriente (San Miguel)',
+    priority: 'Alta', 
+    contact: 'Marcos Benítez', 
+    email: 'mbenitez@agrolapaz.com', 
+    phone: '+503 7234-9988', 
+    assignedTo: 'Ana Gómez',
+    activities: [
+      {
+        id: 801,
+        contactType: 'Reunión Presencial',
+        notes: 'Reunión en agencia San Miguel. Cliente solicitaba crédito no autorizado por comité financiero.',
+        nextTask: 'Seguimiento por si aceptan términos de contado',
+        nextTaskDate: '2026-11-15 10:00',
+        registeredAt: '2026-11-07 14:00',
+        registeredBy: 'Ana Gómez'
+      }
+    ],
+    quote: {
+      paymentTerms: 'Crédito 90 días',
+      deliveryMode: 'A Domicilio',
+      deliveryAddress: 'Carretera El Litoral Km 138, San Miguel',
+      items: [
+        { id: 81, sku: 'PT-TEL-101', name: 'Lote Producto Terminado Estándar Alfa', category: 'Producto Terminado', provider: 'Textiles del Pacífico S.A.', unitPrice: 1850, quantity: 2, total: 3700, status: 'perdido', lostReason: '4. No compró porque quería crédito y no se le dio', lostNotes: 'El cliente exigía crédito a 90 días no autorizado por política de crédito.', lostDate: '2026-11-08 10:00' },
+        { id: 82, sku: 'PT-RIB-103', name: 'Lote Producto Terminado Modelo Reforzado', category: 'Producto Terminado', provider: 'Industrias TexAlfa', unitPrice: 1950, quantity: 2, total: 3900, status: 'perdido', lostReason: '2. No compró por la Marca', lostNotes: 'Cliente prefirió marca importada de su proveedor histórico.', lostDate: '2026-11-08 10:15' }
+      ]
+    }
+  },
+  { 
+    id: 9, 
+    title: 'Equipamiento Almacén Oriente', 
+    company: 'Distribuidora Morazán', 
+    value: '$9,250', 
+    stage: 'Ganado', 
+    date: '09 Nov',
+    createdDate: '2026-11-09',
+    branch: 'Sucursal Oriente (San Miguel)',
+    priority: 'Alta', 
+    contact: 'Lucía Escalante', 
+    email: 'lescalante@dmorazan.com', 
+    phone: '+503 7600-4411', 
+    assignedTo: 'Ana Gómez',
+    activities: [
+      {
+        id: 901,
+        contactType: 'Llamada',
+        notes: 'Aprobación de orden de compra. Procedieron con el 100% de los SKUs cotizados.',
+        nextTask: 'Envío de guía de remisión',
+        nextTaskDate: '2026-11-12 11:00',
+        registeredAt: '2026-11-09 15:30',
+        registeredBy: 'Ana Gómez'
+      }
+    ],
+    quote: {
+      paymentTerms: 'Contado',
+      deliveryMode: 'Entrega en Sucursal',
+      deliveryAddress: '',
+      items: [
+        { id: 91, sku: 'PT-PIQ-105', name: 'Lote Producto Terminado Modelo Plus', category: 'Producto Terminado', provider: 'Textiles del Pacífico S.A.', unitPrice: 2100, quantity: 3, total: 6300, status: 'comprado', lostReason: null, lostNotes: '', lostDate: null },
+        { id: 92, sku: 'MP-HIL-01', name: 'Materia Prima Base MP-01', category: 'Materia Prima', provider: 'Fibras Sintéticas Corp', unitPrice: 380, quantity: 5, total: 1900, status: 'comprado', lostReason: null, lostNotes: '', lostDate: null },
+        { id: 93, sku: 'SRV-CONS-01', name: 'Servicio de Consultoría y Diagnóstico ERP', category: 'Servicio', provider: 'Servicios NyTEX Tech', unitPrice: 1050, quantity: 1, total: 1050, status: 'comprado', lostReason: null, lostNotes: '', lostDate: null }
+      ]
+    }
+  },
+  { 
+    id: 10, 
+    title: 'Servicio Mantenimiento e Insumos', 
+    company: 'Importadora Sonsonate S.A.', 
+    value: '$6,590', 
+    stage: 'Cotizado', 
+    date: '11 Nov',
+    createdDate: '2026-11-11',
+    branch: 'Sucursal Occidente (Sonsonate)',
+    priority: 'Media', 
+    contact: 'David Morales', 
+    email: 'dmorales@impsonsonate.com', 
+    phone: '+503 7511-2233', 
+    assignedTo: 'Carlos Méndez',
+    activities: [
+      {
+        id: 1001,
+        contactType: 'Llamada',
+        notes: 'Cliente aprobó la compra del producto físico pero declinó la póliza de soporte.',
+        nextTask: 'Facturación del SKU comprado',
+        nextTaskDate: '2026-11-12 16:00',
+        registeredAt: '2026-11-11 11:20',
+        registeredBy: 'Carlos Méndez'
+      }
+    ],
+    quote: {
+      paymentTerms: 'Contado',
+      deliveryMode: 'Entrega en Sucursal',
+      deliveryAddress: '',
+      items: [
+        { id: 101, sku: 'SKU-TEL-01', name: 'Lote Producto Terminado Serie 100', category: 'Producto Terminado', provider: 'Distribuidora Global Textil', unitPrice: 1850, quantity: 2, total: 3700, status: 'comprado', lostReason: null, lostNotes: '', lostDate: null },
+        { id: 102, sku: 'SRV-SOP-04', name: 'Soporte Hypercare 24/7 (Bolsa Mensual)', category: 'Servicio', provider: 'Soporte Hypercare NyTEX', unitPrice: 2400, quantity: 1, total: 2400, status: 'perdido', lostReason: '5. No compra por mal servicio', lostNotes: 'Tiempos de respuesta lentos en soporte anterior; desistieron del servicio.', lostDate: '2026-11-11 14:00' },
+        { id: 103, sku: 'MP-TIN-03', name: 'Compuesto Reactivo Azul Marino', category: 'Insumo Químico', provider: 'Químicos y Colorantes CA', unitPrice: 490, quantity: 1, total: 490, status: 'cotizado', lostReason: null, lostNotes: '', lostDate: null }
+      ]
+    }
+  },
+  { 
+    id: 11, 
+    title: 'Dotación Anual Planta Textil', 
+    company: 'Textilera Santa Ana', 
+    value: '$11,400', 
+    stage: 'Ganado', 
+    date: '12 Nov',
+    createdDate: '2026-11-12',
+    branch: 'Sucursal Norte (Santa Ana)',
+    priority: 'Alta', 
+    contact: 'Beatriz Salazar', 
+    email: 'bsalazar@texsantaana.com', 
+    phone: '+503 7788-9900', 
+    assignedTo: 'Alejandro Castillo',
+    activities: [
+      {
+        id: 1101,
+        contactType: 'Reunión Presencial',
+        notes: 'Cierre total de compra para dotación de planta Santa Ana.',
+        nextTask: 'Despacho logístico',
+        nextTaskDate: '2026-11-14 09:00',
+        registeredAt: '2026-11-12 10:00',
+        registeredBy: 'Alejandro Castillo'
+      }
+    ],
+    quote: {
+      paymentTerms: 'Crédito 30 días',
+      deliveryMode: 'A Domicilio',
+      deliveryAddress: 'Zona Franca Santa Ana, Nave 2',
+      items: [
+        { id: 111, sku: 'PT-FLE-104', name: 'Lote Producto Terminado Modelo Industrial', category: 'Producto Terminado', provider: 'Industrias TexAlfa', unitPrice: 2800, quantity: 3, total: 8400, status: 'comprado', lostReason: null, lostNotes: '', lostDate: null },
+        { id: 112, sku: 'SRV-CAP-03', name: 'Capacitación y Adopción de Usuarios NyTEX', category: 'Servicio', provider: 'Academia NyTEX', unitPrice: 750, quantity: 4, total: 3000, status: 'comprado', lostReason: null, lostNotes: '', lostDate: null }
+      ]
+    }
+  }
 ];
 
 // Calcular valor activo sincronizado de una cotización
@@ -308,6 +480,8 @@ const CrmDashboardView = () => {
     stage: 'Nuevo',
     priority: 'Alta',
     date: '30 Nov',
+    createdDate: '2026-11-12',
+    branch: 'Sucursal Central (San Salvador)',
     contact: '',
     email: '',
     phone: '',
@@ -372,6 +546,76 @@ const CrmDashboardView = () => {
     quantity: 1,
     unitPrice: ''
   });
+
+  // Modo de Vista Principal: 'kanban' (Tablero Kanban) | 'analytics' (Indicadores Cotizaciones vs Vendidas & Pérdidas)
+  const [currentMainView, setCurrentMainView] = useState('kanban');
+
+  // Filtros Analíticos de Cotizaciones
+  const [analyticsDatePreset, setAnalyticsDatePreset] = useState('all'); // 'all' | 'today' | 'last7' | 'thisMonth' | 'last30' | 'year' | 'custom'
+  const [analyticsDateFrom, setAnalyticsDateFrom] = useState('2025-01-01');
+  const [analyticsDateTo, setAnalyticsDateTo] = useState('2026-12-31');
+  const [analyticsBranch, setAnalyticsBranch] = useState('TODAS');
+  const [analyticsSeller, setAnalyticsSeller] = useState('TODOS');
+  const [analyticsProvider, setAnalyticsProvider] = useState('TODOS');
+  const [analyticsCategory, setAnalyticsCategory] = useState('TODAS');
+  const [analyticsSku, setAnalyticsSku] = useState('TODOS');
+  const [analyticsActiveTab, setAnalyticsActiveTab] = useState('total_empresa'); // 'total_empresa' | 'sucursal' | 'vendedor' | 'proveedor' | 'categoria' | 'sku'
+  const [skuFilterSearch, setSkuFilterSearch] = useState('');
+  const [expandedReason, setExpandedReason] = useState(null);
+
+  // Atajos para presets de fecha en el panel analítico
+  const handleApplyDatePreset = (preset) => {
+    setAnalyticsDatePreset(preset);
+    const now = new Date();
+    const yyyy = now.getFullYear();
+    const mm = String(now.getMonth() + 1).padStart(2, '0');
+    const dd = String(now.getDate()).padStart(2, '0');
+    const todayStr = `${yyyy}-${mm}-${dd}`;
+
+    if (preset === 'today') {
+      setAnalyticsDateFrom(todayStr);
+      setAnalyticsDateTo(todayStr);
+    } else if (preset === 'last7') {
+      const d = new Date(now);
+      d.setDate(d.getDate() - 7);
+      const dY = d.getFullYear();
+      const dM = String(d.getMonth() + 1).padStart(2, '0');
+      const dD = String(d.getDate()).padStart(2, '0');
+      setAnalyticsDateFrom(`${dY}-${dM}-${dD}`);
+      setAnalyticsDateTo(todayStr);
+    } else if (preset === 'thisMonth') {
+      const lastDay = new Date(yyyy, now.getMonth() + 1, 0).getDate();
+      setAnalyticsDateFrom(`${yyyy}-${mm}-01`);
+      setAnalyticsDateTo(`${yyyy}-${mm}-${String(lastDay).padStart(2, '0')}`);
+    } else if (preset === 'last30') {
+      const d = new Date(now);
+      d.setDate(d.getDate() - 30);
+      const dY = d.getFullYear();
+      const dM = String(d.getMonth() + 1).padStart(2, '0');
+      const dD = String(d.getDate()).padStart(2, '0');
+      setAnalyticsDateFrom(`${dY}-${dM}-${dD}`);
+      setAnalyticsDateTo(todayStr);
+    } else if (preset === 'year') {
+      setAnalyticsDateFrom(`${yyyy}-01-01`);
+      setAnalyticsDateTo(`${yyyy}-12-31`);
+    } else if (preset === 'all') {
+      setAnalyticsDateFrom('2025-01-01');
+      setAnalyticsDateTo('2027-12-31');
+    }
+  };
+
+  const handleResetAnalyticsFilters = () => {
+    setAnalyticsDatePreset('all');
+    setAnalyticsDateFrom('2025-01-01');
+    setAnalyticsDateTo('2027-12-31');
+    setAnalyticsBranch('TODAS');
+    setAnalyticsSeller('TODOS');
+    setAnalyticsProvider('TODOS');
+    setAnalyticsCategory('TODAS');
+    setAnalyticsSku('TODOS');
+    setSkuFilterSearch('');
+    showToast('🔄 Filtros analíticos restablecidos a Total Empresa.');
+  };
 
   // Filtros
   const [showFilterBar, setShowFilterBar] = useState(false);
@@ -514,6 +758,321 @@ const CrmDashboardView = () => {
     );
   }, [kardexCatalog, newDealSkuSearchQuery]);
 
+  // Proveedores, Categorías y SKUs únicos para los selectores analíticos
+  const availableProviders = useMemo(() => {
+    const set = new Set();
+    kardexCatalog.forEach(k => { if (k.provider) set.add(k.provider); });
+    deals.forEach(d => {
+      (d.quote?.items || []).forEach(it => { if (it.provider) set.add(it.provider); });
+    });
+    return Array.from(set).sort();
+  }, [kardexCatalog, deals]);
+
+  const availableCategories = useMemo(() => {
+    const set = new Set();
+    kardexCatalog.forEach(k => { if (k.category) set.add(k.category); });
+    deals.forEach(d => {
+      (d.quote?.items || []).forEach(it => { if (it.category) set.add(it.category); });
+    });
+    return Array.from(set).sort();
+  }, [kardexCatalog, deals]);
+
+  const availableSkus = useMemo(() => {
+    const map = new Map();
+    kardexCatalog.forEach(k => {
+      if (k.sku) map.set(k.sku, k.name || k.sku);
+    });
+    deals.forEach(d => {
+      (d.quote?.items || []).forEach(it => {
+        if (it.sku && !map.has(it.sku)) map.set(it.sku, it.name || it.sku);
+      });
+    });
+    return Array.from(map.entries()).map(([sku, name]) => ({ sku, name })).sort((a,b) => a.sku.localeCompare(b.sku));
+  }, [kardexCatalog, deals]);
+
+  // Motor Analítico de Cotizaciones Generadas vs Vendidas & Pérdidas
+  const analyticsData = useMemo(() => {
+    const isDateInRange = (dStr) => {
+      if (!dStr) return true;
+      let normalized = dStr;
+      if (/^\d{4}-\d{2}-\d{2}/.test(dStr)) {
+        normalized = dStr.slice(0, 10);
+      }
+      if (analyticsDateFrom && normalized < analyticsDateFrom) return false;
+      if (analyticsDateTo && normalized > analyticsDateTo) return false;
+      return true;
+    };
+
+    const filtered = deals.filter(deal => {
+      const dealDate = deal.createdDate || '2026-11-01';
+      if (!isDateInRange(dealDate)) return false;
+      if (analyticsBranch !== 'TODAS' && deal.branch !== analyticsBranch) return false;
+      if (analyticsSeller !== 'TODOS' && deal.assignedTo !== analyticsSeller) return false;
+
+      if (analyticsProvider !== 'TODOS' || analyticsCategory !== 'TODAS' || analyticsSku !== 'TODOS') {
+        const items = deal.quote?.items || [];
+        const hasMatching = items.some(it => {
+          if (analyticsProvider !== 'TODOS' && (it.provider || '') !== analyticsProvider) return false;
+          if (analyticsCategory !== 'TODAS' && (it.category || '') !== analyticsCategory) return false;
+          if (analyticsSku !== 'TODOS' && it.sku !== analyticsSku) return false;
+          return true;
+        });
+        if (!hasMatching) return false;
+      }
+      return true;
+    });
+
+    let totalQuotations = filtered.length;
+    let totalQuotedAmount = 0;
+    let totalWonQuotations = 0;
+    let totalSoldAmount = 0;
+    let totalOpenQuotations = 0;
+    let totalPendingAmount = 0;
+    let totalLostQuotations = 0;
+    let totalLostAmount = 0;
+    let totalLostItemsCount = 0;
+
+    const reasonsMap = {};
+    LOST_SALE_REASONS.forEach(r => {
+      reasonsMap[r] = { reason: r, count: 0, dealIds: new Set(), amount: 0, items: [] };
+    });
+
+    const branchMap = {};
+    BRANCHES_LIST.forEach(b => {
+      branchMap[b] = { branch: b, genCount: 0, genAmount: 0, wonCount: 0, wonAmount: 0, lostCount: 0, lostAmount: 0, openCount: 0, openAmount: 0, lostReasons: {} };
+    });
+
+    const sellerMap = {};
+    SELLERS_LIST.forEach(s => {
+      sellerMap[s] = { seller: s, genCount: 0, genAmount: 0, wonCount: 0, wonAmount: 0, lostCount: 0, lostAmount: 0, openCount: 0, openAmount: 0, lostReasons: {} };
+    });
+
+    const providerMap = {};
+    const categoryMap = {};
+    const skuMap = {};
+
+    filtered.forEach(deal => {
+      const bName = deal.branch || 'Sucursal Central (San Salvador)';
+      const sName = deal.assignedTo || 'María Asesora';
+
+      if (!branchMap[bName]) {
+        branchMap[bName] = { branch: bName, genCount: 0, genAmount: 0, wonCount: 0, wonAmount: 0, lostCount: 0, lostAmount: 0, openCount: 0, openAmount: 0, lostReasons: {} };
+      }
+      if (!sellerMap[sName]) {
+        sellerMap[sName] = { seller: sName, genCount: 0, genAmount: 0, wonCount: 0, wonAmount: 0, lostCount: 0, lostAmount: 0, openCount: 0, openAmount: 0, lostReasons: {} };
+      }
+
+      branchMap[bName].genCount += 1;
+      sellerMap[sName].genCount += 1;
+
+      let dealQuoted = 0;
+      let dealSold = 0;
+      let dealLost = 0;
+      let dealPending = 0;
+      let hasBought = false;
+      let hasLost = false;
+      let hasPending = false;
+
+      const items = deal.quote?.items || [];
+      items.forEach(it => {
+        if (analyticsProvider !== 'TODOS' && (it.provider || '') !== analyticsProvider) return;
+        if (analyticsCategory !== 'TODAS' && (it.category || '') !== analyticsCategory) return;
+        if (analyticsSku !== 'TODOS' && it.sku !== analyticsSku) return;
+
+        const sub = (Number(it.unitPrice) || 0) * (Number(it.quantity) || 1);
+        dealQuoted += sub;
+
+        const prov = it.provider || 'Proveedor General';
+        const cat = it.category || 'General';
+        const skuCode = it.sku;
+
+        if (!providerMap[prov]) {
+          providerMap[prov] = { provider: prov, quotedAmount: 0, soldAmount: 0, lostAmount: 0, itemsQuoted: 0, itemsSold: 0, itemsLost: 0 };
+        }
+        providerMap[prov].quotedAmount += sub;
+        providerMap[prov].itemsQuoted += (Number(it.quantity) || 1);
+
+        if (!categoryMap[cat]) {
+          categoryMap[cat] = { category: cat, quotedAmount: 0, soldAmount: 0, lostAmount: 0, itemsQuoted: 0, itemsSold: 0, itemsLost: 0 };
+        }
+        categoryMap[cat].quotedAmount += sub;
+        categoryMap[cat].itemsQuoted += (Number(it.quantity) || 1);
+
+        if (!skuMap[skuCode]) {
+          skuMap[skuCode] = { sku: skuCode, name: it.name, category: cat, provider: prov, unitPrice: it.unitPrice, quotedAmount: 0, soldAmount: 0, lostAmount: 0, unitsQuoted: 0, unitsSold: 0, unitsLost: 0, reasons: {} };
+        }
+        skuMap[skuCode].quotedAmount += sub;
+        skuMap[skuCode].unitsQuoted += (Number(it.quantity) || 1);
+
+        if (it.status === 'comprado') {
+          dealSold += sub;
+          hasBought = true;
+          providerMap[prov].soldAmount += sub;
+          providerMap[prov].itemsSold += (Number(it.quantity) || 1);
+          categoryMap[cat].soldAmount += sub;
+          categoryMap[cat].itemsSold += (Number(it.quantity) || 1);
+          skuMap[skuCode].soldAmount += sub;
+          skuMap[skuCode].unitsSold += (Number(it.quantity) || 1);
+        } else if (it.status === 'perdido') {
+          dealLost += sub;
+          hasLost = true;
+          totalLostItemsCount += 1;
+          providerMap[prov].lostAmount += sub;
+          providerMap[prov].itemsLost += (Number(it.quantity) || 1);
+          categoryMap[cat].lostAmount += sub;
+          categoryMap[cat].itemsLost += (Number(it.quantity) || 1);
+          skuMap[skuCode].lostAmount += sub;
+          skuMap[skuCode].unitsLost += (Number(it.quantity) || 1);
+
+          const rKey = it.lostReason || 'Otros / Sin especificar';
+          if (!reasonsMap[rKey]) {
+            reasonsMap[rKey] = { reason: rKey, count: 0, dealIds: new Set(), amount: 0, items: [] };
+          }
+          reasonsMap[rKey].count += 1;
+          reasonsMap[rKey].dealIds.add(deal.id);
+          reasonsMap[rKey].amount += sub;
+          reasonsMap[rKey].items.push({
+            dealId: deal.id,
+            company: deal.company,
+            title: deal.title,
+            seller: sName,
+            branch: bName,
+            date: deal.createdDate || deal.date,
+            sku: it.sku,
+            name: it.name,
+            amount: sub,
+            quantity: it.quantity,
+            notes: it.lostNotes || ''
+          });
+
+          branchMap[bName].lostReasons[rKey] = (branchMap[bName].lostReasons[rKey] || 0) + sub;
+          sellerMap[sName].lostReasons[rKey] = (sellerMap[sName].lostReasons[rKey] || 0) + sub;
+          skuMap[skuCode].reasons[rKey] = (skuMap[skuCode].reasons[rKey] || 0) + 1;
+        } else {
+          dealPending += sub;
+          hasPending = true;
+        }
+      });
+
+      totalQuotedAmount += dealQuoted;
+      totalSoldAmount += dealSold;
+      totalLostAmount += dealLost;
+      totalPendingAmount += dealPending;
+
+      branchMap[bName].genAmount += dealQuoted;
+      branchMap[bName].wonAmount += dealSold;
+      branchMap[bName].lostAmount += dealLost;
+      branchMap[bName].openAmount += dealPending;
+
+      sellerMap[sName].genAmount += dealQuoted;
+      sellerMap[sName].wonAmount += dealSold;
+      sellerMap[sName].lostAmount += dealLost;
+      sellerMap[sName].openAmount += dealPending;
+
+      if (deal.stage === 'Ganado' || hasBought) {
+        totalWonQuotations += 1;
+        branchMap[bName].wonCount += 1;
+        sellerMap[sName].wonCount += 1;
+      }
+      if (hasLost) {
+        totalLostQuotations += 1;
+        branchMap[bName].lostCount += 1;
+        sellerMap[sName].lostCount += 1;
+      }
+      if (hasPending || deal.stage === 'Nuevo' || deal.stage === 'Contactado' || deal.stage === 'Calificado' || (deal.stage === 'Cotizado' && !hasBought && !hasLost)) {
+        totalOpenQuotations += 1;
+        branchMap[bName].openCount += 1;
+        sellerMap[sName].openCount += 1;
+      }
+    });
+
+    const conversionRateQty = totalQuotations > 0 ? ((totalWonQuotations / totalQuotations) * 100).toFixed(1) : '0.0';
+    const conversionRateAmount = totalQuotedAmount > 0 ? ((totalSoldAmount / totalQuotedAmount) * 100).toFixed(1) : '0.0';
+    const pendingRate = totalQuotations > 0 ? ((totalOpenQuotations / totalQuotations) * 100).toFixed(1) : '0.0';
+    const lossRateAmount = totalQuotedAmount > 0 ? ((totalLostAmount / totalQuotedAmount) * 100).toFixed(1) : '0.0';
+    const lossRateQty = totalQuotations > 0 ? ((totalLostQuotations / totalQuotations) * 100).toFixed(1) : '0.0';
+
+    const reasonsList = Object.values(reasonsMap).map(r => ({
+      ...r,
+      dealCount: r.dealIds.size,
+      percentOfLoss: totalLostAmount > 0 ? ((r.amount / totalLostAmount) * 100).toFixed(1) : '0.0',
+      percentOfTotal: totalQuotedAmount > 0 ? ((r.amount / totalQuotedAmount) * 100).toFixed(1) : '0.0'
+    })).sort((a, b) => b.amount - a.amount);
+
+    const getTopReason = (mapObj) => {
+      let top = 'Ninguno';
+      let max = 0;
+      Object.entries(mapObj || {}).forEach(([r, amt]) => {
+        if (amt > max) {
+          max = amt;
+          top = r;
+        }
+      });
+      return top;
+    };
+
+    const branchList = Object.values(branchMap).map(b => ({
+      ...b,
+      winRateQty: b.genCount > 0 ? ((b.wonCount / b.genCount) * 100).toFixed(1) : '0.0',
+      winRateAmount: b.genAmount > 0 ? ((b.wonAmount / b.genAmount) * 100).toFixed(1) : '0.0',
+      lossRateAmount: b.genAmount > 0 ? ((b.lostAmount / b.genAmount) * 100).toFixed(1) : '0.0',
+      topLostReason: getTopReason(b.lostReasons)
+    })).sort((a, b) => b.genAmount - a.genAmount);
+
+    const sellerList = Object.values(sellerMap).map(s => ({
+      ...s,
+      winRateQty: s.genCount > 0 ? ((s.wonCount / s.genCount) * 100).toFixed(1) : '0.0',
+      winRateAmount: s.genAmount > 0 ? ((s.wonAmount / s.genAmount) * 100).toFixed(1) : '0.0',
+      lossRateAmount: s.genAmount > 0 ? ((s.lostAmount / s.genAmount) * 100).toFixed(1) : '0.0',
+      topLostReason: getTopReason(s.lostReasons)
+    })).sort((a, b) => b.wonAmount - a.wonAmount);
+
+    const providerList = Object.values(providerMap).map(p => ({
+      ...p,
+      winRateAmount: p.quotedAmount > 0 ? ((p.soldAmount / p.quotedAmount) * 100).toFixed(1) : '0.0',
+      lossRateAmount: p.quotedAmount > 0 ? ((p.lostAmount / p.quotedAmount) * 100).toFixed(1) : '0.0'
+    })).sort((a, b) => b.quotedAmount - a.quotedAmount);
+
+    const categoryList = Object.values(categoryMap).map(c => ({
+      ...c,
+      winRateAmount: c.quotedAmount > 0 ? ((c.soldAmount / c.quotedAmount) * 100).toFixed(1) : '0.0',
+      lossRateAmount: c.quotedAmount > 0 ? ((c.lostAmount / c.quotedAmount) * 100).toFixed(1) : '0.0'
+    })).sort((a, b) => b.quotedAmount - a.quotedAmount);
+
+    const skuList = Object.values(skuMap).map(s => ({
+      ...s,
+      winRateQty: s.unitsQuoted > 0 ? ((s.unitsSold / s.unitsQuoted) * 100).toFixed(1) : '0.0',
+      winRateAmount: s.quotedAmount > 0 ? ((s.soldAmount / s.quotedAmount) * 100).toFixed(1) : '0.0',
+      topReason: getTopReason(s.reasons)
+    })).sort((a, b) => b.unitsQuoted - a.unitsQuoted);
+
+    return {
+      summary: {
+        totalQuotations,
+        totalQuotedAmount,
+        totalWonQuotations,
+        totalSoldAmount,
+        conversionRateQty,
+        conversionRateAmount,
+        totalOpenQuotations,
+        totalPendingAmount,
+        pendingRate,
+        totalLostQuotations,
+        totalLostAmount,
+        totalLostItemsCount,
+        lossRateAmount,
+        lossRateQty
+      },
+      reasonsList,
+      branchList,
+      sellerList,
+      providerList,
+      categoryList,
+      skuList,
+      filteredDealsCount: filtered.length
+    };
+  }, [deals, analyticsDateFrom, analyticsDateTo, analyticsBranch, analyticsSeller, analyticsProvider, analyticsCategory, analyticsSku]);
+
   // Abrir Modal de Creación
   const handleOpenModal = () => {
     setPartnerMode('catalog');
@@ -563,6 +1122,7 @@ const CrmDashboardView = () => {
       sku: newDealSkuForm.selectedSku,
       name: kardexItem ? kardexItem.name : newDealSkuForm.selectedSku,
       category: kardexItem ? kardexItem.category : 'General',
+      provider: kardexItem ? (kardexItem.provider || 'Proveedor General') : 'Proveedor General',
       unitPrice: price,
       quantity: qty,
       total: price * qty,
@@ -629,6 +1189,8 @@ const CrmDashboardView = () => {
       value: formattedVal,
       stage: formData.stage,
       date: formData.date.trim() || '30 Nov',
+      createdDate: formData.createdDate || new Date().toISOString().split('T')[0],
+      branch: formData.branch || 'Sucursal Central (San Salvador)',
       priority: formData.priority,
       contact: formData.contact.trim(),
       email: formData.email.trim(),
@@ -643,6 +1205,10 @@ const CrmDashboardView = () => {
         items: newDealQuote.items
       }
     };
+
+    if (newDealItem.quote.items.length > 0) {
+      newDealItem.value = calculateQuoteActiveValue(newDealItem.quote, newDealItem.stage, formattedVal);
+    }
 
     setDeals(prev => [newDealItem, ...prev]);
     setIsModalOpen(false);
@@ -839,6 +1405,7 @@ const CrmDashboardView = () => {
       sku: quoteForm.selectedSku,
       name: kardexItem ? kardexItem.name : quoteForm.selectedSku,
       category: kardexItem ? kardexItem.category : 'General',
+      provider: kardexItem ? (kardexItem.provider || 'Proveedor General') : 'Proveedor General',
       unitPrice: price,
       quantity: qty,
       total: price * qty,
@@ -1120,27 +1687,61 @@ const CrmDashboardView = () => {
       )}
 
       {/* Header */}
-      <div className="flex flex-col border-b border-gray-200 px-6 py-4 bg-white sticky top-0 z-10 shrink-0 shadow-sm">
-        <div className="flex justify-between items-center">
-          <div className="flex items-center text-lg text-gray-700">
-            <span className="cursor-pointer hover:underline text-[#006EAD]" onClick={() => navigate('/portal')}>Portal</span>
-            <span className="mx-2 text-gray-400">/</span>
-            <span className="font-bold text-[#0A2540]">NyTEX CRM (Embudo de Ventas)</span>
+      <div className="flex flex-col border-b border-gray-200 px-6 py-3.5 bg-white sticky top-0 z-10 shrink-0 shadow-sm">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="flex items-center text-lg text-gray-700">
+              <span className="cursor-pointer hover:underline text-[#006EAD]" onClick={() => navigate('/portal')}>Portal</span>
+              <span className="mx-2 text-gray-400">/</span>
+              <span className="font-bold text-[#0A2540]">NyTEX CRM</span>
+            </div>
+
+            {/* Selector de Vista Principal: Kanban vs Indicadores & Pérdidas */}
+            <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-gray-200">
+              <button
+                type="button"
+                onClick={() => setCurrentMainView('kanban')}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center space-x-1.5 ${
+                  currentMainView === 'kanban'
+                    ? 'bg-white text-[#0A2540] shadow-xs'
+                    : 'text-gray-500 hover:text-gray-800'
+                }`}
+              >
+                <i className="fas fa-columns"></i>
+                <span>Tablero Kanban</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setCurrentMainView('analytics')}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center space-x-1.5 ${
+                  currentMainView === 'analytics'
+                    ? 'bg-[#006EAD] text-white shadow-xs'
+                    : 'text-gray-600 hover:text-[#006EAD]'
+                }`}
+              >
+                <i className="fas fa-chart-pie"></i>
+                <span>Indicadores: Cotizaciones vs Vendidas</span>
+                <span className="bg-emerald-400 text-slate-900 text-[10px] font-black px-1.5 py-0.2 rounded-full">BI</span>
+              </button>
+            </div>
           </div>
-          <div className="flex space-x-3">
-            <button 
-              onClick={() => setShowFilterBar(!showFilterBar)}
-              className={`border px-4 py-2 rounded-md text-sm font-semibold transition-colors shadow-sm flex items-center ${
-                showFilterBar ? 'bg-blue-50 border-[#006EAD] text-[#006EAD]' : 'bg-white border-gray-300 hover:bg-gray-50 text-gray-700'
-              }`}
-            >
-              <i className="fas fa-filter mr-2"></i>Filtrar
-            </button>
+
+          <div className="flex items-center space-x-2">
+            {currentMainView === 'kanban' && (
+              <button 
+                onClick={() => setShowFilterBar(!showFilterBar)}
+                className={`border px-3.5 py-2 rounded-md text-xs font-semibold transition-colors shadow-sm flex items-center ${
+                  showFilterBar ? 'bg-blue-50 border-[#006EAD] text-[#006EAD]' : 'bg-white border-gray-300 hover:bg-gray-50 text-gray-700'
+                }`}
+              >
+                <i className="fas fa-filter mr-1.5"></i>Filtrar
+              </button>
+            )}
             <button 
               onClick={handleOpenModal}
-              className="bg-[#006EAD] hover:bg-[#005587] text-white px-4 py-2 rounded-md text-sm font-bold transition-all shadow-sm flex items-center active:scale-95"
+              className="bg-[#006EAD] hover:bg-[#005587] text-white px-3.5 py-2 rounded-md text-xs font-bold transition-all shadow-sm flex items-center active:scale-95"
             >
-              <i className="fas fa-plus mr-2"></i>NUEVA OPORTUNIDAD
+              <i className="fas fa-plus mr-1.5"></i>NUEVA OPORTUNIDAD
             </button>
           </div>
         </div>
@@ -1196,144 +1797,1063 @@ const CrmDashboardView = () => {
       </div>
 
       <div className="flex-1 overflow-x-auto overflow-y-auto p-6">
-        
-        {/* KPIs Summaries */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6 min-w-[800px]">
-          <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between border-l-4 border-l-[#09A9E8]">
-            <div>
-              <p className="text-gray-500 text-xs font-bold uppercase mb-1">Oportunidades Abiertas</p>
-              <p className="text-2xl font-extrabold text-[#0A2540]">{kpis.openCount}</p>
-            </div>
-            <div className="text-[#09A9E8] bg-blue-50 w-10 h-10 rounded-full flex items-center justify-center text-lg">
-              <i className="fas fa-briefcase"></i>
-            </div>
-          </div>
-          <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between border-l-4 border-l-purple-500">
-            <div>
-              <p className="text-gray-500 text-xs font-bold uppercase mb-1">Valor del Pipeline</p>
-              <p className="text-2xl font-extrabold text-[#0A2540]">{kpis.pipelineValue}</p>
-            </div>
-            <div className="text-purple-500 bg-purple-50 w-10 h-10 rounded-full flex items-center justify-center text-lg">
-              <i className="fas fa-dollar-sign"></i>
-            </div>
-          </div>
-          <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between border-l-4 border-l-yellow-500">
-            <div>
-              <p className="text-gray-500 text-xs font-bold uppercase mb-1">Tasa de Cierre</p>
-              <p className="text-2xl font-extrabold text-[#0A2540]">{kpis.winRate}</p>
-            </div>
-            <div className="text-yellow-500 bg-yellow-50 w-10 h-10 rounded-full flex items-center justify-center text-lg">
-              <i className="fas fa-chart-line"></i>
-            </div>
-          </div>
-          <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between border-l-4 border-l-green-500">
-            <div>
-              <p className="text-gray-500 text-xs font-bold uppercase mb-1">Ganado este mes</p>
-              <p className="text-2xl font-extrabold text-[#0A2540]">{kpis.wonThisMonth}</p>
-            </div>
-            <div className="text-green-500 bg-green-50 w-10 h-10 rounded-full flex items-center justify-center text-lg">
-              <i className="fas fa-trophy"></i>
-            </div>
-          </div>
-        </div>
-
-        {/* Pipeline Kanban Board */}
-        <div className="flex space-x-4 min-w-[1200px] h-[calc(100%-120px)]">
-          {stages.map(stage => {
-            const stageDeals = filteredDeals.filter(d => d.stage === stage);
-            
-            // Calculate total value of the stage
-            const stageValue = stageDeals.reduce((acc, deal) => {
-              const val = parseInt(deal.value.replace(/[^0-9]/g, ''), 10);
-              return acc + (isNaN(val) ? 0 : val);
-            }, 0);
-
-            return (
-              <div key={stage} className="flex-1 bg-gray-100/50 rounded-xl border border-gray-200 flex flex-col overflow-hidden">
-                
-                {/* Stage Header */}
-                <div className="p-3 border-b border-gray-200 bg-gray-100 flex justify-between items-center shrink-0">
-                  <h3 className="font-bold text-gray-700 text-sm">{stage} ({stageDeals.length})</h3>
-                  <span className="text-xs font-semibold text-gray-500">${stageValue.toLocaleString()}</span>
+        {currentMainView === 'kanban' ? (
+          <>
+            {/* Banner de Conversión Comercial con acceso directo a BI */}
+            <div className="bg-gradient-to-r from-[#0A2540] via-slate-900 to-[#006EAD] text-white p-4 rounded-xl shadow-sm mb-6 flex flex-wrap items-center justify-between gap-4 border border-blue-900 min-w-[800px]">
+              <div className="flex items-center space-x-3">
+                <div className="w-11 h-11 rounded-xl bg-blue-500/20 border border-blue-400/30 flex items-center justify-center text-xl text-blue-300">
+                  <i className="fas fa-chart-line"></i>
                 </div>
+                <div>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-[10px] font-bold text-blue-300 uppercase tracking-wider">
+                      Métrica de Conversión Lead-to-Order
+                    </span>
+                    <span className="text-gray-400 text-xs">•</span>
+                    <span className="text-xs text-blue-100 font-medium">Cotizaciones Generadas vs Vendidas</span>
+                  </div>
+                  <h3 className="text-base font-black text-white flex items-center space-x-2 mt-0.5">
+                    <span>Efectividad Comercial:</span>
+                    <span className="text-emerald-300 font-bold bg-emerald-950/70 border border-emerald-500/40 px-2 py-0.5 rounded text-sm">
+                      {analyticsData.summary.conversionRateQty}% ({analyticsData.summary.totalWonQuotations} vendidas de {analyticsData.summary.totalQuotations} generadas)
+                    </span>
+                    <span className="text-xs font-mono text-gray-300 ml-2">
+                      | ${analyticsData.summary.totalSoldAmount.toLocaleString()} de ${analyticsData.summary.totalQuotedAmount.toLocaleString()} USD
+                    </span>
+                  </h3>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setCurrentMainView('analytics')}
+                className="bg-white hover:bg-blue-50 text-[#0A2540] px-4 py-2 rounded-lg font-bold text-xs shadow-md transition flex items-center space-x-2"
+              >
+                <span>Ver Indicadores, Motivos de Pérdida & Filtros</span>
+                <i className="fas fa-arrow-right text-[#006EAD]"></i>
+              </button>
+            </div>
+
+            {/* KPIs Summaries */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6 min-w-[800px]">
+              <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between border-l-4 border-l-[#09A9E8]">
+                <div>
+                  <p className="text-gray-500 text-xs font-bold uppercase mb-1">Oportunidades Abiertas</p>
+                  <p className="text-2xl font-extrabold text-[#0A2540]">{kpis.openCount}</p>
+                </div>
+                <div className="text-[#09A9E8] bg-blue-50 w-10 h-10 rounded-full flex items-center justify-center text-lg">
+                  <i className="fas fa-briefcase"></i>
+                </div>
+              </div>
+              <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between border-l-4 border-l-purple-500">
+                <div>
+                  <p className="text-gray-500 text-xs font-bold uppercase mb-1">Valor del Pipeline</p>
+                  <p className="text-2xl font-extrabold text-[#0A2540]">{kpis.pipelineValue}</p>
+                </div>
+                <div className="text-purple-500 bg-purple-50 w-10 h-10 rounded-full flex items-center justify-center text-lg">
+                  <i className="fas fa-dollar-sign"></i>
+                </div>
+              </div>
+              <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between border-l-4 border-l-yellow-500">
+                <div>
+                  <p className="text-gray-500 text-xs font-bold uppercase mb-1">Tasa de Cierre</p>
+                  <p className="text-2xl font-extrabold text-[#0A2540]">{kpis.winRate}</p>
+                </div>
+                <div className="text-yellow-500 bg-yellow-50 w-10 h-10 rounded-full flex items-center justify-center text-lg">
+                  <i className="fas fa-chart-line"></i>
+                </div>
+              </div>
+              <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between border-l-4 border-l-green-500">
+                <div>
+                  <p className="text-gray-500 text-xs font-bold uppercase mb-1">Ganado este mes</p>
+                  <p className="text-2xl font-extrabold text-[#0A2540]">{kpis.wonThisMonth}</p>
+                </div>
+                <div className="text-green-500 bg-green-50 w-10 h-10 rounded-full flex items-center justify-center text-lg">
+                  <i className="fas fa-trophy"></i>
+                </div>
+              </div>
+            </div>
+
+            {/* Pipeline Kanban Board */}
+            <div className="flex space-x-4 min-w-[1200px] h-[calc(100%-190px)]">
+              {stages.map(stage => {
+                const stageDeals = filteredDeals.filter(d => d.stage === stage);
                 
-                {/* Deals List */}
-                <div className="flex-1 overflow-y-auto p-3 space-y-3">
-                  {stageDeals.map(deal => (
-                    <div 
-                      key={deal.id} 
-                      onClick={() => handleCardClick(deal)}
-                      className="bg-white p-3 rounded-lg shadow-sm border border-gray-200 hover:shadow-md hover:border-[#006EAD] transition-all cursor-pointer group"
+                // Calculate total value of the stage
+                const stageValue = stageDeals.reduce((acc, deal) => {
+                  const val = parseInt(deal.value.replace(/[^0-9]/g, ''), 10);
+                  return acc + (isNaN(val) ? 0 : val);
+                }, 0);
+
+                return (
+                  <div key={stage} className="flex-1 bg-gray-100/50 rounded-xl border border-gray-200 flex flex-col overflow-hidden">
+                    
+                    {/* Stage Header */}
+                    <div className="p-3 border-b border-gray-200 bg-gray-100 flex justify-between items-center shrink-0">
+                      <h3 className="font-bold text-gray-700 text-sm">{stage} ({stageDeals.length})</h3>
+                      <span className="text-xs font-semibold text-gray-500">${stageValue.toLocaleString()}</span>
+                    </div>
+                    
+                    {/* Deals List */}
+                    <div className="flex-1 overflow-y-auto p-3 space-y-3">
+                      {stageDeals.map(deal => (
+                        <div 
+                          key={deal.id} 
+                          onClick={() => handleCardClick(deal)}
+                          className="bg-white p-3 rounded-lg shadow-sm border border-gray-200 hover:shadow-md hover:border-[#006EAD] transition-all cursor-pointer group"
+                        >
+                          <div className="flex justify-between items-start mb-2">
+                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider ${getPriorityColor(deal.priority)}`}>
+                              {deal.priority}
+                            </span>
+                            <span className="text-gray-400 text-xs hover:text-[#006EAD]"><i className="fas fa-ellipsis-h"></i></span>
+                          </div>
+                          
+                          <h4 className="font-bold text-[#0A2540] text-sm leading-tight mb-1 group-hover:text-[#006EAD] transition-colors">{deal.title}</h4>
+                          <p className="text-xs text-gray-500 mb-3 flex items-center">
+                            <i className="far fa-building mr-1.5 text-gray-400"></i>
+                            <span>{deal.company}</span>
+                            {deal.partnerCode && (
+                              <span className="ml-1.5 bg-blue-50 text-[#006EAD] text-[9px] font-bold px-1.5 py-0.2 rounded border border-blue-200">
+                                {deal.partnerCode}
+                              </span>
+                            )}
+                          </p>
+                          
+                          <div className="flex justify-between items-center pt-2 border-t border-gray-50">
+                            <span className="font-extrabold text-[#006EAD] text-sm">
+                              {calculateQuoteActiveValue(deal.quote, deal.stage, deal.value)}
+                            </span>
+                            <div className="flex items-center text-gray-400 text-xs">
+                              <i className="far fa-clock mr-1"></i>
+                              <span>{deal.date}</span>
+                            </div>
+                          </div>
+
+                          {/* Chips indicadores: Actividades, Cotización y Venta Perdida */}
+                          {((deal.activities && deal.activities.length > 0) || (deal.quote && deal.quote.items && deal.quote.items.length > 0)) && (
+                            <div className="flex flex-wrap gap-1 mt-2 pt-2 border-t border-gray-100">
+                              {deal.activities && deal.activities.length > 0 && (
+                                <span className="text-[10px] font-semibold text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-100 flex items-center">
+                                  <i className="fas fa-history mr-1 text-[9px]"></i>{deal.activities.length} act.
+                                </span>
+                              )}
+                              {deal.quote && deal.quote.items && deal.quote.items.length > 0 && (
+                                <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-100 flex items-center">
+                                  <i className="fas fa-boxes mr-1 text-[9px]"></i>{deal.quote.items.length} SKUs
+                                </span>
+                              )}
+                              {deal.salesOrderCode && (
+                                <span className="text-[10px] font-bold text-purple-700 bg-purple-50 px-1.5 py-0.5 rounded border border-purple-200 flex items-center" title={`Pedido ${deal.salesOrderCode} en Módulo 2`}>
+                                  <i className="fas fa-receipt mr-1 text-[9px]"></i>{deal.salesOrderCode}
+                                </span>
+                              )}
+                              {deal.quote && deal.quote.items && deal.quote.items.some(i => i.status === 'perdido') && (
+                                <span className="text-[10px] font-semibold text-red-700 bg-red-50 px-1.5 py-0.5 rounded border border-red-100 flex items-center">
+                                  <i className="fas fa-exclamation-triangle mr-1 text-[9px]"></i>Venta perdida
+                                </span>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                      
+                      {stageDeals.length === 0 && (
+                        <div className="p-4 text-center text-gray-400 text-xs border border-dashed border-gray-300 rounded-lg">
+                          Sin oportunidades en esta etapa
+                        </div>
+                      )}
+
+                      <div className="h-4"></div>
+                    </div>
+
+                  </div>
+                );
+              })}
+            </div>
+          </>
+        ) : (
+          /* ========================================================= */
+          /* VISTA ANALÍTICA DE COTIZACIONES VS VENDIDAS & PÉRDIDAS    */
+          /* ========================================================= */
+          <div className="space-y-6 max-w-7xl mx-auto pb-12 animate-fadeIn">
+            
+            {/* Header del Panel Analítico y Filtros */}
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-5 space-y-4">
+              <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-3 border-b border-gray-100 pb-4">
+                <div>
+                  <div className="flex items-center space-x-2">
+                    <span className="bg-blue-100 text-[#006EAD] text-[11px] font-black uppercase px-2 py-0.5 rounded-md">
+                      Módulo 1 CRM • Business Intelligence
+                    </span>
+                    <span className="text-xs text-gray-400">|</span>
+                    <span className="text-xs text-gray-500 font-medium">Control de Tasa de Cierre y Fugas Comerciales</span>
+                  </div>
+                  <h2 className="text-xl font-black text-[#0A2540] mt-1 flex items-center space-x-2">
+                    <i className="fas fa-chart-line text-[#006EAD]"></i>
+                    <span>Cotizaciones Generadas vs Cotizaciones Vendidas & Pérdidas</span>
+                  </h2>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={handleResetAnalyticsFilters}
+                    className="px-3 py-1.5 rounded-lg border border-gray-300 text-xs font-bold text-gray-700 hover:bg-gray-100 transition flex items-center space-x-1.5"
+                  >
+                    <i className="fas fa-undo text-gray-400"></i>
+                    <span>Restablecer Filtros</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setCurrentMainView('kanban')}
+                    className="px-3.5 py-1.5 rounded-lg bg-[#0A2540] text-white text-xs font-bold hover:bg-[#006EAD] transition flex items-center space-x-1.5"
+                  >
+                    <i className="fas fa-columns"></i>
+                    <span>Ver Tablero Kanban</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Filtros Dinámicos */}
+              <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div className="flex items-center space-x-2">
+                    <i className="fas fa-calendar-alt text-[#006EAD] text-sm"></i>
+                    <span className="text-xs font-black text-gray-700 uppercase tracking-wider">
+                      Filtro por Rango de Fechas:
+                    </span>
+                  </div>
+
+                  {/* Atajos Rápidos */}
+                  <div className="flex flex-wrap gap-1">
+                    {[
+                      { id: 'all', label: 'Histórico Completo' },
+                      { id: 'year', label: 'Año 2026' },
+                      { id: 'thisMonth', label: 'Este Mes' },
+                      { id: 'last30', label: 'Últimos 30 días' },
+                      { id: 'last7', label: 'Últimos 7 días' },
+                      { id: 'today', label: 'Hoy' }
+                    ].map(p => (
+                      <button
+                        key={p.id}
+                        type="button"
+                        onClick={() => handleApplyDatePreset(p.id)}
+                        className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition ${
+                          analyticsDatePreset === p.id
+                            ? 'bg-[#006EAD] text-white shadow-xs'
+                            : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-100'
+                        }`}
+                      >
+                        {p.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 pt-2 border-t border-slate-200/70">
+                  <div>
+                    <label className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Fecha Desde</label>
+                    <input
+                      type="date"
+                      value={analyticsDateFrom}
+                      onChange={(e) => { setAnalyticsDateFrom(e.target.value); setAnalyticsDatePreset('custom'); }}
+                      className="w-full px-2.5 py-1.5 border border-gray-300 rounded-lg text-xs font-semibold bg-white focus:outline-none focus:border-[#006EAD]"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Fecha Hasta</label>
+                    <input
+                      type="date"
+                      value={analyticsDateTo}
+                      onChange={(e) => { setAnalyticsDateTo(e.target.value); setAnalyticsDatePreset('custom'); }}
+                      className="w-full px-2.5 py-1.5 border border-gray-300 rounded-lg text-xs font-semibold bg-white focus:outline-none focus:border-[#006EAD]"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Sucursal</label>
+                    <select
+                      value={analyticsBranch}
+                      onChange={(e) => setAnalyticsBranch(e.target.value)}
+                      className="w-full px-2.5 py-1.5 border border-gray-300 rounded-lg text-xs font-semibold bg-white focus:outline-none focus:border-[#006EAD]"
+                    >
+                      <option value="TODAS">🏢 Total Empresa (Todas)</option>
+                      {BRANCHES_LIST.map(b => (
+                        <option key={b} value={b}>{b}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Vendedor / Asesor</label>
+                    <select
+                      value={analyticsSeller}
+                      onChange={(e) => setAnalyticsSeller(e.target.value)}
+                      className="w-full px-2.5 py-1.5 border border-gray-300 rounded-lg text-xs font-semibold bg-white focus:outline-none focus:border-[#006EAD]"
+                    >
+                      <option value="TODOS">👤 Todos los Asesores</option>
+                      {SELLERS_LIST.map(s => (
+                        <option key={s} value={s}>{s}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Proveedor / Fabricante</label>
+                    <select
+                      value={analyticsProvider}
+                      onChange={(e) => setAnalyticsProvider(e.target.value)}
+                      className="w-full px-2.5 py-1.5 border border-gray-300 rounded-lg text-xs font-semibold bg-white focus:outline-none focus:border-[#006EAD]"
+                    >
+                      <option value="TODOS">🏭 Todos los Proveedores</option>
+                      {availableProviders.map(p => (
+                        <option key={p} value={p}>{p}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-[10px] font-bold text-gray-500 uppercase mb-1">Categoría Producto</label>
+                    <select
+                      value={analyticsCategory}
+                      onChange={(e) => setAnalyticsCategory(e.target.value)}
+                      className="w-full px-2.5 py-1.5 border border-gray-300 rounded-lg text-xs font-semibold bg-white focus:outline-none focus:border-[#006EAD]"
+                    >
+                      <option value="TODAS">🏷️ Todas las Categorías</option>
+                      {availableCategories.map(c => (
+                        <option key={c} value={c}>{c}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap items-center justify-between text-xs text-gray-500 pt-1">
+                  <span>
+                    Mostrando resultados para: <strong>{analyticsBranch === 'TODAS' ? 'Total Empresa' : analyticsBranch}</strong>
+                    {analyticsSeller !== 'TODOS' && ` • Vendedor: ${analyticsSeller}`}
+                    {analyticsProvider !== 'TODOS' && ` • Proveedor: ${analyticsProvider}`}
+                    {analyticsCategory !== 'TODAS' && ` • Categoría: ${analyticsCategory}`}
+                    {analyticsSku !== 'TODOS' && ` • SKU: ${analyticsSku}`}
+                  </span>
+                  <span className="font-bold text-[#006EAD]">
+                    {analyticsData.filteredDealsCount} cotizaciones evaluadas en este filtro
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* ========================================================= */}
+            {/* INDICADORES CLAVE (COTIZACIONES GENERADAS VS VENDIDAS)    */}
+            {/* ========================================================= */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              
+              {/* 1. Cotizaciones Generadas */}
+              <div className="bg-white rounded-2xl p-5 border border-gray-200 shadow-sm relative overflow-hidden border-t-4 border-t-blue-600">
+                <div className="flex justify-between items-start mb-2">
+                  <span className="text-gray-500 font-bold uppercase text-[11px] tracking-wider">
+                    Cotizaciones Generadas
+                  </span>
+                  <div className="w-9 h-9 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-base">
+                    <i className="fas fa-file-invoice-dollar"></i>
+                  </div>
+                </div>
+                <div className="flex items-baseline space-x-2">
+                  <span className="text-3xl font-black text-gray-900">
+                    {analyticsData.summary.totalQuotations}
+                  </span>
+                  <span className="text-xs font-bold text-gray-400">cotizaciones</span>
+                </div>
+                <div className="mt-2 text-xs font-mono font-bold text-blue-800 bg-blue-50 px-2.5 py-1 rounded-md inline-block">
+                  ${analyticsData.summary.totalQuotedAmount.toLocaleString()} USD
+                </div>
+                <p className="text-[11px] text-gray-400 mt-2">
+                  100% volumen bruto cotizado en el rango seleccionado.
+                </p>
+              </div>
+
+              {/* 2. Cotizaciones Vendidas (Cierre) */}
+              <div className="bg-white rounded-2xl p-5 border border-emerald-200 shadow-sm relative overflow-hidden border-t-4 border-t-emerald-500 bg-emerald-50/20">
+                <div className="flex justify-between items-start mb-2">
+                  <span className="text-emerald-800 font-bold uppercase text-[11px] tracking-wider">
+                    Cotizaciones Vendidas (Cierre)
+                  </span>
+                  <div className="w-9 h-9 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center text-base">
+                    <i className="fas fa-check-double"></i>
+                  </div>
+                </div>
+                <div className="flex items-baseline space-x-2">
+                  <span className="text-3xl font-black text-emerald-700">
+                    {analyticsData.summary.totalWonQuotations}
+                  </span>
+                  <span className="text-xs font-bold text-emerald-600">vendidas</span>
+                  <span className="ml-auto text-sm font-black bg-emerald-100 text-emerald-800 px-2.5 py-0.5 rounded-full border border-emerald-300">
+                    {analyticsData.summary.conversionRateQty}%
+                  </span>
+                </div>
+                <div className="mt-2 text-xs font-mono font-bold text-emerald-900 bg-emerald-100/70 px-2.5 py-1 rounded-md inline-block">
+                  ${analyticsData.summary.totalSoldAmount.toLocaleString()} USD ({analyticsData.summary.conversionRateAmount}% monto)
+                </div>
+
+                {/* Barra de progreso de conversión */}
+                <div className="mt-2.5 w-full bg-emerald-100 h-2 rounded-full overflow-hidden">
+                  <div 
+                    className="bg-emerald-600 h-full rounded-full transition-all duration-500"
+                    style={{ width: `${Math.min(100, Number(analyticsData.summary.conversionRateQty))}%` }}
+                  ></div>
+                </div>
+                <p className="text-[11px] text-emerald-700 mt-1 font-semibold">
+                  Tasa de efectividad de cotizaciones a compras reales.
+                </p>
+              </div>
+
+              {/* 3. Cotizaciones en Negociación / Abiertas */}
+              <div className="bg-white rounded-2xl p-5 border border-gray-200 shadow-sm relative overflow-hidden border-t-4 border-t-amber-500">
+                <div className="flex justify-between items-start mb-2">
+                  <span className="text-amber-800 font-bold uppercase text-[11px] tracking-wider">
+                    En Negociación / Abiertas
+                  </span>
+                  <div className="w-9 h-9 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center text-base">
+                    <i className="fas fa-hourglass-half"></i>
+                  </div>
+                </div>
+                <div className="flex items-baseline space-x-2">
+                  <span className="text-3xl font-black text-amber-700">
+                    {analyticsData.summary.totalOpenQuotations}
+                  </span>
+                  <span className="text-xs font-bold text-amber-600">en proceso</span>
+                  <span className="ml-auto text-sm font-black bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full">
+                    {analyticsData.summary.pendingRate}%
+                  </span>
+                </div>
+                <div className="mt-2 text-xs font-mono font-bold text-amber-800 bg-amber-50 px-2.5 py-1 rounded-md inline-block">
+                  ${analyticsData.summary.totalPendingAmount.toLocaleString()} USD
+                </div>
+                <p className="text-[11px] text-gray-400 mt-2">
+                  Cotizaciones en curso pendientes de decisión final.
+                </p>
+              </div>
+
+              {/* 4. Ventas Perdidas / Fuga */}
+              <div className="bg-white rounded-2xl p-5 border border-red-200 shadow-sm relative overflow-hidden border-t-4 border-t-red-500 bg-red-50/20">
+                <div className="flex justify-between items-start mb-2">
+                  <span className="text-red-800 font-bold uppercase text-[11px] tracking-wider">
+                    Ventas Perdidas / Fuga
+                  </span>
+                  <div className="w-9 h-9 rounded-lg bg-red-100 text-red-700 flex items-center justify-center text-base">
+                    <i className="fas fa-exclamation-triangle"></i>
+                  </div>
+                </div>
+                <div className="flex items-baseline space-x-2">
+                  <span className="text-3xl font-black text-red-700">
+                    {analyticsData.summary.totalLostQuotations}
+                  </span>
+                  <span className="text-xs font-bold text-red-600">cotiz. ({analyticsData.summary.totalLostItemsCount} SKUs)</span>
+                  <span className="ml-auto text-sm font-black bg-red-100 text-red-800 px-2 py-0.5 rounded-full border border-red-200">
+                    {analyticsData.summary.lossRateAmount}%
+                  </span>
+                </div>
+                <div className="mt-2 text-xs font-mono font-bold text-red-800 bg-red-100/70 px-2.5 py-1 rounded-md inline-block">
+                  -${analyticsData.summary.totalLostAmount.toLocaleString()} USD fugados
+                </div>
+                <p className="text-[11px] text-red-700 font-semibold mt-2">
+                  Rechazos clasificados por los 5 motivos de no compra.
+                </p>
+              </div>
+            </div>
+
+            {/* ========================================================= */}
+            {/* AUDITORÍA DE MOTIVOS DE VENTAS PERDIDAS (1 AL 5)          */}
+            {/* ========================================================= */}
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 space-y-4">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-gray-100 pb-3">
+                <div>
+                  <h3 className="text-base font-black text-gray-900 flex items-center space-x-2">
+                    <i className="fas fa-list-ol text-red-600"></i>
+                    <span>Motivos de Ventas Perdidas (Razones Estratégicas de No Compra)</span>
+                  </h3>
+                  <p className="text-xs text-gray-500 mt-0.5">
+                    Auditoría de por qué los clientes declinaron o descartaron SKUs cotizados (Fuga total: ${analyticsData.summary.totalLostAmount.toLocaleString()} USD en {analyticsData.summary.totalLostItemsCount} SKUs).
+                  </p>
+                </div>
+                <span className="text-xs font-bold bg-red-50 text-red-700 border border-red-200 px-2.5 py-1 rounded-lg">
+                  {analyticsData.reasonsList.filter(r => r.amount > 0).length} Motivos con Incidencia Activa
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                {analyticsData.reasonsList.map((r) => {
+                  const hasLoss = r.amount > 0;
+                  return (
+                    <div
+                      key={r.reason}
+                      className={`p-4 rounded-xl border transition ${
+                        hasLoss
+                          ? 'bg-red-50/30 border-red-200 hover:border-red-400 hover:shadow-xs'
+                          : 'bg-gray-50/50 border-gray-200 opacity-60'
+                      }`}
                     >
                       <div className="flex justify-between items-start mb-2">
-                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider ${getPriorityColor(deal.priority)}`}>
-                          {deal.priority}
+                        <span className={`text-xs font-black ${hasLoss ? 'text-red-900' : 'text-gray-500'}`}>
+                          {r.reason}
                         </span>
-                        <span className="text-gray-400 text-xs hover:text-[#006EAD]"><i className="fas fa-ellipsis-h"></i></span>
-                      </div>
-                      
-                      <h4 className="font-bold text-[#0A2540] text-sm leading-tight mb-1 group-hover:text-[#006EAD] transition-colors">{deal.title}</h4>
-                      <p className="text-xs text-gray-500 mb-3 flex items-center">
-                        <i className="far fa-building mr-1.5 text-gray-400"></i>
-                        <span>{deal.company}</span>
-                        {deal.partnerCode && (
-                          <span className="ml-1.5 bg-blue-50 text-[#006EAD] text-[9px] font-bold px-1.5 py-0.2 rounded border border-blue-200">
-                            {deal.partnerCode}
-                          </span>
-                        )}
-                      </p>
-                      
-                      <div className="flex justify-between items-center pt-2 border-t border-gray-50">
-                        <span className="font-extrabold text-[#006EAD] text-sm">
-                          {calculateQuoteActiveValue(deal.quote, deal.stage, deal.value)}
+                        <span className={`text-[10px] font-black px-1.5 py-0.5 rounded ${
+                          hasLoss ? 'bg-red-200 text-red-900' : 'bg-gray-200 text-gray-600'
+                        }`}>
+                          {r.percentOfLoss}% de la fuga
                         </span>
-                        <div className="flex items-center text-gray-400 text-xs">
-                          <i className="far fa-clock mr-1"></i>
-                          <span>{deal.date}</span>
-                        </div>
                       </div>
 
-                      {/* Chips indicadores: Actividades, Cotización y Venta Perdida */}
-                      {((deal.activities && deal.activities.length > 0) || (deal.quote && deal.quote.items && deal.quote.items.length > 0)) && (
-                        <div className="flex flex-wrap gap-1 mt-2 pt-2 border-t border-gray-100">
-                          {deal.activities && deal.activities.length > 0 && (
-                            <span className="text-[10px] font-semibold text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-100 flex items-center">
-                              <i className="fas fa-history mr-1 text-[9px]"></i>{deal.activities.length} act.
-                            </span>
-                          )}
-                          {deal.quote && deal.quote.items && deal.quote.items.length > 0 && (
-                            <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-100 flex items-center">
-                              <i className="fas fa-boxes mr-1 text-[9px]"></i>{deal.quote.items.length} SKUs
-                            </span>
-                          )}
-                          {deal.salesOrderCode && (
-                            <span className="text-[10px] font-bold text-purple-700 bg-purple-50 px-1.5 py-0.5 rounded border border-purple-200 flex items-center" title={`Pedido ${deal.salesOrderCode} en Módulo 2`}>
-                              <i className="fas fa-receipt mr-1 text-[9px]"></i>{deal.salesOrderCode}
-                            </span>
-                          )}
-                          {deal.quote && deal.quote.items && deal.quote.items.some(i => i.status === 'perdido') && (
-                            <span className="text-[10px] font-semibold text-red-700 bg-red-50 px-1.5 py-0.5 rounded border border-red-100 flex items-center">
-                              <i className="fas fa-exclamation-triangle mr-1 text-[9px]"></i>Venta perdida
-                            </span>
-                          )}
+                      <div className="flex justify-between items-baseline text-xs mb-2">
+                        <span className="text-gray-500 font-semibold">{r.count} SKUs ({r.dealCount} cotizaciones)</span>
+                        <span className={`font-mono font-black text-sm ${hasLoss ? 'text-red-700' : 'text-gray-400'}`}>
+                          ${r.amount.toLocaleString()} USD
+                        </span>
+                      </div>
+
+                      {/* Barra de impacto */}
+                      <div className="w-full bg-gray-200 h-2 rounded-full overflow-hidden mb-2">
+                        <div 
+                          className="bg-red-500 h-full rounded-full transition-all duration-300"
+                          style={{ width: `${Math.min(100, Number(r.percentOfLoss))}%` }}
+                        ></div>
+                      </div>
+
+                      {hasLoss && (
+                        <button
+                          type="button"
+                          onClick={() => setExpandedReason(expandedReason === r.reason ? null : r.reason)}
+                          className="text-[11px] font-bold text-red-700 hover:text-red-900 underline flex items-center space-x-1 mt-1"
+                        >
+                          <span>{expandedReason === r.reason ? 'Ocultar Casos ▲' : `Ver ${r.items.length} Casos ▼`}</span>
+                        </button>
+                      )}
+
+                      {/* Casos expandidos */}
+                      {expandedReason === r.reason && (
+                        <div className="mt-3 pt-3 border-t border-red-200 space-y-2 text-[11px]">
+                          {r.items.map((it, i) => (
+                            <div key={i} className="bg-white p-2.5 rounded-lg border border-red-100 shadow-2xs">
+                              <div className="flex justify-between font-bold text-gray-900">
+                                <span>{it.company}</span>
+                                <span className="text-red-700 font-mono">${it.amount.toLocaleString()}</span>
+                              </div>
+                              <div className="text-gray-700 text-[11px] mt-0.5">
+                                <strong className="text-red-800">{it.sku}</strong> • {it.name} ({it.quantity} un.)
+                              </div>
+                              <div className="text-gray-400 text-[10px] mt-1 flex flex-wrap gap-2">
+                                <span>📍 {it.branch}</span>
+                                <span>👤 {it.seller}</span>
+                                <span>📅 {it.date}</span>
+                              </div>
+                              {it.notes && (
+                                <div className="text-amber-900 bg-amber-50 p-1.5 rounded mt-1 text-[10px] italic border border-amber-200">
+                                  "{it.notes}"
+                                </div>
+                              )}
+                            </div>
+                          ))}
                         </div>
                       )}
                     </div>
-                  ))}
-                  
-                  {stageDeals.length === 0 && (
-                    <div className="p-4 text-center text-gray-400 text-xs border border-dashed border-gray-300 rounded-lg">
-                      Sin oportunidades en esta etapa
-                    </div>
-                  )}
+                  );
+                })}
+              </div>
+            </div>
 
-                  <div className="h-4"></div>
-                </div>
+            {/* ========================================================= */}
+            {/* CLASIFICACIÓN MULTIDIMENSIONAL                            */}
+            {/* Total Empresa | Sucursal | Vendedor | Proveedor | Código  */}
+            {/* ========================================================= */}
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+              
+              {/* Pestañas de Clasificación */}
+              <div className="flex flex-wrap border-b border-gray-200 bg-slate-50 px-4 pt-2 gap-1 text-xs font-bold">
+                {[
+                  { id: 'total_empresa', label: '🏢 Total Empresa', count: null },
+                  { id: 'sucursal', label: '📍 Por Sucursal', count: analyticsData.branchList.length },
+                  { id: 'vendedor', label: '👤 Por Vendedor', count: analyticsData.sellerList.length },
+                  { id: 'proveedor', label: '🏭 Por Proveedor', count: analyticsData.providerList.length },
+                  { id: 'categoria', label: '🏷️ Por Categoría', count: analyticsData.categoryList.length },
+                  { id: 'sku', label: '📦 Por Códigos (SKU)', count: analyticsData.skuList.length }
+                ].map(tab => (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    onClick={() => setAnalyticsActiveTab(tab.id)}
+                    className={`py-2.5 px-4 rounded-t-lg transition flex items-center space-x-2 border-t border-l border-r ${
+                      analyticsActiveTab === tab.id
+                        ? 'bg-white border-gray-200 text-[#006EAD] border-b-2 border-b-white -mb-[1px]'
+                        : 'border-transparent text-gray-600 hover:text-gray-900 hover:bg-slate-100'
+                    }`}
+                  >
+                    <span>{tab.label}</span>
+                    {tab.count !== null && (
+                      <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${
+                        analyticsActiveTab === tab.id ? 'bg-blue-100 text-[#006EAD]' : 'bg-gray-200 text-gray-700'
+                      }`}>
+                        {tab.count}
+                      </span>
+                    )}
+                  </button>
+                ))}
+              </div>
+
+              {/* Contenido de la Clasificación Seleccionada */}
+              <div className="p-6">
+                
+                {/* 1. TOTAL EMPRESA */}
+                {analyticsActiveTab === 'total_empresa' && (
+                  <div className="space-y-6">
+                    <div className="bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 text-white p-5 rounded-xl shadow-xs">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-blue-300">
+                            Consolidado Estratégico General
+                          </span>
+                          <h4 className="text-lg font-black text-white mt-1">
+                            Salud Comercial & Conversión Total de la Compañía
+                          </h4>
+                          <p className="text-xs text-blue-100 mt-1 max-w-2xl">
+                            Evaluación holística de la efectividad comercial entre cotizaciones emitidas, contratos o compras ganadas, y causas detectadas de venta perdida en todas las sucursales.
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <span className="text-2xl font-black text-emerald-400">
+                            {analyticsData.summary.conversionRateQty}%
+                          </span>
+                          <span className="text-[10px] uppercase font-bold text-gray-300 block">Efectividad Global</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Comparativa Rápida en Tarjetas */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div className="p-4 rounded-xl border border-gray-200 bg-slate-50/70">
+                        <span className="text-[11px] font-bold text-gray-500 uppercase block mb-1">
+                          📍 Sucursal con Mayor Cierre
+                        </span>
+                        <h5 className="text-base font-black text-gray-900">
+                          {analyticsData.branchList[0]?.branch || 'N/A'}
+                        </h5>
+                        <p className="text-xs text-emerald-700 font-bold mt-1">
+                          {analyticsData.branchList[0]?.winRateQty || 0}% efectividad (${analyticsData.branchList[0]?.wonAmount.toLocaleString()} USD)
+                        </p>
+                      </div>
+
+                      <div className="p-4 rounded-xl border border-gray-200 bg-slate-50/70">
+                        <span className="text-[11px] font-bold text-gray-500 uppercase block mb-1">
+                          👤 Asesor Comercial Líder
+                        </span>
+                        <h5 className="text-base font-black text-gray-900">
+                          {analyticsData.sellerList[0]?.seller || 'N/A'}
+                        </h5>
+                        <p className="text-xs text-blue-700 font-bold mt-1">
+                          ${analyticsData.sellerList[0]?.wonAmount.toLocaleString()} USD vendidos ({analyticsData.sellerList[0]?.winRateQty || 0}% tasa)
+                        </p>
+                      </div>
+
+                      <div className="p-4 rounded-xl border border-red-200 bg-red-50/30">
+                        <span className="text-[11px] font-bold text-red-700 uppercase block mb-1">
+                          ⚠️ Principal Causa de Fuga
+                        </span>
+                        <h5 className="text-base font-black text-red-900">
+                          {analyticsData.reasonsList[0]?.reason || 'Sin pérdidas'}
+                        </h5>
+                        <p className="text-xs text-red-700 font-bold mt-1">
+                          ${analyticsData.reasonsList[0]?.amount.toLocaleString()} USD ({analyticsData.reasonsList[0]?.percentOfLoss}% de las pérdidas)
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Tabla de Resumen por Sucursales en Total Empresa */}
+                    <div className="border border-gray-200 rounded-xl overflow-hidden shadow-2xs">
+                      <div className="bg-slate-100 px-4 py-2.5 font-bold text-xs text-gray-700 border-b border-gray-200">
+                        Desglose Comparativo por Sucursal (Total Empresa)
+                      </div>
+                      <table className="w-full text-left text-xs">
+                        <thead className="bg-slate-50 text-gray-600 uppercase text-[10px] font-bold border-b border-gray-200">
+                          <tr>
+                            <th className="py-2.5 px-3">Sucursal</th>
+                            <th className="py-2.5 px-3 text-center">Cotizaciones</th>
+                            <th className="py-2.5 px-3 text-right">Monto Cotizado</th>
+                            <th className="py-2.5 px-3 text-center">Vendidas</th>
+                            <th className="py-2.5 px-3 text-right">Monto Vendido</th>
+                            <th className="py-2.5 px-3 text-center">% Conversión</th>
+                            <th className="py-2.5 px-3 text-right">Monto Perdido</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100">
+                          {analyticsData.branchList.map(b => (
+                            <tr key={b.branch} className="hover:bg-slate-50 transition">
+                              <td className="py-2.5 px-3 font-bold text-gray-900">{b.branch}</td>
+                              <td className="py-2.5 px-3 text-center">{b.genCount}</td>
+                              <td className="py-2.5 px-3 text-right font-mono">${b.genAmount.toLocaleString()}</td>
+                              <td className="py-2.5 px-3 text-center text-emerald-700 font-bold">{b.wonCount}</td>
+                              <td className="py-2.5 px-3 text-right font-mono text-emerald-700 font-bold">${b.wonAmount.toLocaleString()}</td>
+                              <td className="py-2.5 px-3 text-center font-bold">
+                                <span className={`px-2 py-0.5 rounded text-[11px] ${
+                                  Number(b.winRateQty) >= 60 ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'
+                                }`}>
+                                  {b.winRateQty}%
+                                </span>
+                              </td>
+                              <td className="py-2.5 px-3 text-right font-mono text-red-700 font-bold">
+                                {b.lostAmount > 0 ? `-$${b.lostAmount.toLocaleString()}` : '$0'}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
+
+                {/* 2. POR SUCURSAL */}
+                {analyticsActiveTab === 'sucursal' && (
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center text-xs text-gray-500">
+                      <span>Rendimiento comercial y fuga segmentado por cada agencia/sucursal de NyTEX.</span>
+                      <span className="font-bold text-[#006EAD]">{analyticsData.branchList.length} Sucursales Registradas</span>
+                    </div>
+
+                    <div className="border border-gray-200 rounded-xl overflow-hidden shadow-2xs">
+                      <table className="w-full text-left text-xs">
+                        <thead className="bg-slate-50 text-gray-700 uppercase text-[10px] font-bold border-b border-gray-200">
+                          <tr>
+                            <th className="py-3 px-3">Sucursal</th>
+                            <th className="py-3 px-3 text-center">Generadas</th>
+                            <th className="py-3 px-3 text-right">Monto Cotizado</th>
+                            <th className="py-3 px-3 text-center">Vendidas</th>
+                            <th className="py-3 px-3 text-right">Monto Vendido</th>
+                            <th className="py-3 px-3 text-center">% Efectividad (Cant.)</th>
+                            <th className="py-3 px-3 text-center">% Efectividad ($)</th>
+                            <th className="py-3 px-3 text-right">Monto Perdido</th>
+                            <th className="py-3 px-3">Causa Principal de Pérdida</th>
+                            <th className="py-3 px-3 text-center">Acción</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100">
+                          {analyticsData.branchList.map(b => (
+                            <tr key={b.branch} className="hover:bg-slate-50 transition">
+                              <td className="py-3 px-3 font-black text-gray-900 flex items-center space-x-1.5">
+                                <i className="fas fa-store text-blue-600"></i>
+                                <span>{b.branch}</span>
+                              </td>
+                              <td className="py-3 px-3 text-center font-bold text-gray-700">{b.genCount}</td>
+                              <td className="py-3 px-3 text-right font-mono">${b.genAmount.toLocaleString()}</td>
+                              <td className="py-3 px-3 text-center font-black text-emerald-700">{b.wonCount}</td>
+                              <td className="py-3 px-3 text-right font-mono text-emerald-700 font-bold">${b.wonAmount.toLocaleString()}</td>
+                              <td className="py-3 px-3 text-center">
+                                <span className={`px-2 py-0.5 rounded font-black text-[11px] ${
+                                  Number(b.winRateQty) >= 60 ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'
+                                }`}>
+                                  {b.winRateQty}%
+                                </span>
+                              </td>
+                              <td className="py-3 px-3 text-center font-mono text-gray-600 font-semibold">{b.winRateAmount}%</td>
+                              <td className="py-3 px-3 text-right font-mono text-red-700 font-bold">
+                                {b.lostAmount > 0 ? `-$${b.lostAmount.toLocaleString()}` : '$0'}
+                              </td>
+                              <td className="py-3 px-3 text-gray-600 text-[11px]">
+                                <span className="bg-red-50 text-red-800 px-2 py-0.5 rounded border border-red-100 font-medium">
+                                  {b.topLostReason}
+                                </span>
+                              </td>
+                              <td className="py-3 px-3 text-center">
+                                <button
+                                  type="button"
+                                  onClick={() => { setAnalyticsBranch(b.branch); showToast(`📍 Filtrado por ${b.branch}`); }}
+                                  className="text-[10px] bg-blue-50 text-[#006EAD] hover:bg-blue-100 font-bold px-2 py-1 rounded"
+                                >
+                                  Filtrar
+                                </button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
+
+                {/* 3. POR VENDEDOR */}
+                {analyticsActiveTab === 'vendedor' && (
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center text-xs text-gray-500">
+                      <span>Ranking de desempeño comercial y conversión por asesor de ventas.</span>
+                      <span className="font-bold text-[#006EAD]">{analyticsData.sellerList.length} Asesores</span>
+                    </div>
+
+                    <div className="border border-gray-200 rounded-xl overflow-hidden shadow-2xs">
+                      <table className="w-full text-left text-xs">
+                        <thead className="bg-slate-50 text-gray-700 uppercase text-[10px] font-bold border-b border-gray-200">
+                          <tr>
+                            <th className="py-3 px-3">Asesor Comercial</th>
+                            <th className="py-3 px-3 text-center">Cotizaciones</th>
+                            <th className="py-3 px-3 text-right">Monto Cotizado</th>
+                            <th className="py-3 px-3 text-center">Vendidas</th>
+                            <th className="py-3 px-3 text-right">Monto Vendido</th>
+                            <th className="py-3 px-3 text-center">% Tasa de Cierre</th>
+                            <th className="py-3 px-3 text-right">Monto Pérdida</th>
+                            <th className="py-3 px-3">Principal Rechazo</th>
+                            <th className="py-3 px-3 text-center">Acción</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100">
+                          {analyticsData.sellerList.map(s => (
+                            <tr key={s.seller} className="hover:bg-slate-50 transition">
+                              <td className="py-3 px-3 font-black text-gray-900 flex items-center space-x-2">
+                                <div className="w-6 h-6 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-[10px] font-bold">
+                                  {s.seller.charAt(0)}
+                                </div>
+                                <span>{s.seller}</span>
+                              </td>
+                              <td className="py-3 px-3 text-center font-bold text-gray-700">{s.genCount}</td>
+                              <td className="py-3 px-3 text-right font-mono">${s.genAmount.toLocaleString()}</td>
+                              <td className="py-3 px-3 text-center font-black text-emerald-700">{s.wonCount}</td>
+                              <td className="py-3 px-3 text-right font-mono text-emerald-700 font-bold">${s.wonAmount.toLocaleString()}</td>
+                              <td className="py-3 px-3 text-center">
+                                <span className={`px-2 py-0.5 rounded font-black text-[11px] ${
+                                  Number(s.winRateQty) >= 60 ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'
+                                }`}>
+                                  {s.winRateQty}%
+                                </span>
+                              </td>
+                              <td className="py-3 px-3 text-right font-mono text-red-700 font-bold">
+                                {s.lostAmount > 0 ? `-$${s.lostAmount.toLocaleString()}` : '$0'}
+                              </td>
+                              <td className="py-3 px-3 text-gray-600 text-[11px]">
+                                <span className="bg-red-50 text-red-800 px-2 py-0.5 rounded border border-red-100 font-medium">
+                                  {s.topLostReason}
+                                </span>
+                              </td>
+                              <td className="py-3 px-3 text-center">
+                                <button
+                                  type="button"
+                                  onClick={() => { setAnalyticsSeller(s.seller); showToast(`👤 Filtrado por ${s.seller}`); }}
+                                  className="text-[10px] bg-blue-50 text-[#006EAD] hover:bg-blue-100 font-bold px-2 py-1 rounded"
+                                >
+                                  Filtrar
+                                </button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
+
+                {/* 4. POR PROVEEDOR */}
+                {analyticsActiveTab === 'proveedor' && (
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center text-xs text-gray-500">
+                      <span>Efectividad de cotización y ventas según la marca o proveedor del producto.</span>
+                      <span className="font-bold text-[#006EAD]">{analyticsData.providerList.length} Proveedores</span>
+                    </div>
+
+                    <div className="border border-gray-200 rounded-xl overflow-hidden shadow-2xs">
+                      <table className="w-full text-left text-xs">
+                        <thead className="bg-slate-50 text-gray-700 uppercase text-[10px] font-bold border-b border-gray-200">
+                          <tr>
+                            <th className="py-3 px-3">Proveedor / Marca</th>
+                            <th className="py-3 px-3 text-center">Unidades Cotizadas</th>
+                            <th className="py-3 px-3 text-right">Monto Cotizado</th>
+                            <th className="py-3 px-3 text-center">Unidades Vendidas</th>
+                            <th className="py-3 px-3 text-right">Monto Vendido</th>
+                            <th className="py-3 px-3 text-center">% Éxito Marca ($)</th>
+                            <th className="py-3 px-3 text-right">Monto Perdido</th>
+                            <th className="py-3 px-3 text-center">Acción</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100">
+                          {analyticsData.providerList.map(p => (
+                            <tr key={p.provider} className="hover:bg-slate-50 transition">
+                              <td className="py-3 px-3 font-bold text-gray-900 flex items-center space-x-1.5">
+                                <i className="fas fa-industry text-indigo-600"></i>
+                                <span>{p.provider}</span>
+                              </td>
+                              <td className="py-3 px-3 text-center">{p.itemsQuoted}</td>
+                              <td className="py-3 px-3 text-right font-mono">${p.quotedAmount.toLocaleString()}</td>
+                              <td className="py-3 px-3 text-center text-emerald-700 font-bold">{p.itemsSold}</td>
+                              <td className="py-3 px-3 text-right font-mono text-emerald-700 font-bold">${p.soldAmount.toLocaleString()}</td>
+                              <td className="py-3 px-3 text-center font-bold">
+                                <span className={`px-2 py-0.5 rounded text-[11px] ${
+                                  Number(p.winRateAmount) >= 50 ? 'bg-emerald-100 text-emerald-800' : 'bg-gray-100 text-gray-700'
+                                }`}>
+                                  {p.winRateAmount}%
+                                </span>
+                              </td>
+                              <td className="py-3 px-3 text-right font-mono text-red-700 font-bold">
+                                {p.lostAmount > 0 ? `-$${p.lostAmount.toLocaleString()}` : '$0'}
+                              </td>
+                              <td className="py-3 px-3 text-center">
+                                <button
+                                  type="button"
+                                  onClick={() => { setAnalyticsProvider(p.provider); showToast(`🏭 Filtrado por ${p.provider}`); }}
+                                  className="text-[10px] bg-blue-50 text-[#006EAD] hover:bg-blue-100 font-bold px-2 py-1 rounded"
+                                >
+                                  Filtrar
+                                </button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
+
+                {/* 5. POR CATEGORÍA DE PRODUCTOS */}
+                {analyticsActiveTab === 'categoria' && (
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center text-xs text-gray-500">
+                      <span>Comportamiento de cotizaciones y ventas por familia de productos y servicios.</span>
+                      <span className="font-bold text-[#006EAD]">{analyticsData.categoryList.length} Categorías</span>
+                    </div>
+
+                    <div className="border border-gray-200 rounded-xl overflow-hidden shadow-2xs">
+                      <table className="w-full text-left text-xs">
+                        <thead className="bg-slate-50 text-gray-700 uppercase text-[10px] font-bold border-b border-gray-200">
+                          <tr>
+                            <th className="py-3 px-3">Categoría de Producto</th>
+                            <th className="py-3 px-3 text-center">Unidades Cotizadas</th>
+                            <th className="py-3 px-3 text-right">Monto Cotizado</th>
+                            <th className="py-3 px-3 text-center">Unidades Vendidas</th>
+                            <th className="py-3 px-3 text-right">Monto Vendido</th>
+                            <th className="py-3 px-3 text-center">% Conversión ($)</th>
+                            <th className="py-3 px-3 text-right">Monto Fuga</th>
+                            <th className="py-3 px-3 text-center">Acción</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100">
+                          {analyticsData.categoryList.map(c => (
+                            <tr key={c.category} className="hover:bg-slate-50 transition">
+                              <td className="py-3 px-3 font-bold text-gray-900 flex items-center space-x-1.5">
+                                <i className="fas fa-tag text-amber-600"></i>
+                                <span>{c.category}</span>
+                              </td>
+                              <td className="py-3 px-3 text-center">{c.itemsQuoted}</td>
+                              <td className="py-3 px-3 text-right font-mono">${c.quotedAmount.toLocaleString()}</td>
+                              <td className="py-3 px-3 text-center text-emerald-700 font-bold">{c.itemsSold}</td>
+                              <td className="py-3 px-3 text-right font-mono text-emerald-700 font-bold">${c.soldAmount.toLocaleString()}</td>
+                              <td className="py-3 px-3 text-center font-bold">
+                                <span className={`px-2 py-0.5 rounded text-[11px] ${
+                                  Number(c.winRateAmount) >= 50 ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'
+                                }`}>
+                                  {c.winRateAmount}%
+                                </span>
+                              </td>
+                              <td className="py-3 px-3 text-right font-mono text-red-700 font-bold">
+                                {c.lostAmount > 0 ? `-$${c.lostAmount.toLocaleString()}` : '$0'}
+                              </td>
+                              <td className="py-3 px-3 text-center">
+                                <button
+                                  type="button"
+                                  onClick={() => { setAnalyticsCategory(c.category); showToast(`🏷️ Filtrado por ${c.category}`); }}
+                                  className="text-[10px] bg-blue-50 text-[#006EAD] hover:bg-blue-100 font-bold px-2 py-1 rounded"
+                                >
+                                  Filtrar
+                                </button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
+
+                {/* 6. POR CÓDIGOS (SKU) */}
+                {analyticsActiveTab === 'sku' && (
+                  <div className="space-y-4">
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                      <div className="text-xs text-gray-500">
+                        <span>Desglose unitario por código de producto/servicio cotizado en Kardex.</span>
+                      </div>
+                      <div className="w-full sm:w-72">
+                        <input
+                          type="text"
+                          placeholder="Buscar código SKU o nombre..."
+                          value={skuFilterSearch}
+                          onChange={(e) => setSkuFilterSearch(e.target.value)}
+                          className="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-xs bg-white focus:outline-none focus:border-[#006EAD]"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="border border-gray-200 rounded-xl overflow-hidden shadow-2xs max-h-[500px] overflow-y-auto">
+                      <table className="w-full text-left text-xs">
+                        <thead className="bg-slate-50 text-gray-700 uppercase text-[10px] font-bold border-b border-gray-200 sticky top-0 z-10 shadow-2xs">
+                          <tr>
+                            <th className="py-3 px-3">Código SKU</th>
+                            <th className="py-3 px-3">Descripción Producto / Servicio</th>
+                            <th className="py-3 px-3">Proveedor</th>
+                            <th className="py-3 px-3 text-center">Unid. Cotizadas</th>
+                            <th className="py-3 px-3 text-right">Monto Cotizado</th>
+                            <th className="py-3 px-3 text-center">Unid. Vendidas</th>
+                            <th className="py-3 px-3 text-right">Monto Vendido</th>
+                            <th className="py-3 px-3 text-center">% Éxito SKU</th>
+                            <th className="py-3 px-3 text-center">Unid. Perdidas</th>
+                            <th className="py-3 px-3 text-right">Monto Fuga</th>
+                            <th className="py-3 px-3">Causa de Pérdida</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100">
+                          {analyticsData.skuList
+                            .filter(s => {
+                              if (!skuFilterSearch.trim()) return true;
+                              const q = skuFilterSearch.toLowerCase();
+                              return s.sku.toLowerCase().includes(q) || (s.name || '').toLowerCase().includes(q);
+                            })
+                            .map(s => (
+                              <tr key={s.sku} className="hover:bg-slate-50 transition">
+                                <td className="py-2.5 px-3 font-mono font-bold text-[#006EAD]">
+                                  {s.sku}
+                                </td>
+                                <td className="py-2.5 px-3 font-medium text-gray-900 max-w-[200px] truncate" title={s.name}>
+                                  {s.name}
+                                </td>
+                                <td className="py-2.5 px-3 text-gray-500 text-[11px]">{s.provider}</td>
+                                <td className="py-2.5 px-3 text-center font-semibold">{s.unitsQuoted}</td>
+                                <td className="py-2.5 px-3 text-right font-mono">${s.quotedAmount.toLocaleString()}</td>
+                                <td className="py-2.5 px-3 text-center font-bold text-emerald-700">{s.unitsSold}</td>
+                                <td className="py-2.5 px-3 text-right font-mono text-emerald-700 font-bold">${s.soldAmount.toLocaleString()}</td>
+                                <td className="py-2.5 px-3 text-center">
+                                  <span className={`px-2 py-0.5 rounded font-black text-[10px] ${
+                                    Number(s.winRateQty) >= 60 ? 'bg-emerald-100 text-emerald-800' : 'bg-gray-100 text-gray-700'
+                                  }`}>
+                                    {s.winRateQty}%
+                                  </span>
+                                </td>
+                                <td className="py-2.5 px-3 text-center font-bold text-red-600">{s.unitsLost}</td>
+                                <td className="py-2.5 px-3 text-right font-mono text-red-700 font-bold">
+                                  {s.lostAmount > 0 ? `-$${s.lostAmount.toLocaleString()}` : '$0'}
+                                </td>
+                                <td className="py-2.5 px-3 text-gray-500 text-[10px]">
+                                  {s.topReason !== 'Ninguno' ? (
+                                    <span className="bg-red-50 text-red-700 px-1.5 py-0.5 rounded border border-red-100">
+                                      {s.topReason}
+                                    </span>
+                                  ) : (
+                                    <span className="text-gray-400">Sin rechazos</span>
+                                  )}
+                                </td>
+                              </tr>
+                            ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
 
               </div>
-            );
-          })}
-        </div>
+            </div>
+
+          </div>
+        )}
       </div>
 
       {/* ========================================================= */}
@@ -1616,10 +3136,37 @@ const CrmDashboardView = () => {
                     onChange={(e) => setFormData({ ...formData, assignedTo: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-[#006EAD] text-sm font-medium"
                   >
-                    <option value="María Asesora">María Asesora</option>
-                    <option value="Alejandro Castillo">Alejandro Castillo</option>
-                    <option value="Carlos Méndez">Carlos Méndez</option>
+                    {SELLERS_LIST.map(s => (
+                      <option key={s} value={s}>{s}</option>
+                    ))}
                   </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-gray-700 uppercase mb-1">
+                    Sucursal de Registro *
+                  </label>
+                  <select
+                    value={formData.branch}
+                    onChange={(e) => setFormData({ ...formData, branch: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-[#006EAD] text-sm font-medium"
+                  >
+                    {BRANCHES_LIST.map(b => (
+                      <option key={b} value={b}>{b}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-gray-700 uppercase mb-1">
+                    Fecha de Creación
+                  </label>
+                  <input
+                    type="date"
+                    value={formData.createdDate || '2026-11-12'}
+                    onChange={(e) => setFormData({ ...formData, createdDate: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#006EAD] text-sm"
+                  />
                 </div>
               </div>
 
