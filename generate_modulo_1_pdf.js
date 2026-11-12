@@ -1,0 +1,808 @@
+const fs = require('fs');
+const path = require('path');
+const { chromium } = require('playwright');
+
+const baseDir = path.join(__dirname, 'Manuales de usuarios NyTEX');
+const outDir = path.join(baseDir, 'Fase 2 Express', 'Modulo 1 NyTEX CRM (Embudo de Ventas)');
+if (!fs.existsSync(outDir)) {
+  fs.mkdirSync(outDir, { recursive: true });
+}
+
+console.log('🚀 Iniciando compilación del Manual Imprimible PDF: Módulo [1] NyTEX CRM (Embudo de Ventas)...');
+
+const htmlContent = `<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>ERP NyTEX — Módulo [1] CRM (Embudo de Ventas)</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+    :root {
+      --primary: #0A2540;
+      --secondary: #006EAD;
+      --accent: #D97706;
+      --success: #059669;
+      --danger: #DC2626;
+      --text: #1E293B;
+      --text-muted: #64748B;
+      --bg-light: #F8FAFC;
+      --border: #E2E8F0;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: var(--text);
+      line-height: 1.55;
+      font-size: 9.5pt;
+      background-color: #FFFFFF;
+      padding: 0;
+    }
+
+    .page {
+      padding: 15px 0;
+    }
+
+    .page-break {
+      page-break-before: always;
+    }
+
+    /* Portada */
+    .cover-container {
+      padding: 45px 35px;
+      text-align: left;
+      border-bottom: 4px solid var(--secondary);
+    }
+
+    .cover-badge {
+      display: inline-block;
+      background: #E0F2FE;
+      color: #0369A1;
+      font-size: 8.5pt;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 4px 12px;
+      border-radius: 6px;
+      margin-bottom: 16px;
+    }
+
+    .cover-title {
+      font-size: 24pt;
+      font-weight: 900;
+      color: var(--primary);
+      line-height: 1.2;
+      margin-bottom: 10px;
+    }
+
+    .cover-subtitle {
+      font-size: 11.5pt;
+      color: var(--text-muted);
+      margin-bottom: 25px;
+      font-weight: 400;
+      line-height: 1.45;
+    }
+
+    .tech-sheet {
+      background: var(--bg-light);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--secondary);
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin-top: 20px;
+      font-size: 8.5pt;
+    }
+
+    .tech-sheet h4 {
+      color: var(--primary);
+      font-size: 9.5pt;
+      font-weight: 800;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .tech-sheet-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px 18px;
+    }
+
+    .tech-sheet-item strong {
+      color: var(--primary);
+    }
+
+    /* Headings */
+    h1 {
+      color: var(--primary);
+      font-size: 15pt;
+      font-weight: 800;
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 5px;
+      margin-top: 24px;
+      margin-bottom: 12px;
+      page-break-after: avoid;
+    }
+
+    h2 {
+      color: var(--secondary);
+      font-size: 11.5pt;
+      font-weight: 700;
+      margin-top: 18px;
+      margin-bottom: 8px;
+      page-break-after: avoid;
+    }
+
+    h3 {
+      color: var(--primary);
+      font-size: 10pt;
+      font-weight: 700;
+      margin-top: 14px;
+      margin-bottom: 6px;
+      page-break-after: avoid;
+    }
+
+    p {
+      margin-bottom: 9px;
+      text-align: justify;
+    }
+
+    ul, ol {
+      margin-left: 18px;
+      margin-bottom: 12px;
+    }
+
+    li {
+      margin-bottom: 4px;
+    }
+
+    /* Callouts */
+    .callout {
+      border-radius: 8px;
+      padding: 12px 16px;
+      margin: 14px 0;
+      font-size: 9pt;
+      border-left: 4px solid;
+      page-break-inside: avoid;
+    }
+
+    .callout-success {
+      background: #F0FDF4;
+      border-color: #10B981;
+      color: #064E3B;
+    }
+
+    .callout-warning {
+      background: #FFFBEB;
+      border-color: #F59E0B;
+      color: #78350F;
+    }
+
+    .callout-info {
+      background: #EFF6FF;
+      border-color: #3B82F6;
+      color: #1E3A8A;
+    }
+
+    .callout-purple {
+      background: #FAF5FF;
+      border-color: #A855F7;
+      color: #581C87;
+    }
+
+    .callout-danger {
+      background: #FFF1F2;
+      border-color: #E11D48;
+      color: #881337;
+    }
+
+    .callout-title {
+      font-weight: 800;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      font-size: 8.5pt;
+      letter-spacing: 0.5px;
+    }
+
+    /* Tablas */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0;
+      font-size: 8.5pt;
+      page-break-inside: avoid;
+    }
+
+    th, td {
+      border: 1px solid var(--border);
+      padding: 7px 10px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background-color: var(--primary);
+      color: #FFFFFF;
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 8pt;
+      letter-spacing: 0.5px;
+    }
+
+    tr:nth-child(even) td {
+      background-color: #F8FAFC;
+    }
+
+    .font-mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .code-box {
+      background: #0F172A;
+      color: #E2E8F0;
+      border-radius: 8px;
+      padding: 12px 14px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 7.5pt;
+      line-height: 1.4;
+      white-space: pre;
+      overflow-x: auto;
+      margin: 12px 0;
+      page-break-inside: avoid;
+    }
+
+    /* Badges */
+    .badge {
+      display: inline-block;
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-size: 7.5pt;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .badge-blue { background: #DBEAFE; color: #1E40AF; }
+    .badge-green { background: #D1FAE5; color: #065F46; }
+    .badge-yellow { background: #FEF3C7; color: #92400E; }
+    .badge-red { background: #FEE2E2; color: #991B1B; }
+    .badge-purple { background: #F3E8FF; color: #6B21A8; }
+
+    /* TOC */
+    .toc-item {
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px dotted var(--border);
+      padding: 5px 0;
+      font-size: 9pt;
+      font-weight: 600;
+      color: var(--text);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- PORTADA -->
+  <div class="cover-container">
+    <span class="cover-badge">ERP NyTEX 4.0 • Circuito Lead-to-Order (L2O)</span>
+    <h1 class="cover-title">Módulo [1] — NyTEX CRM (Embudo de Ventas)</h1>
+    <p class="cover-subtitle">Manual de Usuario Oficial y Guía Operativa Integral de Capacitación Tarea por Tarea<br>
+    Incluye Integración con Módulo 2 (Ventas/Facturación en Caja), Búsqueda Predictiva de Kardex y Panel Analítico Multidimensional de Fugas y Cierre</p>
+
+    <div class="tech-sheet">
+      <h4>Ficha Técnica de Implementación Empresarial</h4>
+      <div class="tech-sheet-grid">
+        <div class="tech-sheet-item"><strong>Ecosistema:</strong> ERP NyTEX Versión 4.0</div>
+        <div class="tech-sheet-item"><strong>Fecha de Emisión:</strong> Noviembre 2026</div>
+        <div class="tech-sheet-item"><strong>Fase de Implementación:</strong> Fase 2: Express en adelante</div>
+        <div class="tech-sheet-item"><strong>Circuito Operativo:</strong> Lead-to-Order (L2O)</div>
+        <div class="tech-sheet-item"><strong>Moneda Base de Negociación:</strong> Dólares de los Estados Unidos (USD)</div>
+        <div class="tech-sheet-item"><strong>Segregación de Funciones:</strong> Vendedor cotiza en CRM; Cajera factura en Módulo 2</div>
+      </div>
+      <div style="margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--border);">
+        <strong>Módulos Interconectados:</strong> [0] Business Partners (Socios de Negocio), [2] Ventas & Facturación, [4] Inventarios & Kardex, [5] Planeación de Demanda, [8] Cuentas por Cobrar (CxC), [12] Contabilidad Central.
+      </div>
+    </div>
+  </div>
+
+  <div class="page-break"></div>
+
+  <!-- ÍNDICE DE CONTENIDO -->
+  <div class="page">
+    <h1>Índice de Contenido General</h1>
+    <div style="margin-top: 15px;">
+      <div class="toc-item"><span>1. Definición y Función del Módulo [1] dentro del Circuito Lead-to-Order (L2O)</span><span>Pág. 3</span></div>
+      <div class="toc-item"><span>2. Mapa Comparativo de Circuitos y Ecosistema de Módulos NyTEX</span><span>Pág. 4</span></div>
+      <div class="toc-item"><span>3. Estructura de la Pantalla Principal, Vistas del Sistema y KPIs en Vivo</span><span>Pág. 5</span></div>
+      <div class="toc-item"><span>4. Procedimiento N° 1: Captación, Registro y Calificación BANT de una Oportunidad</span><span>Pág. 6</span></div>
+      <div class="toc-item"><span>5. Procedimiento N° 2: Búsqueda Predictiva y Selección Ágil de SKUs del Kardex</span><span>Pág. 7</span></div>
+      <div class="toc-item"><span>6. Procedimiento N° 3: Gestión Visual del Embudo (Pipeline Kanban) y Maduración de Etapas</span><span>Pág. 8</span></div>
+      <div class="toc-item"><span>7. Procedimiento N° 4: Historial de Actividades, Bitácora Comercial y Seguimiento de Tareas</span><span>Pág. 9</span></div>
+      <div class="toc-item"><span>8. Procedimiento N° 5: Integración Comercial y Facturación en Caja en NyTEX Ventas [2]</span><span>Pág. 10</span></div>
+      <div class="toc-item"><span>9. Procedimiento N° 6: Tablero Analítico de Cotizaciones Generadas vs Vendidas y Fugas</span><span>Pág. 11</span></div>
+      <div class="toc-item"><span>10. Matriz de Interconexión e Impacto con los Demás Módulos del Ecosistema NyTEX</span><span>Pág. 13</span></div>
+      <div class="toc-item"><span>11. Buenas Prácticas Comerciales, Segregación de Funciones y Gobernanza del Pipeline</span><span>Pág. 14</span></div>
+    </div>
+
+    <h1 style="margin-top: 30px;">1. Definición y Función del Módulo [1] en el Circuito Lead-to-Order (L2O)</h1>
+    <div class="callout callout-success">
+      <div class="callout-title">Definición Ejecutiva del Módulo [1]</div>
+      Así como el Módulo [2] NyTEX Ventas & Facturación gestiona el ciclo comercial formal dentro del circuito Order-to-Cash (O2C) 
+      (desde la emisión fiscal, despacho de almacén y timbrado hasta la cobranza y póliza contable), el Módulo [1] NyTEX CRM (Embudo de Ventas) 
+      gestiona el ciclo integral de prospección comercial, calificación técnica, cotización estructurada y conversión dentro del circuito Lead-to-Order (L2O).<br><br>
+      Su función primordial es captar y estructurar todas las oportunidades comerciales en un pipeline visual dinámico por etapas, 
+      calificando su viabilidad económica mediante metodologías BANT, consultando en vivo el catálogo del Kardex de Inventarios [4], 
+      proyectando ingresos futuros con métricas en tiempo real e interconectando fluidamente las cotizaciones autorizadas por clientes 
+      hacia Ventas [2] para que la cajera facture los comprobantes fiscales sin recaptura manual y garantizando la estricta segregación de funciones.
+    </div>
+
+    <h2>Alcance Funcional por Fase de Implementación</h2>
+    <ul>
+      <li><strong>Fase 1: Starter:</strong> Se opera principalmente la venta transaccional directa de mostrador en Ventas [2], sobre clientes preexistentes, sin requerir un pipeline largo de negociación consultiva.</li>
+      <li><strong>Fase 2: Express en adelante (Express, Advanced, Enterprise):</strong> Se activa plenamente el Módulo [1] NyTEX CRM. Se habilita el tablero Kanban interactivo, el cotizador con búsqueda predictiva de Kardex, la calificación BANT, el pase directo a Módulo 2 para facturación en caja y el potente Tablero Analítico de Cotizaciones Generadas vs Vendidas con auditoría de las 5 causas de fuga.</li>
+    </ul>
+  </div>
+
+  <div class="page-break"></div>
+
+  <!-- SECCIÓN 2 & 3 -->
+  <div class="page">
+    <h1>2. Mapa Comparativo de Circuitos y Ecosistema de Módulos NyTEX</h1>
+    <p>La siguiente tabla ubica al Módulo [1] en sincronía con los demás componentes de la cadena de valor empresarial de NyTEX:</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Módulo NyTEX</th>
+          <th>Circuito Empresarial</th>
+          <th>Función Operativa Principal</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>[1] CRM (Embudo de Ventas)</strong></td>
+          <td><span class="badge badge-blue">Lead-to-Order (L2O)</span></td>
+          <td>Capta, califica y madura oportunidades comerciales, cotiza artículos del Kardex, audita motivos de no compra y transfiere cotizaciones autorizadas a Ventas para facturación en caja.</td>
+        </tr>
+        <tr>
+          <td><strong>[2] Ventas & Facturación</strong></td>
+          <td><span class="badge badge-green">Order-to-Cash (O2C)</span></td>
+          <td>Recibe cotizaciones autorizadas del CRM, factura en caja (DTE/Ticket), gestiona despachos de bodega, genera cartera en CxC y emite la póliza contable automática.</td>
+        </tr>
+        <tr>
+          <td><strong>[3] Compras & Abastecimiento</strong></td>
+          <td><span class="badge badge-yellow">Procure-to-Pay (P2P)</span></td>
+          <td>Gestiona el aprovisionamiento de insumos y mercadería mediante órdenes de compra, controlando recepción de proveedores, inventario y pasivos en CxP.</td>
+        </tr>
+        <tr>
+          <td><strong>[4] Inventario & Control de Stock</strong></td>
+          <td><span class="badge badge-purple">P2P / O2C / Supply Chain</span></td>
+          <td>Administra la custodia física, catálogo maestro de SKUs, existencias en almacenes, kardex de entradas/salidas y valuación de costo promedio.</td>
+        </tr>
+        <tr>
+          <td><strong>[5] Planeación de Demanda</strong></td>
+          <td><span class="badge badge-blue">Plan-to-Produce</span></td>
+          <td>Consolida ventas históricas y el forecast del CRM para calcular pronósticos de reabastecimiento ROP y planes de producción.</td>
+        </tr>
+        <tr>
+          <td><strong>[8] Cuentas por Cobrar (CxC)</strong></td>
+          <td><span class="badge badge-green">Order-to-Cash (O2C)</span></td>
+          <td>Administra la recuperación de liquidez, control de créditos, estados de cuenta de clientes, aplicación de cobranza y emisión de pólizas de ingreso.</td>
+        </tr>
+        <tr>
+          <td><strong>[12] Contabilidad Central & Pólizas</strong></td>
+          <td><span class="badge badge-purple">Record-to-Report (R2R)</span></td>
+          <td>Núcleo centralizador: consolida todas las transacciones operativas en asientos de partida doble y Balanza en tiempo real.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h1>3. Estructura de la Pantalla Principal, Vistas y KPIs en Vivo</h1>
+    <p>Al acceder al módulo a través del Workspace (<code>/app/workspace?phase=2&mod=crm</code>), el sistema despliega dos vistas de navegación principales:</p>
+    <ul>
+      <li><strong>Vista [ 📊 Tablero Pipeline ]:</strong> El embudo visual clásico Kanban con 5 columnas de avance progresivo y 4 KPIs de pipeline en vivo.</li>
+      <li><strong>Vista [ 📈 Indicadores: Cotizaciones vs Vendidas ]:</strong> El centro de inteligencia comercial y auditoría de fugas, con filtros por fechas, análisis de 5 motivos de venta perdida y desglose por SKU, sucursal, vendedor, proveedor y empresa.</li>
+    </ul>
+
+    <div class="code-box">Portal / NyTEX CRM (Embudo de Ventas)       [ 📊 Tablero Pipeline ]  [ 📈 Indicadores ]  [ + NUEVA OPORTUNIDAD ]
+┌─────────────────────────┬─────────────────────────┬─────────────────────────┬─────────────────────────┐
+│ 💼 OPORTUNIDADES        │ 💲 VALOR DEL PIPELINE   │ 📈 TASA DE CIERRE       │ 🏆 GANADO ESTE MES      │
+│    ABIERTAS: 6          │    $68,700 USD          │    24.5%                │    $12,400 USD          │
+└─────────────────────────┴─────────────────────────┴─────────────────────────┴─────────────────────────┘
+
+┌──────────────────┬──────────────────┬──────────────────┬──────────────────┬──────────────────┐
+│ Nuevo (2) $23.5k │ Contactado(1)$3.2│ Calificado(2)$17k│ Cotizado(1) $25k │ Ganado (1) $2.4k │
+├──────────────────┼──────────────────┼──────────────────┼──────────────────┼──────────────────┤
+│ [ALTA]       ··· │ [ALTA]       ··· │ [BAJA]       ··· │ [MEDIA]      ··· │ [MEDIA]      ··· │
+│ Impl. ERP Fase 1 │ Fac. Electrónica │ Consultoría Log. │ Proyecto WMS     │ Soporte Hypercare│
+│ 🏢 Industrias Ap. │ 🏢 Comercializ.  │ 🏢 Logistics Pro │ 🏢 Alm. Globales │ 🏢 Constr. XYZ   │
+│ 💲 $15,000        │ 💲 $3,200        │ 💲 $5,000        │ 💲 $25,000       │ 💲 $2,400        │
+│ 🕒 24 Sep        │ 🕒 21 Sep        │ 🕒 18 Sep        │ 🕒 10 Sep        │ 🕒 05 Sep        │
+└──────────────────┴──────────────────┴──────────────────┴──────────────────┴──────────────────┘</div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Indicador Clave (KPI)</th>
+          <th>Fórmula de Cálculo</th>
+          <th>Propósito Operativo</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Oportunidades Abiertas (Azul)</strong></td>
+          <td class="font-mono">COUNT(Etapas 1 a 4)</td>
+          <td>Mide el volumen de negociaciones comerciales activas que demandan atención continua.</td>
+        </tr>
+        <tr>
+          <td><strong>Valor del Pipeline (Morado)</strong></td>
+          <td class="font-mono">SUM(Monto Estimado Abiertas)</td>
+          <td>Valor económico bruto acumulado de todas las negociaciones abiertas en curso.</td>
+        </tr>
+        <tr>
+          <td><strong>Tasa de Cierre (Dorado)</strong></td>
+          <td class="font-mono">(Ganadas / Total Cerradas) × 100</td>
+          <td>Mide la eficacia de conversión del equipo comercial; meta recomendada: ≥ 20%-25%.</td>
+        </tr>
+        <tr>
+          <td><strong>Ganado Este Mes (Verde)</strong></td>
+          <td class="font-mono">SUM(Monto Ganadas Mes)</td>
+          <td>Total acumulado de contratos formalizados y ganados con éxito durante el mes corriente.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="page-break"></div>
+
+  <!-- SECCIÓN 4 & 5 -->
+  <div class="page">
+    <h1>4. Procedimiento N° 1: Captación, Registro y Calificación BANT</h1>
+    <p>Este procedimiento garantiza que ninguna oportunidad quede desatendida y que solo las negociaciones viables consuman recursos operativos:</p>
+
+    <div class="callout callout-info">
+      <div class="callout-title">Ventana Modal de "Nueva Oportunidad" (2 Pestañas)</div>
+      • <strong>Pestaña 1. Datos de la Oportunidad:</strong><br>
+      &nbsp;&nbsp;– <em>Título del Proyecto:</em> Nombre descriptivo de la negociación comercial.<br>
+      &nbsp;&nbsp;– <em>Modo de Procedencia de Empresa:</em> Pestaña <strong>Business Partners</strong> (catálogo oficial de clientes sincronizado) o pestaña <strong>Escribir Manual</strong> (prospecto nuevo).<br>
+      &nbsp;&nbsp;– <em>Monto Estimado ($ USD):</em> Valor económico proyectado con formateo monetario automático.<br>
+      &nbsp;&nbsp;– <em>Etapa y Prioridad:</em> Etapa inicial (por defecto Nuevo) y prioridad Alta (rojo), Media (amarillo) o Baja (verde).<br>
+      &nbsp;&nbsp;– <em>Asesor, Fecha y Notas BANT:</em> Presupuesto (Budget), Autoridad (Authority), Necesidad (Need) y Tiempo (Timeline).<br><br>
+      • <strong>Pestaña 2. Cotización Inicial (Opcional):</strong><br>
+      &nbsp;&nbsp;Permite agregar desde el primer instante artículos del Kardex con cantidades y precios para que la oportunidad nazca respaldada por una cotización formal.
+    </div>
+
+    <h1>5. Procedimiento N° 2: Búsqueda Predictiva y Selección Ágil de SKUs</h1>
+    <p>Para agilizar la selección en catálogos extensos con cientos de referencias, NyTEX CRM incluye un buscador predictivo interactivo:</p>
+
+    <div class="callout callout-success">
+      <div class="callout-title">Buscador Predictivo Reactivo de Kardex</div>
+      Al abrir el selector de productos en la cotización, el campo <strong><code>🔍 Buscar SKU por código o nombre...</code></strong> reduce dinámicamente la lista al instante con solo teclear letras o números:
+      <br>• Si teclea <code>HIL</code> o <code>TEX</code>, se reducen los resultados mostrando solo hilos o textiles.
+      <br>• Si teclea números como <code>101</code> o <code>500</code>, localiza el código exacto de catálogo.
+      <br>• Cada opción despliega en tiempo real: Código SKU, Nombre, Proveedor, Categoría, Precio de lista en USD y Stock disponible en almacén.
+    </div>
+
+    <h2>Pasos Operativos de Cotización:</h2>
+    <ol>
+      <li><strong>Paso 2.1: Activar el Buscador Predictivo:</strong> En la sección de cotización de la oportunidad, haga clic en el buscador y escriba el código o término descriptivo del producto.</li>
+      <li><strong>Paso 2.2: Seleccionar el Artículo:</strong> Al seleccionar el SKU con un clic, el sistema precarga automáticamente su nombre, precio unitario de lista y categoría.</li>
+      <li><strong>Paso 2.3: Definir Cantidad y Precio Pactado:</strong> Digite las unidades requeridas y ajuste el precio acordado en USD. Presione <strong><code>+ Agregar a Cotización</code></strong>.</li>
+      <li><strong>Paso 2.4: Sincronización Automática:</strong> El sistema calcula los subtotales de la línea y actualiza de inmediato el monto total de la cotización y el valor estimado de la oportunidad.</li>
+    </ol>
+  </div>
+
+  <div class="page-break"></div>
+
+  <!-- SECCIÓN 6 & 7 -->
+  <div class="page">
+    <h1>6. Procedimiento N° 3: Gestión Visual del Pipeline Kanban</h1>
+    <p>El embudo de ventas consta de 5 columnas principales. Conforme la negociación madura, el asesor arrastra la tarjeta entre columnas o hace clic sobre ella para cambiar de etapa:</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Etapa del Pipeline</th>
+          <th>Probabilidad</th>
+          <th>Criterio de Entrada Obligatorio</th>
+          <th>Acción Operativa Requerida</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>1. Nuevo</strong></td>
+          <td><span class="badge badge-blue">10%</span></td>
+          <td>Oportunidad recién captada desde web, campaña, recomendación o prospección.</td>
+          <td>Asignar ejecutivo comercial y realizar llamada o reunión inicial de descubrimiento.</td>
+        </tr>
+        <tr>
+          <td><strong>2. Contactado</strong></td>
+          <td><span class="badge badge-blue">25%</span></td>
+          <td>Primer contacto formal establecido; interlocutor y requerimiento confirmados.</td>
+          <td>Iniciar investigación técnica, perfilar necesidades y evaluar la matriz BANT.</td>
+        </tr>
+        <tr>
+          <td><strong>3. Calificado</strong></td>
+          <td><span class="badge badge-yellow">50%</span></td>
+          <td>Matriz BANT validada con presupuesto real, tomador de decisión y urgencia.</td>
+          <td>Validar disponibilidad de SKUs en Inventarios [4] y coordinar propuesta técnica.</td>
+        </tr>
+        <tr>
+          <td><strong>4. Cotizado</strong></td>
+          <td><span class="badge badge-yellow">75%</span></td>
+          <td>Propuesta técnico-económica formal emitida y entregada al cliente para revisión.</td>
+          <td>Realizar seguimiento a cotización, resolver objeciones y afinar plazos de entrega.</td>
+        </tr>
+        <tr>
+          <td><strong>5. Ganado</strong></td>
+          <td><span class="badge badge-green">100%</span></td>
+          <td>Aceptación formal de la propuesta, emisión de orden de compra o confirmación.</td>
+          <td>Transferir cotización autorizada a Ventas [2] para facturación en caja.</td>
+        </tr>
+        <tr>
+          <td><strong>Descartada / Perdida</strong></td>
+          <td><span class="badge badge-red">0%</span></td>
+          <td>Rechazo formal de la oferta por parte del prospecto o cancelación de proyecto.</td>
+          <td>Registrar motivo obligatorio de descarte (1 de las 5 causas de fuga) para auditoría.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h1>7. Procedimiento N° 4: Historial de Actividades y Tareas</h1>
+    <div class="callout callout-purple">
+      <div class="callout-title">Regla Antienfriamiento de Oportunidades</div>
+      Toda oportunidad activa debe contar con al menos una próxima tarea programada (llamada, visita o entrega de muestras). Si una tarjeta permanece más de 7 días continuos sin interacción registrada, el sistema le asigna un marco visual color ámbar con la leyenda <strong>"Riesgo de Inactividad"</strong>.
+    </div>
+    <ul>
+      <li><strong>Registro de Interacciones:</strong> Al abrir la oportunidad, seleccione entre Llamada, Reunión, Videoconferencia, Correo o Envío de Muestras.</li>
+      <li><strong>Minuta de Acuerdos:</strong> Escriba un resumen de los puntos acordados y requerimientos específicos del cliente.</li>
+      <li><strong>Próxima Acción Comprometida:</strong> Establezca fecha y hora de la siguiente tarea para que el sistema emita alertas de seguimiento.</li>
+    </ul>
+  </div>
+
+  <div class="page-break"></div>
+
+  <!-- SECCIÓN 8: INTEGRACIÓN CON MÓDULO 2 -->
+  <div class="page">
+    <h1>8. Procedimiento N° 5: Integración Comercial y Facturación en Caja en NyTEX Ventas [2]</h1>
+    <p>Este procedimiento representa el puente de comunicación directa entre el <strong>Módulo 1: CRM (Rol Vendedor)</strong> y el <strong>Módulo 2: Ventas & Facturación (Rol Cajera / Facturador)</strong>, garantizando la estricta segregación de funciones:</p>
+
+    <div class="callout callout-success">
+      <div class="callout-title">Principio Operativo: El Vendedor Cotiza, la Cajera Factura</div>
+      El vendedor no debe emitir facturas ni cobrar en caja para evitar riesgos de fraude y descuadres de arqueo. El CRM permite al vendedor negociar, cotizar y autorizar la venta; una vez que el cliente acepta, la cotización viaja automáticamente a la pantalla de Ventas para que la cajera procese el pago y emita el DTE fiscal correspondiente.
+    </div>
+
+    <h2>Flujo Operativo Tarea por Tarea:</h2>
+    <ol>
+      <li><strong>Paso 5.1: Autorización de la Compra por el Cliente:</strong><br>
+      En el Módulo 1 CRM, dentro de la oportunidad en etapa <em>Cotizado</em>, el vendedor cuenta con dos opciones según la decisión del cliente:
+        <ul style="margin-top: 4px;">
+          <li><strong>Compra Total:</strong> Al dar clic en el botón verde <strong><code>[ ✓ Comprar Todos los SKUs ]</code></strong>, todos los artículos de la cotización cambian a estado <em>Comprado</em> y se genera la orden de venta completa.</li>
+          <li><strong>Compra Parcial:</strong> Si el cliente decide no comprar ciertos artículos, el vendedor marca únicamente los SKUs autorizados y presiona <strong><code>[ 🚀 Generar Pedido en Módulo 2 ]</code></strong>. Los artículos descartados solicitan la causa de no compra para alimentar la auditoría de fugas.</li>
+        </ul>
+      </li>
+      <li><strong>Paso 5.2: Notificación y Botón Directo a Facturación:</strong><br>
+      Al confirmarse la compra, el sistema despliega una notificación de éxito y habilita el botón azul <strong><code>[ ➔ Ir a Facturar en Módulo 2 ]</code></strong>. El vendedor puede hacer clic para navegar directamente a la pantalla de ventas si requiere acompañar la operación.</li>
+      <li><strong>Paso 5.3: Sincronización en Tiempo Real en Módulo 2 Ventas:</strong><br>
+      En la pantalla de Ventas & Facturación de la cajera, la pestaña <strong><code>[ Cotizaciones Abiertas ]</code></strong> actualiza su contador de forma inmediata (mostrando por ejemplo <em>1 cotización abierta</em>). La cajera no necesita recargar la página; el sistema sincroniza automáticamente las cotizaciones autorizadas que están listas para cobrar.</li>
+      <li><strong>Paso 5.4: Facturación en Caja por la Cajera:</strong><br>
+      La cajera hace clic en <strong><code>[ Cotizaciones Abiertas ]</code></strong>, selecciona la cotización autorizada y presiona <strong><code>Cargar a Caja</code></strong>. El sistema precarga automáticamente los SKUs, cantidades, precios pactados y datos del cliente. La cajera selecciona el método de pago (Efectivo, Tarjeta, Transferencia o Crédito) y emite la Factura Fiscal / DTE sin recaptura manual.</li>
+    </ol>
+
+    <div class="callout callout-info">
+      <div class="callout-title">Reserva Automática en Inventarios [4]</div>
+      Al autorizarse la cotización en el CRM y pasar a Ventas, el ERP NyTEX envía una instrucción de reserva preventiva al Módulo [4] Inventarios, bloqueando las existencias físicas para que ninguna otra sucursal venda el lote textil comprometido.
+    </div>
+  </div>
+
+  <div class="page-break"></div>
+
+  <!-- SECCIÓN 9: TABLERO ANALÍTICO Y FUGAS -->
+  <div class="page">
+    <h1>9. Procedimiento N° 6: Tablero Analítico de Cotizaciones Generadas vs Vendidas y Auditoría de Fugas</h1>
+    <p>Para auditar la efectividad comercial y responder con certeza directiva a qué productos se venden y por qué razones se pierden, el CRM cuenta con la vista <strong><code>[ 📈 Indicadores: Cotizaciones vs Vendidas ]</code></strong>:</p>
+
+    <div class="code-box">Control de Tasa de Cierre y Fugas Comerciales  [Filtro Fechas: 2026-01-01 al 2026-12-31] [Sucursal: TODAS]
+┌─────────────────────────┬─────────────────────────┬─────────────────────────┬─────────────────────────┐
+│ 📄 COTIZACIONES         │ ✓ COTIZACIONES          │ ⏳ EN NEGOCIACIÓN /     │ ⚠️ VENTAS PERDIDAS /    │
+│    GENERADAS: 11        │    VENDIDAS: 7 (63.6%)  │    ABIERTAS: 5 (45.5%)  │    FUGA: 3 ($4,800 USD) │
+│    $18,400 USD Bruto    │    $11,700 USD Cerrado  │    $5,900 USD en Curso  │    18.2% Tasa de Fuga   │
+└─────────────────────────┴─────────────────────────┴─────────────────────────┴─────────────────────────┘</div>
+
+    <h2>Auditoría de los 5 Motivos Estratégicos de Ventas Perdidas (Razones de No Compra):</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Motivo Estratégico</th>
+          <th>Incidencia Típica</th>
+          <th>Acción Correctiva en NyTEX</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>1. Precio Alto / Competencia Más Barata</strong></td>
+          <td>Pérdida por precio de lista frente a ofertas de terceros.</td>
+          <td>Revisión de costos con proveedores en Compras [3] o análisis de márgenes comerciales.</td>
+        </tr>
+        <tr>
+          <td><strong>2. Falta de Stock / Tiempo de Entrega Tardío</strong></td>
+          <td>Pérdida por quiebre de inventario o desabasto.</td>
+          <td>Ajuste de punto de reorden (ROP) y stock de seguridad en Planeación de Demanda [5] e Inventarios [4].</td>
+        </tr>
+        <tr>
+          <td><strong>3. Desistimiento del Cliente / Cancelación</strong></td>
+          <td>El prospecto postergó o canceló su proyecto interno.</td>
+          <td>Programación de tareas automáticas de reactivación en CRM a 60 o 90 días.</td>
+        </tr>
+        <tr>
+          <td><strong>4. Especificación Técnica Incorrecta</strong></td>
+          <td>El artículo cotizado no satisfizo la norma técnica del cliente.</td>
+          <td>Capacitación al asesor y vinculación de fichas técnicas en catálogo de SKUs.</td>
+        </tr>
+        <tr>
+          <td><strong>5. Falta de Aprobación de Crédito</strong></td>
+          <td>Condiciones de crédito rechazadas por Cuentas por Cobrar [8].</td>
+          <td>Esquemas de pago mixto (anticipo + saldo contra entrega) o líneas con pagaré.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>Pestaña Destacada al Tope: [ 📦 Por Códigos (SKU) ]</h2>
+    <p>Ubicada inmediatamente debajo de las 4 tarjetas KPI para visualización sin scroll, permite auditar cada producto:</p>
+    <ul>
+      <li><strong>Modos de Métrica:</strong> Alterne con un clic entre <code>[ 📊 Completa ]</code>, <code>[ 🔢 Cantidad ]</code> (unidades cotizadas vs vendidas vs no vendidas), <code>[ ％ Porcentaje ]</code> (tasa de conversión por código) y <code>[ 💲 Montos ]</code> ($ USD).</li>
+      <li><strong>Filtros por Estado:</strong> Permite filtrar entre Todos los SKUs, Con Ventas Ganadas, Con Ventas Perdidas o 100% No Vendidos.</li>
+      <li><strong>Buscador Predictivo de Código:</strong> Localice al instante cualquier producto por SKU o descripción.</li>
+      <li><strong>Desglose de Causas por SKU y Acordeón de Casos:</strong> Cada producto muestra los motivos exactos por los que se perdió y permite expandir el acordeón para auditar las cotizaciones, clientes, vendedores y notas reales del rechazo.</li>
+    </ul>
+
+    <h2>Otras Dimensiones de Clasificación:</h2>
+    <p>El tablero permite además evaluar la salud comercial por <strong>[ 🏢 Total Empresa ]</strong>, <strong>[ 📍 Por Sucursal ]</strong>, <strong>[ 👤 Por Vendedor ]</strong>, <strong>[ 🏭 Por Proveedor ]</strong>, <strong>[ 🏷️ Por Categoría ]</strong> y la auditoría dedicada en <strong>[ ⚠️ Motivos de Pérdida (1 al 5) ]</strong>.</p>
+  </div>
+
+  <div class="page-break"></div>
+
+  <!-- SECCIÓN 10 & 11 -->
+  <div class="page">
+    <h1>10. Matriz de Interconexión con los Demás Módulos</h1>
+    <p>El Módulo [1] NyTEX CRM se integra transversalmente con los módulos operativos y financieros:</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Módulo Receptor</th>
+          <th>Datos Transferidos</th>
+          <th>Impacto Operativo en el ERP</th>
+          <th>Circuito</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>[0] Business Partners</strong></td>
+          <td>Razón social, NIT/RFC, teléfono, dirección fiscal.</td>
+          <td>Crea el expediente del cliente formal en la base de datos central si no existía.</td>
+          <td>Maestros</td>
+        </tr>
+        <tr>
+          <td><strong>[2] Ventas & Facturación</strong></td>
+          <td>Cotización autorizada, SKUs, precios pactados, descuentos.</td>
+          <td>Habilita la facturación en caja (DTE/Ticket) sin recaptura manual.</td>
+          <td>Order-to-Cash</td>
+        </tr>
+        <tr>
+          <td><strong>[4] Inventario & Stock</strong></td>
+          <td>Consulta de existencias del Kardex y apartados preventivos.</td>
+          <td>Reserva el stock requerido y previene sobreventa física en almacenes.</td>
+          <td>Supply Chain</td>
+        </tr>
+        <tr>
+          <td><strong>[5] Planeación de Demanda</strong></td>
+          <td>Forecast del pipeline y auditoría de fugas por SKU.</td>
+          <td>Ajusta pronósticos de reposición ROP y compras a proveedores.</td>
+          <td>Plan-to-Produce</td>
+        </tr>
+        <tr>
+          <td><strong>[8] Cuentas por Cobrar (CxC)</strong></td>
+          <td>Plazos de crédito otorgados y monto de la negociación.</td>
+          <td>Programa cobranza futura y evalúa exposición crediticia.</td>
+          <td>Order-to-Cash</td>
+        </tr>
+        <tr>
+          <td><strong>[12] Contabilidad Central</strong></td>
+          <td>Historial transaccional desde oportunidad hasta venta.</td>
+          <td>Asegura trazabilidad forense completa de la póliza de ingresos.</td>
+          <td>Record-to-Report</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h1>11. Buenas Prácticas Comerciales, Segregación de Funciones y Gobernanza</h1>
+    <p>Para asegurar la máxima rentabilidad, control interno y disciplina operativa, el equipo comercial debe regirse por los siguientes principios:</p>
+
+    <div class="callout callout-danger">
+      <div class="callout-title">Políticas Obligatorias de Control Interno</div>
+      <p style="margin-bottom: 6px;"><strong>1. Segregación de Funciones Estricta (Vendedor vs Cajera):</strong> El asesor comercial cotiza y negocia en CRM; la cajera o facturador es la única persona autorizada para emitir el comprobante fiscal y cobrar en Módulo 2.</p>
+      <p style="margin-bottom: 6px;"><strong>2. Causa de Descarte Obligatoria:</strong> Al descartar un SKU o marcar una oportunidad como perdida, el sistema exige seleccionar 1 de los 5 motivos estratégicos de no compra y redactar la nota explicativa.</p>
+      <p style="margin-bottom: 6px;"><strong>3. Prohibición de Cotizaciones sin Oportunidad:</strong> Todas las cotizaciones emitidas a clientes deben nacer en el CRM para preservar la analítica de efectividad y tasa de cierre.</p>
+      <p style="margin-bottom: 6px;"><strong>4. Validación de Kardex antes de Cotizar:</strong> Los ejecutivos deben verificar las existencias en el Kardex interactivo para no comprometer entregas inviables.</p>
+      <p style="margin: 0;"><strong>5. Caducidad y Reasignación de Prospectos:</strong> Negociaciones sin actividad durante 30 días naturales se desasignarán y reingresarán a la bolsa común corporativa.</p>
+    </div>
+
+    <div style="margin-top: 30px; padding: 18px; background: var(--bg-light); border-radius: 8px; border: 1px solid var(--border); text-align: center;">
+      <h3 style="color: var(--primary); margin: 0 0 6px 0;">Consultores NyT S.A. de C.V. — División de Capacitación y Procesos</h3>
+      <p style="font-size: 8.5pt; color: var(--text-muted); margin: 0;">Manual Operativo Oficial • Sistema Integrado ERP NyTEX • Todos los derechos reservados.</p>
+    </div>
+  </div>
+
+</body>
+</html>
+`;
+
+async function generatePdf() {
+  const htmlPath = path.join(outDir, 'NyTEX_Modulo_1_CRM_Embudo_de_Ventas_Imprimible.html');
+  fs.writeFileSync(htmlPath, htmlContent, 'utf8');
+  console.log('✅ Archivo HTML base guardado en:', htmlPath);
+
+  const pdfPath1 = path.join(outDir, 'NyTEX_Modulo_1_Manual_CRM_Embudo_de_Ventas.pdf');
+  const pdfPath2 = path.join(outDir, 'Módulo 1 NyTEX CRM (Embudo de Ventas) - Manual de usuario.pdf');
+  const pdfPath3 = path.join(outDir, 'NyTEX_Modulo_1_CRM_Embudo_de_Ventas.pdf');
+
+  try {
+    const browser = await chromium.launch({ channel: 'msedge', headless: true });
+    const page = await browser.newPage();
+
+    const fileUrl = 'file:///' + htmlPath.replace(/\\/g, '/');
+    await page.goto(fileUrl, { waitUntil: 'domcontentloaded' });
+
+    await page.pdf({
+      path: pdfPath1,
+      format: 'A4',
+      margin: {
+        top: '16mm',
+        bottom: '16mm',
+        left: '14mm',
+        right: '14mm'
+      },
+      displayHeaderFooter: true,
+      headerTemplate: '<div style="font-family: Inter, sans-serif; font-size: 8pt; color: #94A3B8; text-align: right; width: 100%; padding-right: 14mm;">ERP NyTEX — Módulo [1] CRM (Embudo de Ventas)</div>',
+      footerTemplate: '<div style="font-family: Inter, sans-serif; font-size: 8pt; color: #94A3B8; text-align: center; width: 100%;">Página <span class="pageNumber"></span> de <span class="totalPages"></span> • Consultores NyT S.A. de C.V.</div>',
+      printBackground: true
+    });
+
+    console.log('🎉 Archivo PDF oficial generado con éxito:', pdfPath1);
+
+    fs.copyFileSync(pdfPath1, pdfPath2);
+    console.log('🎉 Copia PDF 2 generada con éxito:', pdfPath2);
+
+    fs.copyFileSync(pdfPath1, pdfPath3);
+    console.log('🎉 Copia PDF 3 generada con éxito:', pdfPath3);
+
+    // Copiar a Fase 1 Starter y a la raíz
+    const targetDirs = [
+      path.join(baseDir, 'Fase 1 Starter', 'Modulo 1 NyTEX CRM (Embudo de Ventas)'),
+      baseDir
+    ];
+
+    for (const tDir of targetDirs) {
+      if (!fs.existsSync(tDir)) {
+        fs.mkdirSync(tDir, { recursive: true });
+      }
+      fs.copyFileSync(pdfPath1, path.join(tDir, 'NyTEX_Modulo_1_Manual_CRM_Embudo_de_Ventas.pdf'));
+      fs.copyFileSync(pdfPath1, path.join(tDir, 'Módulo 1 NyTEX CRM (Embudo de Ventas) - Manual de usuario.pdf'));
+      fs.copyFileSync(pdfPath1, path.join(tDir, 'NyTEX_Modulo_1_CRM_Embudo_de_Ventas.pdf'));
+      fs.copyFileSync(htmlPath, path.join(tDir, 'NyTEX_Modulo_1_CRM_Embudo_de_Ventas_Imprimible.html'));
+      console.log('🎉 Archivos PDF y HTML copiados con éxito a:', tDir);
+    }
+
+    await browser.close();
+  } catch (err) {
+    console.error('❌ Error generando PDF con Playwright:', err);
+  }
+}
+
+generatePdf();
