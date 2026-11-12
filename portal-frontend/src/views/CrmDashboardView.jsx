@@ -72,6 +72,17 @@ const initialDeals = [
     email: 'rsilva@apex.com', 
     phone: '+503 7890-1234', 
     assignedTo: 'María Asesora',
+    channel: 'email',
+    requestType: 'cotizacion',
+    resolutionStatus: 'pendiente',
+    resolutionNotes: '',
+    resolvedAt: null,
+    resolvedBy: null,
+    slaMinutes: 120,
+    messages: [
+      { id: 1001, sender: 'client', channel: 'email', text: 'Estimados señores de NyTEX: Nos comunicamos para solicitar formalmente la cotización de los módulos de Fase 1 para nuestra planta en Ilopango.', timestamp: '2026-09-18 09:15' },
+      { id: 1002, sender: 'agent', channel: 'email', text: 'Buenos días Roberto, con gusto. Ya cargamos la propuesta en el cotizador con los servicios de consultoría y migración en la nube.', timestamp: '2026-09-18 10:30' }
+    ],
     activities: [
       {
         id: 101,
@@ -108,6 +119,17 @@ const initialDeals = [
     email: 'kmorales@techsolutions.com', 
     phone: '+503 7654-3210', 
     assignedTo: 'Alejandro Castillo',
+    channel: 'whatsapp',
+    requestType: 'cotizacion',
+    resolutionStatus: 'resuelto',
+    resolutionNotes: 'Cotización aceptada en su totalidad y enviada a Módulo 2 para facturación en caja.',
+    resolvedAt: '2026-09-23 15:30',
+    resolvedBy: 'Alejandro Castillo',
+    slaMinutes: 0,
+    messages: [
+      { id: 2001, sender: 'client', channel: 'whatsapp', text: 'Hola Alejandro, revisamos la cotización de la migración y el plan de capacitación. Queda aprobada, ¿cuándo podemos firmar el contrato?', timestamp: '2026-09-23 11:20' },
+      { id: 2002, sender: 'agent', channel: 'whatsapp', text: '¡Excelente Karla! En este momento transfiero la orden formal a facturación y caja para coordinar el anticipo.', timestamp: '2026-09-23 11:25' }
+    ],
     activities: [
       {
         id: 201,
@@ -143,13 +165,24 @@ const initialDeals = [
     email: 'lgomez@comsur.com', 
     phone: '+503 7123-4567', 
     assignedTo: 'María Asesora',
+    channel: 'whatsapp',
+    requestType: 'cotizacion',
+    resolutionStatus: 'pendiente',
+    resolutionNotes: '',
+    resolvedAt: null,
+    resolvedBy: null,
+    slaMinutes: 45,
+    messages: [
+      { id: 3001, sender: 'client', channel: 'whatsapp', text: 'Buenas tardes, nos urge implementar DTE para facturación electrónica en San Miguel. ¿Tienen disponibilidad?', timestamp: '2026-10-12 14:10' },
+      { id: 3002, sender: 'agent', channel: 'whatsapp', text: 'Hola Luis, sí contamos con el conector oficial de Hacienda. Te preparo la cotización con 1 conector DTE y la capacitación inicial.', timestamp: '2026-10-12 14:25' }
+    ],
     activities: [
       {
         id: 301,
         contactType: 'Llamada',
         notes: 'Minuta: Primera llamada de contacto. El cliente requiere timbrado DTE urgente para cumplir normativa fiscal.',
-        nextTask: 'Llamada de seguimiento para revisión de propuesta',
-        nextTaskDate: '2026-10-15 15:00',
+        nextTask: 'Enviar cotización formal de DTE',
+        nextTaskDate: '2026-10-14 09:00',
         registeredAt: '2026-10-12 10:15',
         registeredBy: 'María Asesora'
       }
@@ -157,252 +190,355 @@ const initialDeals = [
     quote: {
       paymentTerms: 'Contado',
       deliveryMode: 'Entrega en Sucursal',
-      deliveryAddress: '',
+      deliveryAddress: 'Agencia San Miguel, 4a Calle Pte',
       items: [
-        { id: 31, sku: 'SRV-CONS-01', name: 'Servicio de Consultoría y Diagnóstico ERP', category: 'Servicio', provider: 'Servicios NyTEX Tech', unitPrice: 1200, quantity: 1, total: 1200, status: 'cotizado', lostReason: null, lostNotes: '', lostDate: null },
-        { id: 32, sku: 'SRV-SOP-04', name: 'Soporte Hypercare 24/7 (Bolsa Mensual)', category: 'Servicio', provider: 'Soporte Hypercare NyTEX', unitPrice: 2000, quantity: 1, total: 2000, status: 'cotizado', lostReason: null, lostNotes: '', lostDate: null }
+        { id: 31, sku: 'SRV-CONS-01', name: 'Servicio de Consultoría y Diagnóstico ERP', category: 'Servicio', provider: 'Servicios NyTEX Tech', unitPrice: 1200, quantity: 1, total: 1200, status: 'comprado', lostReason: null, lostNotes: '', lostDate: null },
+        { id: 32, sku: 'SRV-CAP-03', name: 'Capacitación y Adopción de Usuarios NyTEX', category: 'Servicio', provider: 'Academia NyTEX', unitPrice: 1000, quantity: 2, total: 2000, status: 'perdido', lostReason: '1. Precio Alto / Competencia Más Barata', lostNotes: 'El cliente consideró que el costo de capacitación superaba su presupuesto asignado y optó por capacitar internamente a su personal.', lostDate: '2026-10-13' }
       ]
     }
   },
   { 
     id: 4, 
-    title: 'Consultoría Logística', 
+    title: 'Consultoría Logística WMS', 
     company: 'Logistics Pro', 
     value: '$5,000', 
     stage: 'Calificado', 
     date: '18 Oct',
-    createdDate: '2026-10-18',
-    branch: 'Sucursal Norte (Santa Ana)',
+    createdDate: '2026-10-15',
+    branch: 'Sucursal Central (San Salvador)',
     priority: 'Baja', 
-    contact: 'Sandra Peña', 
-    email: 'spena@logisticspro.com', 
-    phone: '+503 7321-9876', 
+    contact: 'Ana Beltrán', 
+    email: 'abeltran@logisticspro.com', 
+    phone: '+503 7987-6543', 
     assignedTo: 'Carlos Méndez',
-    activities: [],
+    channel: 'instagram',
+    requestType: 'cotizacion',
+    resolutionStatus: 'pendiente',
+    resolutionNotes: '',
+    resolvedAt: null,
+    resolvedBy: null,
+    slaMinutes: 180,
+    messages: [
+      { id: 4001, sender: 'client', channel: 'instagram', text: 'Hola! Vi su publicación sobre el módulo WMS de almacenes. ¿Hacen consultoría para centros de distribución con radiofrecuencia?', timestamp: '2026-10-15 16:00' },
+      { id: 4002, sender: 'agent', channel: 'instagram', text: 'Hola Ana, sí, cubrimos picking con código de barras y radiofrecuencia. Te agendamos una llamada técnica para el 18 de octubre.', timestamp: '2026-10-15 16:30' }
+    ],
+    activities: [
+      {
+        id: 401,
+        contactType: 'Reunión Presencial',
+        notes: 'Minuta: Calificación de requerimientos en bodega central. Solicitan control de racks y trazabilidad de lotes.',
+        nextTask: 'Enviar propuesta de consultoría logística',
+        nextTaskDate: '2026-10-20 15:00',
+        registeredAt: '2026-10-18 11:00',
+        registeredBy: 'Carlos Méndez'
+      }
+    ],
     quote: {
-      paymentTerms: 'Crédito 15 días',
+      paymentTerms: 'Contado',
       deliveryMode: 'Entrega en Sucursal',
-      deliveryAddress: '',
+      deliveryAddress: 'Centro Logístico Nejapa',
       items: [
-        { id: 41, sku: 'SRV-CONS-01', name: 'Servicio de Consultoría y Diagnóstico ERP', category: 'Servicio', provider: 'Servicios NyTEX Tech', unitPrice: 1250, quantity: 4, total: 5000, status: 'cotizado', lostReason: null, lostNotes: '', lostDate: null }
+        { id: 41, sku: 'SRV-CONS-01', name: 'Servicio de Consultoría y Diagnóstico ERP', category: 'Servicio', provider: 'Servicios NyTEX Tech', unitPrice: 1200, quantity: 2, total: 2400, status: 'comprado', lostReason: null, lostNotes: '', lostDate: null },
+        { id: 42, sku: 'SRV-MIG-02', name: 'Servicio de Migración a la Nube e Infraestructura', category: 'Servicio', provider: 'Servicios Cloud Tech', unitPrice: 2600, quantity: 1, total: 2600, status: 'perdido', lostReason: '2. Falta de Stock / Tiempo de Entrega Tardío', lostNotes: 'Requerían iniciar la migración en menos de 48 horas y el equipo técnico tenía agenda copada por dos semanas.', lostDate: '2026-10-18' }
       ]
     }
   },
   { 
     id: 5, 
-    title: 'Renovación Licencias anual', 
-    company: 'Grupo Inmobiliario', 
-    value: '$12,000', 
-    stage: 'Calificado', 
+    title: 'Suministro de Tejido Plano Industrial', 
+    company: 'Almacenes Globales', 
+    value: '$25,000', 
+    stage: 'Cotizado', 
     date: '25 Oct',
-    createdDate: '2026-10-25',
-    branch: 'Sucursal Central (San Salvador)',
+    createdDate: '2026-10-20',
+    branch: 'Sucursal Occidente (Santa Ana)',
     priority: 'Alta', 
-    contact: 'Eduardo Castro', 
-    email: 'ecastro@grupoinm.com', 
-    phone: '+503 7987-6543', 
-    assignedTo: 'Alejandro Castillo',
-    activities: [],
+    contact: 'Javier Ramos', 
+    email: 'jramos@almacenesglobales.com', 
+    phone: '+503 7456-7890', 
+    assignedTo: 'María Asesora',
+    channel: 'web',
+    requestType: 'cotizacion',
+    resolutionStatus: 'pendiente',
+    resolutionNotes: '',
+    resolvedAt: null,
+    resolvedBy: null,
+    slaMinutes: 30,
+    messages: [
+      { id: 5001, sender: 'client', channel: 'web', text: 'Solicitud web: Requerimos cotización de 200 rollos de tela Oxford y gabardina para confección de uniformes de temporada.', timestamp: '2026-10-20 08:30' },
+      { id: 5002, sender: 'agent', channel: 'web', text: 'Estimado Javier, cotización preparada y enviada con precio especial por volumen y entrega en Santa Ana.', timestamp: '2026-10-20 10:00' }
+    ],
+    activities: [
+      {
+        id: 501,
+        contactType: 'Envío de Muestras',
+        notes: 'Minuta: Entrega de muestrario físico de telas Oxford y Gabardina. Cliente evaluará solidez de color.',
+        nextTask: 'Llamada de seguimiento a aprobación de muestra',
+        nextTaskDate: '2026-10-26 10:00',
+        registeredAt: '2026-10-22 14:00',
+        registeredBy: 'María Asesora'
+      }
+    ],
     quote: {
-      paymentTerms: 'Contado',
-      deliveryMode: 'Entrega en Sucursal',
-      deliveryAddress: '',
+      paymentTerms: 'Crédito 15 días',
+      deliveryMode: 'A Domicilio',
+      deliveryAddress: 'Bodega Santa Ana, Parque Industrial',
       items: [
-        { id: 51, sku: 'SRV-SOP-04', name: 'Soporte Hypercare 24/7 (Bolsa Mensual)', category: 'Servicio', provider: 'Soporte Hypercare NyTEX', unitPrice: 2400, quantity: 5, total: 12000, status: 'cotizado', lostReason: null, lostNotes: '', lostDate: null }
+        { id: 51, sku: 'MP-OXF-001', name: 'Tela Oxford Algodón/Poliéster 1.50m', category: 'Materia Prima', provider: 'Textiles El Cóndor', unitPrice: 3800, quantity: 3, total: 11400, status: 'comprado', lostReason: null, lostNotes: '', lostDate: null },
+        { id: 52, sku: 'MP-GAB-002', name: 'Tela Gabardina Pesada 100% Algodón', category: 'Materia Prima', provider: 'Hilados San Andrés', unitPrice: 4200, quantity: 2, total: 8400, status: 'perdido', lostReason: '3. Desistimiento del Cliente / Cancelación del Proyecto', lostNotes: 'La junta directiva del cliente congeló el presupuesto de uniformes corporativos hasta el primer trimestre del próximo año.', lostDate: '2026-10-24' },
+        { id: 53, sku: 'HIL-POL-010', name: 'Cono de Hilo Poliéster 40/2 5000m', category: 'Insumos', provider: 'Hilos Industriales Global', unitPrice: 2600, quantity: 2, total: 5200, status: 'cotizado', lostReason: null, lostNotes: '', lostDate: null }
       ]
     }
   },
   { 
     id: 6, 
-    title: 'Proyecto WMS y Telas', 
-    company: 'Almacenes Globales', 
-    value: '$22,850', 
-    stage: 'Cotizado', 
+    title: 'Soporte Hypercare Post-GoLive', 
+    company: 'Constructora XYZ', 
+    value: '$2,400', 
+    stage: 'Ganado', 
     date: '02 Nov',
-    createdDate: '2026-11-02',
-    branch: 'Sucursal Occidente (Sonsonate)',
+    createdDate: '2026-10-28',
+    branch: 'Sucursal Central (San Salvador)',
     priority: 'Media', 
-    contact: 'Guillermo Vega', 
-    email: 'gvega@almacenesg.com', 
-    phone: '+503 7456-1122', 
-    assignedTo: 'María Asesora',
+    contact: 'Pedro Castillo', 
+    email: 'pcastillo@constructoraxyz.com', 
+    phone: '+503 7321-6549', 
+    assignedTo: 'Carlos Méndez',
+    channel: 'whatsapp',
+    requestType: 'cotizacion',
+    resolutionStatus: 'resuelto',
+    resolutionNotes: 'Contrato de soporte cerrado y formalizado en Módulo 2.',
+    resolvedAt: '2026-11-02 16:00',
+    resolvedBy: 'Carlos Méndez',
+    slaMinutes: 0,
+    messages: [
+      { id: 6001, sender: 'client', channel: 'whatsapp', text: 'Carlos, aceptamos el plan de soporte hypercare de $2,400 por 3 meses.', timestamp: '2026-11-02 10:15' },
+      { id: 6002, sender: 'agent', channel: 'whatsapp', text: 'Excelente Pedro, acabamos de generar la orden formal para activar el equipo de soporte.', timestamp: '2026-11-02 10:20' }
+    ],
     activities: [
       {
         id: 601,
-        contactType: 'Envío de Muestras',
-        notes: 'Minuta: Se despacharon muestras de producto terminado industrial para pruebas de resistencia.',
-        nextTask: 'Reunión de seguimiento de resultados de muestras',
+        contactType: 'Llamada',
+        notes: 'Minuta: Acuerdo de soporte extendido por 3 meses post-arranque de sistema.',
+        nextTask: 'Enviar póliza de soporte firmada',
         nextTaskDate: '2026-11-05 09:00',
-        registeredAt: '2026-11-02 11:00',
-        registeredBy: 'María Asesora'
+        registeredAt: '2026-11-02 15:30',
+        registeredBy: 'Carlos Méndez'
       }
     ],
     quote: {
-      paymentTerms: 'Crédito 30 días',
-      deliveryMode: 'A Domicilio',
-      deliveryAddress: 'Centro de Distribución Almacenes Globales, Nave 4',
+      paymentTerms: 'Contado',
+      deliveryMode: 'Entrega en Sucursal',
+      deliveryAddress: 'Oficinas Constructora XYZ, Escalón',
       items: [
-        { id: 61, sku: 'PT-FLE-104', name: 'Lote Producto Terminado Modelo Industrial', category: 'Producto Terminado', provider: 'Industrias TexAlfa', unitPrice: 2800, quantity: 5, total: 14000, status: 'comprado', lostReason: null, lostNotes: '', lostDate: null },
-        { id: 62, sku: 'PT-POP-102', name: 'Lote Producto Terminado Modelo Estándar', category: 'Producto Terminado', provider: 'Textiles del Pacífico S.A.', unitPrice: 2150, quantity: 3, total: 6450, status: 'perdido', lostReason: '3. No compró porque no hay existencias', lostNotes: 'Cliente requería entrega inmediata pero el inventario estaba en producción.', lostDate: '2026-11-04 11:15' },
-        { id: 63, sku: 'SRV-CONS-01', name: 'Servicio de Consultoría y Diagnóstico ERP', category: 'Servicio', provider: 'Servicios NyTEX Tech', unitPrice: 1200, quantity: 2, total: 2400, status: 'perdido', lostReason: '1. No compró por precio alto', lostNotes: 'Cliente consideró el costo de consultoría fuera de presupuesto.', lostDate: '2026-11-04 11:20' }
+        { id: 61, sku: 'SRV-CONS-01', name: 'Servicio de Consultoría y Diagnóstico ERP', category: 'Servicio', provider: 'Servicios NyTEX Tech', unitPrice: 1200, quantity: 2, total: 2400, status: 'comprado', lostReason: null, lostNotes: '', lostDate: null }
       ]
     }
   },
   { 
     id: 7, 
-    title: 'Soporte Hypercare Taller', 
-    company: 'Constructora XYZ', 
-    value: '$2,400', 
-    stage: 'Ganado', 
-    date: '05 Nov',
-    createdDate: '2026-11-05',
-    branch: 'Sucursal Norte (Santa Ana)',
-    priority: 'Media', 
-    contact: 'Patricia Henríquez', 
-    email: 'phenriquez@xyz.com', 
-    phone: '+503 7889-0011', 
-    assignedTo: 'Carlos Méndez',
+    title: 'Adquisición de Lote Frazadas y Cobertores', 
+    company: 'Distribuidora Textil del Centro', 
+    value: '$6,800', 
+    stage: 'Cotizado', 
+    date: '04 Nov',
+    createdDate: '2026-10-30',
+    branch: 'Sucursal Central (San Salvador)',
+    priority: 'Alta', 
+    contact: 'Claudia Herrera', 
+    email: 'cherrera@distextil.com', 
+    phone: '+503 7600-1122', 
+    assignedTo: 'Alejandro Castillo',
+    channel: 'email',
+    requestType: 'cotizacion',
+    resolutionStatus: 'pendiente',
+    resolutionNotes: '',
+    resolvedAt: null,
+    resolvedBy: null,
+    slaMinutes: 60,
+    messages: [
+      { id: 7001, sender: 'client', channel: 'email', text: 'Buenas tardes, requerimos cotización de 100 frazadas térmicas y cobertores para temporada navideña.', timestamp: '2026-10-30 11:00' },
+      { id: 7002, sender: 'agent', channel: 'email', text: 'Estimada Claudia, cotización enviada con precios por mayor y despacho en almacén central.', timestamp: '2026-10-30 14:00' }
+    ],
     activities: [
       {
         id: 701,
         contactType: 'Llamada',
-        notes: 'Minuta: Cierre formal del acuerdo. Se acordó inicio de bolsa Hypercare con soporte extendido.',
-        nextTask: 'Monitoreo de tickets de primer mes',
-        nextTaskDate: '2026-11-30 17:00',
-        registeredAt: '2026-11-05 16:00',
-        registeredBy: 'Carlos Méndez'
+        notes: 'Minuta: Cliente solicitó cotización formal con descuento por volumen superior a 100 unidades.',
+        nextTask: 'Seguimiento a cotización enviada',
+        nextTaskDate: '2026-11-06 10:00',
+        registeredAt: '2026-11-04 11:30',
+        registeredBy: 'Alejandro Castillo'
       }
     ],
     quote: {
-      paymentTerms: 'Contado',
-      deliveryMode: 'Entrega en Sucursal',
-      deliveryAddress: '',
+      paymentTerms: 'Crédito 30 días',
+      deliveryMode: 'A Domicilio',
+      deliveryAddress: 'Sucursal Centro, Calle Arce',
       items: [
-        { id: 71, sku: 'SRV-SOP-04', name: 'Soporte Hypercare 24/7 (Bolsa Mensual)', category: 'Servicio', provider: 'Soporte Hypercare NyTEX', unitPrice: 2400, quantity: 1, total: 2400, status: 'comprado', lostReason: null, lostNotes: '', lostDate: null }
+        { id: 71, sku: 'PT-COB-101', name: 'Cobertor Matrimonial Estampado Premium', category: 'Producto Terminado', provider: 'Industrias TexAlfa', unitPrice: 1800, quantity: 2, total: 3600, status: 'comprado', lostReason: null, lostNotes: '', lostDate: null },
+        { id: 72, sku: 'PT-FRA-102', name: 'Frazada Térmica Microfibra Suave', category: 'Producto Terminado', provider: 'Industrias TexAlfa', unitPrice: 3200, quantity: 1, total: 3200, status: 'perdido', lostReason: '4. Especificación Técnica Incorrecta o Incompatible', lostNotes: 'El gramaje de la microfibra no coincidía con las especificaciones del pliego de licitación del cliente.', lostDate: '2026-11-04' }
       ]
     }
   },
   { 
     id: 8, 
-    title: 'Suministro Lotes Tejido Alfa', 
-    company: 'Agroindustrias La Paz', 
-    value: '$7,600', 
-    stage: 'Cotizado', 
-    date: '07 Nov',
-    createdDate: '2026-11-07',
+    title: 'Reposición Insumos de Costura', 
+    company: 'Maquilas Modernas S.A.', 
+    value: '$4,200', 
+    stage: 'Calificado', 
+    date: '06 Nov',
+    createdDate: '2026-11-01',
     branch: 'Sucursal Oriente (San Miguel)',
-    priority: 'Alta', 
-    contact: 'Marcos Benítez', 
-    email: 'mbenitez@agrolapaz.com', 
-    phone: '+503 7234-9988', 
-    assignedTo: 'Ana Gómez',
+    priority: 'Media', 
+    contact: 'Jorge Meléndez', 
+    email: 'jmelendez@maquilasmodernas.com', 
+    phone: '+503 7555-4321', 
+    assignedTo: 'Carlos Méndez',
+    channel: 'instagram',
+    requestType: 'cotizacion',
+    resolutionStatus: 'pendiente',
+    resolutionNotes: '',
+    resolvedAt: null,
+    resolvedBy: null,
+    slaMinutes: 110,
+    messages: [
+      { id: 8001, sender: 'client', channel: 'instagram', text: 'Buenas, quisiéramos saber el precio por caja de botones y cremalleras de poliéster para entrega en San Miguel.', timestamp: '2026-11-01 15:20' }
+    ],
     activities: [
       {
         id: 801,
-        contactType: 'Reunión Presencial',
-        notes: 'Reunión en agencia San Miguel. Cliente solicitaba crédito no autorizado por comité financiero.',
-        nextTask: 'Seguimiento por si aceptan términos de contado',
-        nextTaskDate: '2026-11-15 10:00',
-        registeredAt: '2026-11-07 14:00',
-        registeredBy: 'Ana Gómez'
+        contactType: 'Llamada',
+        notes: 'Minuta: Se revisaron volúmenes de hilo y botones. El cliente solicitó plazo de crédito a 45 días.',
+        nextTask: 'Consultar aprobación de crédito en Módulo CxC',
+        nextTaskDate: '2026-11-08 14:00',
+        registeredAt: '2026-11-06 09:15',
+        registeredBy: 'Carlos Méndez'
       }
     ],
     quote: {
-      paymentTerms: 'Crédito 90 días',
-      deliveryMode: 'A Domicilio',
-      deliveryAddress: 'Carretera El Litoral Km 138, San Miguel',
+      paymentTerms: 'Crédito 45 días',
+      deliveryMode: 'Entrega en Sucursal',
+      deliveryAddress: 'Parque Industrial San Miguel, Módulo 8',
       items: [
-        { id: 81, sku: 'PT-TEL-101', name: 'Lote Producto Terminado Estándar Alfa', category: 'Producto Terminado', provider: 'Textiles del Pacífico S.A.', unitPrice: 1850, quantity: 2, total: 3700, status: 'perdido', lostReason: '4. No compró porque quería crédito y no se le dio', lostNotes: 'El cliente exigía crédito a 90 días no autorizado por política de crédito.', lostDate: '2026-11-08 10:00' },
-        { id: 82, sku: 'PT-RIB-103', name: 'Lote Producto Terminado Modelo Reforzado', category: 'Producto Terminado', provider: 'Industrias TexAlfa', unitPrice: 1950, quantity: 2, total: 3900, status: 'perdido', lostReason: '2. No compró por la Marca', lostNotes: 'Cliente prefirió marca importada de su proveedor histórico.', lostDate: '2026-11-08 10:15' }
+        { id: 81, sku: 'HIL-POL-010', name: 'Cono de Hilo Poliéster 40/2 5000m', category: 'Insumos', provider: 'Hilos Industriales Global', unitPrice: 2000, quantity: 1, total: 2000, status: 'comprado', lostReason: null, lostNotes: '', lostDate: null },
+        { id: 82, sku: 'INS-BOT-020', name: 'Botón Poliéster 4 Agujeros Caja 1000u', category: 'Insumos', provider: 'Hilos Industriales Global', unitPrice: 2200, quantity: 1, total: 2200, status: 'perdido', lostReason: '5. Falta de Aprobación de Crédito / Condiciones de Pago', lostNotes: 'El departamento de CxC rechazó otorgar plazo de 45 días por no contar con referencias bancarias suficientes.', lostDate: '2026-11-06' }
       ]
     }
   },
   { 
     id: 9, 
-    title: 'Equipamiento Almacén Oriente', 
-    company: 'Distribuidora Morazán', 
-    value: '$9,250', 
-    stage: 'Ganado', 
-    date: '09 Nov',
-    createdDate: '2026-11-09',
-    branch: 'Sucursal Oriente (San Miguel)',
+    title: 'Suministro Tela Gabardina para Uniformes', 
+    company: 'Uniformes Industriales El Salvador', 
+    value: '$7,200', 
+    stage: 'Cotizado', 
+    date: '08 Nov',
+    createdDate: '2026-11-03',
+    branch: 'Sucursal Central (San Salvador)',
     priority: 'Alta', 
-    contact: 'Lucía Escalante', 
-    email: 'lescalante@dmorazan.com', 
-    phone: '+503 7600-4411', 
-    assignedTo: 'Ana Gómez',
+    contact: 'Patricia Salazar', 
+    email: 'psalazar@uniformes.sv', 
+    phone: '+503 7200-3344', 
+    assignedTo: 'María Asesora',
+    channel: 'web',
+    requestType: 'cotizacion',
+    resolutionStatus: 'pendiente',
+    resolutionNotes: '',
+    resolvedAt: null,
+    resolvedBy: null,
+    slaMinutes: 15,
+    messages: [
+      { id: 9001, sender: 'client', channel: 'web', text: 'Formulario web: Cotización de tela gabardina azul y caqui para dotación de seguridad industrial.', timestamp: '2026-11-03 09:00' }
+    ],
     activities: [
       {
         id: 901,
-        contactType: 'Llamada',
-        notes: 'Aprobación de orden de compra. Procedieron con el 100% de los SKUs cotizados.',
-        nextTask: 'Envío de guía de remisión',
-        nextTaskDate: '2026-11-12 11:00',
-        registeredAt: '2026-11-09 15:30',
-        registeredBy: 'Ana Gómez'
+        contactType: 'Reunión Presencial',
+        notes: 'Minuta: Presentación de cotización en oficinas del cliente. Se revisó ficha técnica y tiempos de despacho.',
+        nextTask: 'Llamada de confirmación de pedido',
+        nextTaskDate: '2026-11-10 11:00',
+        registeredAt: '2026-11-08 16:00',
+        registeredBy: 'María Asesora'
       }
     ],
     quote: {
-      paymentTerms: 'Contado',
-      deliveryMode: 'Entrega en Sucursal',
-      deliveryAddress: '',
+      paymentTerms: 'Crédito 15 días',
+      deliveryMode: 'A Domicilio',
+      deliveryAddress: 'Planta de Confección Soyapango',
       items: [
-        { id: 91, sku: 'PT-PIQ-105', name: 'Lote Producto Terminado Modelo Plus', category: 'Producto Terminado', provider: 'Textiles del Pacífico S.A.', unitPrice: 2100, quantity: 3, total: 6300, status: 'comprado', lostReason: null, lostNotes: '', lostDate: null },
-        { id: 92, sku: 'MP-HIL-01', name: 'Materia Prima Base MP-01', category: 'Materia Prima', provider: 'Fibras Sintéticas Corp', unitPrice: 380, quantity: 5, total: 1900, status: 'comprado', lostReason: null, lostNotes: '', lostDate: null },
-        { id: 93, sku: 'SRV-CONS-01', name: 'Servicio de Consultoría y Diagnóstico ERP', category: 'Servicio', provider: 'Servicios NyTEX Tech', unitPrice: 1050, quantity: 1, total: 1050, status: 'comprado', lostReason: null, lostNotes: '', lostDate: null }
+        { id: 91, sku: 'MP-GAB-002', name: 'Tela Gabardina Pesada 100% Algodón', category: 'Materia Prima', provider: 'Hilados San Andrés', unitPrice: 3600, quantity: 2, total: 7200, status: 'comprado', lostReason: null, lostNotes: '', lostDate: null }
       ]
     }
   },
   { 
     id: 10, 
-    title: 'Servicio Mantenimiento e Insumos', 
-    company: 'Importadora Sonsonate S.A.', 
-    value: '$6,590', 
-    stage: 'Cotizado', 
-    date: '11 Nov',
-    createdDate: '2026-11-11',
-    branch: 'Sucursal Occidente (Sonsonate)',
+    title: 'Adquisición Frazadas Infantiles', 
+    company: 'Comercial Hogar Feliz', 
+    value: '$3,600', 
+    stage: 'Ganado', 
+    date: '10 Nov',
+    createdDate: '2026-11-05',
+    branch: 'Sucursal Occidente (Santa Ana)',
     priority: 'Media', 
-    contact: 'David Morales', 
-    email: 'dmorales@impsonsonate.com', 
-    phone: '+503 7511-2233', 
-    assignedTo: 'Carlos Méndez',
+    contact: 'Raúl Morales', 
+    email: 'rmorales@hogarfeliz.com', 
+    phone: '+503 7411-9988', 
+    assignedTo: 'Alejandro Castillo',
+    channel: 'whatsapp',
+    requestType: 'cotizacion',
+    resolutionStatus: 'resuelto',
+    resolutionNotes: 'Venta cerrada y cobrada en mostrador de sucursal Santa Ana.',
+    resolvedAt: '2026-11-10 17:00',
+    resolvedBy: 'Alejandro Castillo',
+    slaMinutes: 0,
+    messages: [
+      { id: 10001, sender: 'client', channel: 'whatsapp', text: 'Raúl: Ya autorizamos la orden de las 50 frazadas infantiles. Llegaré hoy a pagar a caja en Santa Ana.', timestamp: '2026-11-10 14:00' },
+      { id: 10002, sender: 'agent', channel: 'whatsapp', text: 'Excelente Raúl, la cotización ya está en el sistema de caja de Santa Ana lista para facturación.', timestamp: '2026-11-10 14:05' }
+    ],
     activities: [
       {
         id: 1001,
         contactType: 'Llamada',
-        notes: 'Cliente aprobó la compra del producto físico pero declinó la póliza de soporte.',
-        nextTask: 'Facturación del SKU comprado',
-        nextTaskDate: '2026-11-12 16:00',
-        registeredAt: '2026-11-11 11:20',
-        registeredBy: 'Carlos Méndez'
+        notes: 'Minuta: Confirmación de compra de lote de frazadas infantiles estampadas.',
+        nextTask: 'Facturación en Módulo 2',
+        nextTaskDate: '2026-11-11 10:00',
+        registeredAt: '2026-11-10 14:30',
+        registeredBy: 'Alejandro Castillo'
       }
     ],
     quote: {
       paymentTerms: 'Contado',
       deliveryMode: 'Entrega en Sucursal',
-      deliveryAddress: '',
+      deliveryAddress: 'Agencia Santa Ana, Centro',
       items: [
-        { id: 101, sku: 'SKU-TEL-01', name: 'Lote Producto Terminado Serie 100', category: 'Producto Terminado', provider: 'Distribuidora Global Textil', unitPrice: 1850, quantity: 2, total: 3700, status: 'comprado', lostReason: null, lostNotes: '', lostDate: null },
-        { id: 102, sku: 'SRV-SOP-04', name: 'Soporte Hypercare 24/7 (Bolsa Mensual)', category: 'Servicio', provider: 'Soporte Hypercare NyTEX', unitPrice: 2400, quantity: 1, total: 2400, status: 'perdido', lostReason: '5. No compra por mal servicio', lostNotes: 'Tiempos de respuesta lentos en soporte anterior; desistieron del servicio.', lostDate: '2026-11-11 14:00' },
-        { id: 103, sku: 'MP-TIN-03', name: 'Compuesto Reactivo Azul Marino', category: 'Insumo Químico', provider: 'Químicos y Colorantes CA', unitPrice: 490, quantity: 1, total: 490, status: 'cotizado', lostReason: null, lostNotes: '', lostDate: null }
+        { id: 101, sku: 'PT-FRA-103', name: 'Frazada Térmica Estampada Infantil', category: 'Producto Terminado', provider: 'Industrias TexAlfa', unitPrice: 1800, quantity: 2, total: 3600, status: 'comprado', lostReason: null, lostNotes: '', lostDate: null }
       ]
     }
   },
   { 
     id: 11, 
-    title: 'Dotación Anual Planta Textil', 
-    company: 'Textilera Santa Ana', 
+    title: 'Dotación Integral Ropa de Cama Hospitalaria', 
+    company: 'Servicios Médicos de El Salvador', 
     value: '$11,400', 
     stage: 'Ganado', 
     date: '12 Nov',
-    createdDate: '2026-11-12',
-    branch: 'Sucursal Norte (Santa Ana)',
+    createdDate: '2026-11-08',
+    branch: 'Sucursal Occidente (Santa Ana)',
     priority: 'Alta', 
-    contact: 'Beatriz Salazar', 
-    email: 'bsalazar@texsantaana.com', 
-    phone: '+503 7788-9900', 
+    contact: 'Dr. Fernando Rivas', 
+    email: 'frivas@servimedicos.sv', 
+    phone: '+503 7888-5522', 
     assignedTo: 'Alejandro Castillo',
+    channel: 'direct',
+    requestType: 'cotizacion',
+    resolutionStatus: 'resuelto',
+    resolutionNotes: 'Licitación hospitalaria adjudicada y formalizada en Módulo 2.',
+    resolvedAt: '2026-11-12 11:00',
+    resolvedBy: 'Alejandro Castillo',
+    slaMinutes: 0,
+    messages: [
+      { id: 11001, sender: 'client', channel: 'direct', text: 'Confirmación escrita: Adjudicación de dotación hospitalaria de sábanas y cobertores según cotización presentada.', timestamp: '2026-11-12 09:30' }
+    ],
     activities: [
       {
         id: 1101,
@@ -423,6 +559,117 @@ const initialDeals = [
         { id: 112, sku: 'SRV-CAP-03', name: 'Capacitación y Adopción de Usuarios NyTEX', category: 'Servicio', provider: 'Academia NyTEX', unitPrice: 750, quantity: 4, total: 3000, status: 'comprado', lostReason: null, lostNotes: '', lostDate: null }
       ]
     }
+  },
+  // NUEVAS SOLICITUDES OMNICANAL EN VIVO (CONSULTAS Y RECLAMOS)
+  {
+    id: 12,
+    title: 'Consulta sobre disponibilidad y muestra de Hilo Poliéster en San Miguel',
+    company: 'Confecciones La Unión',
+    value: '$0',
+    stage: 'Nuevo',
+    date: '12 Nov',
+    createdDate: '2026-11-12',
+    branch: 'Sucursal Oriente (San Miguel)',
+    priority: 'Media',
+    contact: 'Marta Rivas',
+    email: 'marta@confeccioneslaunion.com',
+    phone: '+503 7234-5678',
+    assignedTo: 'Carlos Méndez',
+    channel: 'whatsapp',
+    requestType: 'consulta',
+    resolutionStatus: 'pendiente',
+    resolutionNotes: '',
+    resolvedAt: null,
+    resolvedBy: null,
+    slaMinutes: 18,
+    messages: [
+      { id: 1201, sender: 'client', channel: 'whatsapp', text: 'Hola buenas tardes, ¿tienen disponible Hilo Poliéster 40/2 blanco en la sucursal de San Miguel? Necesitamos 25 conos para esta misma tarde.', timestamp: '14:20' }
+    ],
+    activities: [],
+    quote: { paymentTerms: 'Contado', deliveryMode: 'Entrega en Sucursal', deliveryAddress: '', items: [] }
+  },
+  {
+    id: 13,
+    title: 'Reclamo: Lote de Tela Gabardina con variación de tono azul',
+    company: 'Uniformes del Pacífico',
+    value: '$0',
+    stage: 'Nuevo',
+    date: '12 Nov',
+    createdDate: '2026-11-12',
+    branch: 'Sucursal Central (San Salvador)',
+    priority: 'Alta',
+    contact: '@uniformes_pacifico',
+    email: 'produccion@uniformespacifico.com',
+    phone: '+503 7890-4321',
+    assignedTo: 'María Asesora',
+    channel: 'instagram',
+    requestType: 'reclamo',
+    resolutionStatus: 'pendiente',
+    resolutionNotes: '',
+    resolvedAt: null,
+    resolvedBy: null,
+    slaMinutes: 38,
+    messages: [
+      { id: 1301, sender: 'client', channel: 'instagram', text: 'Hola, les escribo por este medio porque el lote de tela gabardina azul marino que recibimos en el pedido de ayer trae una tonalidad más clara que la muestra aprobada. Por favor necesitamos solución urgente ya que tenemos producción parada.', timestamp: '13:55' }
+    ],
+    activities: [],
+    quote: { paymentTerms: 'Contado', deliveryMode: 'Entrega en Sucursal', deliveryAddress: '', items: [] }
+  },
+  {
+    id: 14,
+    title: 'Consulta: Formas de pago y catálogo para clientes nuevos',
+    company: 'Textiles El Ángel',
+    value: '$0',
+    stage: 'Contactado',
+    date: '10 Nov',
+    createdDate: '2026-11-10',
+    branch: 'Sucursal Central (San Salvador)',
+    priority: 'Baja',
+    contact: 'Fernando Castro',
+    email: 'fcastro@elangeltextiles.com',
+    phone: '+503 7111-2233',
+    assignedTo: 'María Asesora',
+    channel: 'email',
+    requestType: 'consulta',
+    resolutionStatus: 'resuelto',
+    resolutionNotes: 'Se envió formulario de solicitud de crédito de CxC y lista de precios oficial por correo electrónico.',
+    resolvedAt: '2026-11-10 16:45',
+    resolvedBy: 'María Asesora',
+    slaMinutes: 0,
+    messages: [
+      { id: 1401, sender: 'client', channel: 'email', text: 'Buenas tardes, somos una nueva empresa de confección en Soyapango. Quisiéramos saber qué requisitos solicitan para abrir línea de crédito y si tienen catálogo de telas.', timestamp: '2026-11-10 10:15' },
+      { id: 1402, sender: 'agent', channel: 'email', text: 'Estimado Fernando, te adjunto el catálogo de productos vigente y los requisitos para apertura de cuenta en CxC.', timestamp: '2026-11-10 16:40' }
+    ],
+    activities: [],
+    quote: { paymentTerms: 'Contado', deliveryMode: 'Entrega en Sucursal', deliveryAddress: '', items: [] }
+  },
+  {
+    id: 15,
+    title: 'Reclamo: Factura emitida con NIT incorrecto en compra de mostrador',
+    company: 'Bordados y Estampados Cuscatlecos',
+    value: '$0',
+    stage: 'Contactado',
+    date: '09 Nov',
+    createdDate: '2026-11-09',
+    branch: 'Sucursal Central (San Salvador)',
+    priority: 'Alta',
+    contact: 'Elena Rivas',
+    email: 'erivas@bordadoscuscatlecos.com',
+    phone: '+503 7999-8877',
+    assignedTo: 'Alejandro Castillo',
+    channel: 'web',
+    requestType: 'reclamo',
+    resolutionStatus: 'resuelto',
+    resolutionNotes: 'Se coordinó con facturación la anulación del DTE y reemisión con el NIT corregido.',
+    resolvedAt: '2026-11-09 11:20',
+    resolvedBy: 'Alejandro Castillo',
+    slaMinutes: 0,
+    messages: [
+      { id: 1501, sender: 'client', channel: 'web', text: 'Ticket web #492: El día de ayer compramos hilos en la sucursal Central y la factura salió con el NIT de persona natural en lugar de nuestra razón social.', timestamp: '2026-11-09 08:45' },
+      { id: 1502, sender: 'agent', channel: 'web', text: 'Estimada Elena, ya se gestionó la nota de crédito y se reemitió el DTE con el NIT corporativo correcto.', timestamp: '2026-11-09 11:15' }
+    ],
+    activities: [],
+    quote: { paymentTerms: 'Contado', deliveryMode: 'Entrega en Sucursal', deliveryAddress: '', items: [] }
   }
 ];
 
@@ -547,8 +794,29 @@ const CrmDashboardView = () => {
     unitPrice: ''
   });
 
-  // Modo de Vista Principal: 'kanban' (Tablero Kanban) | 'analytics' (Indicadores Cotizaciones vs Vendidas & Pérdidas)
+  // Modo de Vista Principal: 'kanban' | 'omnichannel' (Bandeja Omnicanal) | 'analytics'
   const [currentMainView, setCurrentMainView] = useState('kanban');
+
+  // Estado de la Bandeja Omnicanal (WhatsApp, Instagram, Correo & Web)
+  const [omnichannelFilterStatus, setOmnichannelFilterStatus] = useState('pendiente'); // 'pendiente' (DEFAULT: solo pendientes) | 'resuelto' | 'todos'
+  const [omnichannelFilterType, setOmnichannelFilterType] = useState('todos'); // 'todos' | 'cotizacion' | 'consulta' | 'reclamo'
+  const [omnichannelFilterChannel, setOmnichannelFilterChannel] = useState('todos'); // 'todos' | 'whatsapp' | 'instagram' | 'email' | 'web'
+  const [omnichannelSearch, setOmnichannelSearch] = useState('');
+  const [activeChatDeal, setActiveChatDeal] = useState(null);
+  const [newChatReplyText, setNewChatReplyText] = useState('');
+  const [isSimulatorOpen, setIsSimulatorOpen] = useState(false);
+  const [simulatorForm, setSimulatorForm] = useState({
+    channel: 'whatsapp',
+    requestType: 'cotizacion',
+    company: 'Textiles El Volcán',
+    contact: 'Guillermo Mendoza',
+    contactHandle: '+503 7988-1122',
+    title: 'Cotización urgente de 200 yardas de tela Oxford',
+    messageText: 'Buenas tardes, quisiéramos saber el precio por yarda de tela Oxford celeste y si tienen disponibilidad para entrega inmediata en San Salvador.'
+  });
+  const [isResolveModalOpen, setIsResolveModalOpen] = useState(false);
+  const [dealToResolve, setDealToResolve] = useState(null);
+  const [resolveNotesInput, setResolveNotesInput] = useState('');
 
   // Filtros Analíticos de Cotizaciones
   const [analyticsDatePreset, setAnalyticsDatePreset] = useState('all'); // 'all' | 'today' | 'last7' | 'thisMonth' | 'last30' | 'year' | 'custom'
@@ -1136,6 +1404,168 @@ const CrmDashboardView = () => {
       filteredDealsCount: filtered.length
     };
   }, [deals, analyticsDateFrom, analyticsDateTo, analyticsBranch, analyticsSeller, analyticsProvider, analyticsCategory, analyticsSku]);
+
+  // Acciones de la Bandeja Omnicanal
+  const pendingOmnichannelCount = deals.filter(d => (d.resolutionStatus || 'pendiente') === 'pendiente').length;
+  const resolvedOmnichannelCount = deals.filter(d => d.resolutionStatus === 'resuelto').length;
+
+  const handleOpenChat = (deal) => {
+    setActiveChatDeal(deal);
+    setNewChatReplyText('');
+  };
+
+  const handleSendChatReply = async () => {
+    if (!newChatReplyText.trim() || !activeChatDeal) return;
+    const replyMsg = {
+      id: Date.now(),
+      sender: 'agent',
+      channel: activeChatDeal.channel || 'whatsapp',
+      text: newChatReplyText.trim(),
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    };
+
+    const updatedMessages = [...(activeChatDeal.messages || []), replyMsg];
+    const updatedDeal = { ...activeChatDeal, messages: updatedMessages };
+
+    setActiveChatDeal(updatedDeal);
+    setDeals(prev => prev.map(d => d.id === updatedDeal.id ? updatedDeal : d));
+    setNewChatReplyText('');
+    showToast(`📤 Respuesta enviada a ${activeChatDeal.contact || activeChatDeal.company} vía ${(activeChatDeal.channel || 'canal').toUpperCase()}`);
+
+    try {
+      await fetch('/api/crm/messages/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          dealId: activeChatDeal.id,
+          channel: activeChatDeal.channel,
+          recipient: activeChatDeal.contact || activeChatDeal.phone || activeChatDeal.email,
+          text: replyMsg.text
+        })
+      });
+    } catch (e) {
+      // Offline fallback
+    }
+  };
+
+  const handleOpenResolveModal = (deal) => {
+    setDealToResolve(deal);
+    setResolveNotesInput(deal.resolutionNotes || (
+      deal.requestType === 'cotizacion' 
+        ? 'Cotización atendida y acordada con el cliente.' 
+        : deal.requestType === 'consulta'
+        ? 'Consulta técnica respondida y aclarada.'
+        : 'Reclamo investigado y solucionado con satisfacción del cliente.'
+    ));
+    setIsResolveModalOpen(true);
+  };
+
+  const handleConfirmResolve = () => {
+    if (!dealToResolve) return;
+    const resolvedAtStr = new Date().toLocaleString();
+    const updatedDeal = {
+      ...dealToResolve,
+      resolutionStatus: 'resuelto',
+      resolvedAt: resolvedAtStr,
+      resolvedBy: dealToResolve.assignedTo || 'María Asesora',
+      resolutionNotes: resolveNotesInput.trim() || 'Solicitud finalizada con éxito.'
+    };
+
+    setDeals(prev => prev.map(d => d.id === updatedDeal.id ? updatedDeal : d));
+    if (activeChatDeal && activeChatDeal.id === updatedDeal.id) {
+      setActiveChatDeal(updatedDeal);
+    }
+    setIsResolveModalOpen(false);
+    setDealToResolve(null);
+    showToast(`✓ Solicitud de "${updatedDeal.company}" marcada como FINALIZADA y archivada.`);
+  };
+
+  const handleReopenRequest = (deal) => {
+    const updatedDeal = {
+      ...deal,
+      resolutionStatus: 'pendiente',
+      resolvedAt: null,
+      resolvedBy: null,
+      resolutionNotes: ''
+    };
+    setDeals(prev => prev.map(d => d.id === updatedDeal.id ? updatedDeal : d));
+    if (activeChatDeal && activeChatDeal.id === updatedDeal.id) {
+      setActiveChatDeal(updatedDeal);
+    }
+    showToast(`↩️ Solicitud de "${deal.company}" reactivada a estado PENDIENTE.`);
+  };
+
+  const handleSimulateIncomingMessage = async () => {
+    if (!simulatorForm.company.trim() || !simulatorForm.messageText.trim()) {
+      showToast('⚠️ Por favor completa el nombre de empresa y el mensaje a simular.');
+      return;
+    }
+
+    const newDealId = Date.now();
+    const nowTimeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const nowDateStr = new Date().toISOString().slice(0, 10);
+
+    const newIncomingDeal = {
+      id: newDealId,
+      title: simulatorForm.title.trim() || `Solicitud de ${simulatorForm.requestType.toUpperCase()} - ${simulatorForm.company.trim()}`,
+      company: simulatorForm.company.trim(),
+      value: simulatorForm.requestType === 'cotizacion' ? '$2,500' : '$0',
+      stage: 'Nuevo',
+      date: 'Hoy',
+      createdDate: nowDateStr,
+      branch: 'Sucursal Central (San Salvador)',
+      priority: simulatorForm.requestType === 'reclamo' ? 'Alta' : 'Media',
+      contact: simulatorForm.contact.trim() || 'Contacto Prospecto',
+      email: simulatorForm.channel === 'email' ? simulatorForm.contactHandle.trim() : 'prospecto@empresa.com',
+      phone: simulatorForm.channel === 'whatsapp' ? simulatorForm.contactHandle.trim() : '+503 7000-0000',
+      assignedTo: 'María Asesora',
+      channel: simulatorForm.channel,
+      requestType: simulatorForm.requestType,
+      resolutionStatus: 'pendiente',
+      resolutionNotes: '',
+      resolvedAt: null,
+      resolvedBy: null,
+      slaMinutes: simulatorForm.requestType === 'reclamo' ? 5 : 15,
+      messages: [
+        {
+          id: Date.now() + 1,
+          sender: 'client',
+          channel: simulatorForm.channel,
+          text: simulatorForm.messageText.trim(),
+          timestamp: nowTimeStr
+        }
+      ],
+      activities: [],
+      quote: {
+        paymentTerms: 'Contado',
+        deliveryMode: 'Entrega en Sucursal',
+        deliveryAddress: '',
+        items: []
+      }
+    };
+
+    setDeals(prev => [newIncomingDeal, ...prev]);
+    setIsSimulatorOpen(false);
+    showToast(`🔔 ¡Nuevo mensaje recibido de ${simulatorForm.channel.toUpperCase()}! Solicitud agregada como PENDIENTE.`);
+
+    try {
+      await fetch('/api/crm/webhook/omnichannel', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          channel: simulatorForm.channel,
+          requestType: simulatorForm.requestType,
+          contactName: simulatorForm.contact,
+          phone: simulatorForm.contactHandle,
+          email: simulatorForm.contactHandle,
+          messageText: simulatorForm.messageText,
+          title: newIncomingDeal.title
+        })
+      });
+    } catch (e) {
+      // Offline fallback
+    }
+  };
 
   // Abrir Modal de Creación
   const handleOpenModal = () => {
@@ -1882,6 +2312,27 @@ const CrmDashboardView = () => {
                 <i className="fas fa-columns"></i>
                 <span>Tablero Kanban</span>
               </button>
+
+              <button
+                type="button"
+                onClick={() => setCurrentMainView('omnichannel')}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center space-x-1.5 ${
+                  currentMainView === 'omnichannel'
+                    ? 'bg-[#006EAD] text-white shadow-xs'
+                    : 'text-gray-600 hover:text-[#006EAD]'
+                }`}
+              >
+                <i className="fas fa-comments"></i>
+                <span>Bandeja Omnicanal</span>
+                {pendingOmnichannelCount > 0 ? (
+                  <span className="bg-amber-400 text-slate-900 text-[10px] font-black px-1.5 py-0.2 rounded-full animate-pulse">
+                    {pendingOmnichannelCount}
+                  </span>
+                ) : (
+                  <span className="bg-emerald-500 text-white text-[10px] font-black px-1.5 py-0.2 rounded-full">✓</span>
+                )}
+              </button>
+
               <button
                 type="button"
                 onClick={() => setCurrentMainView('analytics')}
@@ -1969,7 +2420,7 @@ const CrmDashboardView = () => {
       </div>
 
       <div className="flex-1 overflow-x-auto overflow-y-auto p-6">
-        {currentMainView === 'kanban' ? (
+        {currentMainView === 'kanban' && (
           <>
             {/* Banner de Conversión Comercial con acceso directo a BI */}
             <div className="bg-gradient-to-r from-[#0A2540] via-slate-900 to-[#006EAD] text-white p-4 rounded-xl shadow-sm mb-6 flex flex-wrap items-center justify-between gap-4 border border-blue-900 min-w-[800px]">
@@ -2144,7 +2595,542 @@ const CrmDashboardView = () => {
               })}
             </div>
           </>
-        ) : (
+        )}
+
+        {/* ========================================================= */}
+        {/* VISTA: BANDEJA OMNICANAL (WhatsApp, Instagram, Email, Web) */}
+        {/* Solicitudes de Cotización, Consultas y Reclamos           */}
+        {/* ========================================================= */}
+        {currentMainView === 'omnichannel' && (() => {
+          // Filtrado de solicitudes omnicanal
+          const filteredOmnichannelDeals = deals.filter(deal => {
+            const reqStatus = deal.resolutionStatus || 'pendiente';
+            const reqType = deal.requestType || 'cotizacion';
+            const reqChannel = deal.channel || 'direct';
+
+            // 1. Filtro de Estado (¡SOLO PENDIENTES POR DEFECTO!)
+            if (omnichannelFilterStatus !== 'todos' && reqStatus !== omnichannelFilterStatus) {
+              return false;
+            }
+
+            // 2. Filtro por Tipo (Cotización, Consulta, Reclamo)
+            if (omnichannelFilterType !== 'todos' && reqType !== omnichannelFilterType) {
+              return false;
+            }
+
+            // 3. Filtro por Canal (WhatsApp, Instagram, Email, Web)
+            if (omnichannelFilterChannel !== 'todos' && reqChannel !== omnichannelFilterChannel) {
+              return false;
+            }
+
+            // 4. Búsqueda por texto
+            if (omnichannelSearch.trim()) {
+              const q = omnichannelSearch.toLowerCase();
+              const matchCompany = (deal.company || '').toLowerCase().includes(q);
+              const matchContact = (deal.contact || '').toLowerCase().includes(q);
+              const matchPhone = (deal.phone || '').toLowerCase().includes(q);
+              const matchEmail = (deal.email || '').toLowerCase().includes(q);
+              const matchTitle = (deal.title || '').toLowerCase().includes(q);
+              const matchNotes = (deal.resolutionNotes || '').toLowerCase().includes(q);
+              const matchMsg = (deal.messages || []).some(m => (m.text || '').toLowerCase().includes(q));
+              if (!matchCompany && !matchContact && !matchPhone && !matchEmail && !matchTitle && !matchNotes && !matchMsg) {
+                return false;
+              }
+            }
+
+            return true;
+          });
+
+          // Conteo de métricas
+          const countPendientes = deals.filter(d => (d.resolutionStatus || 'pendiente') === 'pendiente').length;
+          const countResueltos = deals.filter(d => d.resolutionStatus === 'resuelto').length;
+          const countCotizaciones = deals.filter(d => (d.requestType || 'cotizacion') === 'cotizacion').length;
+          const countConsultas = deals.filter(d => d.requestType === 'consulta').length;
+          const countReclamos = deals.filter(d => d.requestType === 'reclamo').length;
+
+          return (
+            <div className="space-y-6 max-w-7xl mx-auto pb-12 animate-fadeIn">
+              
+              {/* Header y Acciones de la Bandeja */}
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-5 space-y-4">
+                <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-3 border-b border-gray-100 pb-4">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-11 h-11 rounded-xl bg-gradient-to-tr from-emerald-500 via-[#006EAD] to-indigo-600 flex items-center justify-center text-white text-xl shadow-xs">
+                      <i className="fas fa-headset"></i>
+                    </div>
+                    <div>
+                      <div className="flex items-center space-x-2">
+                        <span className="bg-emerald-100 text-emerald-800 text-[10px] font-black uppercase px-2 py-0.5 rounded-md flex items-center gap-1">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                          Omnichannel Live Hub
+                        </span>
+                        <span className="text-xs text-gray-400">|</span>
+                        <span className="text-xs text-gray-500 font-medium">WhatsApp Business • Instagram Direct • Correo • Web</span>
+                      </div>
+                      <h2 className="text-xl font-black text-[#0A2540] mt-0.5">
+                        Bandeja de Solicitudes Comerciales & Atención al Cliente
+                      </h2>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-wrap items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setIsSimulatorOpen(true)}
+                      className="px-4 py-2 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-xs font-black hover:from-purple-700 hover:to-indigo-700 transition shadow-md flex items-center space-x-2"
+                    >
+                      <i className="fas fa-flask"></i>
+                      <span>Simular Mensaje Entrante</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setCurrentMainView('kanban')}
+                      className="px-3.5 py-2 rounded-xl border border-gray-300 text-gray-700 text-xs font-bold hover:bg-gray-100 transition flex items-center space-x-1.5"
+                    >
+                      <i className="fas fa-columns"></i>
+                      <span>Ver Kanban</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Tarjetas KPI de Estado de Solicitudes */}
+                <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+                  <div 
+                    onClick={() => setOmnichannelFilterStatus('pendiente')}
+                    className={`p-3.5 rounded-xl border cursor-pointer transition ${
+                      omnichannelFilterStatus === 'pendiente' 
+                        ? 'bg-amber-50/80 border-amber-400 ring-2 ring-amber-300 shadow-xs' 
+                        : 'bg-slate-50 border-gray-200 hover:bg-gray-100'
+                    }`}
+                  >
+                    <span className="text-[10px] font-black text-amber-800 uppercase tracking-wider block mb-1">
+                      ⏳ Solo Pendientes
+                    </span>
+                    <div className="flex items-baseline space-x-1.5">
+                      <span className="text-2xl font-black text-amber-700">{countPendientes}</span>
+                      <span className="text-xs text-amber-900 font-semibold">activas</span>
+                    </div>
+                    <span className="text-[10px] text-gray-500 mt-1 block">Requieren gestión</span>
+                  </div>
+
+                  <div 
+                    onClick={() => setOmnichannelFilterStatus('resuelto')}
+                    className={`p-3.5 rounded-xl border cursor-pointer transition ${
+                      omnichannelFilterStatus === 'resuelto' 
+                        ? 'bg-emerald-50/80 border-emerald-400 ring-2 ring-emerald-300 shadow-xs' 
+                        : 'bg-slate-50 border-gray-200 hover:bg-gray-100'
+                    }`}
+                  >
+                    <span className="text-[10px] font-black text-emerald-800 uppercase tracking-wider block mb-1">
+                      ✓ Solo Finalizadas
+                    </span>
+                    <div className="flex items-baseline space-x-1.5">
+                      <span className="text-2xl font-black text-emerald-700">{countResueltos}</span>
+                      <span className="text-xs text-emerald-900 font-semibold">resueltas</span>
+                    </div>
+                    <span className="text-[10px] text-gray-500 mt-1 block">Historial cerrado</span>
+                  </div>
+
+                  <div 
+                    onClick={() => setOmnichannelFilterType('cotizacion')}
+                    className={`p-3.5 rounded-xl border cursor-pointer transition ${
+                      omnichannelFilterType === 'cotizacion' 
+                        ? 'bg-blue-50/80 border-blue-400 ring-2 ring-blue-300 shadow-xs' 
+                        : 'bg-slate-50 border-gray-200 hover:bg-gray-100'
+                    }`}
+                  >
+                    <span className="text-[10px] font-black text-blue-800 uppercase tracking-wider block mb-1">
+                      💰 Cotizaciones
+                    </span>
+                    <div className="flex items-baseline space-x-1.5">
+                      <span className="text-2xl font-black text-[#006EAD]">{countCotizaciones}</span>
+                      <span className="text-xs text-blue-900 font-semibold">leads</span>
+                    </div>
+                    <span className="text-[10px] text-gray-500 mt-1 block">Para venta o cierre</span>
+                  </div>
+
+                  <div 
+                    onClick={() => setOmnichannelFilterType('consulta')}
+                    className={`p-3.5 rounded-xl border cursor-pointer transition ${
+                      omnichannelFilterType === 'consulta' 
+                        ? 'bg-sky-50/80 border-sky-400 ring-2 ring-sky-300 shadow-xs' 
+                        : 'bg-slate-50 border-gray-200 hover:bg-gray-100'
+                    }`}
+                  >
+                    <span className="text-[10px] font-black text-sky-800 uppercase tracking-wider block mb-1">
+                      ❓ Consultas
+                    </span>
+                    <div className="flex items-baseline space-x-1.5">
+                      <span className="text-2xl font-black text-sky-700">{countConsultas}</span>
+                      <span className="text-xs text-sky-900 font-semibold">dudas</span>
+                    </div>
+                    <span className="text-[10px] text-gray-500 mt-1 block">Soporte preventa</span>
+                  </div>
+
+                  <div 
+                    onClick={() => setOmnichannelFilterType('reclamo')}
+                    className={`p-3.5 rounded-xl border cursor-pointer transition ${
+                      omnichannelFilterType === 'reclamo' 
+                        ? 'bg-red-50/80 border-red-400 ring-2 ring-red-300 shadow-xs' 
+                        : 'bg-slate-50 border-gray-200 hover:bg-gray-100'
+                    }`}
+                  >
+                    <span className="text-[10px] font-black text-red-800 uppercase tracking-wider block mb-1">
+                      ⚠️ Reclamos
+                    </span>
+                    <div className="flex items-baseline space-x-1.5">
+                      <span className="text-2xl font-black text-red-700">{countReclamos}</span>
+                      <span className="text-xs text-red-900 font-semibold">incidencias</span>
+                    </div>
+                    <span className="text-[10px] text-red-600 font-bold mt-1 block">Con SLA de atención</span>
+                  </div>
+                </div>
+
+                {/* Barra de Filtros Principales (EL FILTRO DE SOLAMENTE LAS PENDIENTES) */}
+                <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-3">
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    
+                    {/* Selector de Estado Principal */}
+                    <div className="flex items-center space-x-2">
+                      <span className="text-xs font-black text-gray-700 uppercase tracking-wider flex items-center">
+                        <i className="fas fa-filter text-[#006EAD] mr-1.5"></i>
+                        Ver Solicitudes:
+                      </span>
+                      <div className="inline-flex rounded-lg border border-gray-300 bg-white p-0.5 shadow-2xs">
+                        <button
+                          type="button"
+                          onClick={() => setOmnichannelFilterStatus('pendiente')}
+                          className={`px-3 py-1.5 text-xs font-black rounded-md transition flex items-center space-x-1.5 ${
+                            omnichannelFilterStatus === 'pendiente'
+                              ? 'bg-amber-500 text-white shadow-xs'
+                              : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100'
+                          }`}
+                        >
+                          <span>⏳ Solo Pendientes</span>
+                          <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-black ${
+                            omnichannelFilterStatus === 'pendiente' ? 'bg-amber-700 text-white' : 'bg-gray-200 text-gray-700'
+                          }`}>
+                            {countPendientes}
+                          </span>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => setOmnichannelFilterStatus('resuelto')}
+                          className={`px-3 py-1.5 text-xs font-bold rounded-md transition flex items-center space-x-1.5 ${
+                            omnichannelFilterStatus === 'resuelto'
+                              ? 'bg-emerald-600 text-white shadow-xs'
+                              : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100'
+                          }`}
+                        >
+                          <span>✓ Solo Finalizadas</span>
+                          <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
+                            omnichannelFilterStatus === 'resuelto' ? 'bg-emerald-800 text-white' : 'bg-gray-200 text-gray-700'
+                          }`}>
+                            {countResueltos}
+                          </span>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => setOmnichannelFilterStatus('todos')}
+                          className={`px-3 py-1.5 text-xs font-bold rounded-md transition ${
+                            omnichannelFilterStatus === 'todos'
+                              ? 'bg-gray-800 text-white shadow-xs'
+                              : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100'
+                          }`}
+                        >
+                          Todas ({deals.length})
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Buscador de Solicitudes */}
+                    <div className="relative min-w-[240px] flex-1 max-w-md">
+                      <i className="fas fa-search absolute left-3 top-2.5 text-gray-400 text-xs"></i>
+                      <input
+                        type="text"
+                        value={omnichannelSearch}
+                        onChange={(e) => setOmnichannelSearch(e.target.value)}
+                        placeholder="Buscar por cliente, @usuario, teléfono o mensaje..."
+                        className="w-full pl-9 pr-3 py-1.5 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#006EAD] focus:border-[#006EAD] bg-white"
+                      />
+                      {omnichannelSearch && (
+                        <button
+                          type="button"
+                          onClick={() => setOmnichannelSearch('')}
+                          className="absolute right-2.5 top-2 text-gray-400 hover:text-gray-600 text-xs"
+                        >
+                          ✕
+                        </button>
+                      )}
+                    </div>
+
+                  </div>
+
+                  {/* Filtros Secundarios por Tipo y Canal */}
+                  <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-slate-200 text-xs">
+                    
+                    {/* Filtro por Tipo */}
+                    <div className="flex items-center space-x-1.5">
+                      <span className="text-gray-500 font-bold">Tipo:</span>
+                      {[
+                        { id: 'todos', label: 'Todos' },
+                        { id: 'cotizacion', label: '💰 Cotización' },
+                        { id: 'consulta', label: '❓ Consulta' },
+                        { id: 'reclamo', label: '⚠️ Reclamo' }
+                      ].map(t => (
+                        <button
+                          key={t.id}
+                          type="button"
+                          onClick={() => setOmnichannelFilterType(t.id)}
+                          className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition ${
+                            omnichannelFilterType === t.id
+                              ? 'bg-[#006EAD] text-white shadow-xs'
+                              : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-100'
+                          }`}
+                        >
+                          {t.label}
+                        </button>
+                      ))}
+                    </div>
+
+                    {/* Filtro por Canal */}
+                    <div className="flex items-center space-x-1.5">
+                      <span className="text-gray-500 font-bold">Canal:</span>
+                      {[
+                        { id: 'todos', label: 'Todos' },
+                        { id: 'whatsapp', label: '💬 WhatsApp' },
+                        { id: 'instagram', label: '📸 Instagram' },
+                        { id: 'email', label: '📧 Correo' },
+                        { id: 'web', label: '🌐 Web' }
+                      ].map(c => (
+                        <button
+                          key={c.id}
+                          type="button"
+                          onClick={() => setOmnichannelFilterChannel(c.id)}
+                          className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition ${
+                            omnichannelFilterChannel === c.id
+                              ? 'bg-gray-800 text-white shadow-xs'
+                              : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-100'
+                          }`}
+                        >
+                          {c.label}
+                        </button>
+                      ))}
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+
+              {/* Listado de Solicitudes Omnicanal */}
+              {filteredOmnichannelDeals.length === 0 ? (
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-12 text-center space-y-3">
+                  <div className="w-16 h-16 rounded-full bg-emerald-50 text-emerald-600 mx-auto flex items-center justify-center text-2xl border border-emerald-200">
+                    <i className="fas fa-check-circle"></i>
+                  </div>
+                  <h3 className="text-lg font-black text-gray-900">
+                    {omnichannelFilterStatus === 'pendiente' 
+                      ? '¡Bandeja al día! No tienes solicitudes pendientes por resolver' 
+                      : 'No se encontraron solicitudes con los filtros aplicados'}
+                  </h3>
+                  <p className="text-xs text-gray-500 max-w-md mx-auto">
+                    {omnichannelFilterStatus === 'pendiente'
+                      ? 'Todas las solicitudes comerciales, consultas y reclamos han sido finalizadas con éxito por los asesores. Cualquier nuevo mensaje recibido por WhatsApp, Instagram o Correo aparecerá aquí automáticamente.'
+                      : 'Prueba cambiando los criterios de filtro de tipo, canal o búsqueda.'}
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => setIsSimulatorOpen(true)}
+                    className="mt-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-xs font-bold rounded-lg hover:shadow-md transition"
+                  >
+                    <i className="fas fa-flask mr-1.5"></i>Simular un Mensaje Entrante para Probar
+                  </button>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {filteredOmnichannelDeals.map((deal) => {
+                    const isPending = (deal.resolutionStatus || 'pendiente') === 'pendiente';
+                    const reqType = deal.requestType || 'cotizacion';
+                    const channel = deal.channel || 'whatsapp';
+                    const lastMsg = deal.messages && deal.messages.length > 0 
+                      ? deal.messages[deal.messages.length - 1] 
+                      : null;
+
+                    return (
+                      <div
+                        key={deal.id}
+                        className={`bg-white rounded-xl border p-4 shadow-sm transition hover:shadow-md flex flex-col md:flex-row items-start md:items-center justify-between gap-4 ${
+                          isPending
+                            ? reqType === 'reclamo' 
+                              ? 'border-red-300 bg-red-50/10 border-l-4 border-l-red-500' 
+                              : reqType === 'consulta'
+                              ? 'border-sky-200 border-l-4 border-l-sky-500'
+                              : 'border-blue-200 border-l-4 border-l-[#006EAD]'
+                            : 'border-gray-200 bg-slate-50/50 opacity-90'
+                        }`}
+                      >
+                        {/* Columna 1: Canal, Tipo y Datos Principales */}
+                        <div className="space-y-1.5 flex-1 min-w-[300px]">
+                          <div className="flex flex-wrap items-center gap-1.5">
+                            {/* Badge Canal */}
+                            {channel === 'whatsapp' && (
+                              <span className="bg-emerald-100 text-emerald-800 border border-emerald-300 text-[10px] font-black px-2 py-0.5 rounded-full flex items-center gap-1">
+                                <i className="fab fa-whatsapp text-emerald-600"></i> WhatsApp
+                              </span>
+                            )}
+                            {channel === 'instagram' && (
+                              <span className="bg-gradient-to-r from-pink-100 to-purple-100 text-pink-800 border border-pink-300 text-[10px] font-black px-2 py-0.5 rounded-full flex items-center gap-1">
+                                <i className="fab fa-instagram text-pink-600"></i> Instagram DM
+                              </span>
+                            )}
+                            {channel === 'email' && (
+                              <span className="bg-blue-100 text-blue-800 border border-blue-300 text-[10px] font-black px-2 py-0.5 rounded-full flex items-center gap-1">
+                                <i className="fas fa-envelope text-blue-600"></i> Correo
+                              </span>
+                            )}
+                            {channel === 'web' && (
+                              <span className="bg-purple-100 text-purple-800 border border-purple-300 text-[10px] font-black px-2 py-0.5 rounded-full flex items-center gap-1">
+                                <i className="fas fa-globe text-purple-600"></i> Formulario Web
+                              </span>
+                            )}
+
+                            {/* Badge Tipo */}
+                            {reqType === 'cotizacion' && (
+                              <span className="bg-emerald-50 text-emerald-800 border border-emerald-200 text-[10px] font-bold px-2 py-0.5 rounded-md">
+                                💰 Cotización
+                              </span>
+                            )}
+                            {reqType === 'consulta' && (
+                              <span className="bg-sky-50 text-sky-800 border border-sky-200 text-[10px] font-bold px-2 py-0.5 rounded-md">
+                                ❓ Consulta Comercial
+                              </span>
+                            )}
+                            {reqType === 'reclamo' && (
+                              <span className="bg-red-100 text-red-900 border border-red-300 text-[10px] font-black px-2 py-0.5 rounded-md flex items-center gap-1">
+                                <i className="fas fa-exclamation-triangle text-red-600"></i> Reclamo / Incidencia
+                              </span>
+                            )}
+
+                            {/* Badge Estado de Resolución */}
+                            {isPending ? (
+                              <span className="bg-amber-100 text-amber-900 border border-amber-300 text-[10px] font-black px-2 py-0.5 rounded-full flex items-center gap-1">
+                                <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-ping"></span>
+                                PENDIENTE
+                              </span>
+                            ) : (
+                              <span className="bg-emerald-100 text-emerald-800 border border-emerald-300 text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
+                                <i className="fas fa-check text-emerald-600"></i> FINALIZADA
+                              </span>
+                            )}
+
+                            {/* SLA si es reclamo */}
+                            {reqType === 'reclamo' && isPending && (
+                              <span className="bg-red-50 text-red-700 text-[10px] font-bold px-2 py-0.5 rounded border border-red-200">
+                                SLA: Prioridad Alta
+                              </span>
+                            )}
+                          </div>
+
+                          {/* Título y Cliente */}
+                          <div>
+                            <h4 className="text-sm font-black text-gray-900 hover:text-[#006EAD] cursor-pointer" onClick={() => handleOpenChat(deal)}>
+                              {deal.title}
+                            </h4>
+                            <div className="flex flex-wrap items-center gap-2 text-xs text-gray-600 mt-0.5">
+                              <span className="font-bold text-gray-900">{deal.company}</span>
+                              <span className="text-gray-300">•</span>
+                              <span>👤 {deal.contact}</span>
+                              <span className="text-gray-300">•</span>
+                              <span className="font-mono text-gray-500">{deal.phone || deal.email}</span>
+                              <span className="text-gray-300">•</span>
+                              <span className="text-[#006EAD] font-semibold">📍 {deal.branch}</span>
+                            </div>
+                          </div>
+
+                          {/* Último mensaje intercambiado */}
+                          {lastMsg && (
+                            <div className="bg-gray-50 p-2 rounded-lg border border-gray-200 text-xs text-gray-700 flex items-start space-x-2 mt-1">
+                              <span className="text-[10px] font-black uppercase text-gray-400 mt-0.5">
+                                {lastMsg.sender === 'client' ? 'Cliente:' : 'Asesor:'}
+                              </span>
+                              <p className="line-clamp-2 italic text-gray-800">
+                                "{lastMsg.text}"
+                              </p>
+                              <span className="ml-auto text-[10px] text-gray-400 whitespace-nowrap">{lastMsg.timestamp}</span>
+                            </div>
+                          )}
+
+                          {/* Notas de resolución si está finalizado */}
+                          {!isPending && deal.resolutionNotes && (
+                            <div className="bg-emerald-50/70 p-2 rounded-lg border border-emerald-200 text-xs text-emerald-900 space-y-0.5">
+                              <div className="flex justify-between items-center text-[10px] font-bold text-emerald-800">
+                                <span>✓ Resolución registrada por {deal.resolvedBy || 'Asesor'}:</span>
+                                <span>{deal.resolvedAt}</span>
+                              </div>
+                              <p className="font-medium">"{deal.resolutionNotes}"</p>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Columna 2: Asesor y Acciones Rápidas */}
+                        <div className="flex flex-col sm:flex-row md:flex-col items-end justify-between gap-2 shrink-0 self-stretch md:self-auto border-t md:border-t-0 pt-2 md:pt-0">
+                          <div className="text-right text-xs">
+                            <span className="text-[10px] font-bold text-gray-400 uppercase block">Atendido por:</span>
+                            <span className="font-bold text-gray-800">{deal.assignedTo}</span>
+                            {reqType === 'cotizacion' && deal.value && (
+                              <span className="font-mono font-black text-sm text-[#006EAD] block mt-0.5">{deal.value} USD</span>
+                            )}
+                          </div>
+
+                          <div className="flex items-center space-x-2 mt-auto">
+                            {/* Botón Abrir Chat */}
+                            <button
+                              type="button"
+                              onClick={() => handleOpenChat(deal)}
+                              className="px-3 py-1.5 rounded-lg bg-[#006EAD] text-white text-xs font-bold hover:bg-blue-800 transition flex items-center space-x-1.5 shadow-xs"
+                            >
+                              <i className="fas fa-comment-dots"></i>
+                              <span>Ver Chat ({deal.messages ? deal.messages.length : 0})</span>
+                            </button>
+
+                            {/* Botón Finalizar / Reabrir */}
+                            {isPending ? (
+                              <button
+                                type="button"
+                                onClick={() => handleOpenResolveModal(deal)}
+                                className="px-3 py-1.5 rounded-lg bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-700 transition flex items-center space-x-1 shadow-xs"
+                                title="Marcar como finalizada/resuelta"
+                              >
+                                <i className="fas fa-check"></i>
+                                <span>Finalizar</span>
+                              </button>
+                            ) : (
+                              <button
+                                type="button"
+                                onClick={() => handleReopenRequest(deal)}
+                                className="px-2.5 py-1.5 rounded-lg border border-gray-300 text-gray-600 text-xs font-bold hover:bg-gray-100 transition"
+                                title="Reactivar solicitud a pendiente"
+                              >
+                                <i className="fas fa-undo"></i>
+                                <span>Reabrir</span>
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
+            </div>
+          );
+        })()}
+
+        {currentMainView === 'analytics' && (
           /* ========================================================= */
           /* VISTA ANALÍTICA DE COTIZACIONES VS VENDIDAS & PÉRDIDAS    */
           /* ========================================================= */
@@ -3408,6 +4394,398 @@ const CrmDashboardView = () => {
           </div>
         )}
       </div>
+
+
+      {/* ========================================================= */}
+      {/* DRAWER / MODAL: CHAT BIDIRECCIONAL OMNICANAL              */}
+      {/* ========================================================= */}
+      {activeChatDeal && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl flex flex-col h-[85vh] overflow-hidden animate-fadeIn border border-gray-100">
+            
+            {/* Header del Chat */}
+            <div className="px-5 py-3.5 border-b border-gray-200 flex justify-between items-center bg-[#0A2540] text-white shrink-0">
+              <div className="flex items-center space-x-3">
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-lg text-white ${
+                  activeChatDeal.channel === 'whatsapp' ? 'bg-emerald-600' :
+                  activeChatDeal.channel === 'instagram' ? 'bg-gradient-to-tr from-pink-500 to-purple-600' :
+                  activeChatDeal.channel === 'email' ? 'bg-blue-600' : 'bg-purple-600'
+                }`}>
+                  {activeChatDeal.channel === 'whatsapp' && <i className="fab fa-whatsapp"></i>}
+                  {activeChatDeal.channel === 'instagram' && <i className="fab fa-instagram"></i>}
+                  {activeChatDeal.channel === 'email' && <i className="fas fa-envelope"></i>}
+                  {activeChatDeal.channel === 'web' && <i className="fas fa-globe"></i>}
+                  {!['whatsapp', 'instagram', 'email', 'web'].includes(activeChatDeal.channel) && <i className="fas fa-comments"></i>}
+                </div>
+                <div>
+                  <div className="flex items-center space-x-2">
+                    <h3 className="text-sm font-bold text-white">{activeChatDeal.contact || activeChatDeal.company}</h3>
+                    <span className="text-[10px] bg-white/20 px-2 py-0.5 rounded-full font-bold uppercase">
+                      {activeChatDeal.channel || 'whatsapp'}
+                    </span>
+                    {(activeChatDeal.resolutionStatus || 'pendiente') === 'pendiente' ? (
+                      <span className="text-[10px] bg-amber-400 text-slate-900 px-2 py-0.5 rounded-full font-black">
+                        PENDIENTE
+                      </span>
+                    ) : (
+                      <span className="text-[10px] bg-emerald-400 text-slate-900 px-2 py-0.5 rounded-full font-bold">
+                        ✓ RESUELTO
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-xs text-blue-200">
+                    {activeChatDeal.company} • Asesor: {activeChatDeal.assignedTo} • {activeChatDeal.phone || activeChatDeal.email}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center space-x-2">
+                {(activeChatDeal.resolutionStatus || 'pendiente') === 'pendiente' ? (
+                  <button
+                    type="button"
+                    onClick={() => handleOpenResolveModal(activeChatDeal)}
+                    className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition flex items-center space-x-1"
+                  >
+                    <i className="fas fa-check"></i>
+                    <span>Finalizar Solicitud</span>
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => handleReopenRequest(activeChatDeal)}
+                    className="bg-white/20 hover:bg-white/30 text-white text-xs font-bold px-2.5 py-1.5 rounded-lg transition"
+                  >
+                    Reabrir
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={() => setActiveChatDeal(null)}
+                  className="text-gray-300 hover:text-white text-xl font-bold p-1"
+                >
+                  ✕
+                </button>
+              </div>
+            </div>
+
+            {/* Banner de Resolución si ya está finalizado */}
+            {activeChatDeal.resolutionStatus === 'resuelto' && (
+              <div className="bg-emerald-50 border-b border-emerald-200 p-3 text-xs text-emerald-900 flex items-start space-x-2 shrink-0">
+                <i className="fas fa-check-circle text-emerald-600 mt-0.5"></i>
+                <div className="flex-1">
+                  <span className="font-bold block">✓ Solicitud Finalizada el {activeChatDeal.resolvedAt} por {activeChatDeal.resolvedBy}:</span>
+                  <p className="italic">"{activeChatDeal.resolutionNotes || 'Sin notas adicionales.'}"</p>
+                </div>
+              </div>
+            )}
+
+            {/* Hilo de Mensajes */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-slate-100">
+              {(!activeChatDeal.messages || activeChatDeal.messages.length === 0) ? (
+                <div className="text-center py-12 text-gray-400 text-xs">
+                  <i className="fas fa-comments text-3xl mb-2 block"></i>
+                  No hay mensajes registrados aún en este hilo.
+                </div>
+              ) : (
+                activeChatDeal.messages.map((msg, i) => {
+                  const isAgent = msg.sender === 'agent';
+                  return (
+                    <div
+                      key={msg.id || i}
+                      className={`flex ${isAgent ? 'justify-end' : 'justify-start'}`}
+                    >
+                      <div
+                        className={`max-w-[78%] rounded-2xl p-3 text-xs shadow-2xs space-y-1 ${
+                          isAgent
+                            ? 'bg-[#006EAD] text-white rounded-br-none'
+                            : 'bg-white text-gray-800 border border-gray-200 rounded-bl-none'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between text-[10px] opacity-75 mb-0.5 space-x-2">
+                          <span className="font-bold">
+                            {isAgent ? `👤 ${activeChatDeal.assignedTo} (NyTEX)` : `💬 ${activeChatDeal.contact || 'Cliente'}`}
+                          </span>
+                          <span>{msg.timestamp || ''}</span>
+                        </div>
+                        <p className="leading-relaxed whitespace-pre-wrap">{msg.text}</p>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+
+            {/* Respuestas Rápidas Predefinidas */}
+            <div className="bg-slate-50 px-4 py-2 border-t border-gray-200 flex flex-wrap gap-1.5 text-[11px] shrink-0">
+              <span className="text-[10px] font-bold text-gray-400 self-center mr-1">Plantillas:</span>
+              <button
+                type="button"
+                onClick={() => setNewChatReplyText('¡Hola! Con gusto te envío la cotización detallada de los artículos solicitados.')}
+                className="bg-white hover:bg-gray-100 text-gray-700 px-2 py-1 rounded border border-gray-200 transition"
+              >
+                Cotización lista
+              </button>
+              <button
+                type="button"
+                onClick={() => setNewChatReplyText('Hemos recibido tu consulta, con gusto verifico existencias en almacén y te respondo en unos momentos.')}
+                className="bg-white hover:bg-gray-100 text-gray-700 px-2 py-1 rounded border border-gray-200 transition"
+              >
+                Consulta recibida
+              </button>
+              <button
+                type="button"
+                onClick={() => setNewChatReplyText('Lamentamos el inconveniente con tu pedido. De inmediato coordinamos la inspección y solución.')}
+                className="bg-white hover:bg-gray-100 text-gray-700 px-2 py-1 rounded border border-gray-200 transition"
+              >
+                Atención a reclamo
+              </button>
+            </div>
+
+            {/* Formulario de Envío de Respuesta */}
+            <div className="p-3.5 border-t border-gray-200 bg-white flex items-end space-x-2 shrink-0">
+              <textarea
+                rows={2}
+                value={newChatReplyText}
+                onChange={(e) => setNewChatReplyText(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    handleSendChatReply();
+                  }
+                }}
+                placeholder={`Escribe tu respuesta para ${activeChatDeal.contact || 'el cliente'} vía ${(activeChatDeal.channel || 'canal').toUpperCase()}...`}
+                className="flex-1 p-2.5 text-xs border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#006EAD] focus:border-[#006EAD] resize-none"
+              />
+              <button
+                type="button"
+                onClick={handleSendChatReply}
+                disabled={!newChatReplyText.trim()}
+                className={`px-4 py-2.5 rounded-xl text-xs font-black text-white transition flex items-center space-x-1.5 h-[42px] ${
+                  newChatReplyText.trim() ? 'bg-[#006EAD] hover:bg-blue-800 shadow-md' : 'bg-gray-300 cursor-not-allowed'
+                }`}
+              >
+                <span>Enviar</span>
+                <i className="fas fa-paper-plane"></i>
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================= */}
+      {/* MODAL: FINALIZAR / RESOLVER SOLICITUD OMNICANAL           */}
+      {/* ========================================================= */}
+      {isResolveModalOpen && dealToResolve && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden animate-fadeIn border border-gray-100">
+            <div className="px-6 py-4 bg-[#0A2540] text-white flex justify-between items-center">
+              <div className="flex items-center space-x-2">
+                <i className="fas fa-check-circle text-emerald-400 text-lg"></i>
+                <h3 className="font-bold text-base">Finalizar y Resolver Solicitud</h3>
+              </div>
+              <button onClick={() => setIsResolveModalOpen(false)} className="text-gray-300 hover:text-white text-lg">✕</button>
+            </div>
+
+            <div className="p-6 space-y-4">
+              <div className="bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs space-y-1">
+                <div className="flex justify-between font-bold text-gray-900">
+                  <span>{dealToResolve.company}</span>
+                  <span className="text-[#006EAD] uppercase">{dealToResolve.channel}</span>
+                </div>
+                <p className="text-gray-600">{dealToResolve.title}</p>
+                <div className="text-[10px] text-gray-400 flex items-center gap-2 pt-1 border-t border-slate-200 mt-1">
+                  <span>👤 {dealToResolve.contact}</span>
+                  <span>•</span>
+                  <span>Asesor: {dealToResolve.assignedTo}</span>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-black text-gray-700 uppercase mb-1">
+                  Notas de Resolución / Cierre *
+                </label>
+                <textarea
+                  rows={3}
+                  value={resolveNotesInput}
+                  onChange={(e) => setResolveNotesInput(e.target.value)}
+                  placeholder="Detalla la solución brindada al cliente (ej. Cotización acordada, duda técnica aclarada, cambio de producto autorizado)..."
+                  className="w-full p-2.5 text-xs border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                />
+                <p className="text-[10px] text-gray-400 mt-1">
+                  Esta solicitud se archivará como <strong>Finalizada</strong> y se ocultará automáticamente de la vista de pendientes.
+                </p>
+              </div>
+
+              <div className="flex justify-end space-x-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setIsResolveModalOpen(false)}
+                  className="px-4 py-2 border border-gray-300 rounded-lg text-xs font-bold text-gray-600 hover:bg-gray-100 transition"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="button"
+                  onClick={handleConfirmResolve}
+                  className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-black transition shadow-md flex items-center space-x-1.5"
+                >
+                  <i className="fas fa-check"></i>
+                  <span>Confirmar y Finalizar</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================= */}
+      {/* MODAL: SIMULADOR DE MENSAJES ENTRANTES OMNICANAL          */}
+      {/* ========================================================= */}
+      {isSimulatorOpen && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-xl overflow-hidden animate-fadeIn border border-gray-100">
+            <div className="px-6 py-4 bg-gradient-to-r from-purple-800 to-indigo-900 text-white flex justify-between items-center">
+              <div className="flex items-center space-x-2.5">
+                <i className="fas fa-flask text-purple-300 text-lg"></i>
+                <div>
+                  <h3 className="font-bold text-base">Simulador de Mensajes Entrantes</h3>
+                  <p className="text-xs text-purple-200">Prueba cómo ingresan solicitudes desde WhatsApp, Instagram, Email y Web</p>
+                </div>
+              </div>
+              <button onClick={() => setIsSimulatorOpen(false)} className="text-gray-300 hover:text-white text-lg">✕</button>
+            </div>
+
+            <div className="p-6 space-y-4">
+              
+              {/* Selector de Canal */}
+              <div>
+                <label className="block text-xs font-black text-gray-700 uppercase mb-1">
+                  1. Canal de Origen
+                </label>
+                <div className="grid grid-cols-4 gap-2">
+                  {[
+                    { id: 'whatsapp', label: 'WhatsApp', icon: 'fab fa-whatsapp', color: 'border-emerald-500 bg-emerald-50 text-emerald-800' },
+                    { id: 'instagram', label: 'Instagram', icon: 'fab fa-instagram', color: 'border-pink-500 bg-pink-50 text-pink-800' },
+                    { id: 'email', label: 'Correo', icon: 'fas fa-envelope', color: 'border-blue-500 bg-blue-50 text-blue-800' },
+                    { id: 'web', label: 'Web', icon: 'fas fa-globe', color: 'border-purple-500 bg-purple-50 text-purple-800' }
+                  ].map(ch => (
+                    <button
+                      key={ch.id}
+                      type="button"
+                      onClick={() => setSimulatorForm(prev => ({ ...prev, channel: ch.id }))}
+                      className={`p-2.5 rounded-xl border text-xs font-bold flex flex-col items-center justify-center gap-1 transition ${
+                        simulatorForm.channel === ch.id ? `${ch.color} ring-2 shadow-xs` : 'border-gray-200 hover:bg-gray-50 text-gray-700'
+                      }`}
+                    >
+                      <i className={`${ch.icon} text-base`}></i>
+                      <span>{ch.label}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Selector de Tipo */}
+              <div>
+                <label className="block text-xs font-black text-gray-700 uppercase mb-1">
+                  2. Tipo de Solicitud
+                </label>
+                <div className="grid grid-cols-3 gap-2">
+                  {[
+                    { 
+                      id: 'cotizacion', 
+                      label: '💰 Cotización', 
+                      sampleText: 'Hola buenas tardes, quisiéramos cotizar 150 yardas de tela Oxford azul y 50 conos de hilo poliéster para entregar en San Salvador.' 
+                    },
+                    { 
+                      id: 'consulta', 
+                      label: '❓ Consulta Comercial', 
+                      sampleText: 'Hola, ¿cuál es el horario de atención en la sucursal de San Miguel y si cuentan con catálogo de frazadas térmicas?' 
+                    },
+                    { 
+                      id: 'reclamo', 
+                      label: '⚠️ Reclamo / Incidencia', 
+                      sampleText: 'Buenas tardes, recibimos el pedido #481 con 2 cajas que presentan empaque dañado y mercancía manchada. Requerimos reposición inmediata.' 
+                    }
+                  ].map(tp => (
+                    <button
+                      key={tp.id}
+                      type="button"
+                      onClick={() => setSimulatorForm(prev => ({ 
+                        ...prev, 
+                        requestType: tp.id,
+                        messageText: tp.sampleText,
+                        title: `Solicitud de ${tp.id.toUpperCase()} - ${prev.company}`
+                      }))}
+                      className={`p-2.5 rounded-xl border text-xs font-bold transition text-center ${
+                        simulatorForm.requestType === tp.id 
+                          ? 'border-[#006EAD] bg-blue-50 text-[#006EAD] ring-2 ring-blue-300' 
+                          : 'border-gray-200 hover:bg-gray-50 text-gray-700'
+                      }`}
+                    >
+                      {tp.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Datos del Cliente */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-[11px] font-bold text-gray-700 mb-1">Empresa / Razón Social *</label>
+                  <input
+                    type="text"
+                    value={simulatorForm.company}
+                    onChange={(e) => setSimulatorForm(prev => ({ ...prev, company: e.target.value }))}
+                    className="w-full p-2 text-xs border border-gray-300 rounded-lg"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[11px] font-bold text-gray-700 mb-1">Contacto Principal *</label>
+                  <input
+                    type="text"
+                    value={simulatorForm.contact}
+                    onChange={(e) => setSimulatorForm(prev => ({ ...prev, contact: e.target.value }))}
+                    className="w-full p-2 text-xs border border-gray-300 rounded-lg"
+                  />
+                </div>
+              </div>
+
+              {/* Mensaje del Cliente */}
+              <div>
+                <label className="block text-[11px] font-bold text-gray-700 mb-1">
+                  Mensaje Enviado por el Cliente *
+                </label>
+                <textarea
+                  rows={3}
+                  value={simulatorForm.messageText}
+                  onChange={(e) => setSimulatorForm(prev => ({ ...prev, messageText: e.target.value }))}
+                  className="w-full p-2.5 text-xs border border-gray-300 rounded-lg"
+                />
+              </div>
+
+              <div className="flex justify-end space-x-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setIsSimulatorOpen(false)}
+                  className="px-4 py-2 border border-gray-300 rounded-lg text-xs font-bold text-gray-600 hover:bg-gray-100 transition"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSimulateIncomingMessage}
+                  className="px-5 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-lg text-xs font-black transition shadow-md flex items-center space-x-1.5"
+                >
+                  <i className="fas fa-paper-plane"></i>
+                  <span>Simular y Recibir en CRM</span>
+                </button>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ========================================================= */}
       {/* MODAL: REGISTRAR NUEVA OPORTUNIDAD                        */}

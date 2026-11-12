@@ -597,6 +597,56 @@ app.get('/api/auth/me', async (req, res) => {
   }
 });
 
+// =========================================================
+// MÓDULO 1: CRM & BANDEJA OMNICANAL (WhatsApp, Instagram, Email, Web)
+// =========================================================
+app.get('/api/crm/webhook/omnichannel', (req, res) => {
+  // Verificación de Webhook para Meta (WhatsApp Cloud API / Instagram Graph API)
+  const mode = req.query['hub.mode'];
+  const token = req.query['hub.verify_token'];
+  const challenge = req.query['hub.challenge'];
+
+  if (mode === 'subscribe' && token === 'NYTEX_CRM_WEBHOOK_SECRET') {
+    return res.status(200).send(challenge);
+  }
+  return res.status(200).json({ 
+    status: 'ok', 
+    service: 'NyTEX Omnichannel Webhook Gateway', 
+    channels: ['whatsapp', 'instagram', 'email', 'web'] 
+  });
+});
+
+app.post('/api/crm/webhook/omnichannel', async (req, res) => {
+  try {
+    const { channel, requestType, contactName, phone, email, messageText, title } = req.body;
+    console.log(`[CRM Omnichannel] Mensaje entrante de ${channel || 'whatsapp'} (${requestType || 'consulta'}):`, contactName, messageText);
+    res.status(200).json({
+      success: true,
+      message: 'Mensaje omnicanal recibido e integrado al CRM',
+      receivedAt: new Date().toISOString(),
+      channel: channel || 'whatsapp',
+      requestType: requestType || 'consulta',
+      status: 'pendiente'
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/api/crm/messages/send', async (req, res) => {
+  try {
+    const { dealId, channel, recipient, text } = req.body;
+    console.log(`[CRM Omnichannel] Enviando respuesta a ${recipient} vía ${channel}:`, text);
+    res.status(200).json({
+      success: true,
+      message: `Mensaje despachado exitosamente vía ${channel}`,
+      dispatchedAt: new Date().toISOString()
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 app.get('/api/business-partners', async (req, res) => {
   try {
     const partners = await BusinessPartner.findAll();
