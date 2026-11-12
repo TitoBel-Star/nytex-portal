@@ -100,6 +100,49 @@ export default function Ventas() {
 
   useEffect(() => {
     fetchData();
+
+    // 1. Polling periódico cada 6 segundos para mantener la bandeja de Ventas y Cajera 100% sincronizada
+    const interval = setInterval(() => {
+      fetchData();
+    }, 6000);
+
+    // 2. Al volver a enfocar la pestaña del navegador
+    const handleFocus = () => {
+      fetchData();
+    };
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') fetchData();
+    };
+    window.addEventListener('focus', handleFocus);
+    document.addEventListener('visibilitychange', handleVisibility);
+
+    // 3. Sincronización instantánea entre pestañas abiertas vía BroadcastChannel y Storage
+    let channel;
+    try {
+      channel = new BroadcastChannel('nytex_sales_sync');
+      channel.onmessage = (msg) => {
+        if (msg.data?.type === 'ORDER_CREATED') {
+          fetchData();
+        }
+      };
+    } catch (e) {
+      // Ignorar si BroadcastChannel no está soportado en algún navegador
+    }
+
+    const handleStorage = (e) => {
+      if (e.key === 'nytex_new_order_timestamp') {
+        fetchData();
+      }
+    };
+    window.addEventListener('storage', handleStorage);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('focus', handleFocus);
+      document.removeEventListener('visibilitychange', handleVisibility);
+      window.removeEventListener('storage', handleStorage);
+      if (channel) channel.close();
+    };
   }, []);
 
   const handlePartnerChange = (e) => {
@@ -426,6 +469,14 @@ export default function Ventas() {
             </span>
           </div>
           <div className="flex items-center flex-wrap gap-2">
+            <button 
+              onClick={() => { setLoading(true); fetchData(); }}
+              className="bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 px-3 py-1.5 rounded-md text-xs font-bold shadow-xs transition flex items-center gap-1.5"
+              title="Refrescar lista de órdenes en tiempo real"
+            >
+              <i className={`fas fa-sync-alt ${loading ? 'animate-spin' : ''}`}></i>
+              <span>Actualizar</span>
+            </button>
             <button 
               onClick={() => navigate('/app/circuito-comercial')}
               className="bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 px-3 py-1.5 rounded-md text-xs font-bold shadow-sm transition"
