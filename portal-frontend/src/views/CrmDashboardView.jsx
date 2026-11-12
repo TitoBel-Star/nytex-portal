@@ -940,11 +940,11 @@ const CrmDashboardView = () => {
       // Sincronizar en tiempo real con cualquier otra pestaña abierta del navegador (ej. Ventas / Cajera)
       try {
         const channel = new BroadcastChannel('nytex_sales_sync');
-        channel.postMessage({ type: 'ORDER_CREATED', orderCode });
-        channel.close();
+        channel.postMessage({ type: 'ORDER_CREATED', orderCode, time: Date.now() });
       } catch (e) {}
       try {
         localStorage.setItem('nytex_new_order_timestamp', String(Date.now()));
+        window.dispatchEvent(new Event('storage'));
       } catch (e) {}
 
       showToast(`🎉 ¡Éxito! Pedido ${orderCode} generado en Módulo 2 (Ventas & Facturación). La cajera ya puede emitir la factura.`);

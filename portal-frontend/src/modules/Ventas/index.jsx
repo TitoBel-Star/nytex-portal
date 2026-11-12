@@ -54,7 +54,7 @@ export default function Ventas() {
   const fetchData = async () => {
     try {
       const [resOrders, resPartners, resInv] = await Promise.all([
-        fetch('/api/ventas/orders'),
+        fetch(`/api/ventas/orders?_t=${Date.now()}`, { cache: 'no-store' }),
         fetch('/api/business-partners'),
         fetch('/api/inventario/items')
       ]);

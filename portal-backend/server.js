@@ -727,6 +727,7 @@ app.get('/api/circuit/comercial/summary', async (req, res) => {
 
 app.get('/api/ventas/orders', async (req, res) => {
   try {
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
     const orders = await SaleOrder.findAll({ order: [['id', 'DESC']] });
     res.json(orders);
   } catch (error) {
