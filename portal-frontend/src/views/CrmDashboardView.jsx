@@ -559,7 +559,7 @@ const CrmDashboardView = () => {
   const [analyticsProvider, setAnalyticsProvider] = useState('TODOS');
   const [analyticsCategory, setAnalyticsCategory] = useState('TODAS');
   const [analyticsSku, setAnalyticsSku] = useState('TODOS');
-  const [analyticsActiveTab, setAnalyticsActiveTab] = useState('total_empresa'); // 'total_empresa' | 'sucursal' | 'vendedor' | 'proveedor' | 'categoria' | 'sku'
+  const [analyticsActiveTab, setAnalyticsActiveTab] = useState('sku'); // 'total_empresa' | 'sucursal' | 'vendedor' | 'proveedor' | 'categoria' | 'sku'
   const [skuFilterSearch, setSkuFilterSearch] = useState('');
   const [skuMetricMode, setSkuMetricMode] = useState('all'); // 'all' | 'qty' | 'percent' | 'amount'
   const [skuStatusFilter, setSkuStatusFilter] = useState('todos'); // 'todos' | 'con_perdidas' | 'con_ventas' | '100_vendido' | '100_perdido'
@@ -1738,6 +1738,114 @@ const CrmDashboardView = () => {
     showToast(`🔄 Monto de la oportunidad sincronizado a ${syncedValue} según cotización activa.`);
   };
 
+  // Render Auditoria de Motivos de Ventas Perdidas (1 al 5)
+  const renderLossReasonsAudit = () => (
+    <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 space-y-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-gray-100 pb-3">
+        <div>
+          <h3 className="text-base font-black text-gray-900 flex items-center space-x-2">
+            <i className="fas fa-list-ol text-red-600"></i>
+            <span>Motivos de Ventas Perdidas (Razones Estratégicas de No Compra)</span>
+          </h3>
+          <p className="text-xs text-gray-500 mt-0.5">
+            Auditoría de por qué los clientes declinaron o descartaron SKUs cotizados (Fuga total: ${analyticsData.summary.totalLostAmount.toLocaleString()} USD en ${analyticsData.summary.totalLostItemsCount} SKUs).
+          </p>
+        </div>
+        <div className="flex items-center space-x-2">
+          <span className="text-xs font-bold bg-red-50 text-red-700 border border-red-200 px-2.5 py-1 rounded-lg">
+            {analyticsData.reasonsList.filter(r => r.amount > 0).length} Motivos con Incidencia Activa
+          </span>
+          <button
+            type="button"
+            onClick={() => setAnalyticsActiveTab('sku')}
+            className="text-xs font-bold bg-blue-50 text-[#006EAD] border border-blue-200 px-2.5 py-1 rounded-lg hover:bg-blue-100 transition"
+          >
+            📦 Ver Impacto por Códigos SKU ➔
+          </button>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+        {analyticsData.reasonsList.map((r) => {
+          const hasLoss = r.amount > 0;
+          return (
+            <div
+              key={r.reason}
+              className={`p-4 rounded-xl border transition ${
+                hasLoss
+                  ? 'bg-red-50/30 border-red-200 hover:border-red-400 hover:shadow-xs'
+                  : 'bg-gray-50/50 border-gray-200 opacity-60'
+              }`}
+            >
+              <div className="flex justify-between items-start mb-2">
+                <span className={`text-xs font-black ${hasLoss ? 'text-red-900' : 'text-gray-500'}`}>
+                  {r.reason}
+                </span>
+                <span className={`text-[10px] font-black px-1.5 py-0.5 rounded ${
+                  hasLoss ? 'bg-red-200 text-red-900' : 'bg-gray-200 text-gray-600'
+                }`}>
+                  {r.percentOfLoss}% de la fuga
+                </span>
+              </div>
+
+              <div className="flex justify-between items-baseline text-xs mb-2">
+                <span className="text-gray-500 font-semibold">{r.count} SKUs ({r.dealCount} cotizaciones)</span>
+                <span className={`font-mono font-black text-sm ${hasLoss ? 'text-red-700' : 'text-gray-400'}`}>
+                  ${r.amount.toLocaleString()} USD
+                </span>
+              </div>
+
+              {/* Barra de impacto */}
+              <div className="w-full bg-gray-200 h-2 rounded-full overflow-hidden mb-2">
+                <div 
+                  className="bg-red-500 h-full rounded-full transition-all duration-300"
+                  style={{ width: `${Math.min(100, Number(r.percentOfLoss))}%` }}
+                ></div>
+              </div>
+
+              {hasLoss && (
+                <button
+                  type="button"
+                  onClick={() => setExpandedReason(expandedReason === r.reason ? null : r.reason)}
+                  className="text-[11px] font-bold text-red-700 hover:text-red-900 underline flex items-center space-x-1 mt-1"
+                >
+                  <span>{expandedReason === r.reason ? 'Ocultar Casos ▲' : `Ver ${r.items.length} Casos ▼`}</span>
+                </button>
+              )}
+
+              {/* Casos expandidos */}
+              {expandedReason === r.reason && (
+                <div className="mt-3 pt-3 border-t border-red-200 space-y-2 text-[11px]">
+                  {r.items.map((it, i) => (
+                    <div key={i} className="bg-white p-2.5 rounded-lg border border-red-100 shadow-2xs">
+                      <div className="flex justify-between font-bold text-gray-900">
+                        <span>{it.company}</span>
+                        <span className="text-red-700 font-mono">${it.amount.toLocaleString()}</span>
+                      </div>
+                      <div className="text-gray-700 text-[11px] mt-0.5">
+                        <strong className="text-red-800">{it.sku}</strong> • {it.name} ({it.quantity} un.)
+                      </div>
+                      <div className="text-gray-400 text-[10px] mt-1 flex flex-wrap gap-2">
+                        <span>📍 {it.branch}</span>
+                        <span>👤 {it.seller}</span>
+                        <span>📅 {it.date}</span>
+                      </div>
+                      {it.notes && (
+                        <div className="text-amber-900 bg-amber-50 p-1.5 rounded mt-1 text-[10px] italic border border-amber-200">
+                          "{it.notes}"
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+
   return (
     <div className="h-full flex flex-col bg-[#f4f7f9] overflow-hidden relative">
       
@@ -2328,140 +2436,114 @@ const CrmDashboardView = () => {
             </div>
 
             {/* ========================================================= */}
-            {/* AUDITORÍA DE MOTIVOS DE VENTAS PERDIDAS (1 AL 5)          */}
+            {/* BARRA DESTACADA DE DIMENSIONES & ACCESO DIRECTO           */}
             {/* ========================================================= */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 space-y-4">
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-gray-100 pb-3">
-                <div>
-                  <h3 className="text-base font-black text-gray-900 flex items-center space-x-2">
-                    <i className="fas fa-list-ol text-red-600"></i>
-                    <span>Motivos de Ventas Perdidas (Razones Estratégicas de No Compra)</span>
-                  </h3>
-                  <p className="text-xs text-gray-500 mt-0.5">
-                    Auditoría de por qué los clientes declinaron o descartaron SKUs cotizados (Fuga total: ${analyticsData.summary.totalLostAmount.toLocaleString()} USD en {analyticsData.summary.totalLostItemsCount} SKUs).
-                  </p>
+            <div className="bg-gradient-to-r from-[#0A2540] via-blue-900 to-indigo-950 text-white p-3.5 rounded-2xl shadow-md flex flex-wrap items-center justify-between gap-3 border border-blue-800">
+              <div className="flex items-center space-x-3">
+                <div className="w-9 h-9 rounded-xl bg-blue-500/30 border border-blue-400/30 flex items-center justify-center text-blue-300">
+                  <i className="fas fa-layer-group text-sm"></i>
                 </div>
-                <span className="text-xs font-bold bg-red-50 text-red-700 border border-red-200 px-2.5 py-1 rounded-lg">
-                  {analyticsData.reasonsList.filter(r => r.amount > 0).length} Motivos con Incidencia Activa
-                </span>
+                <div>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-[10px] font-black uppercase tracking-wider text-blue-300">Dimensiones de Auditoría</span>
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+                  </div>
+                  <h4 className="text-xs sm:text-sm font-black text-white">
+                    Clasificación de Cotizaciones vs Vendidas (SKU, Sucursal, Vendedor, Proveedor, Empresa)
+                  </h4>
+                </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                {analyticsData.reasonsList.map((r) => {
-                  const hasLoss = r.amount > 0;
-                  return (
-                    <div
-                      key={r.reason}
-                      className={`p-4 rounded-xl border transition ${
-                        hasLoss
-                          ? 'bg-red-50/30 border-red-200 hover:border-red-400 hover:shadow-xs'
-                          : 'bg-gray-50/50 border-gray-200 opacity-60'
-                      }`}
-                    >
-                      <div className="flex justify-between items-start mb-2">
-                        <span className={`text-xs font-black ${hasLoss ? 'text-red-900' : 'text-gray-500'}`}>
-                          {r.reason}
-                        </span>
-                        <span className={`text-[10px] font-black px-1.5 py-0.5 rounded ${
-                          hasLoss ? 'bg-red-200 text-red-900' : 'bg-gray-200 text-gray-600'
-                        }`}>
-                          {r.percentOfLoss}% de la fuga
-                        </span>
-                      </div>
-
-                      <div className="flex justify-between items-baseline text-xs mb-2">
-                        <span className="text-gray-500 font-semibold">{r.count} SKUs ({r.dealCount} cotizaciones)</span>
-                        <span className={`font-mono font-black text-sm ${hasLoss ? 'text-red-700' : 'text-gray-400'}`}>
-                          ${r.amount.toLocaleString()} USD
-                        </span>
-                      </div>
-
-                      {/* Barra de impacto */}
-                      <div className="w-full bg-gray-200 h-2 rounded-full overflow-hidden mb-2">
-                        <div 
-                          className="bg-red-500 h-full rounded-full transition-all duration-300"
-                          style={{ width: `${Math.min(100, Number(r.percentOfLoss))}%` }}
-                        ></div>
-                      </div>
-
-                      {hasLoss && (
-                        <button
-                          type="button"
-                          onClick={() => setExpandedReason(expandedReason === r.reason ? null : r.reason)}
-                          className="text-[11px] font-bold text-red-700 hover:text-red-900 underline flex items-center space-x-1 mt-1"
-                        >
-                          <span>{expandedReason === r.reason ? 'Ocultar Casos ▲' : `Ver ${r.items.length} Casos ▼`}</span>
-                        </button>
-                      )}
-
-                      {/* Casos expandidos */}
-                      {expandedReason === r.reason && (
-                        <div className="mt-3 pt-3 border-t border-red-200 space-y-2 text-[11px]">
-                          {r.items.map((it, i) => (
-                            <div key={i} className="bg-white p-2.5 rounded-lg border border-red-100 shadow-2xs">
-                              <div className="flex justify-between font-bold text-gray-900">
-                                <span>{it.company}</span>
-                                <span className="text-red-700 font-mono">${it.amount.toLocaleString()}</span>
-                              </div>
-                              <div className="text-gray-700 text-[11px] mt-0.5">
-                                <strong className="text-red-800">{it.sku}</strong> • {it.name} ({it.quantity} un.)
-                              </div>
-                              <div className="text-gray-400 text-[10px] mt-1 flex flex-wrap gap-2">
-                                <span>📍 {it.branch}</span>
-                                <span>👤 {it.seller}</span>
-                                <span>📅 {it.date}</span>
-                              </div>
-                              {it.notes && (
-                                <div className="text-amber-900 bg-amber-50 p-1.5 rounded mt-1 text-[10px] italic border border-amber-200">
-                                  "{it.notes}"
-                                </div>
-                              )}
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
+              {/* Botones de Acceso Rápido */}
+              <div className="flex flex-wrap items-center gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => setAnalyticsActiveTab('sku')}
+                  className={`px-3.5 py-1.5 rounded-xl text-xs font-black flex items-center space-x-1.5 transition shadow-xs ${
+                    analyticsActiveTab === 'sku'
+                      ? 'bg-blue-500 text-white ring-2 ring-white'
+                      : 'bg-white/10 hover:bg-white/20 text-blue-200 border border-white/10'
+                  }`}
+                >
+                  <span>📦 Por Códigos (SKU)</span>
+                  <span className="bg-blue-400/30 text-white text-[10px] px-1.5 py-0.2 rounded-full">
+                    {analyticsData.skuList.length} SKUs
+                  </span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setAnalyticsActiveTab('total_empresa')}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center space-x-1.5 transition ${
+                    analyticsActiveTab === 'total_empresa'
+                      ? 'bg-blue-500 text-white ring-2 ring-white shadow-xs'
+                      : 'bg-white/10 hover:bg-white/20 text-gray-200 border border-white/10'
+                  }`}
+                >
+                  <span>🏢 Total Empresa</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setAnalyticsActiveTab('motivos')}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center space-x-1.5 transition ${
+                    analyticsActiveTab === 'motivos'
+                      ? 'bg-red-600 text-white ring-2 ring-white shadow-xs'
+                      : 'bg-red-500/20 hover:bg-red-500/30 text-red-200 border border-red-400/30'
+                  }`}
+                >
+                  <span>⚠️ 5 Motivos de Pérdida</span>
+                </button>
               </div>
             </div>
 
             {/* ========================================================= */}
             {/* CLASIFICACIÓN MULTIDIMENSIONAL                            */}
-            {/* Total Empresa | Sucursal | Vendedor | Proveedor | Código  */}
+            {/* SKU | Total Empresa | Sucursal | Vendedor | Proveedor     */}
             {/* ========================================================= */}
             <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
               
               {/* Pestañas de Clasificación */}
-              <div className="flex flex-wrap border-b border-gray-200 bg-slate-50 px-4 pt-2 gap-1 text-xs font-bold">
+              <div className="flex flex-wrap border-b border-gray-200 bg-slate-50 px-4 pt-3 gap-1.5 text-xs font-bold">
                 {[
+                  { id: 'sku', label: '📦 Por Códigos (SKU)', count: analyticsData.skuList.length, highlight: true },
                   { id: 'total_empresa', label: '🏢 Total Empresa', count: null },
                   { id: 'sucursal', label: '📍 Por Sucursal', count: analyticsData.branchList.length },
                   { id: 'vendedor', label: '👤 Por Vendedor', count: analyticsData.sellerList.length },
                   { id: 'proveedor', label: '🏭 Por Proveedor', count: analyticsData.providerList.length },
                   { id: 'categoria', label: '🏷️ Por Categoría', count: analyticsData.categoryList.length },
-                  { id: 'sku', label: '📦 Por Códigos (SKU)', count: analyticsData.skuList.length }
-                ].map(tab => (
-                  <button
-                    key={tab.id}
-                    type="button"
-                    onClick={() => setAnalyticsActiveTab(tab.id)}
-                    className={`py-2.5 px-4 rounded-t-lg transition flex items-center space-x-2 border-t border-l border-r ${
-                      analyticsActiveTab === tab.id
-                        ? 'bg-white border-gray-200 text-[#006EAD] border-b-2 border-b-white -mb-[1px]'
-                        : 'border-transparent text-gray-600 hover:text-gray-900 hover:bg-slate-100'
-                    }`}
-                  >
-                    <span>{tab.label}</span>
-                    {tab.count !== null && (
-                      <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${
-                        analyticsActiveTab === tab.id ? 'bg-blue-100 text-[#006EAD]' : 'bg-gray-200 text-gray-700'
-                      }`}>
-                        {tab.count}
-                      </span>
-                    )}
-                  </button>
-                ))}
+                  { id: 'motivos', label: '⚠️ Motivos de Pérdida (1 al 5)', count: analyticsData.reasonsList.filter(r => r.amount > 0).length }
+                ].map(tab => {
+                  const isActive = analyticsActiveTab === tab.id;
+                  return (
+                    <button
+                      key={tab.id}
+                      type="button"
+                      onClick={() => setAnalyticsActiveTab(tab.id)}
+                      className={`py-2.5 px-4 rounded-t-xl transition-all flex items-center space-x-2 border-t border-l border-r ${
+                        isActive
+                          ? 'bg-white border-gray-300 text-[#006EAD] border-b-2 border-b-white -mb-[1px] shadow-xs font-black'
+                          : tab.highlight
+                          ? 'border-blue-200 bg-blue-50/70 text-blue-900 hover:bg-blue-100'
+                          : 'border-transparent text-gray-600 hover:text-gray-900 hover:bg-slate-100'
+                      }`}
+                    >
+                      <span>{tab.label}</span>
+                      {tab.count !== null && (
+                        <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-black ${
+                          isActive
+                            ? 'bg-blue-100 text-[#006EAD]'
+                            : tab.highlight
+                            ? 'bg-blue-200 text-blue-900'
+                            : 'bg-gray-200 text-gray-700'
+                        }`}>
+                          {tab.count}
+                        </span>
+                      )}
+                      {tab.highlight && !isActive && (
+                        <span className="w-1.5 h-1.5 rounded-full bg-blue-600 animate-ping"></span>
+                      )}
+                    </button>
+                  );
+                })}
               </div>
 
               {/* Contenido de la Clasificación Seleccionada */}
@@ -2571,8 +2653,14 @@ const CrmDashboardView = () => {
                         </tbody>
                       </table>
                     </div>
+                    
+                    {/* Auditoría de Fugas Estratégicas en Consolidado Total Empresa */}
+                    <div className="pt-2">
+                      {renderLossReasonsAudit()}
+                    </div>
                   </div>
                 )}
+
 
                 {/* 2. POR SUCURSAL */}
                 {analyticsActiveTab === 'sucursal' && (
@@ -3307,6 +3395,13 @@ const CrmDashboardView = () => {
                   </div>
                 )}
 
+              
+                {/* 7. AUDITORÍA DE MOTIVOS DE VENTAS PERDIDAS (1 AL 5) */}
+                {analyticsActiveTab === 'motivos' && (
+                  <div className="space-y-4">
+                    {renderLossReasonsAudit()}
+                  </div>
+                )}
               </div>
             </div>
 
