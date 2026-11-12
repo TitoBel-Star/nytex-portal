@@ -561,6 +561,10 @@ const CrmDashboardView = () => {
   const [analyticsSku, setAnalyticsSku] = useState('TODOS');
   const [analyticsActiveTab, setAnalyticsActiveTab] = useState('total_empresa'); // 'total_empresa' | 'sucursal' | 'vendedor' | 'proveedor' | 'categoria' | 'sku'
   const [skuFilterSearch, setSkuFilterSearch] = useState('');
+  const [skuMetricMode, setSkuMetricMode] = useState('all'); // 'all' | 'qty' | 'percent' | 'amount'
+  const [skuStatusFilter, setSkuStatusFilter] = useState('todos'); // 'todos' | 'con_perdidas' | 'con_ventas' | '100_vendido' | '100_perdido'
+  const [skuSuccessFilter, setSkuSuccessFilter] = useState('todos'); // 'todos' | 'gt75' | '50_75' | 'lt50' | 'zero'
+  const [expandedSkuDetail, setExpandedSkuDetail] = useState(null); // sku code string for drilldown
   const [expandedReason, setExpandedReason] = useState(null);
 
   // Atajos para presets de fecha en el panel analítico
@@ -614,6 +618,10 @@ const CrmDashboardView = () => {
     setAnalyticsCategory('TODAS');
     setAnalyticsSku('TODOS');
     setSkuFilterSearch('');
+    setSkuMetricMode('all');
+    setSkuStatusFilter('todos');
+    setSkuSuccessFilter('todos');
+    setExpandedSkuDetail(null);
     showToast('🔄 Filtros analíticos restablecidos a Total Empresa.');
   };
 
@@ -899,7 +907,23 @@ const CrmDashboardView = () => {
         categoryMap[cat].itemsQuoted += (Number(it.quantity) || 1);
 
         if (!skuMap[skuCode]) {
-          skuMap[skuCode] = { sku: skuCode, name: it.name, category: cat, provider: prov, unitPrice: it.unitPrice, quotedAmount: 0, soldAmount: 0, lostAmount: 0, unitsQuoted: 0, unitsSold: 0, unitsLost: 0, reasons: {} };
+          skuMap[skuCode] = { 
+            sku: skuCode, 
+            name: it.name, 
+            category: cat, 
+            provider: prov, 
+            unitPrice: it.unitPrice, 
+            quotedAmount: 0, 
+            soldAmount: 0, 
+            lostAmount: 0, 
+            pendingAmount: 0,
+            unitsQuoted: 0, 
+            unitsSold: 0, 
+            unitsLost: 0, 
+            unitsPending: 0,
+            reasons: {},
+            lostCases: []
+          };
         }
         skuMap[skuCode].quotedAmount += sub;
         skuMap[skuCode].unitsQuoted += (Number(it.quantity) || 1);
@@ -931,7 +955,7 @@ const CrmDashboardView = () => {
           reasonsMap[rKey].count += 1;
           reasonsMap[rKey].dealIds.add(deal.id);
           reasonsMap[rKey].amount += sub;
-          reasonsMap[rKey].items.push({
+          const lostCaseItem = {
             dealId: deal.id,
             company: deal.company,
             title: deal.title,
@@ -942,15 +966,20 @@ const CrmDashboardView = () => {
             name: it.name,
             amount: sub,
             quantity: it.quantity,
-            notes: it.lostNotes || ''
-          });
+            notes: it.lostNotes || '',
+            reason: rKey
+          };
+          reasonsMap[rKey].items.push(lostCaseItem);
 
           branchMap[bName].lostReasons[rKey] = (branchMap[bName].lostReasons[rKey] || 0) + sub;
           sellerMap[sName].lostReasons[rKey] = (sellerMap[sName].lostReasons[rKey] || 0) + sub;
-          skuMap[skuCode].reasons[rKey] = (skuMap[skuCode].reasons[rKey] || 0) + 1;
+          skuMap[skuCode].reasons[rKey] = (skuMap[skuCode].reasons[rKey] || 0) + (Number(it.quantity) || 1);
+          skuMap[skuCode].lostCases.push(lostCaseItem);
         } else {
           dealPending += sub;
           hasPending = true;
+          skuMap[skuCode].pendingAmount += sub;
+          skuMap[skuCode].unitsPending += (Number(it.quantity) || 1);
         }
       });
 
@@ -1039,12 +1068,39 @@ const CrmDashboardView = () => {
       lossRateAmount: c.quotedAmount > 0 ? ((c.lostAmount / c.quotedAmount) * 100).toFixed(1) : '0.0'
     })).sort((a, b) => b.quotedAmount - a.quotedAmount);
 
-    const skuList = Object.values(skuMap).map(s => ({
-      ...s,
-      winRateQty: s.unitsQuoted > 0 ? ((s.unitsSold / s.unitsQuoted) * 100).toFixed(1) : '0.0',
-      winRateAmount: s.quotedAmount > 0 ? ((s.soldAmount / s.quotedAmount) * 100).toFixed(1) : '0.0',
-      topReason: getTopReason(s.reasons)
-    })).sort((a, b) => b.unitsQuoted - a.unitsQuoted);
+    const skuList = Object.values(skuMap).map(s => {
+      const winRateQty = s.unitsQuoted > 0 ? ((s.unitsSold / s.unitsQuoted) * 100).toFixed(1) : '0.0';
+      const lostRateQty = s.unitsQuoted > 0 ? ((s.unitsLost / s.unitsQuoted) * 100).toFixed(1) : '0.0';
+      const pendingRateQty = s.unitsQuoted > 0 ? ((s.unitsPending / s.unitsQuoted) * 100).toFixed(1) : '0.0';
+      const winRateAmount = s.quotedAmount > 0 ? ((s.soldAmount / s.quotedAmount) * 100).toFixed(1) : '0.0';
+      const lostRateAmount = s.quotedAmount > 0 ? ((s.lostAmount / s.quotedAmount) * 100).toFixed(1) : '0.0';
+
+      const reasonsBreakdown = Object.entries(s.reasons || {}).map(([reason, qty]) => {
+        const amt = (s.lostCases || []).filter(c => c.reason === reason).reduce((sum, c) => sum + c.amount, 0);
+        const pctOfLoss = s.unitsLost > 0 ? ((qty / s.unitsLost) * 100).toFixed(0) : 0;
+        return { reason, qty, amt, pctOfLoss };
+      }).sort((a, b) => b.qty - a.qty);
+
+      return {
+        ...s,
+        winRateQty,
+        lostRateQty,
+        pendingRateQty,
+        winRateAmount,
+        lostRateAmount,
+        reasonsBreakdown,
+        topReason: getTopReason(s.reasons)
+      };
+    }).sort((a, b) => b.unitsQuoted - a.unitsQuoted);
+
+    const totalDistinctSkusQuoted = Object.keys(skuMap).length;
+    const totalSkusWithSales = Object.values(skuMap).filter(s => s.unitsSold > 0).length;
+    const totalSkusWithLosses = Object.values(skuMap).filter(s => s.unitsLost > 0).length;
+    const totalUnitsQuoted = Object.values(skuMap).reduce((sum, s) => sum + s.unitsQuoted, 0);
+    const totalUnitsSold = Object.values(skuMap).reduce((sum, s) => sum + s.unitsSold, 0);
+    const totalUnitsLost = Object.values(skuMap).reduce((sum, s) => sum + s.unitsLost, 0);
+    const skuOverallWinRateQty = totalUnitsQuoted > 0 ? ((totalUnitsSold / totalUnitsQuoted) * 100).toFixed(1) : '0.0';
+    const skuOverallLostRateQty = totalUnitsQuoted > 0 ? ((totalUnitsLost / totalUnitsQuoted) * 100).toFixed(1) : '0.0';
 
     return {
       summary: {
@@ -1061,7 +1117,15 @@ const CrmDashboardView = () => {
         totalLostAmount,
         totalLostItemsCount,
         lossRateAmount,
-        lossRateQty
+        lossRateQty,
+        totalDistinctSkusQuoted,
+        totalSkusWithSales,
+        totalSkusWithLosses,
+        totalUnitsQuoted,
+        totalUnitsSold,
+        totalUnitsLost,
+        skuOverallWinRateQty,
+        skuOverallLostRateQty
       },
       reasonsList,
       branchList,
@@ -2766,86 +2830,480 @@ const CrmDashboardView = () => {
                   </div>
                 )}
 
-                {/* 6. POR CÓDIGOS (SKU) */}
+                {/* 6. POR CÓDIGOS (SKU) - INDICADOR DETALLADO: COTIZADOS VS VENDIDOS VS NO VENDIDOS Y MOTIVOS */}
                 {analyticsActiveTab === 'sku' && (
-                  <div className="space-y-4">
-                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-                      <div className="text-xs text-gray-500">
-                        <span>Desglose unitario por código de producto/servicio cotizado en Kardex.</span>
+                  <div className="space-y-5">
+                    
+                    {/* Tarjetas de Resumen Rápido por Códigos SKU */}
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                      <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">
+                          📦 Total Códigos Cotizados
+                        </span>
+                        <div className="flex items-baseline space-x-2">
+                          <span className="text-2xl font-black text-gray-900">{analyticsData.summary.totalDistinctSkusQuoted}</span>
+                          <span className="text-xs text-gray-500">códigos ({analyticsData.summary.totalUnitsQuoted} unidades)</span>
+                        </div>
+                        <span className="text-xs font-mono font-bold text-blue-700 mt-1 block">
+                          ${analyticsData.summary.totalQuotedAmount.toLocaleString()} USD en demanda
+                        </span>
                       </div>
-                      <div className="w-full sm:w-72">
-                        <input
-                          type="text"
-                          placeholder="Buscar código SKU o nombre..."
-                          value={skuFilterSearch}
-                          onChange={(e) => setSkuFilterSearch(e.target.value)}
-                          className="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-xs bg-white focus:outline-none focus:border-[#006EAD]"
-                        />
+
+                      <div className="bg-emerald-50/40 p-4 rounded-xl border border-emerald-200">
+                        <span className="text-[10px] font-bold text-emerald-800 uppercase tracking-wider block mb-1">
+                          ✓ Códigos Vendidos (Cerrados)
+                        </span>
+                        <div className="flex items-baseline space-x-2">
+                          <span className="text-2xl font-black text-emerald-700">{analyticsData.summary.totalSkusWithSales}</span>
+                          <span className="text-xs text-emerald-600">códigos ({analyticsData.summary.totalUnitsSold} unidades)</span>
+                          <span className="ml-auto text-xs font-black bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full border border-emerald-300">
+                            {analyticsData.summary.skuOverallWinRateQty}%
+                          </span>
+                        </div>
+                        <span className="text-xs font-mono font-bold text-emerald-800 mt-1 block">
+                          ${analyticsData.summary.totalSoldAmount.toLocaleString()} USD efectivamente vendidos
+                        </span>
+                      </div>
+
+                      <div className="bg-red-50/40 p-4 rounded-xl border border-red-200">
+                        <span className="text-[10px] font-bold text-red-800 uppercase tracking-wider block mb-1">
+                          ⚠️ Códigos NO Vendidos (Perdidos)
+                        </span>
+                        <div className="flex items-baseline space-x-2">
+                          <span className="text-2xl font-black text-red-700">{analyticsData.summary.totalSkusWithLosses}</span>
+                          <span className="text-xs text-red-600">códigos ({analyticsData.summary.totalUnitsLost} unidades)</span>
+                          <span className="ml-auto text-xs font-black bg-red-100 text-red-800 px-2 py-0.5 rounded-full border border-red-300">
+                            {analyticsData.summary.skuOverallLostRateQty}%
+                          </span>
+                        </div>
+                        <span className="text-xs font-mono font-bold text-red-800 mt-1 block">
+                          -${analyticsData.summary.totalLostAmount.toLocaleString()} USD en pérdidas registradas
+                        </span>
                       </div>
                     </div>
 
-                    <div className="border border-gray-200 rounded-xl overflow-hidden shadow-2xs max-h-[500px] overflow-y-auto">
-                      <table className="w-full text-left text-xs">
-                        <thead className="bg-slate-50 text-gray-700 uppercase text-[10px] font-bold border-b border-gray-200 sticky top-0 z-10 shadow-2xs">
-                          <tr>
-                            <th className="py-3 px-3">Código SKU</th>
-                            <th className="py-3 px-3">Descripción Producto / Servicio</th>
-                            <th className="py-3 px-3">Proveedor</th>
-                            <th className="py-3 px-3 text-center">Unid. Cotizadas</th>
-                            <th className="py-3 px-3 text-right">Monto Cotizado</th>
-                            <th className="py-3 px-3 text-center">Unid. Vendidas</th>
-                            <th className="py-3 px-3 text-right">Monto Vendido</th>
-                            <th className="py-3 px-3 text-center">% Éxito SKU</th>
-                            <th className="py-3 px-3 text-center">Unid. Perdidas</th>
-                            <th className="py-3 px-3 text-right">Monto Fuga</th>
-                            <th className="py-3 px-3">Causa de Pérdida</th>
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-100">
-                          {analyticsData.skuList
-                            .filter(s => {
-                              if (!skuFilterSearch.trim()) return true;
-                              const q = skuFilterSearch.toLowerCase();
-                              return s.sku.toLowerCase().includes(q) || (s.name || '').toLowerCase().includes(q);
-                            })
-                            .map(s => (
-                              <tr key={s.sku} className="hover:bg-slate-50 transition">
-                                <td className="py-2.5 px-3 font-mono font-bold text-[#006EAD]">
-                                  {s.sku}
-                                </td>
-                                <td className="py-2.5 px-3 font-medium text-gray-900 max-w-[200px] truncate" title={s.name}>
-                                  {s.name}
-                                </td>
-                                <td className="py-2.5 px-3 text-gray-500 text-[11px]">{s.provider}</td>
-                                <td className="py-2.5 px-3 text-center font-semibold">{s.unitsQuoted}</td>
-                                <td className="py-2.5 px-3 text-right font-mono">${s.quotedAmount.toLocaleString()}</td>
-                                <td className="py-2.5 px-3 text-center font-bold text-emerald-700">{s.unitsSold}</td>
-                                <td className="py-2.5 px-3 text-right font-mono text-emerald-700 font-bold">${s.soldAmount.toLocaleString()}</td>
-                                <td className="py-2.5 px-3 text-center">
-                                  <span className={`px-2 py-0.5 rounded font-black text-[10px] ${
-                                    Number(s.winRateQty) >= 60 ? 'bg-emerald-100 text-emerald-800' : 'bg-gray-100 text-gray-700'
-                                  }`}>
-                                    {s.winRateQty}%
-                                  </span>
-                                </td>
-                                <td className="py-2.5 px-3 text-center font-bold text-red-600">{s.unitsLost}</td>
-                                <td className="py-2.5 px-3 text-right font-mono text-red-700 font-bold">
-                                  {s.lostAmount > 0 ? `-$${s.lostAmount.toLocaleString()}` : '$0'}
-                                </td>
-                                <td className="py-2.5 px-3 text-gray-500 text-[10px]">
-                                  {s.topReason !== 'Ninguno' ? (
-                                    <span className="bg-red-50 text-red-700 px-1.5 py-0.5 rounded border border-red-100">
-                                      {s.topReason}
-                                    </span>
-                                  ) : (
-                                    <span className="text-gray-400">Sin rechazos</span>
-                                  )}
-                                </td>
-                              </tr>
-                            ))}
-                        </tbody>
-                      </table>
+                    {/* Barra de Filtros y Controles de Métricas (Cantidad vs % vs Montos) */}
+                    <div className="bg-slate-50 p-4 rounded-xl border border-gray-200 space-y-3">
+                      <div className="flex flex-wrap items-center justify-between gap-3">
+                        
+                        {/* Selector de Modo de Métrica (Cantidad, %, Montos o Completa) */}
+                        <div className="flex items-center space-x-2">
+                          <span className="text-xs font-black text-gray-700 uppercase tracking-wider flex items-center">
+                            <i className="fas fa-eye mr-1.5 text-[#006EAD]"></i>
+                            Visualizar Métricas en:
+                          </span>
+                          <div className="inline-flex rounded-lg border border-gray-300 bg-white p-0.5 shadow-2xs">
+                            <button
+                              type="button"
+                              onClick={() => setSkuMetricMode('all')}
+                              className={`px-2.5 py-1 text-xs font-bold rounded-md transition ${
+                                skuMetricMode === 'all'
+                                  ? 'bg-[#006EAD] text-white shadow-xs'
+                                  : 'text-gray-600 hover:text-gray-900'
+                              }`}
+                            >
+                              📊 Completa (Cant, % y $)
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setSkuMetricMode('qty')}
+                              className={`px-2.5 py-1 text-xs font-bold rounded-md transition ${
+                                skuMetricMode === 'qty'
+                                  ? 'bg-[#006EAD] text-white shadow-xs'
+                                  : 'text-gray-600 hover:text-gray-900'
+                              }`}
+                            >
+                              🔢 Cantidad (Unidades)
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setSkuMetricMode('percent')}
+                              className={`px-2.5 py-1 text-xs font-bold rounded-md transition ${
+                                skuMetricMode === 'percent'
+                                  ? 'bg-[#006EAD] text-white shadow-xs'
+                                  : 'text-gray-600 hover:text-gray-900'
+                              }`}
+                            >
+                              ％ Porcentajes (%)
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setSkuMetricMode('amount')}
+                              className={`px-2.5 py-1 text-xs font-bold rounded-md transition ${
+                                skuMetricMode === 'amount'
+                                  ? 'bg-[#006EAD] text-white shadow-xs'
+                                  : 'text-gray-600 hover:text-gray-900'
+                              }`}
+                            >
+                              💲 Montos ($ USD)
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Buscador de Código SKU */}
+                        <div className="w-full sm:w-80">
+                          <div className="relative">
+                            <i className="fas fa-search absolute left-3 top-2.5 text-gray-400 text-xs"></i>
+                            <input
+                              type="text"
+                              placeholder="Buscar código SKU, nombre o proveedor..."
+                              value={skuFilterSearch}
+                              onChange={(e) => setSkuFilterSearch(e.target.value)}
+                              className="w-full pl-9 pr-3 py-1.5 border border-gray-300 rounded-lg text-xs bg-white focus:outline-none focus:border-[#006EAD]"
+                            />
+                            {skuFilterSearch && (
+                              <button
+                                onClick={() => setSkuFilterSearch('')}
+                                className="absolute right-2.5 top-2 text-gray-400 hover:text-gray-600 text-xs"
+                              >
+                                ✕
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Filtros de Estado y Nivel de Conversión */}
+                      <div className="flex flex-wrap items-center gap-3 pt-2 border-t border-slate-200/80 text-xs">
+                        <div className="flex items-center space-x-2">
+                          <span className="text-gray-500 font-bold uppercase text-[10px]">Filtrar por Estado:</span>
+                          <select
+                            value={skuStatusFilter}
+                            onChange={(e) => setSkuStatusFilter(e.target.value)}
+                            className="px-2.5 py-1 border border-gray-300 rounded-md text-xs font-semibold bg-white focus:outline-none focus:border-[#006EAD]"
+                          >
+                            <option value="todos">Todos los Códigos ({analyticsData.skuList.length})</option>
+                            <option value="con_ventas">✓ Solo con Ventas (Vendidos)</option>
+                            <option value="con_perdidas">⚠️ Solo con Pérdidas (No Vendidos)</option>
+                            <option value="100_vendido">⭐ 100% Vendido (Éxito Total)</option>
+                            <option value="100_perdido">📉 100% NO Vendido (Fuga Total)</option>
+                          </select>
+                        </div>
+
+                        <div className="flex items-center space-x-2">
+                          <span className="text-gray-500 font-bold uppercase text-[10px]">Efectividad %:</span>
+                          <select
+                            value={skuSuccessFilter}
+                            onChange={(e) => setSkuSuccessFilter(e.target.value)}
+                            className="px-2.5 py-1 border border-gray-300 rounded-md text-xs font-semibold bg-white focus:outline-none focus:border-[#006EAD]"
+                          >
+                            <option value="todos">Todos los porcentajes</option>
+                            <option value="gt75">Alta conversión (≥ 75%)</option>
+                            <option value="50_75">Media conversión (50% a 74%)</option>
+                            <option value="lt50">Baja conversión (&lt; 50%)</option>
+                            <option value="zero">Sin ventas logradas (0%)</option>
+                          </select>
+                        </div>
+
+                        {(skuStatusFilter !== 'todos' || skuSuccessFilter !== 'todos' || skuFilterSearch) && (
+                          <button
+                            type="button"
+                            onClick={() => { setSkuStatusFilter('todos'); setSkuSuccessFilter('todos'); setSkuFilterSearch(''); }}
+                            className="text-[11px] text-red-600 hover:text-red-800 font-bold underline ml-auto"
+                          >
+                            Limpiar filtros de códigos
+                          </button>
+                        )}
+                      </div>
                     </div>
+
+                    {/* Tabla de Indicador por Código (Cotizados vs Vendidos vs No Vendidos + Motivos) */}
+                    <div className="border border-gray-200 rounded-xl overflow-hidden shadow-2xs">
+                      <div className="bg-slate-100 px-4 py-2.5 font-bold text-xs text-gray-700 border-b border-gray-200 flex justify-between items-center">
+                        <span className="flex items-center space-x-2">
+                          <i className="fas fa-boxes text-[#006EAD]"></i>
+                          <span>Indicador de Conversión y Fuga por Código SKU</span>
+                        </span>
+                        <span className="text-[11px] text-gray-500 font-normal">
+                          Mostrando <strong>{analyticsData.skuList.filter(s => {
+                            if (skuFilterSearch.trim()) {
+                              const q = skuFilterSearch.toLowerCase();
+                              if (!s.sku.toLowerCase().includes(q) && !(s.name || '').toLowerCase().includes(q) && !(s.provider || '').toLowerCase().includes(q)) return false;
+                            }
+                            if (skuStatusFilter === 'con_ventas' && s.unitsSold <= 0) return false;
+                            if (skuStatusFilter === 'con_perdidas' && s.unitsLost <= 0) return false;
+                            if (skuStatusFilter === '100_vendido' && (s.unitsLost > 0 || s.unitsPending > 0 || s.unitsSold === 0)) return false;
+                            if (skuStatusFilter === '100_perdido' && (s.unitsSold > 0 || s.unitsLost === 0)) return false;
+                            const rate = Number(s.winRateQty);
+                            if (skuSuccessFilter === 'gt75' && rate < 75) return false;
+                            if (skuSuccessFilter === '50_75' && (rate < 50 || rate >= 75)) return false;
+                            if (skuSuccessFilter === 'lt50' && (rate >= 50 || rate === 0)) return false;
+                            if (skuSuccessFilter === 'zero' && rate > 0) return false;
+                            return true;
+                          }).length}</strong> de {analyticsData.skuList.length} códigos
+                        </span>
+                      </div>
+
+                      <div className="overflow-x-auto max-h-[600px] overflow-y-auto">
+                        <table className="w-full text-left text-xs">
+                          <thead className="bg-slate-50 text-gray-700 uppercase text-[10px] font-bold border-b border-gray-200 sticky top-0 z-10 shadow-2xs">
+                            <tr>
+                              <th className="py-3 px-3">Código SKU & Producto</th>
+                              <th className="py-3 px-3 text-center">Proveedor / Familia</th>
+                              <th className="py-3 px-3 text-center bg-blue-50/50">
+                                {skuMetricMode === 'qty' && 'Cotizados (Unid)'}
+                                {skuMetricMode === 'percent' && 'Cotizados (%)'}
+                                {skuMetricMode === 'amount' && 'Cotizados ($)'}
+                                {skuMetricMode === 'all' && 'Cotizados (Cant. y $)'}
+                              </th>
+                              <th className="py-3 px-3 text-center bg-emerald-50/50">
+                                {skuMetricMode === 'qty' && 'Vendidos (Unid)'}
+                                {skuMetricMode === 'percent' && '% Efectividad Vendida'}
+                                {skuMetricMode === 'amount' && 'Vendidos ($)'}
+                                {skuMetricMode === 'all' && 'Vendidos (Cant., $ y %)'}
+                              </th>
+                              <th className="py-3 px-3 text-center bg-red-50/50">
+                                {skuMetricMode === 'qty' && 'NO Vendidos (Unid)'}
+                                {skuMetricMode === 'percent' && '% Fuga NO Vendida'}
+                                {skuMetricMode === 'amount' && 'NO Vendidos ($)'}
+                                {skuMetricMode === 'all' && 'NO Vendidos (Cant., $ y %)'}
+                              </th>
+                              <th className="py-3 px-3 text-center">Pendientes</th>
+                              <th className="py-3 px-3 min-w-[280px]">
+                                Motivo(s) por el que NO se vendió este código
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-gray-100">
+                            {analyticsData.skuList
+                              .filter(s => {
+                                if (skuFilterSearch.trim()) {
+                                  const q = skuFilterSearch.toLowerCase();
+                                  if (!s.sku.toLowerCase().includes(q) && !(s.name || '').toLowerCase().includes(q) && !(s.provider || '').toLowerCase().includes(q)) return false;
+                                }
+                                if (skuStatusFilter === 'con_ventas' && s.unitsSold <= 0) return false;
+                                if (skuStatusFilter === 'con_perdidas' && s.unitsLost <= 0) return false;
+                                if (skuStatusFilter === '100_vendido' && (s.unitsLost > 0 || s.unitsPending > 0 || s.unitsSold === 0)) return false;
+                                if (skuStatusFilter === '100_perdido' && (s.unitsSold > 0 || s.unitsLost === 0)) return false;
+                                const rate = Number(s.winRateQty);
+                                if (skuSuccessFilter === 'gt75' && rate < 75) return false;
+                                if (skuSuccessFilter === '50_75' && (rate < 50 || rate >= 75)) return false;
+                                if (skuSuccessFilter === 'lt50' && (rate >= 50 || rate === 0)) return false;
+                                if (skuSuccessFilter === 'zero' && rate > 0) return false;
+                                return true;
+                              })
+                              .map(s => {
+                                const isExpanded = expandedSkuDetail === s.sku;
+                                const hasLoss = s.unitsLost > 0;
+                                return (
+                                  <React.Fragment key={s.sku}>
+                                    <tr className={`hover:bg-slate-50 transition ${isExpanded ? 'bg-amber-50/30' : ''}`}>
+                                      
+                                      {/* SKU & Producto */}
+                                      <td className="py-3 px-3">
+                                        <div className="flex items-center space-x-2">
+                                          <span className="font-mono font-black text-xs text-[#006EAD] bg-blue-50 px-2 py-0.5 rounded border border-blue-200">
+                                            {s.sku}
+                                          </span>
+                                        </div>
+                                        <div className="font-bold text-gray-900 text-xs mt-1" title={s.name}>
+                                          {s.name}
+                                        </div>
+                                        <div className="text-gray-400 text-[10px]">
+                                          Precio unitario de lista: ${Number(s.unitPrice).toLocaleString()} USD
+                                        </div>
+                                      </td>
+
+                                      {/* Proveedor y Categoría */}
+                                      <td className="py-3 px-3 text-center text-[11px]">
+                                        <span className="font-semibold text-gray-700 block">{s.provider}</span>
+                                        <span className="text-[10px] text-gray-500 bg-gray-100 px-1.5 py-0.2 rounded inline-block mt-0.5">{s.category}</span>
+                                      </td>
+
+                                      {/* COTIZADOS */}
+                                      <td className="py-3 px-3 text-center bg-blue-50/30 font-semibold">
+                                        {skuMetricMode === 'qty' && (
+                                          <span className="text-gray-900 font-bold">{s.unitsQuoted} un.</span>
+                                        )}
+                                        {skuMetricMode === 'percent' && (
+                                          <span className="text-blue-800 font-bold">100%</span>
+                                        )}
+                                        {skuMetricMode === 'amount' && (
+                                          <span className="font-mono font-bold text-gray-900">${s.quotedAmount.toLocaleString()}</span>
+                                        )}
+                                        {skuMetricMode === 'all' && (
+                                          <div>
+                                            <span className="font-black text-gray-900 block">{s.unitsQuoted} un.</span>
+                                            <span className="text-[10px] font-mono text-gray-500">${s.quotedAmount.toLocaleString()} USD</span>
+                                          </div>
+                                        )}
+                                      </td>
+
+                                      {/* VENDIDOS */}
+                                      <td className="py-3 px-3 text-center bg-emerald-50/30">
+                                        {skuMetricMode === 'qty' && (
+                                          <span className="text-emerald-700 font-black">{s.unitsSold} un.</span>
+                                        )}
+                                        {skuMetricMode === 'percent' && (
+                                          <span className={`px-2 py-0.5 rounded font-black text-[11px] ${
+                                            Number(s.winRateQty) >= 60 ? 'bg-emerald-100 text-emerald-800' : 'bg-gray-100 text-gray-700'
+                                          }`}>
+                                            {s.winRateQty}%
+                                          </span>
+                                        )}
+                                        {skuMetricMode === 'amount' && (
+                                          <span className="font-mono font-bold text-emerald-700">${s.soldAmount.toLocaleString()}</span>
+                                        )}
+                                        {skuMetricMode === 'all' && (
+                                          <div>
+                                            <div className="flex items-center justify-center space-x-1">
+                                              <span className="font-black text-emerald-700">{s.unitsSold} un.</span>
+                                              <span className={`text-[10px] font-bold px-1.5 py-0.2 rounded ${
+                                                Number(s.winRateQty) >= 60 ? 'bg-emerald-100 text-emerald-800' : 'bg-gray-100 text-gray-600'
+                                              }`}>
+                                                {s.winRateQty}%
+                                              </span>
+                                            </div>
+                                            <span className="text-[10px] font-mono text-emerald-600 font-semibold block mt-0.5">
+                                              ${s.soldAmount.toLocaleString()} USD
+                                            </span>
+                                          </div>
+                                        )}
+                                      </td>
+
+                                      {/* NO VENDIDOS (Perdidos) */}
+                                      <td className="py-3 px-3 text-center bg-red-50/30">
+                                        {skuMetricMode === 'qty' && (
+                                          <span className={`font-black ${hasLoss ? 'text-red-600' : 'text-gray-400'}`}>
+                                            {s.unitsLost} un.
+                                          </span>
+                                        )}
+                                        {skuMetricMode === 'percent' && (
+                                          <span className={`px-2 py-0.5 rounded font-black text-[11px] ${
+                                            hasLoss ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-500'
+                                          }`}>
+                                            {s.lostRateQty}%
+                                          </span>
+                                        )}
+                                        {skuMetricMode === 'amount' && (
+                                          <span className={`font-mono font-bold ${hasLoss ? 'text-red-700' : 'text-gray-400'}`}>
+                                            {hasLoss ? `-$${s.lostAmount.toLocaleString()}` : '$0'}
+                                          </span>
+                                        )}
+                                        {skuMetricMode === 'all' && (
+                                          <div>
+                                            <div className="flex items-center justify-center space-x-1">
+                                              <span className={`font-black ${hasLoss ? 'text-red-600' : 'text-gray-400'}`}>
+                                                {s.unitsLost} un.
+                                              </span>
+                                              {hasLoss && (
+                                                <span className="text-[10px] font-bold bg-red-100 text-red-800 px-1.5 py-0.2 rounded">
+                                                  {s.lostRateQty}% fuga
+                                                </span>
+                                              )}
+                                            </div>
+                                            <span className={`text-[10px] font-mono block mt-0.5 ${hasLoss ? 'text-red-700 font-semibold' : 'text-gray-400'}`}>
+                                              {hasLoss ? `-$${s.lostAmount.toLocaleString()} USD` : '$0 USD'}
+                                            </span>
+                                          </div>
+                                        )}
+                                      </td>
+
+                                      {/* PENDIENTES */}
+                                      <td className="py-3 px-3 text-center text-gray-500 text-[11px]">
+                                        {s.unitsPending > 0 ? (
+                                          <span className="text-amber-800 font-bold bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
+                                            {s.unitsPending} un. ({s.pendingRateQty}%)
+                                          </span>
+                                        ) : (
+                                          <span className="text-gray-300">-</span>
+                                        )}
+                                      </td>
+
+                                      {/* MOTIVO(S) POR EL QUE NO SE VENDIÓ */}
+                                      <td className="py-3 px-3">
+                                        {!hasLoss ? (
+                                          <span className="text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded font-bold text-[10px] inline-flex items-center">
+                                            <i className="fas fa-check-circle mr-1"></i>100% Vendido / Sin fugas
+                                          </span>
+                                        ) : (
+                                          <div className="space-y-1">
+                                            {/* Desglose de motivos específicos de este código */}
+                                            <div className="flex flex-wrap gap-1">
+                                              {s.reasonsBreakdown.map(rb => (
+                                                <span
+                                                  key={rb.reason}
+                                                  className="bg-red-50 text-red-900 border border-red-200 rounded px-1.5 py-0.5 text-[10px] font-semibold flex items-center space-x-1"
+                                                >
+                                                  <span className="w-1.5 h-1.5 rounded-full bg-red-500"></span>
+                                                  <span>{rb.reason}</span>
+                                                  <strong className="text-red-700 font-bold ml-1">({rb.qty} un. • {rb.pctOfLoss}%)</strong>
+                                                </span>
+                                              ))}
+                                            </div>
+
+                                            {/* Botón para expandir detalles y notas */}
+                                            <button
+                                              type="button"
+                                              onClick={() => setExpandedSkuDetail(isExpanded ? null : s.sku)}
+                                              className="text-[10px] font-bold text-[#006EAD] hover:underline flex items-center space-x-1 mt-1"
+                                            >
+                                              <i className={`fas fa-chevron-${isExpanded ? 'up' : 'down'} text-[9px]`}></i>
+                                              <span>{isExpanded ? 'Ocultar casos' : `Ver ${s.lostCases.length} cotización(es) con rechazo`}</span>
+                                            </button>
+                                          </div>
+                                        )}
+                                      </td>
+                                    </tr>
+
+                                    {/* Fila Acordeón Expandida de Casos y Motivos */}
+                                    {isExpanded && (
+                                      <tr className="bg-amber-50/40 border-b-2 border-b-amber-200">
+                                        <td colSpan={7} className="p-4">
+                                          <div className="bg-white p-4 rounded-xl border border-amber-200 space-y-3 shadow-xs">
+                                            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-amber-100 pb-2">
+                                              <div className="flex items-center space-x-2">
+                                                <i className="fas fa-exclamation-triangle text-amber-600"></i>
+                                                <span className="font-bold text-xs text-gray-800 uppercase">
+                                                  Auditoría de No Compra para el SKU: <strong>{s.sku}</strong> ({s.name})
+                                                </span>
+                                              </div>
+                                              <button
+                                                type="button"
+                                                onClick={() => { setAnalyticsSku(s.sku); showToast(`📦 Dashboard filtrado por SKU "${s.sku}"`); }}
+                                                className="bg-[#006EAD] text-white text-[10px] font-bold px-2.5 py-1 rounded-md hover:bg-blue-800 transition"
+                                              >
+                                                Filtrar todo el Dashboard por este SKU
+                                              </button>
+                                            </div>
+
+                                            {/* Listado de casos reales con notas del vendedor */}
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                                              {s.lostCases.map((c, idx) => (
+                                                <div key={idx} className="p-3 rounded-lg border border-red-100 bg-red-50/20 space-y-1.5">
+                                                  <div className="flex justify-between items-start font-bold">
+                                                    <span className="text-gray-900">{c.company}</span>
+                                                    <span className="text-red-700 font-mono">-${c.amount.toLocaleString()} USD ({c.quantity} un.)</span>
+                                                  </div>
+                                                  <div className="text-[11px] text-red-800 font-semibold flex items-center">
+                                                    <span className="w-1.5 h-1.5 rounded-full bg-red-600 mr-1.5"></span>
+                                                    {c.reason}
+                                                  </div>
+                                                  <div className="text-gray-400 text-[10px] flex flex-wrap gap-2">
+                                                    <span>📍 {c.branch}</span>
+                                                    <span>👤 {c.seller}</span>
+                                                    <span>📅 {c.date}</span>
+                                                  </div>
+                                                  {c.notes && (
+                                                    <div className="bg-white p-2 rounded border border-amber-200 text-amber-900 text-[11px] italic mt-1">
+                                                      "{c.notes}"
+                                                    </div>
+                                                  )}
+                                                </div>
+                                              ))}
+                                            </div>
+                                          </div>
+                                        </td>
+                                      </tr>
+                                    )}
+                                  </React.Fragment>
+                                );
+                              })}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+
                   </div>
                 )}
 
