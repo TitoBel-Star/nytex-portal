@@ -76,7 +76,9 @@ const SaleOrder = sequelize.define('SaleOrder', {
   invoiceCode: { type: DataTypes.STRING, allowNull: true },
   paymentMethod: { type: DataTypes.STRING, defaultValue: 'Por Definir' },
   amountReceived: { type: DataTypes.FLOAT, defaultValue: 0 },
-  changeGiven: { type: DataTypes.FLOAT, defaultValue: 0 }
+  changeGiven: { type: DataTypes.FLOAT, defaultValue: 0 },
+  originDealId: { type: DataTypes.INTEGER, allowNull: true },
+  originCrmTitle: { type: DataTypes.STRING, allowNull: true }
 });
 
 const WmsTask = sequelize.define('WmsTask', {
@@ -736,7 +738,7 @@ app.post('/api/ventas/orders', async (req, res) => {
   try {
     const { 
       clientCode, clientName, deliveryAddress, items, paymentTerms, deliveryMode,
-      paymentMethod, amountReceived, changeGiven
+      paymentMethod, amountReceived, changeGiven, originDealId, originCrmTitle, status: reqStatus
     } = req.body;
     const count = await SaleOrder.count();
     const orderCode = `SO-2026-${String(count + 1).padStart(3, '0')}`;
@@ -745,24 +747,33 @@ app.post('/api/ventas/orders', async (req, res) => {
     const formattedItems = (items || []).map(item => {
       const itemSub = (Number(item.quantity) || 1) * (Number(item.unitPrice) || 0);
       subtotal += itemSub;
-      return { ...item, subtotal: itemSub };
+      return { 
+        sku: item.sku || 'SKU-GEN',
+        description: item.description || item.name || 'Producto / Servicio',
+        quantity: Number(item.quantity) || 1,
+        unitPrice: Number(item.unitPrice) || 0,
+        dispatchLocation: item.dispatchLocation || 'Caja',
+        subtotal: itemSub 
+      };
     });
 
     const tax = Math.round(subtotal * 0.13 * 100) / 100;
     const total = Math.round((subtotal + tax) * 100) / 100;
 
-    let status = 'Cotización';
+    let status = reqStatus || 'Cotización';
     let defaultAddress = 'Dirección de Entrega';
     let defaultTerms = 'Crédito 30 días';
 
-    if (deliveryMode === 'mostrador') {
-      status = 'Entregado';
-      defaultAddress = 'Mostrador / Caja Principal (Entrega Inmediata)';
-      defaultTerms = 'Contado / Anticipado';
-    } else if (deliveryMode === 'mixto') {
-      status = 'En Preparación WMS';
-      defaultAddress = 'Caja (Menudeo) + Andén Bodega (Bultos Grandes)';
-      defaultTerms = 'Contado / Anticipado';
+    if (!reqStatus) {
+      if (deliveryMode === 'mostrador') {
+        status = 'Entregado';
+        defaultAddress = 'Mostrador / Caja Principal (Entrega Inmediata)';
+        defaultTerms = 'Contado / Anticipado';
+      } else if (deliveryMode === 'mixto') {
+        status = 'En Preparación WMS';
+        defaultAddress = 'Caja (Menudeo) + Andén Bodega (Bultos Grandes)';
+        defaultTerms = 'Contado / Anticipado';
+      }
     }
 
     const newOrder = await SaleOrder.create({
@@ -777,9 +788,11 @@ app.post('/api/ventas/orders', async (req, res) => {
       paymentTerms: paymentTerms || defaultTerms,
       status,
       isInvoiced: false,
-      paymentMethod: paymentMethod || (paymentTerms === 'Contado / Anticipado' ? 'Efectivo' : 'Crédito'),
+      paymentMethod: paymentMethod || (paymentTerms === 'Contado / Anticipado' || paymentTerms === 'Contado' ? 'Efectivo' : 'Crédito'),
       amountReceived: Number(amountReceived) || 0,
-      changeGiven: Number(changeGiven) || 0
+      changeGiven: Number(changeGiven) || 0,
+      originDealId: originDealId || null,
+      originCrmTitle: originCrmTitle || null
     });
 
     // Si es despacho mixto, se genera la orden de alistamiento en rampa en WMS (solo para los productos de Bodega)
@@ -5333,6 +5346,8 @@ async function startServer() {
       if (!soCols.includes('paymentMethod')) await sequelize.query("ALTER TABLE SaleOrders ADD COLUMN paymentMethod VARCHAR(255) DEFAULT 'Por Definir'");
       if (!soCols.includes('amountReceived')) await sequelize.query("ALTER TABLE SaleOrders ADD COLUMN amountReceived FLOAT DEFAULT 0");
       if (!soCols.includes('changeGiven')) await sequelize.query("ALTER TABLE SaleOrders ADD COLUMN changeGiven FLOAT DEFAULT 0");
+      if (!soCols.includes('originDealId')) await sequelize.query("ALTER TABLE SaleOrders ADD COLUMN originDealId INTEGER");
+      if (!soCols.includes('originCrmTitle')) await sequelize.query("ALTER TABLE SaleOrders ADD COLUMN originCrmTitle VARCHAR(255)");
 
       const cols = (await sequelize.query("PRAGMA table_info(AccountPayables)"))[0].map(c => c.name);
       if (!cols.includes('invoiceNumber')) await sequelize.query("ALTER TABLE AccountPayables ADD COLUMN invoiceNumber VARCHAR(255)");
@@ -5483,6 +5498,8 @@ async function startServer() {
       if (!soCols.includes('paymentMethod')) await sequelize.query("ALTER TABLE SaleOrders ADD COLUMN paymentMethod VARCHAR(255) DEFAULT 'Por Definir'");
       if (!soCols.includes('amountReceived')) await sequelize.query("ALTER TABLE SaleOrders ADD COLUMN amountReceived FLOAT DEFAULT 0");
       if (!soCols.includes('changeGiven')) await sequelize.query("ALTER TABLE SaleOrders ADD COLUMN changeGiven FLOAT DEFAULT 0");
+      if (!soCols.includes('originDealId')) await sequelize.query("ALTER TABLE SaleOrders ADD COLUMN originDealId INTEGER");
+      if (!soCols.includes('originCrmTitle')) await sequelize.query("ALTER TABLE SaleOrders ADD COLUMN originCrmTitle VARCHAR(255)");
 
       const bpCols = (await sequelize.query("PRAGMA table_info(BusinessPartners)"))[0].map(c => c.name);
       if (!bpCols.includes('taxId')) await sequelize.query("ALTER TABLE BusinessPartners ADD COLUMN taxId VARCHAR(255) DEFAULT 'RFC-GENERICO'");

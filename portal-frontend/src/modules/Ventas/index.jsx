@@ -406,7 +406,8 @@ export default function Ventas() {
     const itemsMatch = Array.isArray(o.items) && o.items.some(it => 
       (it.sku || '').toLowerCase().includes(q) || (it.description || '').toLowerCase().includes(q)
     );
-    return orderCodeMatch || clientNameMatch || clientCodeMatch || invoiceMatch || paymentMatch || itemsMatch;
+    const crmMatch = (o.originCrmTitle || '').toLowerCase().includes(q);
+    return orderCodeMatch || clientNameMatch || clientCodeMatch || invoiceMatch || paymentMatch || itemsMatch || crmMatch;
   });
 
   const totalFacturado = orders.filter(o => o.isInvoiced).reduce((sum, o) => sum + (o.total || 0), 0);
@@ -583,7 +584,12 @@ export default function Ventas() {
                   filteredOrders.map(order => (
                     <tr key={order.id} className="hover:bg-blue-50/30 transition">
                       <td className="px-6 py-4 font-mono font-bold text-[#006EAD]">
-                        {order.orderCode}
+                        <div>{order.orderCode}</div>
+                        {order.originCrmTitle && (
+                          <span className="inline-block mt-1 text-[10px] bg-purple-50 text-purple-700 font-bold px-1.5 py-0.5 rounded border border-purple-200" title={`Generado desde Oportunidad CRM: ${order.originCrmTitle}`}>
+                            CRM: {order.originCrmTitle.length > 25 ? order.originCrmTitle.substring(0, 25) + '...' : order.originCrmTitle}
+                          </span>
+                        )}
                       </td>
                       <td className="px-6 py-4">
                         <div className="font-semibold text-gray-800">{order.clientName}</div>

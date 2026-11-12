@@ -340,6 +340,9 @@ const CrmDashboardView = () => {
     unitPrice: ''
   });
 
+  // Estado de transferencia a Módulo 2 (Ventas)
+  const [isTransferringOrder, setIsTransferringOrder] = useState(false);
+
   // Modal Emergente para Registrar Motivo de Venta Perdida (1 al 5)
   const [lostSaleModal, setLostSaleModal] = useState({
     isOpen: false,
@@ -859,8 +862,92 @@ const CrmDashboardView = () => {
     showToast(`✅ SKU marcado como COMPRADO.`);
   };
 
-  // Comprar TODOS los SKUs de la cotización
-  const handlePurchaseAllItems = () => {
+  // Transferir Cotización Aprobada a Módulo 2 (Ventas & Facturación) para emisión de factura por Cajera
+  const handleTransferToVentas = async (dealTarget = null, customItems = null) => {
+    const deal = dealTarget || selectedDeal;
+    if (!deal) return;
+
+    const currentQuote = deal.quote || { items: [] };
+    const itemsSource = customItems || currentQuote.items || [];
+    
+    // Tomar los SKUs comprados/aprobados (o los no perdidos)
+    let approvedItems = itemsSource.filter(it => it.status === 'comprado');
+    if (approvedItems.length === 0) {
+      approvedItems = itemsSource.filter(it => it.status !== 'perdido');
+    }
+
+    if (approvedItems.length === 0) {
+      alert('No hay SKUs aprobados para generar el pedido en Módulo 2 (Ventas).');
+      return;
+    }
+
+    setIsTransferringOrder(true);
+    try {
+      const payload = {
+        clientCode: deal.partnerCode || 'BP-001',
+        clientName: deal.company || 'Cliente Oportunidad CRM',
+        deliveryAddress: deal.quote?.deliveryAddress || (deal.quote?.deliveryMode === 'A Domicilio' ? 'Entrega a Domicilio' : 'Mostrador / Sucursal Central'),
+        paymentTerms: deal.quote?.paymentTerms || 'Contado',
+        deliveryMode: deal.quote?.deliveryMode === 'A Domicilio' ? 'logistica' : 'mostrador',
+        paymentMethod: deal.quote?.paymentTerms?.includes('Crédito') ? 'Crédito en Cuenta' : 'Efectivo',
+        status: 'Cotización', // Se registra en Ventas con estado Cotización para revisión y facturación de la Cajera
+        originDealId: deal.id,
+        originCrmTitle: deal.title,
+        items: approvedItems.map(it => ({
+          sku: it.sku,
+          description: it.name,
+          quantity: Number(it.quantity) || 1,
+          unitPrice: Number(it.unitPrice) || 0,
+          dispatchLocation: (it.name && it.name.toLowerCase().includes('rollo')) || it.category === 'Materia Prima' ? 'Bodega' : 'Caja'
+        }))
+      };
+
+      const res = await fetch('/api/ventas/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || 'Error al generar la orden en Módulo 2');
+      }
+
+      const createdOrder = await res.json();
+      const orderCode = createdOrder.orderCode;
+
+      // Registrar actividad automática de auditoría en la minuta
+      const newActivity = {
+        id: Date.now(),
+        contactType: 'Correo',
+        notes: `🚀 Cotización autorizada por el cliente. Se originó el Pedido de Venta ${orderCode} en Módulo 2 (Ventas & Facturación) para emisión de factura por Cajera. Monto Total: $${(createdOrder.total || 0).toLocaleString()}.`,
+        nextTask: 'Seguimiento a emisión de factura por Cajera en Módulo 2',
+        nextTaskDate: new Date().toISOString().split('T')[0],
+        registeredAt: new Date().toLocaleString('es-SV', { dateStyle: 'short', timeStyle: 'short' }),
+        registeredBy: deal.assignedTo || 'María Asesora'
+      };
+
+      const updatedActivities = [newActivity, ...(deal.activities || [])];
+      const updatedDeal = {
+        ...deal,
+        salesOrderCode: orderCode,
+        activities: updatedActivities
+      };
+
+      setSelectedDeal(updatedDeal);
+      setDeals(prev => prev.map(d => d.id === updatedDeal.id ? updatedDeal : d));
+      showToast(`🎉 ¡Éxito! Pedido ${orderCode} generado en Módulo 2 (Ventas & Facturación). La cajera ya puede emitir la factura.`);
+      return createdOrder;
+    } catch (error) {
+      console.error('Error transfiriendo orden a Ventas:', error);
+      alert('Error al transferir cotización a Ventas: ' + error.message);
+    } finally {
+      setIsTransferringOrder(false);
+    }
+  };
+
+  // Comprar TODOS los SKUs de la cotización y transferir automáticamente a Módulo 2
+  const handlePurchaseAllItems = async () => {
     const currentQuote = selectedDeal.quote || { items: [] };
     if (!currentQuote.items || currentQuote.items.length === 0) {
       alert('No hay SKUs en la cotización para comprar.');
@@ -881,7 +968,9 @@ const CrmDashboardView = () => {
 
     setSelectedDeal(updatedDeal);
     setDeals(prev => prev.map(d => d.id === updatedDeal.id ? updatedDeal : d));
-    showToast(`🎉 ¡Compra Total Aprobada! Todos los SKUs fueron marcados como comprados y la oportunidad pasó a GANADO.`);
+    
+    // Transferir automáticamente la orden al Módulo 2 de Ventas
+    await handleTransferToVentas(updatedDeal, updatedItems);
   };
 
   // Abrir Modal para Registrar Venta Perdida (Eliminar SKU o Rechazar Toda la Cotización)
@@ -1175,6 +1264,11 @@ const CrmDashboardView = () => {
                           {deal.quote && deal.quote.items && deal.quote.items.length > 0 && (
                             <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-100 flex items-center">
                               <i className="fas fa-boxes mr-1 text-[9px]"></i>{deal.quote.items.length} SKUs
+                            </span>
+                          )}
+                          {deal.salesOrderCode && (
+                            <span className="text-[10px] font-bold text-purple-700 bg-purple-50 px-1.5 py-0.5 rounded border border-purple-200 flex items-center" title={`Pedido ${deal.salesOrderCode} en Módulo 2`}>
+                              <i className="fas fa-receipt mr-1 text-[9px]"></i>{deal.salesOrderCode}
                             </span>
                           )}
                           {deal.quote && deal.quote.items && deal.quote.items.some(i => i.status === 'perdido') && (
@@ -1760,6 +1854,12 @@ const CrmDashboardView = () => {
                         {selectedDeal.partnerCode}
                       </span>
                     )}
+                    {selectedDeal.salesOrderCode && (
+                      <span className="ml-2 bg-purple-500/40 text-purple-200 border border-purple-300/40 text-[10px] font-bold px-2 py-0.5 rounded flex items-center">
+                        <i className="fas fa-receipt mr-1"></i>
+                        Pedido {selectedDeal.salesOrderCode} (Ventas)
+                      </span>
+                    )}
                   </p>
                 </div>
               </div>
@@ -2280,24 +2380,60 @@ const CrmDashboardView = () => {
                         Desglose de SKUs Solicitados ({selectedDeal.quote?.items?.length || 0})
                       </span>
                       
-                      {/* Acciones Masivas */}
-                      <div className="flex space-x-2">
-                        <button
-                          type="button"
-                          onClick={handlePurchaseAllItems}
-                          className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold shadow-2xs transition flex items-center space-x-1"
-                        >
-                          <i className="fas fa-check-double text-[10px]"></i>
-                          <span>Comprar Todos los SKUs</span>
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleOpenLostSaleModal('ALL')}
-                          className="px-2.5 py-1 bg-red-600 hover:bg-red-700 text-white rounded-lg text-xs font-bold shadow-2xs transition flex items-center space-x-1"
-                        >
-                          <i className="fas fa-ban text-[10px]"></i>
-                          <span>Rechazar Toda la Cotización</span>
-                        </button>
+                      {/* Acciones Masivas y Puente con Módulo 2 Ventas */}
+                      <div className="flex flex-wrap items-center gap-2">
+                        {selectedDeal.salesOrderCode ? (
+                          <div className="flex items-center space-x-2">
+                            <span className="bg-emerald-100 text-emerald-800 border border-emerald-300 px-2.5 py-1 rounded-lg text-xs font-bold flex items-center">
+                              <i className="fas fa-check-circle mr-1 text-emerald-600"></i>
+                              Pedido {selectedDeal.salesOrderCode} en Módulo 2
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => navigate('/app/workspace?phase=2&mod=ventas')}
+                              className="px-2.5 py-1 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-xs font-bold shadow-2xs transition flex items-center space-x-1"
+                              title="Abrir Módulo 2 (Ventas & Facturación) para facturar por Cajera"
+                            >
+                              <i className="fas fa-file-invoice-dollar text-[10px]"></i>
+                              <span>Ir a Facturar en Módulo 2 ➔</span>
+                            </button>
+                          </div>
+                        ) : (
+                          <>
+                            <button
+                              type="button"
+                              onClick={handlePurchaseAllItems}
+                              disabled={isTransferringOrder}
+                              className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-bold shadow-2xs transition flex items-center space-x-1 disabled:opacity-50"
+                              title="Autorizar todos los SKUs y transferir el pedido a Módulo 2 (Ventas)"
+                            >
+                              <i className="fas fa-check-double text-[10px]"></i>
+                              <span>{isTransferringOrder ? 'Generando Pedido...' : '✓ Comprar Todos los SKUs'}</span>
+                            </button>
+
+                            {quoteSummary.purchasedCount > 0 && (
+                              <button
+                                type="button"
+                                onClick={() => handleTransferToVentas()}
+                                disabled={isTransferringOrder}
+                                className="px-2.5 py-1 bg-[#006EAD] hover:bg-[#005587] text-white rounded-lg text-xs font-bold shadow-2xs transition flex items-center space-x-1 disabled:opacity-50"
+                                title="Transferir los SKUs autorizados a Módulo 2 de Ventas"
+                              >
+                                <i className="fas fa-paper-plane text-[10px]"></i>
+                                <span>{isTransferringOrder ? 'Transfiriendo...' : '🚀 Generar Pedido en Módulo 2'}</span>
+                              </button>
+                            )}
+
+                            <button
+                              type="button"
+                              onClick={() => handleOpenLostSaleModal('ALL')}
+                              className="px-2.5 py-1 bg-red-600 hover:bg-red-700 text-white rounded-lg text-xs font-bold shadow-2xs transition flex items-center space-x-1"
+                            >
+                              <i className="fas fa-ban text-[10px]"></i>
+                              <span>Rechazar Toda la Cotización</span>
+                            </button>
+                          </>
+                        )}
                       </div>
                     </div>
 
