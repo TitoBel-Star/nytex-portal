@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>ERP NyTEX — Módulo [1] Ventas & Facturación</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+    :root {
+      --primary: #0A2540;
+      --secondary: #006EAD;
+      --accent: #D97706;
+      --success: #059669;
+      --danger: #DC2626;
+      --text: #1E293B;
+      --text-muted: #64748B;
+      --bg-light: #F8FAFC;
+      --border: #E2E8F0;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: var(--text);
+      line-height: 1.55;
+      font-size: 9.2pt;
+      background-color: #FFFFFF;
+      padding: 0;
+    }
+
+    .cover-container {
+      padding: 35px 25px;
+      border-bottom: 4px solid var(--secondary);
+      margin-bottom: 25px;
+    }
+    .cover-badge {
+      display: inline-block;
+      background: #E0F2FE;
+      color: #0369A1;
+      font-size: 8.5pt;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 4px 12px;
+      border-radius: 6px;
+      margin-bottom: 12px;
+    }
+    .cover-title {
+      font-size: 22pt;
+      font-weight: 900;
+      color: var(--primary);
+      margin-bottom: 8px;
+    }
+    .cover-sub {
+      font-size: 11pt;
+      color: var(--text-muted);
+      line-height: 1.4;
+      margin-bottom: 20px;
+    }
+
+    .callout {
+      padding: 12px 16px;
+      border-radius: 6px;
+      margin: 14px 0;
+      font-size: 9pt;
+      line-height: 1.5;
+    }
+    .callout-info { background: #F0F9FF; border-left: 4px solid #0284C7; }
+    .callout-success { background: #F0FDF4; border-left: 4px solid #10B981; }
+    .callout-warning { background: #FFFBEB; border-left: 4px solid #D97706; }
+    .callout-danger { background: #FEF2F2; border-left: 4px solid #DC2626; }
+
+    h1 {
+      font-size: 14pt;
+      color: var(--primary);
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 6px;
+      margin-top: 25px;
+      margin-bottom: 12px;
+      page-break-after: avoid;
+    }
+    h2 {
+      font-size: 11.5pt;
+      color: var(--secondary);
+      margin-top: 18px;
+      margin-bottom: 8px;
+      page-break-after: avoid;
+    }
+    p {
+      margin-bottom: 10px;
+      text-align: justify;
+    }
+
+    .code-box {
+      background: #0F172A;
+      color: #E2E8F0;
+      font-family: 'JetBrains Mono', Consolas, monospace;
+      font-size: 8.2pt;
+      padding: 12px;
+      border-radius: 6px;
+      margin: 12px 0;
+      white-space: pre-wrap;
+      overflow-x: auto;
+      border-left: 4px solid var(--secondary);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 14px 0;
+      font-size: 8.8pt;
+      page-break-inside: avoid;
+    }
+    th {
+      background-color: var(--primary);
+      color: #FFFFFF;
+      font-weight: 700;
+      padding: 8px 10px;
+      text-align: left;
+      border: 1px solid #334155;
+    }
+    td {
+      padding: 7px 10px;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+    tr:nth-child(even) { background-color: var(--bg-light); }
+
+    .step-list {
+      margin-left: 20px;
+      margin-bottom: 12px;
+    }
+    .step-list li {
+      margin-bottom: 6px;
+      padding-left: 4px;
+    }
+    .toc-list {
+      margin-left: 20px;
+      list-style-type: decimal;
+      font-weight: 600;
+      color: var(--primary);
+      margin-bottom: 20px;
+    }
+    .toc-list li {
+      margin-bottom: 4px;
+    }
+    .page-break {
+      page-break-before: always;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="cover-container">
+    <div class="cover-badge">Fase 1: Starter (Núcleo Operativo Básico) • Área 1: Dirección Comercial</div>
+    <div class="cover-title">Módulo [1] — NyTEX Ventas & Facturación</div>
+    <div class="cover-sub">
+      <strong>Manual de Usuario Oficial y Guía Operativa Integral Tarea por Tarea</strong><br/>
+      Gestión del Ciclo Comercial Completo: Cotizaciones, Pedidos en Firme, Facturación Electrónica DTE, Descuento Automático de Stock y Pólizas Contables
+    </div>
+
+    <div class="callout callout-info">
+      <strong>FICHA TÉCNICA DE IMPLEMENTACIÓN EMPRESARIAL</strong><br/>
+      • <strong>Ecosistema:</strong> ERP NyTEX Versión 4.0<br/>
+      • <strong>Fase de Implementación:</strong> Fase 1: Starter (Núcleo Operativo Básico)<br/>
+      • <strong>Circuito Operativo:</strong> Order-to-Cash (O2C) / Lead-to-Order (L2O)<br/>
+      • <strong>Entidades Principales:</strong> Cotizaciones, Órdenes de Venta (OV-XXXX), Facturas CFDI / DTE, Clientes y Líneas de Pedido<br/>
+      • <strong>Rutas de Acceso:</strong> /app/ventas, /app/circuito-fase1<br/>
+      • <strong>Módulos Interconectados:</strong><br/>• [3] Inventario: Descuento inmediato de existencias físicas y reserva de stock comprometido.<br/>• [17] WMS: Disparo automático de la orden de preparación (Picking y Packing) al confirmar pedido.<br/>• [8] CxC: Generación de cuenta por cobrar, plazo de crédito y exigibilidad de pago al facturar.<br/>• [12] Contabilidad: Asiento automático de Póliza de Diario/Ingreso (Ingresos por Ventas, IVA Débito y Costo de Venta).<br/>
+      • <strong>Fecha de Emisión:</strong> Noviembre 2026 • Consultores NyT S.A. de C.V.
+    </div>
+  </div>
+
+  <div class="page-break"></div>
+
+  <h1>Índice de Contenido General</h1>
+  <ol class="toc-list">
+    <li>1. Definición, Objetivos y Función del Módulo [1] en el Ecosistema Comercial</li><li>2. Ubicación en el Macrocircuito Order-to-Cash (O2C)</li><li>3. Estructura de Pantallas, Vistas Operativas y Tarjetas KPI</li><li>4. Procedimiento Operativo N° 1: Captura de Nueva Cotización y Búsqueda Predictiva de SKUs</li><li>5. Procedimiento Operativo N° 2: Confirmación de Pedido y Disparo Automático a WMS [17]</li><li>6. Procedimiento Operativo N° 3: Facturación Electrónica (DTE) y Generación de Cartera en CxC [8]</li><li>7. Procedimiento Operativo N° 4: Tratamiento de Ventas de Mostrador y Clientes sin Registro Previo</li><li>8. Procedimiento Operativo N° 5: Anulaciones, Notas de Crédito y Reversión de Inventario</li><li>9. Matriz de Integración e Interconexión con [3] Inventario, [17] WMS, [8] CxC y [12] Contabilidad</li><li>10. Gobernanza Comercial, Segregación de Funciones (SoD) y Reglas de Auditoría</li>
+  </ol>
+
+  <h1>1. Definición, Objetivos y Función del Módulo [1]</h1>
+  <div class="callout callout-success">
+    <strong>PROPÓSITO Y VALOR ESTRATÉGICO: NYTEX VENTAS & FACTURACIÓN</strong><br/>
+    El Módulo [1] NyTEX Ventas & Facturación es el motor generador de ingresos de la empresa. Gestiona de manera centralizada el ciclo de ventas desde el primer contacto formal (cotización) hasta la conversión en pedido en firme y la posterior emisión del comprobante fiscal (Factura electrónica / DTE).<br/><br/>Al operar como núcleo de la Fase 1: Starter, permite una venta fluida tanto para clientes corporativos con crédito como para transacciones ágiles de mostrador (público en general), coordinando de forma automática a los almacenes y a la contabilidad.
+  </div>
+  <p>En la operación diaria, el personal de ventas necesita responder con agilidad a las cotizaciones de los clientes sin vender productos agotados ni aplicar precios incorrectos. El Módulo [1] resuelve esto integrando el catálogo en tiempo real con [3] Inventario, permitiendo consultar existencias disponibles en múltiples bodegas al momento de digitar cada partida.<br/><br/>Asimismo, elimina la duplicidad de captura: una vez que el cliente aprueba la cotización, con un solo clic el documento se transforma en Pedido Confirmado, enviando la notificación de despacho a [17] WMS y preparando la factura en [8] Cuentas por Cobrar.</p>
+
+  <h2>¿Qué ocurre si una empresa no adquiere o no utiliza el Módulo [1]?</h2>
+  <div class="callout callout-warning">
+    <strong>ANÁLISIS DE IMPACTO Y RIESGOS OPERATIVOS POR NO IMPLEMENTACIÓN</strong><br/>
+    Si la empresa no opera con el Módulo de Ventas centralizado:<br/>1. Venta a ciegas: Los vendedores comercializan productos sin stock, generando retrasos, quejas y cancelaciones costosas.<br/>2. Fugas de dinero y errores de precio: Cotizaciones manuales en Excel con márgenes erróneos o descuentos no autorizados.<br/>3. Facturación desfasada: Retrasos de días entre la entrega del producto y la emisión de la factura, retrasando el flujo de caja.<br/>4. Descuadre contable: El departamento de contabilidad debe capturar manualmente las pólizas de ventas, acumulando rezagos de semanas.
+  </div>
+
+  <h1>2. Mapa Comparativo de Circuitos y Ecosistema de Módulos NyTEX</h1>
+  <p>Dentro del circuito Order-to-Cash (O2C), el Módulo de Ventas actúa como el gatillo iniciador. Recibe oportunidades del CRM o solicitudes directas de clientes, compromete stock físico y orquesta la entrega logística y la cobranza financiera.</p>
+  <pre class="code-box">+-----------------------------------------------------------------------------------------+
+|                     CIRCUITO OPERATIVO ORDER-TO-CASH (O2C)                              |
++-----------------------------------------------------------------------------------------+
+|  [1] COTIZACIÓN / ORDEN  -->  [17] SURTIDO WMS  -->  [1] FACTURACIÓN  -->  [8] CxC / [12] POLIZA |
+|   - Seleccionar Cliente        - Picking Lector RF    - Timbrado DTE        - Cuenta x Cobrar   |
+|   - Partidas de SKUs           - Packing y Guía       - Rebaja Kardex [3]   - Póliza de Diario  |
++-----------------------------------------------------------------------------------------+</pre>
+
+  <h1>3. Estructura de Pantallas, Vistas Operativas y Tablero de Control (KPIs)</h1>
+  <p>La pantalla principal de NyTEX Ventas (/app/ventas) cuenta con una barra superior de KPIs en vivo, un selector de filtros rápidos (Todas, Cotizaciones, En Proceso, Entregadas, Facturadas) y un botón de acción principal [+ NUEVA ORDEN / COTIZACIÓN]. La tabla operativa despliega Folio, Cliente, Fecha, Total, Estado y Botones de Acción Rápida.</p>
+  <table>
+    <thead><tr><th>Indicador KPI</th><th>Fórmula / Valor</th><th>Propósito Operativo</th></tr></thead>
+    <tbody><tr><td>Ventas del Mes</td><td>Σ Facturas Emitidas (Mes)</td><td>Control de cumplimiento de cuota comercial del periodo</td></tr><tr><td>Pedidos Pendientes</td><td>Count(Órdenes en Proceso)</td><td>Monitoreo del cuello de botella en surtido y despacho</td></tr><tr><td>Tasa de Conversión</td><td>(Cotizaciones Vendidas / Total) * 100</td><td>Efectividad del equipo de ventas al cerrar propuestas</td></tr><tr><td>Ticket Promedio</td><td>Total Venta / Número de Facturas</td><td>Medición de volumen y venta cruzada por transacción</td></tr></tbody>
+  </table>
+
+  <h2>4. Procedimiento Operativo N° 1: Captura de Nueva Cotización y Búsqueda Predictiva de SKUs</h2>
+            <div class="callout callout-info">
+              <strong>REGLA OPERATIVA DE COTIZACIONES</strong><br/>
+              Toda cotización tiene una vigencia predeterminada de 15 días. Si el cliente no confirma en dicho periodo, el sistema libera la reserva preventiva de existencias.
+            </div>
+            <p>El vendedor inicia el proceso comercial capturando los requerimientos del cliente en el formulario oficial de orden.</p><ol class='step-list'><li>Hacer clic en el botón [+ NUEVA ORDEN / COTIZACIÓN] en la esquina superior derecha.</li><li>Seleccionar el Cliente en el menú desplegable. En Fase 1 (Starter), se seleccionan clientes precargados o el comodín BP-GEN (Venta Mostrador).</li><li>Ingresar la Dirección de Entrega y los Términos de Pago (Contado, Crédito 15 días, Crédito 30 días).</li><li>En la cuadrícula de partidas, escribir el nombre o código del producto. El buscador predictivo mostrará la existencia actual en bodega y el precio de lista.</li><li>Especificar la cantidad solicitada. El sistema calculará automáticamente Subtotal, IVA (13% / 16%) y Total.</li><li>Hacer clic en [Guardar como Cotización]. El sistema generará el folio oficial COT-XXXX.</li></ol>
+            <table>
+              <thead><tr><th>Campo del Formulario</th><th>Tipo de Dato</th><th>Validación y Regla de Negocio</th></tr></thead>
+              <tbody><tr><td>Cliente</td><td>Selector</td><td>Obligatorio. Valida si el cliente tiene crédito bloqueado por morosidad.</td></tr><tr><td>Términos de Pago</td><td>Selector</td><td>Define la fecha de vencimiento al momento de facturar.</td></tr><tr><td>SKU / Producto</td><td>Buscador Predictivo</td><td>Muestra existencias reales disponibles; alerta si cantidad excede stock.</td></tr><tr><td>Descuento (%)</td><td>Numérico</td><td>Máximo 10% para vendedores estándar; requiere supervisor si es mayor.</td></tr></tbody>
+            </table>
+            <pre class='code-box'>POST /api/ventas/ordenes
+Payload: { "clienteId": "CLI-1002", "terminoPago": "CREDITO_30", "partidas": [{"sku": "SKU-001", "cantidad": 10, "precio": 45.00}] }
+Response: 201 Created -> { "ordenId": "OV-2026-0891", "estado": "COTIZACION" }</pre><h2>5. Procedimiento Operativo N° 2: Confirmación de Pedido y Disparo a WMS [17]</h2>
+            <div class="callout callout-info">
+              <strong>COMPROMISO DE STOCK EN FIRME</strong><br/>
+              Al presionar Confirmar, el stock pasa de 'Disponible' a 'Comprometido'. Ningún otro vendedor podrá vender esas unidades.
+            </div>
+            <p>Cuando el cliente aprueba la propuesta formal, la orden debe transformarse en Pedido en Firme para surtido.</p><ol class='step-list'><li>Ubicar la cotización en la lista de órdenes bajo el filtro [Cotizaciones].</li><li>Hacer clic en el botón de acción [⚡ Confirmar ➔ WMS].</li><li>El sistema valida en milisegundos que aún exista stock suficiente en el almacén asignado.</li><li>El estado cambia inmediatamente a 'En Proceso' y se emite la orden de preparación digital hacia [17] WMS.</li><li>Se imprime o envía por correo la confirmación de pedido al cliente con fecha estimada de entrega.</li></ol><h2>6. Procedimiento Operativo N° 3: Facturación Electrónica (DTE / CFDI) y Generación de CxC [8]</h2>
+            <div class="callout callout-info">
+              <strong>TIMBRADO Y PÓLIZA CONTABLE INMEDIATA</strong><br/>
+              La emisión de la factura es irreversible. Descuenta el inventario físico en Kardex y genera la póliza automática en [12] Contabilidad.
+            </div>
+            <p>Al completarse el surtido o acordarse el despacho, se procede a emitir el comprobante tributario definitivo.</p><ol class='step-list'><li>Seleccionar la orden en estado 'Listo para Facturar' o 'Entregada'.</li><li>Hacer clic en el botón [🧾 Facturar ➔ CxC].</li><li>Confirmar la serie fiscal, el método de pago y el uso de comprobante fiscal.</li><li>El motor tributario de NyTEX sella digitalmente el DTE con el Ministerio de Hacienda / SAT.</li><li>El sistema genera la cuenta por cobrar en [8] CxC y asienta la Póliza de Diario en [12] Contabilidad.</li></ol><h2>7. Procedimiento Operativo N° 4: Tratamiento de Ventas de Mostrador (Público General)</h2><p>Para ventas de piso o mostrador sin registro de cliente previo:<br/>• Se selecciona el socio comodín: BP-GEN (Público en General / Venta Mostrador).<br/>• Términos de pago: Contado / Efectivo / Tarjeta.<br/>• La venta se liquida de inmediato, ingresando a caja de [10] Tesorería y cerrando el ciclo sin saldo pendiente en [8] CxC.</p><ol class='step-list'><li>Abrir formulario de orden y seleccionar BP-GEN.</li><li>Agregar los productos entregados al momento al comprador.</li><li>Seleccionar método de pago inmediato (Efectivo / Tarjeta).</li><li>Hacer clic en [Facturar y Cobrar Mostrador]. El ticket/factura se imprime y el stock se rebaja al instante.</li></ol>
+
+  <h1>8. Matriz de Integración e Interconexión con los Demás Módulos</h1>
+  <p>El Módulo [1] interactúa de forma continua y automatizada a través de la arquitectura orientada a eventos y transacciones atómicas del ERP NyTEX:</p>
+  <table>
+    <thead><tr><th>Módulo Origen</th><th>Evento Disparador</th><th>Módulo Destino</th><th>Impacto Operativo y Contable</th></tr></thead>
+    <tbody><tr><td>[1] Ventas</td><td>Confirmar Pedido</td><td>[17] WMS</td><td>Crea orden de picking; aparta stock físico en almacén.</td></tr><tr><td>[1] Ventas</td><td>Facturar ➔ CxC</td><td>[8] CxC</td><td>Registra saldo deudor a nombre del cliente con fecha de vencimiento.</td></tr><tr><td>[1] Ventas</td><td>Facturar ➔ CxC</td><td>[3] Inventario</td><td>Descarga unidades del Kardex permanente valorizado.</td></tr><tr><td>[1] Ventas</td><td>Facturar ➔ CxC</td><td>[12] Contabilidad</td><td>Póliza automática: Cargo a Clientes, Abono a Ventas e IVA Débito.</td></tr></tbody>
+  </table>
+
+  <h1>9. Gobernanza, Segregación de Funciones (SoD) y Mejores Prácticas</h1>
+  <p>El Módulo de Ventas exige segregación de funciones entre quienes cotizan, quienes autorizan descuentos especiales y quienes facturan fiscalmente. Ningún usuario puede anular una factura sin la clave de supervisión comercial.</p>
+  <table>
+    <thead><tr><th>Rol Operativo</th><th>Nivel de Permisos</th><th>Restricciones de Gobernanza</th></tr></thead>
+    <tbody><tr><td>Vendedor / Asesor</td><td>Crear Cotizaciones, Consultar Stock</td><td>No puede modificar precios mínimos ni autorizar crédito.</td></tr><tr><td>Supervisor Comercial</td><td>Aprobar Descuentos, Liberar Pedidos</td><td>Autoriza excepciones comerciales y pedidos por encima del límite.</td></tr><tr><td>Cajero / Facturador</td><td>Emitir Facturas DTE, Cobrar Mostrador</td><td>No puede alterar cantidades ni partidas ya aprobadas.</td></tr><tr><td>Auditor / Administrador</td><td>Acceso Total y Registro Inmutable</td><td>Visualiza bitácora completa de eventos en /app/seguridad.</td></tr></tbody>
+  </table>
+
+  <div class="callout callout-danger">
+    <strong>REGLAS DE ORO OPERATIVAS Y AUDITORÍA INMUTABLE</strong><br/>
+    1. Cero ventas en negativo: El sistema bloqueará cualquier confirmación si la existencia física es menor a la requerida.<br/>2. Descuentos auditados: Cualquier descuento que supere la matriz permitida requerirá código de autorización gerencial.<br/>3. Facturación sincronizada: No se emitirán facturas fiscales sin orden previa aprobada o registro de caja liquidado.
+  </div>
+
+</body>
+</html>

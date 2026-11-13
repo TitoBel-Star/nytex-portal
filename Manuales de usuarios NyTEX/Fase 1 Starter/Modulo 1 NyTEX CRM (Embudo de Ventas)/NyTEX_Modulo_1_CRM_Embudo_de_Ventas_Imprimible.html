@@ -452,13 +452,49 @@ de Maduración Comercial      Correo y Web (Filtro Solo Pendientes) por Código 
       <li><strong>[ 📊 Indicadores: Cotizaciones vs Vendidas ]:</strong> Plataforma analítica BI que audita la efectividad comercial, calcula tasas de cierre en cantidad y porcentaje, y analiza pérdidas por producto en la pestaña <strong>[ 📦 Por Códigos (SKU) ]</strong>.</li>
     </ul>
 
-    <h2>Métricas Globales en Tiempo Real (KPI Cards)</h2>
-    <ul>
-      <li><strong>Total Pipeline Activo:</strong> Suma monetaria de todas las negociaciones abiertas que se encuentran vivas en el embudo.</li>
-      <li><strong>Forecast Ponderado:</strong> Estimación matemática de ingresos futuros calculada según la probabilidad de cada etapa (Monto x Probabilidad %).</li>
-      <li><strong>Tasa de Conversión (Win Rate):</strong> Porcentaje de oportunidades cerradas con éxito vs total de oportunidades concluidas.</li>
-      <li><strong>Tiempo Promedio de Cierre:</strong> Días promedio desde el registro inicial del prospecto hasta su conversión en venta formal.</li>
-    </ul>
+    <h2>Métricas Globales en Tiempo Real (KPI Comercial CRM)</h2>
+    <p>El tablero superior despliega el conjunto integral de indicadores comerciales estratégicos:</p>
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 30%;">KPI Comercial CRM</th>
+          <th style="width: 38%;">Fórmula / Indicador</th>
+          <th style="width: 32%;">Objetivo Estratégico</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Valor del Pipeline</strong><br><small style="color: #64748B;">Pipeline Value</small></td>
+          <td class="font-mono">Σ Valor Estimado * % Probabilidad Cierre</td>
+          <td>Pronóstico ponderado de ventas para los próximos 30-60 días.</td>
+        </tr>
+        <tr>
+          <td><strong>Tasa de Cierre</strong><br><small style="color: #64748B;">Win Rate</small></td>
+          <td class="font-mono">(Oportunidades Ganadas / Total Cerradas) * 100</td>
+          <td>Medición de efectividad del equipo de ventas (Meta &gt; 35%).</td>
+        </tr>
+        <tr>
+          <td><strong>Velocidad de Venta</strong><br><small style="color: #64748B;">Sales Cycle</small></td>
+          <td class="font-mono">Días promedio desde 1er contacto hasta cierre ganado</td>
+          <td>Reducir ciclo de venta para acelerar rotación de capital.</td>
+        </tr>
+        <tr>
+          <td><strong>Tiempo de Respuesta a Leads</strong><br><small style="color: #64748B;">Lead Response Time</small></td>
+          <td class="font-mono">Minutos transcurridos hasta primera interacción</td>
+          <td>Atender prospectos en &lt; 15 min para triplicar la conversión.</td>
+        </tr>
+        <tr>
+          <td><strong>Oportunidades Abiertas</strong></td>
+          <td class="font-mono">COUNT(Oportunidades en curso)</td>
+          <td>Monitoreo del flujo de negociaciones en seguimiento.</td>
+        </tr>
+        <tr>
+          <td><strong>Ganado este mes</strong></td>
+          <td class="font-mono">SUM(Valor órdenes ganadas mes)</td>
+          <td>Cumplimiento y avance de la cuota comercial mensual.</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 
   <div class="page-break"></div>

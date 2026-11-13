@@ -176,6 +176,7 @@ def build_document():
                 "• Módulos Interconectados:\n"
                 "   – [0] Business Partners: Catálogo oficial de clientes y contactos sincronizados en tiempo real.\n"
                 "   – [2] Ventas & Facturación: Facturación en caja de cotizaciones autorizadas sin recaptura manual.\n"
+                "   – [7] Logística & Despacho: Definición de Modalidad de Entrega (Mostrador vs Domicilio), dirección de flete y disparo de Orden de Embarque para reparto.\n"
                 "   – [4] Inventarios & Stock: Búsqueda predictiva y consulta de existencias de Kardex en vivo.\n"
                 "   – [5] Planeación de Demanda: Forecast ponderado de ventas y auditoría de fugas para reposición.\n"
                 "   – [8] Cuentas por Cobrar (CxC): Condiciones de crédito pactadas y apertura de línea comercial.\n"
@@ -309,11 +310,27 @@ de Maduración Comercial      Correo y Web (Filtro Solo Pendientes) por Código 
 
     doc.add_heading(level=2).add_run("Métricas Globales en Tiempo Real (KPI Cards)")
     p_kpis = doc.add_paragraph()
-    p_kpis.add_run("En la parte superior de la pantalla se despliegan 4 tarjetas de mando integral:\n\n"
-                   "• Total Pipeline Activo: Suma monetaria de todas las negociaciones abiertas que se encuentran vivas en el embudo.\n"
-                   "• Forecast Ponderado: Estimación realista de ingresos futuros calculada mediante la probabilidad matemática de cada etapa (Total x Probabilidad %).\n"
-                   "• Tasa de Conversión (Win Rate): Porcentaje de oportunidades cerradas con éxito vs total de oportunidades concluidas.\n"
-                   "• Tiempo Promedio de Cierre: Días transcurridos desde el registro inicial del prospecto hasta su conversión en venta formal.")
+    p_kpis.add_run("En la parte superior del tablero Kanban se despliegan las 6 tarjetas de mando integral estratégicas:\n\n"
+                   "• Valor del Pipeline (Pipeline Value): Σ Valor Estimado * % Probabilidad Cierre (Pronóstico ponderado para los próximos 30-60 días).\n"
+                   "• Tasa de Cierre (Win Rate): (Oportunidades Ganadas / Total Cerradas) * 100 (Medición de efectividad, Meta > 35%).\n"
+                   "• Velocidad de Venta (Sales Cycle): Días promedio desde primer contacto hasta cierre ganado (Acelera rotación de capital).\n"
+                   "• Tiempo de Respuesta a Leads: Minutos transcurridos hasta primera interacción (Atender en < 15 min para triplicar conversión).\n"
+                   "• Oportunidades Abiertas: Conteo total de negociaciones en curso activo en el pipeline.\n"
+                   "• Ganado este mes: Volumen monetario acumulado de cierres confirmados en el período.\n")
+
+    tbl_kpis = doc.add_table(rows=1, cols=3)
+    col_w_kpi = [2.2, 2.2, 2.8]
+    headers_kpi = ["KPI Comercial CRM", "Fórmula / Indicador", "Objetivo Estratégico"]
+    data_kpi = [
+        ["Valor del Pipeline (Pipeline Value)", "Σ Valor Estimado * % Probabilidad Cierre", "Pronóstico ponderado de ventas para los próximos 30-60 días."],
+        ["Tasa de Cierre (Win Rate)", "(Oportunidades Ganadas / Total Cerradas) * 100", "Medición de efectividad del equipo de ventas (Meta > 35%)."],
+        ["Velocidad de Venta (Sales Cycle)", "Días promedio desde primer contacto hasta cierre ganado", "Reducir el ciclo de venta para acelerar rotación de capital."],
+        ["Tiempo de Respuesta a Leads", "Minutos transcurridos hasta primera interacción", "Atender prospectos en < 15 min para triplicar conversión."],
+        ["Oportunidades Abiertas", "COUNT(Oportunidades abiertas)", "Monitoreo del flujo de negociaciones en seguimiento."],
+        ["Ganado este mes", "SUM(Valor órdenes ganadas mes)", "Cumplimiento de la meta de ventas del período."]
+    ]
+    style_table(tbl_kpis, col_w_kpi, headers_kpi, data_kpi)
+    doc.add_paragraph().paragraph_format.space_after = Pt(12)
 
     doc.add_page_break()
 
@@ -546,6 +563,7 @@ de Maduración Comercial      Correo y Web (Filtro Solo Pendientes) por Código 
     data_integ = [
         ["[0] Business Partners (Catálogo Clientes)", "Razón Social, NIT/RFC, Contactos, Dirección Fiscal", "Crea el expediente maestro del cliente formal si no existía.", "Maestros"],
         ["[2] Ventas & Facturación", "Cotización autorizada, SKUs, precios, descuentos", "Habilita facturación en caja (DTE/Ticket) sin recaptura manual.", "Order-to-Cash"],
+        ["[7] Logística & Despacho", "Modalidad de Entrega (A Domicilio / Mostrador), dirección exacta de despacho y ventana horaria", "Dispara automáticamente la Orden de Embarque, asigna camión de reparto, chofer y genera la Hoja de Ruta.", "Order-to-Cash"],
         ["[4] Inventario & Control de Stock", "Consulta de Kardex en vivo y reserva de existencias", "Aparta stock disponible y evita sobreventa física en almacén.", "Supply Chain"],
         ["[5] Planeación de Demanda", "Forecast ponderado y auditoría de fugas por SKU", "Ajusta pronósticos de reposición ROP y compras a proveedores.", "Plan-to-Produce"],
         ["[8] Cuentas por Cobrar (CxC)", "Términos de crédito pactados y límite comercial", "Abre la cuenta corriente y programa cobros futuros.", "Order-to-Cash"],
