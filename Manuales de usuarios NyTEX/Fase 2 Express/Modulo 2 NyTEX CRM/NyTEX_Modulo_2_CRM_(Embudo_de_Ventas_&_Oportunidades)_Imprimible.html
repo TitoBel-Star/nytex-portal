@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>ERP NyTEX — Módulo [2] CRM (Embudo de Ventas & Oportunidades)</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+    :root {
+      --primary: #0A2540;
+      --secondary: #006EAD;
+      --accent: #D97706;
+      --success: #059669;
+      --danger: #DC2626;
+      --text: #1E293B;
+      --text-muted: #64748B;
+      --bg-light: #F8FAFC;
+      --border: #E2E8F0;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: var(--text);
+      line-height: 1.55;
+      font-size: 9.2pt;
+      background-color: #FFFFFF;
+      padding: 0;
+    }
+
+    .cover-container {
+      padding: 35px 25px;
+      border-bottom: 4px solid var(--secondary);
+      margin-bottom: 25px;
+    }
+    .cover-badge {
+      display: inline-block;
+      background: #E0F2FE;
+      color: #0369A1;
+      font-size: 8.5pt;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 4px 12px;
+      border-radius: 6px;
+      margin-bottom: 12px;
+    }
+    .cover-title {
+      font-size: 22pt;
+      font-weight: 900;
+      color: var(--primary);
+      margin-bottom: 8px;
+    }
+    .cover-sub {
+      font-size: 11pt;
+      color: var(--text-muted);
+      line-height: 1.4;
+      margin-bottom: 20px;
+    }
+
+    .callout {
+      padding: 12px 16px;
+      border-radius: 6px;
+      margin: 14px 0;
+      font-size: 9pt;
+      line-height: 1.5;
+    }
+    .callout-info { background: #F0F9FF; border-left: 4px solid #0284C7; }
+    .callout-success { background: #F0FDF4; border-left: 4px solid #10B981; }
+    .callout-warning { background: #FFFBEB; border-left: 4px solid #D97706; }
+    .callout-danger { background: #FEF2F2; border-left: 4px solid #DC2626; }
+
+    h1 {
+      font-size: 14pt;
+      color: var(--primary);
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 6px;
+      margin-top: 25px;
+      margin-bottom: 12px;
+      page-break-after: avoid;
+    }
+    h2 {
+      font-size: 11.5pt;
+      color: var(--secondary);
+      margin-top: 18px;
+      margin-bottom: 8px;
+      page-break-after: avoid;
+    }
+    p {
+      margin-bottom: 10px;
+      text-align: justify;
+    }
+
+    .code-box {
+      background: #0F172A;
+      color: #E2E8F0;
+      font-family: 'JetBrains Mono', Consolas, monospace;
+      font-size: 8.2pt;
+      padding: 12px;
+      border-radius: 6px;
+      margin: 12px 0;
+      white-space: pre-wrap;
+      overflow-x: auto;
+      border-left: 4px solid var(--secondary);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 14px 0;
+      font-size: 8.8pt;
+      page-break-inside: avoid;
+    }
+    th {
+      background-color: var(--primary);
+      color: #FFFFFF;
+      font-weight: 700;
+      padding: 8px 10px;
+      text-align: left;
+      border: 1px solid #334155;
+    }
+    td {
+      padding: 7px 10px;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+    tr:nth-child(even) { background-color: var(--bg-light); }
+
+    .step-list {
+      margin-left: 20px;
+      margin-bottom: 12px;
+    }
+    .step-list li {
+      margin-bottom: 6px;
+      padding-left: 4px;
+    }
+    .toc-list {
+      margin-left: 20px;
+      list-style-type: decimal;
+      font-weight: 600;
+      color: var(--primary);
+      margin-bottom: 20px;
+    }
+    .toc-list li {
+      margin-bottom: 4px;
+    }
+    .page-break {
+      page-break-before: always;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="cover-container">
+    <div class="cover-badge">Fase 2: Express (Operación y Cadena Completa) • Área 1: Dirección Comercial</div>
+    <div class="cover-title">Módulo [2] — NyTEX CRM (Embudo de Ventas & Oportunidades)</div>
+    <div class="cover-sub">
+      <strong>Manual de Usuario Oficial y Guía Operativa Integral Tarea por Tarea</strong><br/>
+      Gestión del Pipeline Comercial Kanban, Calificación BANT de Oportunidades, Bandeja Omnicanal (WhatsApp/Email), Selección de Despacho (Sala vs Domicilio) y Conversión Ágil a Pedidos en [1] Ventas y [7] Logística
+    </div>
+
+    <div class="callout callout-info">
+      <strong>FICHA TÉCNICA DE IMPLEMENTACIÓN EMPRESARIAL</strong><br/>
+      • <strong>Ecosistema:</strong> ERP NyTEX Versión 4.0<br/>
+      • <strong>Fase de Implementación:</strong> Fase 2: Express (Operación y Cadena Completa)<br/>
+      • <strong>Circuito Operativo:</strong> Lead-to-Order (L2O)<br/>
+      • <strong>Entidades Principales:</strong> Leads / Prospectos, Oportunidades (OPP-XXXX), Pipeline Kanban, Actividades de Seguimiento, Calificación BANT, Cotización Kardex y Modalidad de Despacho<br/>
+      • <strong>Rutas de Acceso:</strong> /app/crm, /app/circuito-fase2<br/>
+      • <strong>Módulos Interconectados:</strong><br/>• [1] Ventas: Conversión directa con 1 clic de oportunidad ganada en cotización oficial u orden de venta precargada sin recaptura de datos.<br/>• [7] Logística y Despachos: Selección y registro del método de entrega acordado con el cliente (Despacho en Sala de Ventas / Retiro en Tienda vs. Entrega a Domicilio). Al ganar la oportunidad y generar el pedido hacia [1] Ventas, se transfieren automáticamente la dirección exacta de entrega, el contacto de recepción, georreferenciación y restricciones de horario para la programación de la ruta de despacho.<br/>• [6] Business Partners: Registro automático del nuevo cliente en el catálogo maestro al ganar la oportunidad o enlace con expediente comercial existente.<br/>• [3] Inventario: Verificación preliminar de disponibilidad de existencias físicas y reserva de stock para SKUs cotizados en etapas avanzadas del embudo.<br/>• [19] Dashboards: Alimentación en tiempo real de métricas de efectividad comercial, velocidad de ventas y pronósticos ponderados de facturación.<br/>
+      • <strong>Fecha de Emisión:</strong> Noviembre 2026 • Consultores NyT S.A. de C.V.
+    </div>
+  </div>
+
+  <div class="page-break"></div>
+
+  <h1>Índice de Contenido General</h1>
+  <ol class="toc-list">
+    <li>1. Definición, Objetivos y Función del Módulo [2] en la Prospección y Cierre Comercial</li><li>2. El Circuito Lead-to-Order (L2O), la Metodología BANT y Modalidad de Despacho (Sala vs Domicilio)</li><li>3. Estructura de Pantallas, Tablero de 6 KPIs en Vivo y Selector de Tres Vistas</li><li>4. Procedimiento Operativo N° 1: Captación, Registro, Calificación BANT y Modalidad de Entrega</li><li>5. Procedimiento Operativo N° 2: Búsqueda Predictiva de SKUs de Kardex y Estimación de Monto</li><li>6. Procedimiento Operativo N° 3: Gestión Visual del Embudo Kanban, Bitácora y Registro de Actividades</li><li>7. Procedimiento Operativo N° 4: Bandeja Omnicanal Integrada (WhatsApp, Instagram, Web y Correo)</li><li>8. Procedimiento Operativo N° 5: Conversión Directa de Oportunidad Ganada a Orden en [1] Ventas y Despacho en [7] Logística</li><li>9. Matriz de Integración con [1] Ventas, [7] Logística, [6] Business Partners y [19] Dashboards</li><li>10. Gobernanza del Pipeline, Metas Comerciales y Auditoría de Actividades de Asesores</li>
+  </ol>
+
+  <h1>1. Definición, Objetivos y Función del Módulo [2]</h1>
+  <div class="callout callout-success">
+    <strong>PROPÓSITO Y VALOR ESTRATÉGICO: NYTEX CRM (EMBUDO DE VENTAS & OPORTUNIDADES)</strong><br/>
+    El Módulo [2] NyTEX CRM (Customer Relationship Management) estructura y profesionaliza la gestión integral de prospectos y oportunidades de negocio de la empresa. Organiza el embudo de ventas en etapas visuales transparentes (Prospecto, Contacto Inicial, Propuesta Comercial, Negociación y Cierre Ganado/Perdido).<br/><br/>Evita que las oportunidades se enfríen por falta de seguimiento, centraliza los chats de WhatsApp y correos en una bandeja unificada, incorpora cotización predictiva de productos desde Kardex y permite pronosticar los ingresos futuros (Sales Forecast) con datos objetivos en tiempo real.
+  </div>
+  <p>Antes de llegar a una orden de venta formal en Ventas [1], existe un proceso riguroso de maduración del prospecto. El CRM aplica el estándar de calificación BANT (Presupuesto, Autoridad, Necesidad y Tiempo) para que los vendedores concentren su energía en prospectos de alto potencial.<br/><br/>Asimismo, desde la misma oportunidad se define la modalidad de despacho: si el cliente retirará su producto en Sala de Ventas o si requerirá Entrega a Domicilio, capturando la dirección y contacto para enlazar automáticamente con [7] Logística.<br/><br/>Al ganarse un trato, el asesor presiona un botón y el sistema transfiere de inmediato todos los datos del cliente, los productos cotizados y los detalles de entrega directamente a [1] Ventas y [7] Logística sin recapturar información.</p>
+
+  <h2>¿Qué ocurre si una empresa no adquiere o no utiliza el Módulo [2]?</h2>
+  <div class="callout callout-warning">
+    <strong>ANÁLISIS DE IMPACTO Y RIESGOS OPERATIVOS POR NO IMPLEMENTACIÓN</strong><br/>
+    No contar con el módulo de CRM ocasiona:<br/>1. Pérdida masiva de prospectos por falta de seguimiento oportuno en libretas o celulares personales.<br/>2. Fuga de clientes al renunciar vendedores que se llevan las carteras de prospectos en sus teléfonos.<br/>3. Ceguera de la Dirección Comercial sobre cuántas cotizaciones se pierden y por qué motivos estratégicos.<br/>4. Errores y demoras en entregas al no coordinar con anticipación entre ventas y logística si el pedido requiere flete a domicilio.<br/>5. Pronósticos de ventas inexactos basados en suposiciones en lugar de probabilidades matemáticas de cierre.
+  </div>
+
+  <h1>2. Mapa Comparativo de Circuitos y Ecosistema de Módulos NyTEX</h1>
+  <p>En el circuito comercial global, el CRM es el extremo frontal. Atrae el interés del mercado, lo califica, lo nutre mediante interacciones registradas, define la modalidad de entrega y lo transfiere listo para facturar a [1] Ventas y despachar a través de [7] Logística.</p>
+  <pre class="code-box">+---------------------------------------------------------------------------------------------------------+
+|                               CIRCUITO OPERATIVO LEAD-TO-ORDER (L2O)                                    |
++---------------------------------------------------------------------------------------------------------+
+|  LEAD ENTRANTE ➔ CALIFICACIÓN BANT ➔ ESTIMACIÓN KARDEX ➔ MODALIDAD ENTREGA ➔ CIERRE GANADO             |
+|   - WhatsApp/Web        - Presupuesto/Plazo     - SKUs predictivos    - [Sala de Ventas]      - Facturación [1]  |
+|   - Bandeja Omnicanal   - Scoring Comercial     - Precios de lista    - [Despacho Domicilio] ➔- Ruta Logística[7]|
++---------------------------------------------------------------------------------------------------------+</pre>
+
+  <h1>3. Estructura de Pantallas, Vistas Operativas y Tablero de Control (KPIs)</h1>
+  <p>La consola de CRM (/app/crm) dispone de una barra superior de métricas estratégicas en tiempo real (KPI Comercial CRM) y 3 vistas operativas clave:<br/>• Tarjetas KPI en Vivo:<br/>  1. [OPORTUNIDADES ABIERTAS]: Conteo de negociaciones activas vivas en el embudo.<br/>  2. [VALOR DEL PIPELINE]: Pronóstico ponderado de ventas (Σ Valor Estimado × % Probabilidad Cierre).<br/>  3. [TASA DE CIERRE]: Porcentaje de éxito comercial ((Ganadas / Cerradas) × 100, Meta > 35%).<br/>  4. [VELOCIDAD DE VENTA]: Sales Cycle, días promedio transcurridos desde el primer contacto hasta el cierre ganado.<br/>  5. [TIEMPO DE RESPUESTA A LEADS]: Minutos transcurridos hasta primera interacción del asesor (Meta < 15 min para triplicar conversión).<br/>  6. [GANADO ESTE MES]: Monto acumulado de ventas ganadas en el período actual frente a la cuota mensual.<br/>• Selector de Tres Vistas Principales:<br/>  1. [📌 Tablero Kanban]: Tablero visual interactivo donde las oportunidades se mueven a través de 5 etapas de maduración.<br/>  2. [📥 Bandeja Omnicanal]: Centro unificado de mensajería (WhatsApp Business, Instagram Direct, Correo y Web) con filtro 'Solo Pendientes'.<br/>  3. [📊 Indicadores: Cotizaciones vs Vendidas (BI)]: Plataforma analítica con pestaña al tope [📦 Por Códigos (SKU)], auditoría de cotizados vs vendidos vs no vendidos y 5 causales de descarte.</p>
+  <table>
+    <thead><tr><th>KPI Comercial CRM</th><th>Fórmula / Indicador</th><th>Objetivo Estratégico</th></tr></thead>
+    <tbody><tr><td>Valor del Pipeline (Pipeline Value)</td><td>Σ Valor Estimado * % Probabilidad Cierre</td><td>Pronóstico ponderado de ventas para los próximos 30-60 días.</td></tr><tr><td>Tasa de Cierre (Win Rate)</td><td>(Oportunidades Ganadas / Total Cerradas) * 100</td><td>Medición de efectividad del equipo de ventas (Meta > 35%).</td></tr><tr><td>Velocidad de Venta (Sales Cycle)</td><td>Días promedio desde primer contacto hasta cierre ganado</td><td>Reducir el ciclo de venta para acelerar la rotación de capital.</td></tr><tr><td>Tiempo de Respuesta a Leads</td><td>Minutos transcurridos hasta primera interacción</td><td>Atender prospectos en < 15 min para triplicar la conversión.</td></tr><tr><td>Oportunidades Abiertas</td><td>COUNT(Oportunidades activas en el embudo)</td><td>Monitoreo del flujo de negociaciones en seguimiento comercial.</td></tr><tr><td>Ganado este mes</td><td>SUM(Valor órdenes ganadas mes actual)</td><td>Cumplimiento y avance de la cuota de facturación mensual.</td></tr></tbody>
+  </table>
+
+  <h2>4. Procedimiento Operativo N° 1: Captación, Registro, Calificación BANT y Modalidad de Despacho</h2>
+            <div class="callout callout-info">
+              <strong>METODOLOGÍA BANT Y LOGÍSTICA DE ENTREGA EN NYTEX</strong><br/>
+              Evalúa 4 factores clave: Budget (Presupuesto), Authority (Tomador de decisión), Need (Dolor operativo a resolver) y Timing (Horizonte de compra). Además, define desde el inicio si la cotización contempla Despacho en Sala de Ventas o Entrega a Domicilio hacia [7] Logística.
+            </div>
+            <p>El asesor registra la oportunidad comercial capturada desde canales digitales o prospección directa:<br/>1. Acceder a /app/crm y pulsar el botón [+ NUEVA OPORTUNIDAD].<br/>2. Seleccionar si es un cliente existente desde catálogo maestro de [6] Business Partners o registrar nuevo prospecto.<br/>3. Capturar Empresa / Razón Social, Nombre de Contacto, Teléfono, Correo Electrónico y Sucursal asignada.<br/>4. Completar el bloque BANT: calificar Presupuesto, Nivel de Autoridad, Necesidad/Urgencia y Plazo de Adquisición.<br/>5. Definir la Modalidad de Despacho: seleccionar 'Despacho en Sala de Ventas' (retiro en sucursal) o 'Despacho a Domicilio' (capturando dirección exacta, municipio, contacto de recepción y notas para [7] Logística).<br/>6. Presionar [Crear Oportunidad] para posicionar la tarjeta en la columna inicial del embudo Kanban.</p><ol class='step-list'><li>Pulsar [+ NUEVA OPORTUNIDAD] en el encabezado del Tablero Kanban.</li><li>Vincular con [6] Business Partners o ingresar datos generales del prospecto.</li><li>Calificar los 4 criterios de maduración BANT (Presupuesto, Autoridad, Necesidad, Tiempo).</li><li>Seleccionar la Modalidad de Entrega (Sala de Ventas o Domicilio) con datos de destino.</li><li>Confirmar la creación; el trato ingresa al pipeline con cálculo automático de probabilidad inicial.</li></ol><h2>5. Procedimiento Operativo N° 2: Búsqueda Predictiva de SKUs de Kardex y Estimación de Monto</h2><p>Para respaldar el valor monetario de la oportunidad con productos reales del catálogo:<br/>1. En el formulario de la oportunidad o edición de tarjeta, desplegar el buscador predictivo de artículos.<br/>2. Escribir el código SKU o nombre del producto; el sistema consulta en tiempo real las existencias disponibles en [3] Inventario.<br/>3. Indicar las cantidades requeridas; el sistema aplica los precios de lista y calcula subtotales, IVA y total estimado.<br/>4. El monto total de la oportunidad se actualiza automáticamente alimentando las tarjetas de Valor del Pipeline y Forecast.</p><ol class='step-list'><li>Abrir la oportunidad y posicionarse en la sección 'Cotización de Productos'.</li><li>Escribir las primeras letras del código SKU o nombre en el buscador interactivo.</li><li>Seleccionar el artículo sugerido con su precio unitario de lista.</li><li>Indicar la cantidad solicitada; el sistema verifica existencias en almacenes.</li><li>Guardar la cotización estimada; el monto ponderado impacta el Forecast del CRM.</li></ol><h2>6. Procedimiento Operativo N° 3: Gestión Visual del Embudo Kanban y Avance de Etapas con Bitácora</h2><p>Conforme avanza la relación comercial, la oportunidad se traslada entre las 5 etapas del embudo:<br/>• Prospecto ➔ Contacto Inicial ➔ Propuesta Comercial ➔ Negociación ➔ Cierre (Ganada / Perdida).<br/>• Cada avance exige registrar en la bitácora la actividad realizada (Llamada, Reunión, Envío de Muestras, Correo).<br/>• Se audita en tiempo real la Velocidad de Venta (Sales Cycle) y el cumplimiento del SLA de respuesta (< 15 min).</p><ol class='step-list'><li>Arrastrar la tarjeta de la oportunidad hacia la siguiente columna del embudo.</li><li>Capturar en el modal emergente el tipo de actividad realizada y los compromisos acordados.</li><li>Programar la fecha y hora del próximo seguimiento en la agenda del vendedor.</li><li>Monitorear los indicadores en vivo en el encabezado del tablero.</li></ol><h2>7. Procedimiento Operativo N° 4: Bandeja Omnicanal Integrada (WhatsApp, Instagram, Web y Correo)</h2><p>Centraliza en una sola pantalla todos los mensajes entrantes de clientes potenciales:<br/>1. Ingresar a la pestaña [📥 Bandeja Omnicanal] en el encabezado de /app/crm.<br/>2. Utilizar el filtro por defecto 'Solo Pendientes' para atender prospectos con mayor urgencia y cumplir la meta de Tiempo de Respuesta (< 15 min).<br/>3. Responder vía chat interactivo con plantillas de mensajes rápidos.<br/>4. Con 1 clic, convertir la conversación en una Oportunidad Kanban o resolverla registrando el motivo.</p><ol class='step-list'><li>Hacer clic en la vista [📥 Bandeja Omnicanal].</li><li>Filtrar por 'Solo Pendientes' para priorizar mensajes sin atender.</li><li>Abrir la conversación, revisar el canal de origen (WhatsApp, Instagram, etc.) y responder al prospecto.</li><li>Pulsar [Convertir a Oportunidad] para ingresar automáticamente al embudo de ventas.</li></ol><h2>8. Procedimiento Operativo N° 5: Cierre Ganado, Conversión a Pedido en [1] Ventas y Pase a [7] Logística</h2><p>Al aceptar el cliente la cotización final, se activa el cierre formal del circuito Lead-to-Order:<br/>1. Arrastrar la oportunidad a la etapa 'Ganada' o presionar [Marcar como Ganada].<br/>2. Pulsar el botón de acción [Convertir a Orden en Ventas].<br/>3. El sistema genera de forma autónoma una Orden de Venta en [1] Ventas & Facturación con todos los SKUs, precios y cliente precargados.<br/>4. Si la oportunidad fue clasificada con 'Despacho a Domicilio', se dispara la notificación automática al Módulo [7] Logística & Despachos con la dirección, georreferenciación y contacto de entrega para programación de ruta y flete.<br/>5. Si fue clasificada con 'Sala de Ventas', el pedido queda programado para retiro inmediato en mostrador.</p><ol class='step-list'><li>Mover la oportunidad a la columna 'Cierre Ganado'.</li><li>Pulsar [Convertir a Orden en Ventas].</li><li>Verificar la orden generada en el Módulo [1] Ventas lista para facturar.</li><li>Comprobar el pase automático a [7] Logística en caso de despacho a domicilio.</li></ol>
+
+  <h1>9. Matriz de Integración e Interconexión con los Demás Módulos</h1>
+  <p>El Módulo [2] interactúa de forma continua y automatizada a través de la arquitectura orientada a eventos y transacciones atómicas del ERP NyTEX:</p>
+  <table>
+    <thead><tr><th>Módulo Origen</th><th>Evento Disparador</th><th>Módulo Destino</th><th>Impacto Operativo y Contable</th></tr></thead>
+    <tbody><tr><td>[2] CRM</td><td>Oportunidad Ganada</td><td>[1] Ventas</td><td>Genera orden de venta precargada lista para confirmación de pedido y facturación.</td></tr><tr><td>[2] CRM</td><td>Selección 'Despacho a Domicilio'</td><td>[7] Logística</td><td>Transmite automáticamente la dirección de entrega, contacto y requerimientos de transporte.</td></tr><tr><td>[2] CRM</td><td>Oportunidad Ganada</td><td>[6] Business Partners</td><td>Da de alta al cliente en el catálogo maestro si no existía o actualiza su expediente comercial.</td></tr><tr><td>[2] CRM</td><td>Etapa de Negociación</td><td>[3] Inventario</td><td>Verificación de existencias en almacenes para validar factibilidad de despacho inmediato.</td></tr><tr><td>[2] CRM</td><td>Actualización de Etapas</td><td>[19] Dashboards</td><td>Actualiza en vivo el embudo visual, velocidad de ventas y el forecast ponderado.</td></tr></tbody>
+  </table>
+
+  <h1>10. Gobernanza, Segregación de Funciones (SoD) y Mejores Prácticas</h1>
+  <p>La cartera de prospectos es propiedad patrimonial de la empresa. Ninguna oportunidad puede ser eliminada del sistema; si un negocio no prospera, debe marcarse obligatoriamente como 'Cerrada Perdida' seleccionando uno de los 5 motivos estratégicos de fuga comercial (Precio Alto, Marca, Falta de Existencias, Falta de Crédito o Mal Servicio). Esta disciplina alimenta el Business Intelligence para auditorías de efectividad comercial.</p>
+  <table>
+    <thead><tr><th>Rol en CRM</th><th>Permisos Operativos</th><th>Restricciones de Gobernanza</th></tr></thead>
+    <tbody><tr><td>Asesor de Ventas</td><td>Crear y Gestionar sus Propias Oportunidades, Bandeja Omnicanal</td><td>No puede ver oportunidades de otros asesores sin previa autorización.</td></tr><tr><td>Supervisor Comercial</td><td>Reasignar Oportunidades, Auditar Bitácora, Aprobar Descuentos</td><td>Supervisa el avance del equipo, cuotas mensuales y cumplimiento de SLAs.</td></tr><tr><td>Director Comercial</td><td>Acceso Total a Forecast, BI de Pérdidas, Configuración de Etapas</td><td>Define cuotas de venta, metas de Win Rate y políticas de comisiones.</td></tr></tbody>
+  </table>
+
+  <div class="callout callout-danger">
+    <strong>REGLAS DE ORO OPERATIVAS Y AUDITORÍA INMUTABLE</strong><br/>
+    1. Cero prospectos en el aire: Todo contacto comercial debe capturarse en el CRM en las primeras 2 horas.<br/>2. Atención inmediata (< 15 min): Los leads entrantes por WhatsApp o Web deben atenderse dentro de los primeros 15 minutos para triplicar la probabilidad de cierre.<br/>3. Definición de entrega desde el origen: Toda oportunidad debe especificar si el cliente retirará en Sala de Ventas o requerirá Despacho a Domicilio para coordinar a tiempo con [7] Logística.<br/>4. Motivo de pérdida obligatorio: No se permite archivar negociaciones no concretadas sin catalogar la causa de descarte.<br/>5. Bitácora viva: Toda oportunidad activa debe tener una interacción registrada en los últimos 7 días hábiles.
+  </div>
+
+</body>
+</html>
