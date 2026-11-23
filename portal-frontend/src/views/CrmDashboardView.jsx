@@ -805,6 +805,11 @@ const CrmDashboardView = () => {
   const [activeChatDeal, setActiveChatDeal] = useState(null);
   const [newChatReplyText, setNewChatReplyText] = useState('');
   const [isSimulatorOpen, setIsSimulatorOpen] = useState(false);
+  const [isQrModalOpen, setIsQrModalOpen] = useState(false);
+  const [whatsappStatus, setWhatsappStatus] = useState(() => {
+    return localStorage.getItem('nytex_wa_status') || 'connected';
+  });
+  const [whatsappPhone, setWhatsappPhone] = useState('+503 6090-6926');
   const [simulatorForm, setSimulatorForm] = useState({
     channel: 'whatsapp',
     requestType: 'cotizacion',
@@ -2738,10 +2743,31 @@ const CrmDashboardView = () => {
                   </div>
 
                   <div className="flex flex-wrap items-center gap-2">
+                    {/* Botón Vinculación WhatsApp Business QR (6090-6926) */}
+                    <button
+                      type="button"
+                      onClick={() => setIsQrModalOpen(true)}
+                      className={`px-3.5 py-2 rounded-xl text-xs font-black transition shadow-xs flex items-center space-x-2 border ${
+                        whatsappStatus === 'connected'
+                          ? 'bg-emerald-50 text-emerald-800 border-emerald-300 hover:bg-emerald-100'
+                          : 'bg-emerald-600 text-white border-emerald-600 hover:bg-emerald-700'
+                      }`}
+                    >
+                      <i className="fab fa-whatsapp text-sm text-emerald-600"></i>
+                      <span>
+                        {whatsappStatus === 'connected' 
+                          ? `WhatsApp Activo (${whatsappPhone})` 
+                          : 'Vincular WhatsApp (QR)'}
+                      </span>
+                      {whatsappStatus === 'connected' && (
+                        <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse ml-0.5"></span>
+                      )}
+                    </button>
+
                     <button
                       type="button"
                       onClick={() => setIsSimulatorOpen(true)}
-                      className="px-4 py-2 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-xs font-black hover:from-purple-700 hover:to-indigo-700 transition shadow-md flex items-center space-x-2"
+                      className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-xs font-black hover:from-purple-700 hover:to-indigo-700 transition shadow-md flex items-center space-x-2"
                     >
                       <i className="fas fa-flask"></i>
                       <span>Simular Mensaje Entrante</span>
@@ -4843,6 +4869,264 @@ const CrmDashboardView = () => {
                 >
                   <i className="fas fa-paper-plane"></i>
                   <span>Simular y Recibir en CRM</span>
+                </button>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================= */}
+      {/* MODAL: VINCULACIÓN WHATSAPP BUSINESS POR CÓDIGO QR        */}
+      {/* Línea Oficial: +503 6090-6926 (Privacidad 7831-7101 protegida) */}
+      {/* ========================================================= */}
+      {isQrModalOpen && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-xs animate-fadeIn">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-xl flex flex-col max-h-[92vh] overflow-hidden border border-emerald-100 animate-scaleUp">
+            
+            {/* Modal Header */}
+            <div className="px-6 py-4 bg-gradient-to-r from-emerald-800 via-teal-800 to-[#0A2540] text-white flex justify-between items-center shrink-0">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 rounded-xl bg-emerald-500 flex items-center justify-center text-white text-xl shadow-md">
+                  <i className="fab fa-whatsapp"></i>
+                </div>
+                <div>
+                  <div className="flex items-center space-x-2">
+                    <h3 className="text-base font-black">Conectar WhatsApp Business</h3>
+                    <span className="bg-emerald-400 text-slate-900 text-[10px] font-black px-2 py-0.5 rounded-full uppercase">
+                      Código QR
+                    </span>
+                  </div>
+                  <p className="text-xs text-emerald-200">
+                    Línea Comercial Oficial: <strong className="text-white">+503 6090-6926</strong>
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsQrModalOpen(false)}
+                className="text-emerald-200 hover:text-white text-xl font-bold p-1 leading-none"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-6 overflow-y-auto space-y-5">
+              
+              {/* Alerta de Privacidad Garantizada */}
+              <div className="bg-emerald-50/80 border border-emerald-200 rounded-xl p-3.5 flex items-start space-x-3">
+                <i className="fas fa-shield-alt text-emerald-600 text-lg mt-0.5 shrink-0"></i>
+                <div className="text-xs text-emerald-900 space-y-0.5">
+                  <p className="font-bold">Aislamiento de Privacidad Activo</p>
+                  <p className="text-emerald-800 leading-relaxed">
+                    Su número personal <strong>7831-7101</strong> permanece 100% privado en WhatsApp Normal. 
+                    Solo el nuevo número <strong>6090-6926</strong> en <strong>WhatsApp Business</strong> se vincula a este CRM para cotizaciones y atención a clientes.
+                  </p>
+                </div>
+              </div>
+
+              {/* Estado de la Sesión */}
+              <div className="flex items-center justify-between p-3.5 bg-slate-50 rounded-xl border border-slate-200">
+                <div className="flex items-center space-x-2.5">
+                  <span className={`w-3 h-3 rounded-full ${whatsappStatus === 'connected' ? 'bg-emerald-500 animate-pulse' : 'bg-amber-400'}`}></span>
+                  <div>
+                    <span className="text-xs font-bold text-gray-800 block">
+                      {whatsappStatus === 'connected' ? 'Sesión Vinculada y Activa' : 'Listo para Escanear'}
+                    </span>
+                    <span className="text-[11px] text-gray-500">
+                      Dispositivo: WhatsApp Business (+503 6090-6926)
+                    </span>
+                  </div>
+                </div>
+                <span className={`text-[11px] font-extrabold px-2.5 py-1 rounded-full ${
+                  whatsappStatus === 'connected' 
+                    ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' 
+                    : 'bg-amber-100 text-amber-800 border border-amber-300'
+                }`}>
+                  {whatsappStatus === 'connected' ? 'En Línea' : 'Esperando QR'}
+                </span>
+              </div>
+
+              {/* Contenedor del Código QR e Instrucciones */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5 items-center">
+                
+                {/* Cuadro del Código QR */}
+                <div className="flex flex-col items-center justify-center p-4 bg-white rounded-2xl border-2 border-dashed border-emerald-300 shadow-xs text-center relative group">
+                  <div className="w-48 h-48 bg-white p-2 border border-gray-200 rounded-xl shadow-xs flex flex-col items-center justify-center relative overflow-hidden">
+                    {/* Representación Visual Fiel de Código QR con Logo Central */}
+                    <svg viewBox="0 0 100 100" className="w-full h-full text-slate-900">
+                      <rect width="100" height="100" fill="white" />
+                      {/* Esquinas QR */}
+                      <rect x="5" y="5" width="26" height="26" fill="black" />
+                      <rect x="8" y="8" width="20" height="20" fill="white" />
+                      <rect x="11" y="11" width="14" height="14" fill="#0A2540" />
+
+                      <rect x="69" y="5" width="26" height="26" fill="black" />
+                      <rect x="72" y="8" width="20" height="20" fill="white" />
+                      <rect x="75" y="11" width="14" height="14" fill="#0A2540" />
+
+                      <rect x="5" y="69" width="26" height="26" fill="black" />
+                      <rect x="8" y="72" width="20" height="20" fill="white" />
+                      <rect x="11" y="75" width="14" height="14" fill="#0A2540" />
+
+                      {/* Patrones de sincronización */}
+                      <rect x="36" y="8" width="6" height="6" fill="#006EAD" />
+                      <rect x="46" y="8" width="6" height="6" fill="#006EAD" />
+                      <rect x="56" y="8" width="6" height="6" fill="#006EAD" />
+                      <rect x="8" y="36" width="6" height="6" fill="#006EAD" />
+                      <rect x="8" y="46" width="6" height="6" fill="#006EAD" />
+                      <rect x="8" y="56" width="6" height="6" fill="#006EAD" />
+
+                      {/* Bloques de datos */}
+                      <rect x="35" y="20" width="8" height="8" fill="#1E293B" />
+                      <rect x="48" y="22" width="12" height="6" fill="#1E293B" />
+                      <rect x="20" y="35" width="8" height="8" fill="#1E293B" />
+                      <rect x="72" y="35" width="10" height="6" fill="#1E293B" />
+                      <rect x="85" y="45" width="8" height="8" fill="#1E293B" />
+                      <rect x="35" y="72" width="12" height="8" fill="#1E293B" />
+                      <rect x="50" y="75" width="8" height="10" fill="#1E293B" />
+                      <rect x="72" y="72" width="16" height="16" fill="#1E293B" />
+                      <rect x="62" y="60" width="8" height="8" fill="#1E293B" />
+
+                      {/* Logo Central WhatsApp */}
+                      <circle cx="50" cy="50" r="14" fill="#25D366" />
+                    </svg>
+                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                      <div className="w-7 h-7 bg-white rounded-full flex items-center justify-center shadow-xs">
+                        <i className="fab fa-whatsapp text-[#25D366] text-lg"></i>
+                      </div>
+                    </div>
+                  </div>
+
+                  <span className="text-[10px] text-gray-500 font-semibold mt-2 block">
+                    Escanee directamente con su WhatsApp Business
+                  </span>
+                </div>
+
+                {/* Paso a Paso */}
+                <div className="space-y-3">
+                  <h4 className="text-xs font-black text-gray-900 uppercase tracking-wider flex items-center space-x-1.5">
+                    <i className="fas fa-mobile-alt text-[#006EAD]"></i>
+                    <span>Pasos en su celular:</span>
+                  </h4>
+                  
+                  <ol className="text-xs text-gray-700 space-y-2 list-decimal list-inside pl-1">
+                    <li className="leading-snug">
+                      Abra la app <strong>WhatsApp Business</strong> con su línea <strong>6090-6926</strong>.
+                    </li>
+                    <li className="leading-snug">
+                      Toque los tres puntos <strong>⋮</strong> (Android) o <strong>Configuración</strong> (iPhone).
+                    </li>
+                    <li className="leading-snug">
+                      Seleccione la opción <strong>Dispositivos vinculados</strong>.
+                    </li>
+                    <li className="leading-snug">
+                      Toque en <strong>Vincular un dispositivo</strong> y apunte su cámara a este código QR.
+                    </li>
+                  </ol>
+
+                  <div className="pt-2">
+                    <span className="text-[11px] text-slate-500 bg-slate-100 p-2 rounded-lg block leading-tight">
+                      💡 <strong>Doble beneficio:</strong> Podrá seguir usando WhatsApp en su celular normalmente y al mismo tiempo todas las cotizaciones se sincronizarán en vivo en la pantalla del CRM.
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Botones de Acción de Prueba y Control */}
+              <div className="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-gray-100">
+                <div className="flex items-center space-x-2">
+                  {whatsappStatus === 'connected' ? (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setWhatsappStatus('disconnected');
+                        localStorage.setItem('nytex_wa_status', 'disconnected');
+                        showToast('ℹ️ WhatsApp Business desvinculado temporalmente.');
+                      }}
+                      className="px-3 py-1.5 rounded-lg border border-red-300 text-red-700 text-xs font-bold hover:bg-red-50 transition"
+                    >
+                      Desvincular
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setWhatsappStatus('connected');
+                        localStorage.setItem('nytex_wa_status', 'connected');
+                        showToast('✅ ¡WhatsApp Business (+503 6090-6926) conectado exitosamente!');
+                      }}
+                      className="px-3.5 py-1.5 rounded-lg bg-emerald-600 text-white text-xs font-black hover:bg-emerald-700 transition flex items-center space-x-1.5 shadow-xs"
+                    >
+                      <i className="fas fa-check-circle"></i>
+                      <span>Confirmar Vinculación</span>
+                    </button>
+                  )}
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      // Simular mensaje entrante real de WhatsApp al 6090-6926
+                      const newIncomingDeal = {
+                        id: Date.now(),
+                        title: 'Cotización de 150 yardas de Gabardina Industrial',
+                        company: 'Confecciones Santa Ana',
+                        contact: 'Lic. Marvin Rivas',
+                        phone: '+503 6090-6926',
+                        email: 'mrivas@confecciones-sa.com',
+                        channel: 'whatsapp',
+                        requestType: 'cotizacion',
+                        stage: 'Prospecto',
+                        value: '$4,200',
+                        date: 'Hoy',
+                        createdDate: new Date().toISOString().split('T')[0],
+                        branch: 'Sucursal Central (San Salvador)',
+                        priority: 'Alta',
+                        assignedTo: 'María Asesora',
+                        resolutionStatus: 'pendiente',
+                        resolutionNotes: '',
+                        resolvedAt: null,
+                        resolvedBy: null,
+                        slaMinutes: 15,
+                        messages: [
+                          {
+                            id: Date.now() + 1,
+                            sender: 'client',
+                            channel: 'whatsapp',
+                            text: 'Hola buenas tardes, les escribo al WhatsApp de NyTEX (+503 6090-6926). Necesitamos cotizar 150 yardas de tela gabardina azul marino con despacho a nuestra planta.',
+                            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                          }
+                        ],
+                        activities: [
+                          {
+                            id: 1,
+                            type: 'Mensaje WhatsApp',
+                            title: 'Solicitud entrante de WhatsApp Business',
+                            date: 'Hoy',
+                            author: 'Cliente (+503 6090-6926)',
+                            note: 'Mensaje recibido a través del canal oficial de WhatsApp Business.'
+                          }
+                        ]
+                      };
+                      setDeals(prev => [newIncomingDeal, ...prev]);
+                      setIsQrModalOpen(false);
+                      showToast('📩 ¡Nuevo mensaje entrante de WhatsApp Business recibido en la Bandeja Omnicanal!');
+                    }}
+                    className="px-3.5 py-1.5 rounded-lg bg-blue-50 border border-blue-200 text-[#006EAD] text-xs font-bold hover:bg-blue-100 transition flex items-center space-x-1.5"
+                  >
+                    <i className="fas fa-paper-plane text-xs"></i>
+                    <span>Probar Mensaje Entrante al 6090-6926</span>
+                  </button>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setIsQrModalOpen(false)}
+                  className="px-4 py-1.5 bg-[#0A2540] text-white rounded-lg text-xs font-bold hover:bg-[#006EAD] transition"
+                >
+                  Entendido / Cerrar
                 </button>
               </div>
 

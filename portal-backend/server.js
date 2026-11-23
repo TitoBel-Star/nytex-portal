@@ -616,6 +616,28 @@ app.get('/api/crm/webhook/omnichannel', (req, res) => {
   });
 });
 
+// Estado de la sesión WhatsApp Business QR
+let whatsappBusinessSession = {
+  connected: true,
+  phoneNumber: '+503 6090-6926',
+  personalNumberProtected: '+503 7831-7101',
+  businessName: 'NyTEX CRM Omnichannel',
+  channel: 'whatsapp_business_qr',
+  status: 'online',
+  linkedAt: new Date().toISOString()
+};
+
+app.get('/api/crm/whatsapp/status', (req, res) => {
+  res.json({ success: true, session: whatsappBusinessSession });
+});
+
+app.post('/api/crm/whatsapp/toggle', (req, res) => {
+  const { connected } = req.body;
+  whatsappBusinessSession.connected = connected !== undefined ? connected : !whatsappBusinessSession.connected;
+  whatsappBusinessSession.status = whatsappBusinessSession.connected ? 'online' : 'offline';
+  res.json({ success: true, message: 'Estado actualizado', session: whatsappBusinessSession });
+});
+
 app.post('/api/crm/webhook/omnichannel', async (req, res) => {
   try {
     const { channel, requestType, contactName, phone, email, messageText, title } = req.body;
