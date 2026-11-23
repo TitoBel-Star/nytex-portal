@@ -806,6 +806,10 @@ const CrmDashboardView = () => {
   const [newChatReplyText, setNewChatReplyText] = useState('');
   const [isSimulatorOpen, setIsSimulatorOpen] = useState(false);
   const [isQrModalOpen, setIsQrModalOpen] = useState(false);
+  const [isNewWhatsAppModalOpen, setIsNewWhatsAppModalOpen] = useState(false);
+  const [newWaTargetPhone, setNewWaTargetPhone] = useState('+503 7831-7101');
+  const [newWaClientName, setNewWaClientName] = useState('Mi Teléfono Personal (Prueba)');
+  const [newWaMessage, setNewWaMessage] = useState('Hola, este es un mensaje de prueba enviado desde NyTEX CRM.');
   const [whatsappStatus, setWhatsappStatus] = useState(() => {
     return localStorage.getItem('nytex_wa_status') || 'connected';
   });
@@ -2764,6 +2768,16 @@ const CrmDashboardView = () => {
                       )}
                     </button>
 
+                    {/* Botón Enviar WhatsApp Directo */}
+                    <button
+                      type="button"
+                      onClick={() => setIsNewWhatsAppModalOpen(true)}
+                      className="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black transition shadow-xs flex items-center space-x-1.5"
+                    >
+                      <i className="fab fa-whatsapp text-sm"></i>
+                      <span>Enviar a WhatsApp</span>
+                    </button>
+
                     <button
                       type="button"
                       onClick={() => setIsSimulatorOpen(true)}
@@ -4530,6 +4544,18 @@ const CrmDashboardView = () => {
               </div>
 
               <div className="flex items-center space-x-2">
+                {activeChatDeal.phone && (
+                  <a
+                    href={`https://wa.me/${activeChatDeal.phone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent('Hola ' + (activeChatDeal.contact || activeChatDeal.company) + ', le saludamos de NyTEX respecto a su solicitud de cotización.')}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-black px-3 py-1.5 rounded-lg transition flex items-center space-x-1.5 shadow-xs"
+                    title="Abrir chat directo en WhatsApp"
+                  >
+                    <i className="fab fa-whatsapp text-sm"></i>
+                    <span>Abrir en WhatsApp</span>
+                  </a>
+                )}
                 {(activeChatDeal.resolutionStatus || 'pendiente') === 'pendiente' ? (
                   <button
                     type="button"
@@ -5128,6 +5154,202 @@ const CrmDashboardView = () => {
                 >
                   Entendido / Cerrar
                 </button>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================= */}
+      {/* MODAL: ENVIAR MENSAJE DIRECTO DE WHATSAPP                 */}
+      {/* ========================================================= */}
+      {isNewWhatsAppModalOpen && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-xs animate-fadeIn">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg flex flex-col max-h-[92vh] overflow-hidden border border-emerald-100 animate-scaleUp">
+            
+            {/* Header */}
+            <div className="px-6 py-4 bg-gradient-to-r from-emerald-800 to-[#0A2540] text-white flex justify-between items-center shrink-0">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 rounded-xl bg-emerald-500 flex items-center justify-center text-white text-xl shadow-md">
+                  <i className="fab fa-whatsapp"></i>
+                </div>
+                <div>
+                  <h3 className="text-base font-black">Enviar Mensaje de WhatsApp</h3>
+                  <p className="text-xs text-emerald-200">
+                    Línea Emisora: <strong>WhatsApp Business (+503 6090-6926)</strong>
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsNewWhatsAppModalOpen(false)}
+                className="text-emerald-200 hover:text-white text-xl font-bold p-1 leading-none"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Body */}
+            <div className="p-6 overflow-y-auto space-y-4">
+              
+              {/* Botones de sugerencia rápida de número */}
+              <div>
+                <label className="block text-xs font-black text-gray-700 uppercase mb-1.5">
+                  1. Destinatario del Mensaje
+                </label>
+                <div className="flex flex-wrap gap-2 mb-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setNewWaTargetPhone('+503 7831-7101');
+                      setNewWaClientName('Mi Celular Personal (7831-7101)');
+                      setNewWaMessage('¡Hola! Este es un mensaje de prueba enviado desde el CRM de NyTEX a mi WhatsApp personal.');
+                    }}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition border flex items-center space-x-1.5 ${
+                      newWaTargetPhone.includes('7831') 
+                        ? 'bg-emerald-50 border-emerald-500 text-emerald-800 ring-2 ring-emerald-300' 
+                        : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
+                    }`}
+                  >
+                    <i className="fas fa-user-check text-emerald-600"></i>
+                    <span>Probar a mi número (7831-7101)</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setNewWaTargetPhone('+503 ');
+                      setNewWaClientName('Cliente');
+                      setNewWaMessage('Estimado cliente, le saludamos de NyTEX para compartirle la información de su cotización.');
+                    }}
+                    className="px-3 py-1.5 rounded-lg text-xs font-bold bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 transition"
+                  >
+                    <i className="fas fa-building text-blue-600"></i>
+                    <span>Número de Cliente Nuevo</span>
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <span className="text-[11px] text-gray-500 font-bold block mb-1">Nombre / Empresa:</span>
+                    <input
+                      type="text"
+                      value={newWaClientName}
+                      onChange={(e) => setNewWaClientName(e.target.value)}
+                      placeholder="Ej: Roberto Silva / Apex"
+                      className="w-full text-xs border border-gray-300 rounded-lg p-2 font-medium focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                    />
+                  </div>
+                  <div>
+                    <span className="text-[11px] text-gray-500 font-bold block mb-1">Número de WhatsApp:</span>
+                    <input
+                      type="text"
+                      value={newWaTargetPhone}
+                      onChange={(e) => setNewWaTargetPhone(e.target.value)}
+                      placeholder="+503 7XXX-XXXX"
+                      className="w-full text-xs border border-gray-300 rounded-lg p-2 font-mono font-bold text-emerald-800 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Mensaje */}
+              <div>
+                <label className="block text-xs font-black text-gray-700 uppercase mb-1.5">
+                  2. Mensaje a Enviar
+                </label>
+                <textarea
+                  rows={3}
+                  value={newWaMessage}
+                  onChange={(e) => setNewWaMessage(e.target.value)}
+                  placeholder="Escriba aquí el mensaje para el cliente..."
+                  className="w-full text-xs border border-gray-300 rounded-lg p-2.5 leading-relaxed focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                />
+              </div>
+
+              {/* Acciones de envío */}
+              <div className="pt-2 border-t border-gray-100 flex flex-col sm:flex-row justify-between items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setIsNewWhatsAppModalOpen(false)}
+                  className="px-4 py-2 border border-gray-300 rounded-lg text-xs font-bold text-gray-600 hover:bg-gray-100 transition w-full sm:w-auto"
+                >
+                  Cancelar
+                </button>
+
+                <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-end">
+                  {/* Opción 1: Abrir WhatsApp Web con el mensaje pre-cargado */}
+                  <a
+                    href={`https://wa.me/${newWaTargetPhone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(newWaMessage)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => {
+                      setIsNewWhatsAppModalOpen(false);
+                      showToast(`💬 Abriendo chat de WhatsApp para ${newWaTargetPhone}...`);
+                    }}
+                    className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-black transition shadow-md flex items-center justify-center space-x-1.5 w-full sm:w-auto"
+                  >
+                    <i className="fab fa-whatsapp text-sm"></i>
+                    <span>Abrir y Enviar en WhatsApp</span>
+                  </a>
+
+                  {/* Opción 2: Registrar en el CRM */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const cleanPhone = newWaTargetPhone.trim();
+                      const newDeal = {
+                        id: Date.now(),
+                        title: `Conversación WhatsApp con ${newWaClientName}`,
+                        company: newWaClientName,
+                        contact: newWaClientName,
+                        phone: cleanPhone,
+                        email: '',
+                        channel: 'whatsapp',
+                        requestType: 'consulta',
+                        stage: 'Prospecto',
+                        value: '$0',
+                        date: 'Hoy',
+                        createdDate: new Date().toISOString().split('T')[0],
+                        branch: 'Sucursal Central (San Salvador)',
+                        priority: 'Media',
+                        assignedTo: 'Carlos Méndez',
+                        resolutionStatus: 'pendiente',
+                        resolutionNotes: '',
+                        resolvedAt: null,
+                        resolvedBy: null,
+                        slaMinutes: 15,
+                        messages: [
+                          {
+                            id: Date.now() + 1,
+                            sender: 'agent',
+                            channel: 'whatsapp',
+                            text: newWaMessage,
+                            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                          }
+                        ],
+                        activities: [
+                          {
+                            id: 1,
+                            type: 'Mensaje Saliente WhatsApp',
+                            title: `Mensaje enviado al ${cleanPhone}`,
+                            date: 'Hoy',
+                            author: 'Carlos Méndez',
+                            note: newWaMessage
+                          }
+                        ]
+                      };
+                      setDeals(prev => [newDeal, ...prev]);
+                      setIsNewWhatsAppModalOpen(false);
+                      showToast(`✅ Conversación registrada en la Bandeja Omnicanal para seguimiento.`);
+                    }}
+                    className="px-3.5 py-2 bg-[#0A2540] hover:bg-[#006EAD] text-white rounded-lg text-xs font-bold transition flex items-center justify-center space-x-1 w-full sm:w-auto"
+                  >
+                    <i className="fas fa-inbox text-xs"></i>
+                    <span>Registrar en CRM</span>
+                  </button>
+                </div>
               </div>
 
             </div>
