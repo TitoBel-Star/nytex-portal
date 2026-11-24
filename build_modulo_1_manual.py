@@ -203,7 +203,7 @@ def build_document():
         "6. Procedimiento Operativo N° 3: Gestión Visual del Embudo (Pipeline Kanban) y Maduración de Etapas",
         "7. Procedimiento Operativo N° 4: Historial de Actividades, Bitácora Comercial y Seguimiento",
         "8. Procedimiento Operativo N° 5: Integración Comercial y Facturación en Caja en NyTEX Ventas [2]",
-        "9. Procedimiento Operativo N° 6: Bandeja Omnicanal Integrada (WhatsApp, Instagram, Correo y Web)",
+        "9. Procedimiento Operativo N° 6: Bandeja Omnicanal Integrada, WhatsApp Business (+503 6090-6926) y Blindaje de Privacidad",
         "10. Procedimiento Operativo N° 7: Tablero Analítico BI de Cotizaciones Generadas vs Vendidas y Pérdidas por Códigos",
         "11. Matriz de Interconexión e Impacto con los Demás Módulos del Ecosistema NyTEX",
         "12. Buenas Prácticas Comerciales, Segregación de Funciones y Gobernanza del Pipeline"
@@ -452,17 +452,62 @@ de Maduración Comercial      Correo y Web (Filtro Solo Pendientes) por Código 
     # SECCIÓN 9: BANDEJA OMNICANAL INTEGRADA
     # -------------------------------------------------------------
     h9 = doc.add_heading(level=1)
-    r9 = h9.add_run("9. Procedimiento Operativo N° 6: Bandeja Omnicanal Integrada (WhatsApp, Instagram, Correo y Web)")
+    r9 = h9.add_run("9. Procedimiento Operativo N° 6: Bandeja Omnicanal Integrada, WhatsApp Business y Blindaje de Privacidad")
     r9.font.name = "Arial"
     r9.font.color.rgb = RGBColor(10, 37, 64)
 
     add_callout(doc, "ARQUITECTURA DE INTEGRACIÓN OMNICANAL CENTRALIZADA",
                 "La Bandeja Omnicanal de NyTEX CRM conecta de manera transparente y bidireccional los canales digitales de atención externa "
-                "(WhatsApp Business Cloud API, Instagram Graph API, buzones de Correo Electrónico y Web Chat) mediante un Gateway unificado de Webhooks "
+                "(WhatsApp Business, Instagram Graph API, buzones de Correo Electrónico y Web Chat) mediante un Gateway unificado de Webhooks "
                 "en la ruta backend '/api/crm/webhook/omnichannel'.\n\n"
                 "Cada interacción de un prospecto genera en milisegundos una solicitud formal en el CRM, permitiendo a los ejecutivos responder directamente "
                 "desde el sistema sin necesidad de consultar teléfonos personales o cuentas dispersas en redes sociales.",
                 bg_hex="FAF5FF", border_hex="9333EA")
+
+    doc.add_heading(level=2).add_run("Configuración de Líneas Telefónicas y Blindaje de Privacidad (Cero Desvío)")
+    p_lineas = doc.add_paragraph()
+    p_lineas.add_run("En la operación comercial moderna de NyTEX, la empresa establece una segregación física y lógica absoluta entre las comunicaciones de negocios y las personales:\n\n"
+                     "• Línea Comercial Oficial de la Empresa (+503 6090-6926):\n"
+                     "  – Destinada exclusivamente a la aplicación WhatsApp Business corporativa y conectada a la Bandeja Omnicanal de NyTEX CRM.\n"
+                     "  – Todos los clientes, prospectos y cotizaciones interactúan con este número oficial.\n\n"
+                     "• Línea Personal Protegida y Aislada (+503 7831-7101):\n"
+                     "  – Canal privado del titular en la aplicación WhatsApp convencional (WhatsApp Messenger).\n"
+                     "  – 100% blindada e invisible para el CRM y los clientes de la empresa.\n\n"
+                     "• Garantía Técnica de Aislamiento y No-Desvío:\n"
+                     "  – WhatsApp Messenger y WhatsApp Business operan como dos aplicaciones y cuentas telefónicas totalmente independientes a nivel de sistema operativo y protocolo de red.\n"
+                     "  – Por diseño técnico, ningún mensaje enviado por un cliente al número comercial (+503 6090-6926) se desviará jamás al número personal (+503 7831-7101) ni a su WhatsApp normal.\n"
+                     "  – La privacidad personal del usuario está completamente resguardada.")
+
+    doc.add_heading(level=2).add_run("Procedimiento de Vinculación por Código QR (Opción A)")
+    p_qr = doc.add_paragraph()
+    p_qr.add_run("Para conectar la línea comercial de WhatsApp Business (+503 6090-6926) a NyTEX CRM mediante vinculación segura por código QR:\n\n"
+                 "1. En el encabezado de la Bandeja Omnicanal de NyTEX CRM, pulse el botón de estado '📱 Conectar WhatsApp / QR'.\n"
+                 "2. El sistema desplegará una ventana modal con el Código QR de vinculación y el estado en tiempo real (🟢 Conectado / 🔴 Desconectado).\n"
+                 "3. En el teléfono celular donde está activo el número +503 6090-6926, abra WhatsApp Business.\n"
+                 "4. Ingrese a Menú / Configuración > Dispositivos vinculados > Vincular un dispositivo.\n"
+                 "5. Apunte la cámara del celular hacia la pantalla del CRM para escanear el código QR.\n"
+                 "6. En milisegundos, NyTEX confirmará la vinculación activa y comenzará a recibir y despachar mensajes en tiempo real.")
+
+    doc.add_heading(level=2).add_run("Recepción Simultánea de Prospectos (Doble Entrada en Tiempo Real)")
+    p_rec = doc.add_paragraph()
+    p_rec.add_run("Cuando un prospecto o cliente escribe al número comercial oficial (+503 6090-6926), el flujo de recepción opera en paralelo:\n\n"
+                  "• En el CRM NyTEX: El mensaje entra de forma instantánea a la Bandeja Omnicanal. Si es un cliente nuevo, se crea automáticamente un prospecto en el embudo comercial; si es recurrente, se añade a la bitácora del trato abierto.\n"
+                  "• En el Teléfono Celular: La aplicación móvil WhatsApp Business notifica y hace sonar el teléfono físico simultáneamente.\n"
+                  "• Flexibilidad Total de Respuesta: El asesor puede responder desde la computadora en la pantalla del CRM o directamente desde la app en el celular si se encuentra fuera de la oficina; toda la conversación queda registrada.")
+
+    doc.add_heading(level=2).add_run("Procedimiento de Envío Proactivo de Mensajes desde el CRM hacia Clientes o Número Propio")
+    p_env = doc.add_paragraph()
+    p_env.add_run("El CRM permite contactar proactivamente a cualquier prospecto sin esperar a que este escriba primero, o realizar pruebas seguras:\n\n"
+                  "1. Botón [ 💬 Enviar a WhatsApp ] (Encabezado Omnicanal):\n"
+                  "   • Al hacer clic en este botón verde en la barra superior de la bandeja, se abre la ventana de envío rápido.\n"
+                  "   • Botón de Acceso Rápido de Prueba: [ 📱 Mi Personal (+503 7831-7101) ]. Al pulsarlo, el CRM rellena automáticamente su número personal para que pueda probar el envío y recepción en su propio celular sin molestar a clientes reales.\n"
+                  "   • Envío a Clientes: Permite digitar cualquier número nacional o internacional (ej: +503 7000-0000) y el nombre de la empresa.\n"
+                  "   • Redacción del Mensaje: Escriba el texto comercial, oferta o cotización de bienvenida.\n"
+                  "   • Acciones:\n"
+                  "     – [ 🚀 Abrir y Enviar en WhatsApp ]: Abre instantáneamente WhatsApp Web o la aplicación con el número y el texto precargado mediante protocolo universal 'https://wa.me/', listo para dar Enter.\n"
+                  "     – [ 💾 Registrar en Historial CRM ]: Guarda el registro de la interacción en la bitácora comercial del cliente.\n\n"
+                  "2. Botón [ 💬 Abrir en WhatsApp ] (Encabezado de Chat Activo):\n"
+                  "   • Al estar atendiendo un trato o conversación abierta, este botón directo en la cabecera del chat permite saltar con un solo clic a WhatsApp para enviar catálogos en PDF, videos de maquinaria o notas de voz explicativas.\n")
 
     doc.add_heading(level=2).add_run("Clasificación en los Tres Tipos de Solicitudes")
     p_tipos = doc.add_paragraph()

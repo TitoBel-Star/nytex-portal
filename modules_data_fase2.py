@@ -14,7 +14,7 @@ FASE2_MODULES = [
         "phase_dir": "Fase 2 Express",
         "macro_area": "Área 1: Dirección Comercial",
         "circuit": "Lead-to-Order (L2O)",
-        "subtitle": "Gestión del Pipeline Comercial Kanban, Calificación BANT de Oportunidades, Bandeja Omnicanal (WhatsApp/Email), Selección de Despacho (Sala vs Domicilio) y Conversión Ágil a Pedidos en [1] Ventas y [7] Logística",
+        "subtitle": "Gestión del Pipeline Comercial Kanban, Calificación BANT, Bandeja Omnicanal (WhatsApp Business +503 6090-6926 con blindaje de privacidad para línea personal +503 7831-7101), Envío Proactivo y Conversión a Pedidos en [1] Ventas y [7] Logística",
         "entities": "Leads / Prospectos, Oportunidades (OPP-XXXX), Pipeline Kanban, Actividades de Seguimiento, Calificación BANT, Cotización Kardex y Modalidad de Despacho",
         "routes": "/app/crm, /app/circuito-fase2",
         "interconnections_summary": (

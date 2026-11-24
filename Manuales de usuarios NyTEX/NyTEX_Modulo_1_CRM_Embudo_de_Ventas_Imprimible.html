@@ -452,13 +452,49 @@ de Maduración Comercial      Correo y Web (Filtro Solo Pendientes) por Código 
       <li><strong>[ 📊 Indicadores: Cotizaciones vs Vendidas ]:</strong> Plataforma analítica BI que audita la efectividad comercial, calcula tasas de cierre en cantidad y porcentaje, y analiza pérdidas por producto en la pestaña <strong>[ 📦 Por Códigos (SKU) ]</strong>.</li>
     </ul>
 
-    <h2>Métricas Globales en Tiempo Real (KPI Cards)</h2>
-    <ul>
-      <li><strong>Total Pipeline Activo:</strong> Suma monetaria de todas las negociaciones abiertas que se encuentran vivas en el embudo.</li>
-      <li><strong>Forecast Ponderado:</strong> Estimación matemática de ingresos futuros calculada según la probabilidad de cada etapa (Monto x Probabilidad %).</li>
-      <li><strong>Tasa de Conversión (Win Rate):</strong> Porcentaje de oportunidades cerradas con éxito vs total de oportunidades concluidas.</li>
-      <li><strong>Tiempo Promedio de Cierre:</strong> Días promedio desde el registro inicial del prospecto hasta su conversión en venta formal.</li>
-    </ul>
+    <h2>Métricas Globales en Tiempo Real (KPI Comercial CRM)</h2>
+    <p>El tablero superior despliega el conjunto integral de indicadores comerciales estratégicos:</p>
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 30%;">KPI Comercial CRM</th>
+          <th style="width: 38%;">Fórmula / Indicador</th>
+          <th style="width: 32%;">Objetivo Estratégico</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Valor del Pipeline</strong><br><small style="color: #64748B;">Pipeline Value</small></td>
+          <td class="font-mono">Σ Valor Estimado * % Probabilidad Cierre</td>
+          <td>Pronóstico ponderado de ventas para los próximos 30-60 días.</td>
+        </tr>
+        <tr>
+          <td><strong>Tasa de Cierre</strong><br><small style="color: #64748B;">Win Rate</small></td>
+          <td class="font-mono">(Oportunidades Ganadas / Total Cerradas) * 100</td>
+          <td>Medición de efectividad del equipo de ventas (Meta &gt; 35%).</td>
+        </tr>
+        <tr>
+          <td><strong>Velocidad de Venta</strong><br><small style="color: #64748B;">Sales Cycle</small></td>
+          <td class="font-mono">Días promedio desde 1er contacto hasta cierre ganado</td>
+          <td>Reducir ciclo de venta para acelerar rotación de capital.</td>
+        </tr>
+        <tr>
+          <td><strong>Tiempo de Respuesta a Leads</strong><br><small style="color: #64748B;">Lead Response Time</small></td>
+          <td class="font-mono">Minutos transcurridos hasta primera interacción</td>
+          <td>Atender prospectos en &lt; 15 min para triplicar la conversión.</td>
+        </tr>
+        <tr>
+          <td><strong>Oportunidades Abiertas</strong></td>
+          <td class="font-mono">COUNT(Oportunidades en curso)</td>
+          <td>Monitoreo del flujo de negociaciones en seguimiento.</td>
+        </tr>
+        <tr>
+          <td><strong>Ganado este mes</strong></td>
+          <td class="font-mono">SUM(Valor órdenes ganadas mes)</td>
+          <td>Cumplimiento y avance de la cuota comercial mensual.</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 
   <div class="page-break"></div>
@@ -581,11 +617,48 @@ de Maduración Comercial      Correo y Web (Filtro Solo Pendientes) por Código 
 
   <!-- SECCIÓN 9: BANDEJA OMNICANAL -->
   <div class="page">
-    <h1>9. Procedimiento Operativo N° 6: Bandeja Omnicanal Integrada (WhatsApp, Instagram, Correo y Web)</h1>
+    <h1>9. Procedimiento Operativo N° 6: Bandeja Omnicanal Integrada, WhatsApp Business y Blindaje de Privacidad</h1>
     <div class="callout callout-purple">
       <div class="callout-title">Arquitectura de Integración Omnicanal Centralizada</div>
-      La Bandeja Omnicanal de NyTEX CRM conecta de manera transparente y bidireccional los canales digitales de atención externa (WhatsApp Business Cloud API, Instagram Graph API, buzones de Correo Electrónico y Web Chat) mediante un Gateway unificado de Webhooks en la ruta backend <code>/api/crm/webhook/omnichannel</code>.<br><br>
+      La Bandeja Omnicanal de NyTEX CRM conecta de manera transparente y bidireccional los canales digitales de atención externa (WhatsApp Business, Instagram Graph API, buzones de Correo Electrónico y Web Chat) mediante un Gateway unificado de Webhooks en la ruta backend <code>/api/crm/webhook/omnichannel</code>.<br><br>
       Cada interacción de un prospecto genera en milisegundos una solicitud formal en el CRM, permitiendo a los ejecutivos responder directamente desde el sistema sin necesidad de consultar teléfonos personales o cuentas dispersas en redes sociales.
+    </div>
+
+    <h2>Configuración de Líneas Telefónicas y Blindaje de Privacidad (Cero Desvío)</h2>
+    <div class="callout callout-info">
+      <div class="callout-title">Segregación Estricta entre Línea Comercial y Línea Personal</div>
+      <p><strong>• Línea Comercial Oficial (+503 6090-6926):</strong> Canal exclusivo de la empresa gestionado a través de <strong>WhatsApp Business</strong> y conectado al CRM NyTEX. Todos los prospectos y clientes se comunican a este número.</p>
+      <p><strong>• Línea Personal Protegida (+503 7831-7101):</strong> Teléfono personal del titular utilizado en <strong>WhatsApp convencional (WhatsApp Messenger)</strong>. Permanece 100% privado y desvinculado del sistema.</p>
+      <p><strong>• Garantía Técnica de No-Desvío:</strong> WhatsApp Messenger y WhatsApp Business operan como aplicaciones e identidades telefónicas totalmente aisladas. Ningún mensaje de un cliente enviado al número empresarial <code>6090-6926</code> podrá desviarse o recibirse por error en el WhatsApp personal <code>7831-7101</code>.</p>
+    </div>
+
+    <h2>Procedimiento de Vinculación por Código QR (Opción A)</h2>
+    <p>Para emparejar la línea comercial <code>+503 6090-6926</code> con NyTEX CRM mediante código QR:</p>
+    <ul>
+      <li><strong>1. Acceder al Modal:</strong> En la Bandeja Omnicanal, pulsar el botón de estado <code>[ 📱 Conectar WhatsApp / QR ]</code> en el encabezado.</li>
+      <li><strong>2. Abrir WhatsApp Business:</strong> En el celular con la línea comercial, entrar a <em>Menú &gt; Dispositivos vinculados &gt; Vincular un dispositivo</em>.</li>
+      <li><strong>3. Escaneo en Pantalla:</strong> Apuntar la cámara del móvil hacia el código QR proyectado en la pantalla de NyTEX.</li>
+      <li><strong>4. Confirmación Activa:</strong> El indicador en NyTEX cambiará a <code>🟢 Conectado (+503 6090-6926)</code>, quedando habilitada la recepción y despacho en vivo.</li>
+    </ul>
+
+    <h2>Recepción Simultánea de Prospectos (Doble Entrada en Tiempo Real)</h2>
+    <p>Cuando un prospecto o cliente escribe al número comercial <code>+503 6090-6926</code>, el mensaje entra al instante en dos ubicaciones paralelas:</p>
+    <ul>
+      <li><strong>1. En NyTEX CRM (Computadora):</strong> Se crea automáticamente un nuevo prospecto o se agrega al historial de la oportunidad en la Bandeja Omnicanal.</li>
+      <li><strong>2. En la App Móvil (WhatsApp Business):</strong> Su teléfono celular suena y notifica el mensaje como cualquier chat común.</li>
+      <li><strong>Flexibilidad Total:</strong> El ejecutivo puede contestar desde el CRM o desde el teléfono según se encuentre en oficina o en ruta.</li>
+    </ul>
+
+    <h2>Procedimiento de Envío Proactivo desde el CRM a Clientes o Número Propio</h2>
+    <div class="callout callout-success">
+      <div class="callout-title">Herramientas de Despacho Rápido hacia WhatsApp</div>
+      <p><strong>1. Botón [ 💬 Enviar a WhatsApp ] (Encabezado Omnicanal):</strong></p>
+      <ul>
+        <li><strong>Prueba Rápida:</strong> Incluye el botón directo <code>[ 📱 Mi Personal (+503 7831-7101) ]</code> para auto-enviarse mensajes de prueba al propio celular sin impactar a clientes reales.</li>
+        <li><strong>Envío a Prospectos:</strong> Permite ingresar el teléfono del cliente (ej: <code>+503 7000-0000</code>) y el texto de la cotización.</li>
+        <li><strong>Opciones de Envío:</strong> Botón <code>[ 🚀 Abrir y Enviar en WhatsApp ]</code> (vía enlace universal <code>https://wa.me/</code>) o <code>[ 💾 Registrar en Historial CRM ]</code>.</li>
+      </ul>
+      <p style="margin-top: 8px;"><strong>2. Botón [ 💬 Abrir en WhatsApp ] (Cabecera de Conversación):</strong> Permite abrir de inmediato el chat en WhatsApp Web/App para enviar archivos adjuntos pesados, fotos de telas o notas de voz.</p>
     </div>
 
     <h2>Clasificación en los Tres Tipos de Solicitudes</h2>
@@ -602,26 +675,26 @@ de Maduración Comercial      Correo y Web (Filtro Solo Pendientes) por Código 
         <tr>
           <td><strong>Solicitud de Cotización</strong></td>
           <td><span class="badge-chip badge-green">💰 Cotización</span></td>
-          <td>Prospectos pidiendo listas de precios, catálogo o volumen. Cuenta con botón directo para enlazar con Kardex, generar cotización y facturar en Módulo 2.</td>
+          <td>Prospectos pidiendo listas de precios, catálogo o volumen. Enlace directo a Kardex y facturación en Módulo 2.</td>
           <td>Alta (Atención &lt; 2 horas)</td>
         </tr>
         <tr>
           <td><strong>Consulta Comercial</strong></td>
           <td><span class="badge-chip badge-blue">❓ Consulta</span></td>
-          <td>Dudas de preventa sobre especificaciones técnicas, disponibilidad de telas, horarios o cobertura de despacho.</td>
+          <td>Dudas de preventa sobre especificaciones técnicas, disponibilidad, horarios o despacho.</td>
           <td>Media (Atención &lt; 4 horas)</td>
         </tr>
         <tr>
           <td><strong>Reclamo / Incidencia</strong></td>
           <td><span class="badge-chip badge-red">⚠️ Reclamo</span></td>
-          <td>Inconformidades por demoras o inconsistencias de pedidos con alerta visual de SLA para evitar cancelaciones.</td>
+          <td>Inconformidades por demoras o inconsistencias con alerta visual de SLA para evitar cancelaciones.</td>
           <td>Crítica (SLA &lt; 60 minutos)</td>
         </tr>
       </tbody>
     </table>
 
     <h2>Filtro Predeterminado: [ ⏳ Solo Pendientes ] (Eficiencia Operativa)</h2>
-    <p>Para evitar que los ejecutivos pierdan tiempo valioso revisando una por una todas las solicitudes históricas, la bandeja aplica como estado predeterminado el filtro <strong>'Solo Pendientes'</strong>:</p>
+    <p>Para evitar que los ejecutivos pierdan tiempo valioso, la bandeja aplica el filtro <strong>'Solo Pendientes'</strong> predeterminado:</p>
     <ul>
       <li><strong>Foco en la Acción:</strong> La pantalla únicamente lista los casos que requieren respuesta o gestión pendiente.</li>
       <li><strong>Contador en Vivo:</strong> Muestra el número exacto de casos activos (ej: <code>4 activas</code>).</li>
@@ -631,13 +704,13 @@ de Maduración Comercial      Correo y Web (Filtro Solo Pendientes) por Código 
 
     <h2>Chat Bidireccional en Vivo y Protocolo de Resolución</h2>
     <ul>
-      <li><strong>Mensajería Bidireccional:</strong> Al pulsar <code>'Ver Chat'</code> se despliega la conversación cronológica completa. Al redactar y presionar enviar, el backend despacha el mensaje hacia el WhatsApp, Instagram o correo del cliente a través de su API correspondiente.</li>
-      <li><strong>Botón [ ✓ Finalizar ]:</strong> Una vez atendida la consulta o acordada la cotización, el asesor hace clic en <strong>Finalizar</strong>. El sistema abre un modal donde es <strong>obligatorio ingresar la Nota de Resolución</strong> (ej: <em>'Cotización enviada y aceptada por WhatsApp'</em>). Al confirmar, la solicitud cambia su estado a <code>'resuelto'</code> y <strong>DESAPARECE INMEDIATAMENTE de la lista de pendientes</strong>, registrando el usuario resolutor, fecha y hora de auditoría.</li>
-      <li><strong>Botón [ Reabrir ]:</strong> Si el cliente vuelve a escribir o reitera el caso, la solicitud puede reactivarse a pendiente.</li>
+      <li><strong>Mensajería Bidireccional:</strong> Conversación cronológica completa con despacho directo hacia WhatsApp, Instagram o correo.</li>
+      <li><strong>Botón [ ✓ Finalizar ]:</strong> Exige ingresar la Nota de Resolución obligatoria y retira el caso de la lista de pendientes al instante.</li>
+      <li><strong>Botón [ Reabrir ]:</strong> Reactiva la solicitud si el prospecto vuelve a escribir.</li>
     </ul>
 
     <h2>Simulador de Mensajes Entrantes para Pruebas</h2>
-    <p>En la esquina superior de la bandeja se encuentra el botón <strong>'🧪 Simular Mensaje Entrante'</strong>, el cual permite probar y capacitar al equipo simulando la llegada de mensajes desde cualquier canal (WhatsApp, Instagram, Correo, Web) en tiempo real.</p>
+    <p>El botón <strong>'🧪 Simular Mensaje Entrante'</strong> permite simular en tiempo real la llegada de prospectos por WhatsApp, Instagram, Correo o Web para capacitar a la fuerza de ventas.</p>
   </div>
 
   <div class="page-break"></div>
