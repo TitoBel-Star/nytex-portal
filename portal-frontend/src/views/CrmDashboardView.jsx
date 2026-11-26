@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 // Catálogo base de Kardex (Productos y Servicios de NyTEX ERP) con Proveedores
@@ -804,6 +804,8 @@ const CrmDashboardView = () => {
   const [omnichannelSearch, setOmnichannelSearch] = useState('');
   const [activeChatDeal, setActiveChatDeal] = useState(null);
   const [newChatReplyText, setNewChatReplyText] = useState('');
+  const [chatAttachment, setChatAttachment] = useState(null);
+  const chatFileInputRef = useRef(null);
   const [isSimulatorOpen, setIsSimulatorOpen] = useState(false);
   const [isQrModalOpen, setIsQrModalOpen] = useState(false);
   const [isNewWhatsAppModalOpen, setIsNewWhatsAppModalOpen] = useState(false);
@@ -1458,13 +1460,31 @@ const CrmDashboardView = () => {
     setNewChatReplyText('');
   };
 
+  const handleChatFileSelected = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      setChatAttachment({
+        name: file.name,
+        size: (file.size / 1024).toFixed(1) + ' KB',
+        type: file.type,
+        dataUrl: event.target?.result
+      });
+      showToast(`📎 Archivo "${file.name}" adjuntado al mensaje.`);
+    };
+    reader.readAsDataURL(file);
+    e.target.value = '';
+  };
+
   const handleSendChatReply = async () => {
-    if (!newChatReplyText.trim() || !activeChatDeal) return;
+    if ((!newChatReplyText.trim() && !chatAttachment) || !activeChatDeal) return;
     const replyMsg = {
       id: Date.now(),
       sender: 'agent',
       channel: activeChatDeal.channel || 'whatsapp',
-      text: newChatReplyText.trim(),
+      text: newChatReplyText.trim() || (chatAttachment ? `[Archivo adjunto: ${chatAttachment.name}]` : ''),
+      attachment: chatAttachment || null,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     };
 
@@ -1474,6 +1494,7 @@ const CrmDashboardView = () => {
     setActiveChatDeal(updatedDeal);
     setDeals(prev => prev.map(d => d.id === updatedDeal.id ? updatedDeal : d));
     setNewChatReplyText('');
+    setChatAttachment(null);
     showToast(`📤 Respuesta enviada a ${activeChatDeal.contact || activeChatDeal.company} vía ${(activeChatDeal.channel || 'canal').toUpperCase()}`);
 
     try {
@@ -1484,7 +1505,8 @@ const CrmDashboardView = () => {
           dealId: activeChatDeal.id,
           channel: activeChatDeal.channel,
           recipient: activeChatDeal.contact || activeChatDeal.phone || activeChatDeal.email,
-          text: replyMsg.text
+          text: replyMsg.text,
+          attachmentName: replyMsg.attachment ? replyMsg.attachment.name : null
         })
       });
     } catch (e) {
@@ -4623,7 +4645,38 @@ const CrmDashboardView = () => {
                           </span>
                           <span>{msg.timestamp || ''}</span>
                         </div>
-                        <p className="leading-relaxed whitespace-pre-wrap">{msg.text}</p>
+                        {msg.text && <p className="leading-relaxed whitespace-pre-wrap">{msg.text}</p>}
+                        {msg.attachment && (
+                          <div className={`mt-2 p-2.5 rounded-xl flex items-center justify-between gap-2 border ${
+                            isAgent ? 'bg-black/25 border-white/20 text-white' : 'bg-slate-50 border-gray-200 text-gray-800'
+                          }`}>
+                            <div className="flex items-center space-x-2.5 truncate">
+                              <i className={`text-xl ${
+                                (msg.attachment.name || '').toLowerCase().endsWith('.pdf') ? 'fas fa-file-pdf text-red-400' :
+                                (msg.attachment.name || '').toLowerCase().endsWith('.xlsx') || (msg.attachment.name || '').toLowerCase().endsWith('.xls') ? 'fas fa-file-excel text-emerald-400' :
+                                (msg.attachment.type && msg.attachment.type.startsWith('image/')) ? 'fas fa-file-image text-amber-300' :
+                                'fas fa-file-alt text-blue-300'
+                              }`}></i>
+                              <div className="truncate">
+                                <span className="font-bold text-[11px] block truncate">{msg.attachment.name}</span>
+                                <span className="text-[9px] opacity-75">{msg.attachment.size}</span>
+                              </div>
+                            </div>
+                            {msg.attachment.dataUrl && (
+                              <a
+                                href={msg.attachment.dataUrl}
+                                download={msg.attachment.name}
+                                className={`px-2.5 py-1 rounded-lg text-[10px] font-black shrink-0 transition flex items-center space-x-1 ${
+                                  isAgent ? 'bg-white/20 hover:bg-white/30 text-white' : 'bg-[#006EAD] hover:bg-blue-800 text-white shadow-2xs'
+                                }`}
+                                title="Descargar archivo"
+                              >
+                                <i className="fas fa-download"></i>
+                                <span>Descargar</span>
+                              </a>
+                            )}
+                          </div>
+                        )}
                       </div>
                     </div>
                   );
@@ -4658,31 +4711,71 @@ const CrmDashboardView = () => {
             </div>
 
             {/* Formulario de Envío de Respuesta */}
-            <div className="p-3.5 border-t border-gray-200 bg-white flex items-end space-x-2 shrink-0">
-              <textarea
-                rows={2}
-                value={newChatReplyText}
-                onChange={(e) => setNewChatReplyText(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    handleSendChatReply();
-                  }
-                }}
-                placeholder={`Escribe tu respuesta para ${activeChatDeal.contact || 'el cliente'} vía ${(activeChatDeal.channel || 'canal').toUpperCase()}...`}
-                className="flex-1 p-2.5 text-xs border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#006EAD] focus:border-[#006EAD] resize-none"
-              />
-              <button
-                type="button"
-                onClick={handleSendChatReply}
-                disabled={!newChatReplyText.trim()}
-                className={`px-4 py-2.5 rounded-xl text-xs font-black text-white transition flex items-center space-x-1.5 h-[42px] ${
-                  newChatReplyText.trim() ? 'bg-[#006EAD] hover:bg-blue-800 shadow-md' : 'bg-gray-300 cursor-not-allowed'
-                }`}
-              >
-                <span>Enviar</span>
-                <i className="fas fa-paper-plane"></i>
-              </button>
+            <div className="p-3.5 border-t border-gray-200 bg-white shrink-0">
+              {/* Preview de archivo adjunto si existe */}
+              {chatAttachment && (
+                <div className="bg-blue-50 border border-blue-200 px-3 py-1.5 rounded-xl flex items-center justify-between text-xs text-blue-900 mb-2 shadow-2xs">
+                  <div className="flex items-center space-x-2 truncate">
+                    <i className="fas fa-paperclip text-[#006EAD]"></i>
+                    <span className="font-bold truncate">{chatAttachment.name}</span>
+                    <span className="text-[10px] text-gray-500">({chatAttachment.size})</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setChatAttachment(null)}
+                    className="text-gray-400 hover:text-red-500 font-bold ml-2 text-sm p-1"
+                    title="Quitar archivo adjunto"
+                  >
+                    ✕
+                  </button>
+                </div>
+              )}
+
+              <div className="flex items-end space-x-2">
+                {/* Input de archivo oculto */}
+                <input
+                  type="file"
+                  ref={chatFileInputRef}
+                  onChange={handleChatFileSelected}
+                  className="hidden"
+                  accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg,.txt"
+                />
+
+                <button
+                  type="button"
+                  onClick={() => chatFileInputRef.current?.click()}
+                  className="p-2.5 text-gray-500 hover:text-[#006EAD] hover:bg-slate-100 rounded-xl transition flex items-center justify-center h-[42px] w-[42px] border border-gray-200 bg-gray-50 shadow-2xs shrink-0"
+                  title="Adjuntar archivo (PDF, Cotización, Ficha técnica, Imagen)"
+                >
+                  <i className="fas fa-paperclip text-sm"></i>
+                </button>
+
+                <textarea
+                  rows={2}
+                  value={newChatReplyText}
+                  onChange={(e) => setNewChatReplyText(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                      e.preventDefault();
+                      handleSendChatReply();
+                    }
+                  }}
+                  placeholder={`Escribe tu respuesta para ${activeChatDeal.contact || 'el cliente'} vía ${(activeChatDeal.channel || 'canal').toUpperCase()}...`}
+                  className="flex-1 p-2.5 text-xs border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#006EAD] focus:border-[#006EAD] resize-none"
+                />
+
+                <button
+                  type="button"
+                  onClick={handleSendChatReply}
+                  disabled={!newChatReplyText.trim() && !chatAttachment}
+                  className={`px-4 py-2.5 rounded-xl text-xs font-black text-white transition flex items-center space-x-1.5 h-[42px] shrink-0 ${
+                    (newChatReplyText.trim() || chatAttachment) ? 'bg-[#006EAD] hover:bg-blue-800 shadow-md' : 'bg-gray-300 cursor-not-allowed'
+                  }`}
+                >
+                  <span>Enviar</span>
+                  <i className="fas fa-paper-plane"></i>
+                </button>
+              </div>
             </div>
 
           </div>
