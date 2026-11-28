@@ -705,12 +705,59 @@ const stages = ['Nuevo', 'Contactado', 'Calificado', 'Cotizado', 'Ganado'];
 
 const CrmDashboardView = () => {
   const navigate = useNavigate();
-  const [deals, setDeals] = useState(() =>
-    initialDeals.map(d => ({
+  const [deals, setDeals] = useState(() => {
+    try {
+      const saved = localStorage.getItem('nytex_crm_deals');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) {
+          return parsed.map(d => ({
+            ...d,
+            value: calculateQuoteActiveValue(d.quote, d.stage, d.value)
+          }));
+        }
+      }
+    } catch (e) {
+      console.error('Error cargando deals de localStorage:', e);
+    }
+    return initialDeals.map(d => ({
       ...d,
       value: calculateQuoteActiveValue(d.quote, d.stage, d.value)
-    }))
-  );
+    }));
+  });
+
+  // Persistencia automática de los tratos en localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem('nytex_crm_deals', JSON.stringify(deals));
+    } catch (e) {
+      console.error('Error guardando deals en localStorage:', e);
+    }
+  }, [deals]);
+
+  // Vaciar completamente el tablero Kanban (todas las oportunidades)
+  const handleClearAllBoardDeals = () => {
+    if (deals.length === 0) return;
+    if (window.confirm(`¿Está seguro de eliminar permanentemente TODAS las ${deals.length} oportunidades del tablero Kanban? El tablero quedará completamente en blanco.`)) {
+      setDeals([]);
+      if (selectedDeal) {
+        setIsDetailOpen(false);
+      }
+      showToast('🗑️ Tablero Kanban vaciado por completo. Estado guardado permanentemente.');
+    }
+  };
+
+  // Restaurar datos de prueba iniciales
+  const handleResetDemoDeals = () => {
+    if (window.confirm('¿Desea restaurar los datos de prueba y demostración del manual?')) {
+      const reset = initialDeals.map(d => ({
+        ...d,
+        value: calculateQuoteActiveValue(d.quote, d.stage, d.value)
+      }));
+      setDeals(reset);
+      showToast('🔄 Datos de demostración restaurados.');
+    }
+  };
 
   // Business Partners Catálogo
   const [businessPartners, setBusinessPartners] = useState([]);
@@ -909,6 +956,7 @@ const CrmDashboardView = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [priorityFilter, setPriorityFilter] = useState('Todas');
   const [stageFilter, setStageFilter] = useState('Todas');
+  const [sellerFilter, setSellerFilter] = useState('Todos');
 
   // Mensaje de notificación (Toast)
   const [toastMessage, setToastMessage] = useState('');
@@ -1054,10 +1102,11 @@ const CrmDashboardView = () => {
       
       const matchPriority = priorityFilter === 'Todas' || deal.priority === priorityFilter;
       const matchStage = stageFilter === 'Todas' || deal.stage === stageFilter;
+      const matchSeller = sellerFilter === 'Todos' || deal.assignedTo === sellerFilter;
 
-      return matchSearch && matchPriority && matchStage;
+      return matchSearch && matchPriority && matchStage && matchSeller;
     });
-  }, [deals, searchQuery, priorityFilter, stageFilter]);
+  }, [deals, searchQuery, priorityFilter, stageFilter, sellerFilter]);
 
   // Filtrado reactivo en tiempo real de productos del Kardex (reduce a medida que se teclean letras o números)
   const filteredKardex = useMemo(() => {
@@ -1822,13 +1871,59 @@ const CrmDashboardView = () => {
     }
   };
 
-  // Eliminar / Descartar Oportunidad
+  // Eliminar / Descartar Oportunidad desde Modal
   const handleDeleteDeal = () => {
     if (!selectedDeal) return;
     if (window.confirm(`¿Está seguro de descartar la oportunidad "${selectedDeal.title}"?`)) {
       setDeals(prev => prev.filter(d => d.id !== selectedDeal.id));
       setIsDetailOpen(false);
       showToast(`Oportunidad descartada del pipeline.`);
+    }
+  };
+
+  // Eliminar Oportunidad directamente desde la tarjeta Kanban
+  const handleDeleteDealDirect = (e, dealId, dealTitle) => {
+    e.stopPropagation();
+    if (window.confirm(`¿Está seguro de eliminar el contacto / oportunidad "${dealTitle}" del tablero?`)) {
+      setDeals(prev => prev.filter(d => d.id !== dealId));
+      if (selectedDeal && selectedDeal.id === dealId) {
+        setIsDetailOpen(false);
+      }
+      showToast(`🗑️ Contacto "${dealTitle}" eliminado del tablero Kanban.`);
+    }
+  };
+
+  // Vaciar todas las oportunidades de una etapa completa en el Kanban
+  const handleClearStageDeals = (stageName) => {
+    const dealsInStage = deals.filter(d => d.stage === stageName);
+    if (dealsInStage.length === 0) return;
+    if (window.confirm(`¿Está seguro de eliminar TODOS los ${dealsInStage.length} contactos / oportunidades en la etapa "${stageName}"?`)) {
+      setDeals(prev => prev.filter(d => d.stage !== stageName));
+      if (selectedDeal && selectedDeal.stage === stageName) {
+        setIsDetailOpen(false);
+      }
+      showToast(`🗑️ Se eliminaron las ${dealsInStage.length} oportunidades de la etapa "${stageName}".`);
+    }
+  };
+
+  // Eliminar una actividad específica de la bitácora
+  const handleDeleteActivity = (activityId) => {
+    if (!selectedDeal) return;
+    const updatedActivities = (selectedDeal.activities || []).filter(a => a.id !== activityId);
+    const updatedDeal = { ...selectedDeal, activities: updatedActivities };
+    setSelectedDeal(updatedDeal);
+    setDeals(prev => prev.map(d => d.id === updatedDeal.id ? updatedDeal : d));
+    showToast('🗑️ Actividad de seguimiento eliminada.');
+  };
+
+  // Eliminar todos los seguimientos de la oportunidad actual
+  const handleClearAllActivities = () => {
+    if (!selectedDeal) return;
+    if (window.confirm('¿Desea eliminar todos los seguimientos y actividades registradas en esta oportunidad?')) {
+      const updatedDeal = { ...selectedDeal, activities: [] };
+      setSelectedDeal(updatedDeal);
+      setDeals(prev => prev.map(d => d.id === updatedDeal.id ? updatedDeal : d));
+      showToast('🗑️ Todo el historial de seguimiento ha sido eliminado.');
     }
   };
 
@@ -2417,13 +2512,50 @@ const CrmDashboardView = () => {
 
           <div className="flex items-center space-x-2">
             {currentMainView === 'kanban' && (
+              <>
+                {sellerFilter !== 'Todos' && (
+                  <span className="bg-blue-100 text-[#006EAD] border border-blue-200 text-xs font-bold px-2.5 py-1 rounded-md flex items-center space-x-1">
+                    <i className="fas fa-user-tie text-[10px]"></i>
+                    <span>{sellerFilter}</span>
+                    <button
+                      type="button"
+                      onClick={() => setSellerFilter('Todos')}
+                      className="ml-1 text-[#006EAD] hover:text-red-500 font-black"
+                      title="Quitar filtro de ejecutivo"
+                    >
+                      ✕
+                    </button>
+                  </span>
+                )}
+                <button 
+                  onClick={() => setShowFilterBar(!showFilterBar)}
+                  className={`border px-3.5 py-2 rounded-md text-xs font-semibold transition-colors shadow-sm flex items-center ${
+                    showFilterBar || sellerFilter !== 'Todos' || priorityFilter !== 'Todas' || stageFilter !== 'Todas' ? 'bg-blue-50 border-[#006EAD] text-[#006EAD]' : 'bg-white border-gray-300 hover:bg-gray-50 text-gray-700'
+                  }`}
+                >
+                  <i className="fas fa-filter mr-1.5"></i>Filtrar
+                </button>
+              </>
+            )}
+            {deals.length > 0 ? (
               <button 
-                onClick={() => setShowFilterBar(!showFilterBar)}
-                className={`border px-3.5 py-2 rounded-md text-xs font-semibold transition-colors shadow-sm flex items-center ${
-                  showFilterBar ? 'bg-blue-50 border-[#006EAD] text-[#006EAD]' : 'bg-white border-gray-300 hover:bg-gray-50 text-gray-700'
-                }`}
+                type="button"
+                onClick={handleClearAllBoardDeals}
+                className="border border-red-200 hover:border-red-400 bg-red-50/50 hover:bg-red-100 text-red-600 px-3 py-2 rounded-md text-xs font-bold transition-all shadow-xs flex items-center space-x-1"
+                title="Eliminar permanentemente todas las oportunidades del tablero"
               >
-                <i className="fas fa-filter mr-1.5"></i>Filtrar
+                <i className="fas fa-trash-alt text-xs"></i>
+                <span className="hidden sm:inline">Vaciar Tablero</span>
+              </button>
+            ) : (
+              <button 
+                type="button"
+                onClick={handleResetDemoDeals}
+                className="border border-blue-200 hover:border-blue-400 bg-blue-50 text-[#006EAD] px-3 py-2 rounded-md text-xs font-bold transition-all shadow-xs flex items-center space-x-1"
+                title="Restaurar datos de prueba del manual"
+              >
+                <i className="fas fa-undo text-xs"></i>
+                <span className="hidden sm:inline">Restaurar Demo</span>
               </button>
             )}
             <button 
@@ -2446,6 +2578,21 @@ const CrmDashboardView = () => {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full px-3 py-1.5 border border-gray-300 rounded-md focus:outline-none focus:border-[#006EAD] text-sm"
               />
+            </div>
+            <div className="flex items-center space-x-2">
+              <span className="text-gray-600 text-xs font-bold uppercase flex items-center">
+                <i className="fas fa-user-tie mr-1 text-[#006EAD]"></i>Ejecutivo:
+              </span>
+              <select 
+                value={sellerFilter} 
+                onChange={(e) => setSellerFilter(e.target.value)}
+                className="px-2.5 py-1.5 border border-gray-300 rounded-md bg-white text-xs font-bold text-gray-800 focus:outline-none focus:border-[#006EAD]"
+              >
+                <option value="Todos">Todos los Ejecutivos</option>
+                {SELLERS_LIST.map(seller => (
+                  <option key={seller} value={seller}>👤 {seller}</option>
+                ))}
+              </select>
             </div>
             <div className="flex items-center space-x-2">
               <span className="text-gray-600 text-xs font-bold uppercase">Prioridad:</span>
@@ -2473,14 +2620,17 @@ const CrmDashboardView = () => {
                 ))}
               </select>
             </div>
-            {(searchQuery || priorityFilter !== 'Todas' || stageFilter !== 'Todas') && (
-              <button 
-                onClick={() => { setSearchQuery(''); setPriorityFilter('Todas'); setStageFilter('Todas'); }}
-                className="text-xs text-red-600 hover:text-red-800 font-bold underline ml-auto"
-              >
-                Limpiar filtros
-              </button>
-            )}
+            <div className="ml-auto flex items-center space-x-3">
+              {(searchQuery || priorityFilter !== 'Todas' || stageFilter !== 'Todas' || sellerFilter !== 'Todos') && (
+                <button 
+                  onClick={() => { setSearchQuery(''); setPriorityFilter('Todas'); setStageFilter('Todas'); setSellerFilter('Todos'); }}
+                  className="text-xs text-red-600 hover:text-red-800 font-bold underline flex items-center space-x-1"
+                >
+                  <i className="fas fa-times text-[10px]"></i>
+                  <span>Limpiar filtros</span>
+                </button>
+              )}
+            </div>
           </div>
         )}
       </div>
@@ -2608,7 +2758,19 @@ const CrmDashboardView = () => {
                     
                     {/* Stage Header */}
                     <div className="p-3 border-b border-gray-200 bg-gray-100 flex justify-between items-center shrink-0">
-                      <h3 className="font-bold text-gray-700 text-sm">{stage} ({stageDeals.length})</h3>
+                      <div className="flex items-center space-x-1.5">
+                        <h3 className="font-bold text-gray-700 text-sm">{stage} ({stageDeals.length})</h3>
+                        {stageDeals.length > 0 && (
+                          <button
+                            type="button"
+                            onClick={() => handleClearStageDeals(stage)}
+                            className="text-gray-400 hover:text-red-600 text-xs p-1 rounded transition"
+                            title={`Vaciar todas las oportunidades en etapa "${stage}"`}
+                          >
+                            <i className="fas fa-trash-alt text-[10px]"></i>
+                          </button>
+                        )}
+                      </div>
                       <span className="text-xs font-semibold text-gray-500">${stageValue.toLocaleString()}</span>
                     </div>
                     
@@ -2624,7 +2786,14 @@ const CrmDashboardView = () => {
                             <span className={`text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider ${getPriorityColor(deal.priority)}`}>
                               {deal.priority}
                             </span>
-                            <span className="text-gray-400 text-xs hover:text-[#006EAD]"><i className="fas fa-ellipsis-h"></i></span>
+                            <button
+                              type="button"
+                              onClick={(e) => handleDeleteDealDirect(e, deal.id, deal.title)}
+                              className="text-gray-300 hover:text-red-600 p-1 rounded transition"
+                              title="Eliminar este contacto / oportunidad del tablero"
+                            >
+                              <i className="fas fa-trash-alt text-xs"></i>
+                            </button>
                           </div>
                           
                           <h4 className="font-bold text-[#0A2540] text-sm leading-tight mb-1 group-hover:text-[#006EAD] transition-colors">{deal.title}</h4>
@@ -6458,7 +6627,20 @@ const CrmDashboardView = () => {
                         <i className="fas fa-history mr-1.5 text-[#006EAD]"></i>
                         Historial y Bitácora de Interacciones ({selectedDeal.activities?.length || 0})
                       </h4>
-                      <span className="text-[11px] text-gray-400">Orden cronológico</span>
+                      <div className="flex items-center space-x-2">
+                        {selectedDeal.activities?.length > 0 && (
+                          <button
+                            type="button"
+                            onClick={handleClearAllActivities}
+                            className="text-red-600 hover:text-red-700 text-[11px] font-bold hover:underline flex items-center space-x-1"
+                            title="Eliminar todos los seguimientos registrados en esta oportunidad"
+                          >
+                            <i className="fas fa-trash-alt text-[10px]"></i>
+                            <span>Limpiar Todo</span>
+                          </button>
+                        )}
+                        <span className="text-[11px] text-gray-400">Orden cronológico</span>
+                      </div>
                     </div>
 
                     {(!selectedDeal.activities || selectedDeal.activities.length === 0) ? (
@@ -6482,7 +6664,17 @@ const CrmDashboardView = () => {
                                   <span className="text-gray-400 text-xs">•</span>
                                   <span className="text-xs font-semibold text-gray-700">{act.registeredBy}</span>
                                 </div>
-                                <span className="text-[11px] text-gray-400">{act.registeredAt}</span>
+                                <div className="flex items-center space-x-2">
+                                  <span className="text-[11px] text-gray-400">{act.registeredAt}</span>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleDeleteActivity(act.id)}
+                                    className="text-gray-400 hover:text-red-600 p-1 rounded transition"
+                                    title="Eliminar este seguimiento"
+                                  >
+                                    <i className="fas fa-trash-alt text-[11px]"></i>
+                                  </button>
+                                </div>
                               </div>
 
                               <p className="text-xs text-gray-800 bg-slate-50 p-2.5 rounded-lg border border-gray-100 whitespace-pre-wrap leading-relaxed">
