@@ -1526,13 +1526,23 @@ const CrmDashboardView = () => {
     e.target.value = '';
   };
 
-  const handleSendChatReply = async () => {
+  const formatWaPhone = (rawPhone) => {
+    if (!rawPhone) return '';
+    let digits = String(rawPhone).replace(/[^0-9]/g, '');
+    if (digits.length === 8) {
+      digits = '503' + digits;
+    }
+    return digits;
+  };
+
+  const handleSendChatReply = async (sendToWhatsApp = false) => {
     if ((!newChatReplyText.trim() && !chatAttachment) || !activeChatDeal) return;
+    const msgText = newChatReplyText.trim();
     const replyMsg = {
       id: Date.now(),
       sender: 'agent',
       channel: activeChatDeal.channel || 'whatsapp',
-      text: newChatReplyText.trim() || (chatAttachment ? `[Archivo adjunto: ${chatAttachment.name}]` : ''),
+      text: msgText || (chatAttachment ? `[Archivo adjunto: ${chatAttachment.name}]` : ''),
       attachment: chatAttachment || null,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     };
@@ -1544,7 +1554,17 @@ const CrmDashboardView = () => {
     setDeals(prev => prev.map(d => d.id === updatedDeal.id ? updatedDeal : d));
     setNewChatReplyText('');
     setChatAttachment(null);
-    showToast(`📤 Respuesta enviada a ${activeChatDeal.contact || activeChatDeal.company} vía ${(activeChatDeal.channel || 'canal').toUpperCase()}`);
+    showToast(`📤 Respuesta registrada para ${activeChatDeal.contact || activeChatDeal.company}`);
+
+    // Si se activa el envío hacia WhatsApp y tiene teléfono configurado
+    if (sendToWhatsApp && activeChatDeal.phone) {
+      const fullPhone = formatWaPhone(activeChatDeal.phone);
+      if (fullPhone) {
+        const waUrl = `https://wa.me/${fullPhone}?text=${encodeURIComponent(replyMsg.text)}`;
+        window.open(waUrl, '_blank', 'noopener,noreferrer');
+        showToast(`💬 Abriendo WhatsApp para enviar a +${fullPhone}...`);
+      }
+    }
 
     try {
       await fetch('/api/crm/messages/send', {
@@ -4737,7 +4757,7 @@ const CrmDashboardView = () => {
               <div className="flex items-center space-x-2">
                 {activeChatDeal.phone && (
                   <a
-                    href={`https://wa.me/${activeChatDeal.phone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent('Hola ' + (activeChatDeal.contact || activeChatDeal.company) + ', le saludamos de NyTEX respecto a su solicitud de cotización.')}`}
+                    href={`https://wa.me/${formatWaPhone(activeChatDeal.phone)}?text=${encodeURIComponent('Hola ' + (activeChatDeal.contact || activeChatDeal.company) + ', le saludamos de NyTEX respecto a su solicitud.')}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-black px-3 py-1.5 rounded-lg transition flex items-center space-x-1.5 shadow-xs"
@@ -4926,24 +4946,47 @@ const CrmDashboardView = () => {
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' && !e.shiftKey) {
                       e.preventDefault();
-                      handleSendChatReply();
+                      handleSendChatReply(activeChatDeal.channel === 'whatsapp' || !!activeChatDeal.phone);
                     }
                   }}
-                  placeholder={`Escribe tu respuesta para ${activeChatDeal.contact || 'el cliente'} vía ${(activeChatDeal.channel || 'canal').toUpperCase()}...`}
-                  className="flex-1 p-2.5 text-xs border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#006EAD] focus:border-[#006EAD] resize-none"
+                  placeholder={`Escribe tu mensaje para ${activeChatDeal.contact || 'el cliente'}...`}
+                  className="flex-1 p-2.5 text-xs border border-gray-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 resize-none"
                 />
 
-                <button
-                  type="button"
-                  onClick={handleSendChatReply}
-                  disabled={!newChatReplyText.trim() && !chatAttachment}
-                  className={`px-4 py-2.5 rounded-xl text-xs font-black text-white transition flex items-center space-x-1.5 h-[42px] shrink-0 ${
-                    (newChatReplyText.trim() || chatAttachment) ? 'bg-[#006EAD] hover:bg-blue-800 shadow-md' : 'bg-gray-300 cursor-not-allowed'
-                  }`}
-                >
-                  <span>Enviar</span>
-                  <i className="fas fa-paper-plane"></i>
-                </button>
+                <div className="flex flex-col sm:flex-row gap-1.5 shrink-0">
+                  {/* Botón principal: Enviar directamente por WhatsApp */}
+                  {(activeChatDeal.channel === 'whatsapp' || activeChatDeal.phone) && (
+                    <button
+                      type="button"
+                      onClick={() => handleSendChatReply(true)}
+                      disabled={!newChatReplyText.trim() && !chatAttachment}
+                      className={`px-3.5 py-2.5 rounded-xl text-xs font-black text-white transition flex items-center justify-center space-x-1.5 h-[42px] ${
+                        (newChatReplyText.trim() || chatAttachment) 
+                          ? 'bg-emerald-600 hover:bg-emerald-700 shadow-md active:scale-95' 
+                          : 'bg-emerald-300 opacity-60 cursor-not-allowed'
+                      }`}
+                      title="Registrar en CRM y abrir WhatsApp para enviar al celular del cliente"
+                    >
+                      <i className="fab fa-whatsapp text-sm"></i>
+                      <span>Enviar a WhatsApp</span>
+                    </button>
+                  )}
+
+                  {/* Botón secundario: Guardar solo en CRM */}
+                  <button
+                    type="button"
+                    onClick={() => handleSendChatReply(false)}
+                    disabled={!newChatReplyText.trim() && !chatAttachment}
+                    className={`px-3 py-2.5 rounded-xl text-xs font-bold text-white transition flex items-center justify-center space-x-1 h-[42px] ${
+                      (newChatReplyText.trim() || chatAttachment) 
+                        ? 'bg-[#006EAD] hover:bg-blue-800 shadow-xs' 
+                        : 'bg-gray-300 cursor-not-allowed'
+                    }`}
+                    title="Guardar únicamente como nota interna en el historial del CRM"
+                  >
+                    <span>Guardar CRM</span>
+                  </button>
+                </div>
               </div>
             </div>
 
