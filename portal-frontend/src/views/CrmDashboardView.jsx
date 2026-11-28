@@ -1560,9 +1560,10 @@ const CrmDashboardView = () => {
     if (sendToWhatsApp && activeChatDeal.phone) {
       const fullPhone = formatWaPhone(activeChatDeal.phone);
       if (fullPhone) {
-        const waUrl = `https://wa.me/${fullPhone}?text=${encodeURIComponent(replyMsg.text)}`;
+        // Usa web.whatsapp.com directo para evitar la pantalla intermedia de selección
+        const waUrl = `https://web.whatsapp.com/send?phone=${fullPhone}&text=${encodeURIComponent(replyMsg.text)}`;
         window.open(waUrl, '_blank', 'noopener,noreferrer');
-        showToast(`💬 Abriendo WhatsApp para enviar a +${fullPhone}...`);
+        showToast(`💬 Abriendo WhatsApp Web para enviar a +${fullPhone}...`);
       }
     }
 
@@ -4757,7 +4758,7 @@ const CrmDashboardView = () => {
               <div className="flex items-center space-x-2">
                 {activeChatDeal.phone && (
                   <a
-                    href={`https://wa.me/${formatWaPhone(activeChatDeal.phone)}?text=${encodeURIComponent('Hola ' + (activeChatDeal.contact || activeChatDeal.company) + ', le saludamos de NyTEX respecto a su solicitud.')}`}
+                    href={`https://web.whatsapp.com/send?phone=${formatWaPhone(activeChatDeal.phone)}&text=${encodeURIComponent('Hola ' + (activeChatDeal.contact || activeChatDeal.company) + ', le saludamos de NyTEX respecto a su solicitud.')}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-black px-3 py-1.5 rounded-lg transition flex items-center space-x-1.5 shadow-xs"
@@ -5586,7 +5587,7 @@ const CrmDashboardView = () => {
                 <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-end">
                   {/* Opción 1: Abrir WhatsApp Web con el mensaje pre-cargado */}
                   <a
-                    href={`https://wa.me/${newWaTargetPhone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(newWaMessage)}`}
+                    href={`https://web.whatsapp.com/send?phone=${formatWaPhone(newWaTargetPhone)}&text=${encodeURIComponent(newWaMessage)}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     onClick={() => {
