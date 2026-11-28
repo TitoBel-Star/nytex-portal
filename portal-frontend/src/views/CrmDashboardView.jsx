@@ -1535,12 +1535,12 @@ const CrmDashboardView = () => {
     return digits;
   };
 
-  const handleSendChatReply = async (sendToWhatsApp = false) => {
+  const handleSendChatReply = async (sendToWhatsApp = false, senderType = 'agent') => {
     if ((!newChatReplyText.trim() && !chatAttachment) || !activeChatDeal) return;
     const msgText = newChatReplyText.trim();
     const replyMsg = {
       id: Date.now(),
-      sender: 'agent',
+      sender: senderType, // 'agent' o 'client'
       channel: activeChatDeal.channel || 'whatsapp',
       text: msgText || (chatAttachment ? `[Archivo adjunto: ${chatAttachment.name}]` : ''),
       attachment: chatAttachment || null,
@@ -1554,7 +1554,7 @@ const CrmDashboardView = () => {
     setDeals(prev => prev.map(d => d.id === updatedDeal.id ? updatedDeal : d));
     setNewChatReplyText('');
     setChatAttachment(null);
-    showToast(`📤 Respuesta registrada para ${activeChatDeal.contact || activeChatDeal.company}`);
+    showToast(senderType === 'client' ? `📥 Respuesta del cliente registrada en el expediente` : `📤 Respuesta registrada para ${activeChatDeal.contact || activeChatDeal.company}`);
 
     // Si se activa el envío hacia WhatsApp y tiene teléfono configurado
     if (sendToWhatsApp && activeChatDeal.phone) {
@@ -4976,7 +4976,7 @@ const CrmDashboardView = () => {
                   {/* Botón secundario: Guardar solo en CRM */}
                   <button
                     type="button"
-                    onClick={() => handleSendChatReply(false)}
+                    onClick={() => handleSendChatReply(false, 'agent')}
                     disabled={!newChatReplyText.trim() && !chatAttachment}
                     className={`px-3 py-2.5 rounded-xl text-xs font-bold text-white transition flex items-center justify-center space-x-1 h-[42px] ${
                       (newChatReplyText.trim() || chatAttachment) 
@@ -4986,6 +4986,22 @@ const CrmDashboardView = () => {
                     title="Guardar únicamente como nota interna en el historial del CRM"
                   >
                     <span>Guardar CRM</span>
+                  </button>
+
+                  {/* Botón terciario: Registrar respuesta recibida del cliente */}
+                  <button
+                    type="button"
+                    onClick={() => handleSendChatReply(false, 'client')}
+                    disabled={!newChatReplyText.trim() && !chatAttachment}
+                    className={`px-3 py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center space-x-1 h-[42px] border ${
+                      (newChatReplyText.trim() || chatAttachment) 
+                        ? 'bg-amber-50 hover:bg-amber-100 border-amber-300 text-amber-900 shadow-xs' 
+                        : 'bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed'
+                    }`}
+                    title="Registrar en el CRM un mensaje que el cliente le respondió a su celular (ej: 'Gracias recibido')"
+                  >
+                    <i className="fas fa-inbox text-amber-600 mr-1"></i>
+                    <span>📥 Mensaje del Cliente</span>
                   </button>
                 </div>
               </div>
